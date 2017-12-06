@@ -36,4 +36,4 @@ services:
     restart: always
     ports:
       - 4567:4567
-    #command: ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "target/dbeval-0.0.1.jar"]
+    command: ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "target/dbeval-0.0.1.jar"]
