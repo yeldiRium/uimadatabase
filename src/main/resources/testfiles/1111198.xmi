@@ -1,0 +1,1817 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmlns:xmi="http://www.omg.org/XMI" xmlns:cas="http:///uima/cas.ecore" xmlns:chunk="http:///de/tudarmstadt/ukp/dkpro/core/api/syntax/type/chunk.ecore" xmlns:constituent="http:///de/tudarmstadt/ukp/dkpro/core/api/syntax/type/constituent.ecore" xmlns:dependency="http:///de/tudarmstadt/ukp/dkpro/core/api/syntax/type/dependency.ecore" xmlns:disambiguation="http:///org/hucompute/webservices/disambiguation.ecore" xmlns:ducc="http:///org/apache/uima/ducc.ecore" xmlns:heideltime="http:///de/unihd/dbs/uima/types/heideltime.ecore" xmlns:html="http:///org/hucompute/services/type/html.ecore" xmlns:infos="http:///de/hucompute/service/infos.ecore" xmlns:morph="http:///de/tudarmstadt/ukp/dkpro/core/api/lexmorph/type/morph.ecore" xmlns:pos="http:///de/tudarmstadt/ukp/dkpro/core/api/lexmorph/type/pos.ecore" xmlns:segmentation="http:///org/hucompute/services/type/segmentation.ecore" xmlns:stanford="http:///org/apache/uima/stanford.ecore" xmlns:tcas="http:///uima/tcas.ecore" xmlns:topic="http:///org/hucompute/webservices/topic.ecore" xmlns:tweet="http:///de/tudarmstadt/ukp/dkpro/core/api/lexmorph/type/pos/tweet.ecore" xmlns:type="http:///de/tudarmstadt/ukp/dkpro/core/api/anomaly/type.ecore" xmlns:type10="http:///de/tudarmstadt/ukp/dkpro/core/sentiment/type.ecore" xmlns:type11="http:///org/hucompute/services/type.ecore" xmlns:type2="http:///de/tudarmstadt/ukp/dkpro/core/api/coref/type.ecore" xmlns:type3="http:///de/tudarmstadt/ukp/dkpro/core/api/frequency/tfidf/type.ecore" xmlns:type4="http:///de/tudarmstadt/ukp/dkpro/core/api/metadata/type.ecore" xmlns:type5="http:///de/tudarmstadt/ukp/dkpro/core/api/ner/type.ecore" xmlns:type6="http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore" xmlns:type7="http:///de/tudarmstadt/ukp/dkpro/core/api/semantics/type.ecore" xmlns:type8="http:///de/tudarmstadt/ukp/dkpro/core/api/syntax/type.ecore" xmlns:type9="http:///de/tudarmstadt/ukp/dkpro/core/api/transform/type.ecore" xmi:version="2.0">
+   <cas:NULL xmi:id="0" />
+   <type4:DocumentMetaData xmi:id="1" sofa="11659" begin="0" end="3304" language="de" documentTitle="Kollagenasen" documentId="1111198" documentUri="file:/media/ahemati/cea5347d-36d3-4856-a9be-bcd0bddbfd92/clean_wikipedia/input/dewiki_2016-11-01_articles_html.txt" collectionId="file:/media/ahemati/cea5347d-36d3-4856-a9be-bcd0bddbfd92/clean_wikipedia/input/" documentBaseUri="file:/media/ahemati/cea5347d-36d3-4856-a9be-bcd0bddbfd92/clean_wikipedia/input/" isLastSegment="false" />
+   <html:h1 xmi:id="12" sofa="11659" begin="0" end="12" />
+   <html:b xmi:id="19" sofa="11659" begin="18" end="30" />
+   <html:b xmi:id="26" sofa="11659" begin="426" end="452" />
+   <html:b xmi:id="33" sofa="11659" begin="567" end="579" />
+   <html:b xmi:id="40" sofa="11659" begin="669" end="692" />
+   <html:b xmi:id="47" sofa="11659" begin="744" end="756" />
+   <html:b xmi:id="54" sofa="11659" begin="912" end="925" />
+   <html:b xmi:id="61" sofa="11659" begin="1298" end="1313" />
+   <html:a xmi:id="68" sofa="11659" begin="38" end="44" href="/wiki/Enzym" title="Enzym" />
+   <html:a xmi:id="77" sofa="11659" begin="68" end="81" href="/wiki/Peptidbindung" title="Peptidbindung" />
+   <html:a xmi:id="86" sofa="11659" begin="91" end="97" href="/wiki/Prolin" title="Prolin" />
+   <html:a xmi:id="95" sofa="11659" begin="110" end="121" href="/wiki/Aminos%C3%A4uren" title="Aminosäuren" />
+   <html:a xmi:id="104" sofa="11659" begin="148" end="157" href="/wiki/Protease" title="Protease" />
+   <html:a xmi:id="113" sofa="11659" begin="171" end="179" href="/wiki/Kollagen" title="Kollagen" />
+   <html:a xmi:id="122" sofa="11659" begin="221" end="230" href="/wiki/Coelomata" title="Coelomata" />
+   <html:a xmi:id="131" sofa="11659" begin="233" end="242" href="/wiki/Bakterien" title="Bakterien" />
+   <html:a xmi:id="140" sofa="11659" begin="255" end="263" href="/wiki/Archaeen" title="Archaeen" />
+   <html:a xmi:id="149" sofa="11659" begin="331" end="354" href="/wiki/Matrix-Metalloproteasen" title="Matrix-Metalloproteasen" />
+   <html:a xmi:id="158" sofa="11659" begin="356" end="358" href="/wiki/EC-Nummer" title="EC-Nummer" />
+   <html:a xmi:id="167" sofa="11659" begin="359" end="367" klass="external text" href="http://ca.expasy.org/enzyme/3.4.24.-" />
+   <html:a xmi:id="176" sofa="11659" begin="377" end="380" href="#cite_note-0" />
+   <html:a xmi:id="185" sofa="11659" begin="452" end="456" klass="external text" href="http://www.genenames.org/data/hgnc_data.php?match=MMP1" />
+   <html:a xmi:id="194" sofa="11659" begin="456" end="462" klass="external text" href="http://www.uniprot.org/uniprot/P03956" />
+   <html:a xmi:id="203" sofa="11659" begin="552" end="567" href="/wiki/HIV-Protein_Tat" title="HIV-Protein Tat" />
+   <html:a xmi:id="212" sofa="11659" begin="579" end="583" klass="external text" href="http://www.genenames.org/data/hgnc_data.php?match=MMP2" />
+   <html:a xmi:id="221" sofa="11659" begin="583" end="589" klass="external text" href="http://www.uniprot.org/uniprot/P08253" />
+   <html:a xmi:id="230" sofa="11659" begin="603" end="626" href="/wiki/Torg-Winchester-Syndrom" title="Torg-Winchester-Syndrom" />
+   <html:a xmi:id="239" sofa="11659" begin="692" end="696" klass="external text" href="http://www.genenames.org/data/hgnc_data.php?match=MMP8" />
+   <html:a xmi:id="248" sofa="11659" begin="696" end="702" klass="external text" href="http://www.uniprot.org/uniprot/P22894" />
+   <html:a xmi:id="257" sofa="11659" begin="756" end="760" klass="external text" href="http://www.genenames.org/data/hgnc_data.php?match=MMP9" />
+   <html:a xmi:id="266" sofa="11659" begin="760" end="766" klass="external text" href="http://www.uniprot.org/uniprot/P14780" />
+   <html:a xmi:id="275" sofa="11659" begin="799" end="818" href="/wiki/Bandscheibenvorfall" title="Bandscheibenvorfall" />
+   <html:a xmi:id="284" sofa="11659" begin="820" end="832" href="/wiki/Anadysplasie" title="Anadysplasie" />
+   <html:a xmi:id="293" sofa="11659" begin="837" end="846" href="/wiki/Metaphyse" title="Metaphyse" />
+   <html:a xmi:id="302" sofa="11659" begin="925" end="930" klass="external text" href="http://www.genenames.org/data/hgnc_data.php?match=MMP13" />
+   <html:a xmi:id="311" sofa="11659" begin="930" end="936" klass="external text" href="http://www.uniprot.org/uniprot/P45452" />
+   <html:a xmi:id="320" sofa="11659" begin="939" end="949" href="/wiki/Dysplasie" title="Dysplasie" />
+   <html:a xmi:id="329" sofa="11659" begin="1006" end="1017" href="/wiki/Clostridien" title="Clostridien" />
+   <html:a xmi:id="338" sofa="11659" begin="1050" end="1061" href="/wiki/Bindegewebe" title="Bindegewebe" />
+   <html:a xmi:id="347" sofa="11659" begin="1155" end="1166" href="/wiki/Wundheilung" title="Wundheilung" />
+   <html:a xmi:id="356" sofa="11659" begin="1168" end="1179" href="/wiki/D%C3%A9bridement" title="Débridement" />
+   <html:a xmi:id="365" sofa="11659" begin="1191" end="1194" href="#cite_note-PMID20853433-1" />
+   <html:a xmi:id="374" sofa="11659" begin="1194" end="1197" href="#cite_note-PMID19918148-2" />
+   <html:a xmi:id="383" sofa="11659" begin="1197" end="1200" href="#cite_note-3" />
+   <html:a xmi:id="392" sofa="11659" begin="1243" end="1261" href="/wiki/Translation_(Biologie)" title="Translation (Biologie)" />
+   <html:a xmi:id="401" sofa="11659" begin="1274" end="1293" href="/wiki/Pr%C3%A4kursor-Proteine" title="Präkursor-Proteine" />
+   <html:a xmi:id="410" sofa="11659" begin="1314" end="1317" href="#cite_note-4" />
+   <html:a xmi:id="419" sofa="11659" begin="1325" end="1342" href="/wiki/Posttranslationale_Modifikation" title="Posttranslationale Modifikation" />
+   <html:a xmi:id="428" sofa="11659" begin="1509" end="1525" href="/wiki/Morbus_Dupuytren" title="Morbus Dupuytren" />
+   <html:a xmi:id="437" sofa="11659" begin="1600" end="1611" href="/wiki/Handelsname" title="Handelsname" />
+   <html:a xmi:id="446" sofa="11659" begin="1631" end="1637" href="/wiki/Pfizer" title="Pfizer" />
+   <html:a xmi:id="455" sofa="11659" begin="2049" end="2063" klass="external text" href="http://dispatch.opac.dnb.de/DB=1.1/CMD?ACT=SRCHA&amp;IKT=8&amp;TRM=1071-5754" />
+   <html:a xmi:id="464" sofa="11659" begin="2065" end="2068" href="/wiki/Digital_Object_Identifier" title="Digital Object Identifier" />
+   <html:a xmi:id="473" sofa="11659" begin="2069" end="2103" klass="external text" href="https://dx.doi.org/10.1097%2F01.WON.0000319125.21854.78" />
+   <html:a xmi:id="482" sofa="11659" begin="2146" end="2147" href="#cite_ref-0" />
+   <html:a xmi:id="491" sofa="11659" begin="2148" end="2168" klass="external text" href="http://www.uniprot.org/uniprot/?query=name%3acollagenase+and+ec%3a3.*&amp;by=taxonomy" />
+   <html:a xmi:id="500" sofa="11659" begin="2168" end="2169" href="#cite_ref-PMID20853433_1-0" />
+   <html:a xmi:id="509" sofa="11659" begin="2414" end="2428" klass="external text" href="http://dispatch.opac.dnb.de/DB=1.1/CMD?ACT=SRCHA&amp;IKT=8&amp;TRM=1536-4844" />
+   <html:a xmi:id="518" sofa="11659" begin="2430" end="2433" href="/wiki/Digital_Object_Identifier" title="Digital Object Identifier" />
+   <html:a xmi:id="527" sofa="11659" begin="2434" end="2451" klass="external text" href="https://dx.doi.org/10.1002%2Fibd.21475" />
+   <html:a xmi:id="536" sofa="11659" begin="2467" end="2468" href="#cite_ref-PMID19918148_2-0" />
+   <html:a xmi:id="545" sofa="11659" begin="2734" end="2748" klass="external text" href="http://dispatch.opac.dnb.de/DB=1.1/CMD?ACT=SRCHA&amp;IKT=8&amp;TRM=1528-3976" />
+   <html:a xmi:id="554" sofa="11659" begin="2750" end="2753" href="/wiki/Digital_Object_Identifier" title="Digital Object Identifier" />
+   <html:a xmi:id="563" sofa="11659" begin="2754" end="2782" klass="external text" href="https://dx.doi.org/10.1097%2FWON.0b013e3181bfdf83" />
+   <html:a xmi:id="572" sofa="11659" begin="2808" end="2809" href="#cite_ref-3" />
+   <html:a xmi:id="581" sofa="11659" begin="2810" end="2879" klass="external text" href="https://www.iqwig.de/de/presse/pressemitteilungen/pressemitteilungen/collagenase_bei_dupuytren_scher_kontraktur_zusatznutzen_nicht_belegt.2452.html" />
+   <html:a xmi:id="590" sofa="11659" begin="2902" end="2967" href="/wiki/Institut_f%C3%BCr_Qualit%C3%A4t_und_Wirtschaftlichkeit_im_Gesundheitswesen" title="Institut für Qualität und Wirtschaftlichkeit im Gesundheitswesen" />
+   <html:a xmi:id="599" sofa="11659" begin="2987" end="2988" href="#cite_ref-4" />
+   <html:a xmi:id="608" sofa="11659" begin="3064" end="3178" klass="external text" href="http://www.jbc.org/content/262/33/15862.full.pdf" />
+   <type11:Wikify xmi:id="617" sofa="11659" begin="38" end="44" link="Enzym" />
+   <type11:Wikify xmi:id="624" sofa="11659" begin="68" end="81" link="Peptidbindung" />
+   <type11:Wikify xmi:id="631" sofa="11659" begin="91" end="97" link="Prolin" />
+   <type11:Wikify xmi:id="638" sofa="11659" begin="110" end="121" link="Aminos%C3%A4uren" />
+   <type11:Wikify xmi:id="645" sofa="11659" begin="148" end="157" link="Protease" />
+   <type11:Wikify xmi:id="652" sofa="11659" begin="171" end="179" link="Kollagen" />
+   <type11:Wikify xmi:id="659" sofa="11659" begin="221" end="230" link="Coelomata" />
+   <type11:Wikify xmi:id="666" sofa="11659" begin="233" end="242" link="Bakterien" />
+   <type11:Wikify xmi:id="673" sofa="11659" begin="255" end="263" link="Archaeen" />
+   <type11:Wikify xmi:id="680" sofa="11659" begin="331" end="354" link="Matrix-Metalloproteasen" />
+   <type11:Wikify xmi:id="687" sofa="11659" begin="356" end="358" link="EC-Nummer" />
+   <type11:Wikify xmi:id="694" sofa="11659" begin="552" end="567" link="HIV-Protein_Tat" />
+   <type11:Wikify xmi:id="701" sofa="11659" begin="603" end="626" link="Torg-Winchester-Syndrom" />
+   <type11:Wikify xmi:id="708" sofa="11659" begin="799" end="818" link="Bandscheibenvorfall" />
+   <type11:Wikify xmi:id="715" sofa="11659" begin="820" end="832" link="Anadysplasie" />
+   <type11:Wikify xmi:id="722" sofa="11659" begin="837" end="846" link="Metaphyse" />
+   <type11:Wikify xmi:id="729" sofa="11659" begin="939" end="949" link="Dysplasie" />
+   <type11:Wikify xmi:id="736" sofa="11659" begin="1006" end="1017" link="Clostridien" />
+   <type11:Wikify xmi:id="743" sofa="11659" begin="1050" end="1061" link="Bindegewebe" />
+   <type11:Wikify xmi:id="750" sofa="11659" begin="1155" end="1166" link="Wundheilung" />
+   <type11:Wikify xmi:id="757" sofa="11659" begin="1168" end="1179" link="D%C3%A9bridement" />
+   <type11:Wikify xmi:id="764" sofa="11659" begin="1243" end="1261" link="Translation_(Biologie)" />
+   <type11:Wikify xmi:id="771" sofa="11659" begin="1274" end="1293" link="Pr%C3%A4kursor-Proteine" />
+   <type11:Wikify xmi:id="778" sofa="11659" begin="1325" end="1342" link="Posttranslationale_Modifikation" />
+   <type11:Wikify xmi:id="785" sofa="11659" begin="1509" end="1525" link="Morbus_Dupuytren" />
+   <type11:Wikify xmi:id="792" sofa="11659" begin="1600" end="1611" link="Handelsname" />
+   <type11:Wikify xmi:id="799" sofa="11659" begin="1631" end="1637" link="Pfizer" />
+   <type11:Wikify xmi:id="806" sofa="11659" begin="2065" end="2068" link="Digital_Object_Identifier" />
+   <type11:Wikify xmi:id="813" sofa="11659" begin="2430" end="2433" link="Digital_Object_Identifier" />
+   <type11:Wikify xmi:id="820" sofa="11659" begin="2750" end="2753" link="Digital_Object_Identifier" />
+   <type11:Wikify xmi:id="827" sofa="11659" begin="2902" end="2967" link="Institut_f%C3%BCr_Qualit%C3%A4t_und_Wirtschaftlichkeit_im_Gesundheitswesen" />
+   <html:p xmi:id="834" sofa="11659" begin="14" end="380" />
+   <html:p xmi:id="841" sofa="11659" begin="970" end="1200" />
+   <html:p xmi:id="848" sofa="11659" begin="1214" end="1407" />
+   <html:p xmi:id="855" sofa="11659" begin="1425" end="1808" />
+   <type6:Paragraph xmi:id="862" sofa="11659" begin="14" end="380" />
+   <type6:Paragraph xmi:id="868" sofa="11659" begin="970" end="1200" />
+   <type6:Paragraph xmi:id="874" sofa="11659" begin="1214" end="1407" />
+   <type6:Paragraph xmi:id="880" sofa="11659" begin="1425" end="1808" />
+   <html:th xmi:id="886" sofa="11659" begin="381" end="388" />
+   <html:th xmi:id="893" sofa="11659" begin="388" end="398" />
+   <html:th xmi:id="900" sofa="11659" begin="398" end="405" />
+   <html:th xmi:id="907" sofa="11659" begin="405" end="415" />
+   <html:th xmi:id="914" sofa="11659" begin="415" end="426" />
+   <html:tr xmi:id="921" sofa="11659" begin="381" end="426" />
+   <html:tr xmi:id="928" sofa="11659" begin="426" end="567" />
+   <html:tr xmi:id="935" sofa="11659" begin="567" end="669" />
+   <html:tr xmi:id="942" sofa="11659" begin="669" end="744" />
+   <html:tr xmi:id="949" sofa="11659" begin="744" end="912" />
+   <html:tr xmi:id="956" sofa="11659" begin="912" end="969" />
+   <html:td xmi:id="963" sofa="11659" begin="426" end="452" />
+   <html:td xmi:id="970" sofa="11659" begin="452" end="456" />
+   <html:td xmi:id="977" sofa="11659" begin="456" end="462" />
+   <html:td xmi:id="984" sofa="11659" begin="462" end="470" />
+   <html:td xmi:id="991" sofa="11659" begin="470" end="567" />
+   <html:td xmi:id="998" sofa="11659" begin="567" end="579" />
+   <html:td xmi:id="1005" sofa="11659" begin="579" end="583" />
+   <html:td xmi:id="1012" sofa="11659" begin="583" end="589" />
+   <html:td xmi:id="1019" sofa="11659" begin="589" end="592" />
+   <html:td xmi:id="1026" sofa="11659" begin="592" end="669" />
+   <html:td xmi:id="1033" sofa="11659" begin="669" end="692" />
+   <html:td xmi:id="1040" sofa="11659" begin="692" end="696" />
+   <html:td xmi:id="1047" sofa="11659" begin="696" end="702" />
+   <html:td xmi:id="1054" sofa="11659" begin="702" end="705" />
+   <html:td xmi:id="1061" sofa="11659" begin="705" end="744" />
+   <html:td xmi:id="1068" sofa="11659" begin="744" end="756" />
+   <html:td xmi:id="1075" sofa="11659" begin="756" end="760" />
+   <html:td xmi:id="1082" sofa="11659" begin="760" end="766" />
+   <html:td xmi:id="1089" sofa="11659" begin="766" end="782" />
+   <html:td xmi:id="1096" sofa="11659" begin="782" end="912" />
+   <html:td xmi:id="1103" sofa="11659" begin="912" end="925" />
+   <html:td xmi:id="1110" sofa="11659" begin="925" end="930" />
+   <html:td xmi:id="1117" sofa="11659" begin="930" end="936" />
+   <html:td xmi:id="1124" sofa="11659" begin="936" end="939" />
+   <html:td xmi:id="1131" sofa="11659" begin="939" end="969" />
+   <html:i xmi:id="1138" sofa="11659" begin="452" end="456" />
+   <html:i xmi:id="1145" sofa="11659" begin="579" end="583" />
+   <html:i xmi:id="1152" sofa="11659" begin="692" end="696" />
+   <html:i xmi:id="1159" sofa="11659" begin="756" end="760" />
+   <html:i xmi:id="1166" sofa="11659" begin="925" end="930" />
+   <html:i xmi:id="1173" sofa="11659" begin="1612" end="1618" />
+   <html:i xmi:id="1180" sofa="11659" begin="1720" end="1744" />
+   <html:i xmi:id="1187" sofa="11659" begin="1840" end="1868" />
+   <html:i xmi:id="1194" sofa="11659" begin="1873" end="2003" />
+   <html:i xmi:id="1201" sofa="11659" begin="2202" end="2337" />
+   <html:i xmi:id="1208" sofa="11659" begin="2342" end="2370" />
+   <html:i xmi:id="1215" sofa="11659" begin="2490" end="2549" />
+   <html:i xmi:id="1222" sofa="11659" begin="2554" end="2684" />
+   <html:i xmi:id="1229" sofa="11659" begin="3064" end="3177" />
+   <html:table xmi:id="1236" sofa="11659" begin="381" end="969" klass="wikitable" />
+   <html:div xmi:id="1243" sofa="11659" begin="1201" end="1201" klass="xo-toc" />
+   <html:span xmi:id="1250" sofa="11659" begin="1202" end="1213" klass="mw-headline" id="Biosynthese" />
+   <html:span xmi:id="1257" sofa="11659" begin="1408" end="1424" klass="mw-headline" id="Morbus_Dupuytren" />
+   <html:span xmi:id="1264" sofa="11659" begin="1809" end="1818" klass="mw-headline" id="Literatur" />
+   <html:span xmi:id="1271" sofa="11659" begin="2049" end="2063" klass="plainlinks-print" />
+   <html:span xmi:id="1278" sofa="11659" begin="2069" end="2103" klass="uri-handle" />
+   <html:span xmi:id="1285" sofa="11659" begin="2130" end="2145" klass="mw-headline" id="Einzelnachweise" />
+   <html:span xmi:id="1292" sofa="11659" begin="2146" end="2147" klass="mw-cite-backlink" />
+   <html:span xmi:id="1299" sofa="11659" begin="2148" end="2168" klass="reference-text" />
+   <html:span xmi:id="1306" sofa="11659" begin="2168" end="2169" klass="mw-cite-backlink" />
+   <html:span xmi:id="1313" sofa="11659" begin="2170" end="2467" klass="reference-text" />
+   <html:span xmi:id="1320" sofa="11659" begin="2414" end="2428" klass="plainlinks-print" />
+   <html:span xmi:id="1327" sofa="11659" begin="2434" end="2451" klass="uri-handle" />
+   <html:span xmi:id="1334" sofa="11659" begin="2467" end="2468" klass="mw-cite-backlink" />
+   <html:span xmi:id="1341" sofa="11659" begin="2469" end="2808" klass="reference-text" />
+   <html:span xmi:id="1348" sofa="11659" begin="2734" end="2748" klass="plainlinks-print" />
+   <html:span xmi:id="1355" sofa="11659" begin="2754" end="2782" klass="uri-handle" />
+   <html:span xmi:id="1362" sofa="11659" begin="2808" end="2809" klass="mw-cite-backlink" />
+   <html:span xmi:id="1369" sofa="11659" begin="2810" end="2987" klass="reference-text" />
+   <html:span xmi:id="1376" sofa="11659" begin="2987" end="2988" klass="mw-cite-backlink" />
+   <html:span xmi:id="1383" sofa="11659" begin="2989" end="3302" id="Reference-Campbell" />
+   <html:span xmi:id="1390" sofa="11659" begin="2989" end="3302" klass="reference-text" />
+   <html:h2 xmi:id="1397" sofa="11659" begin="1202" end="1213" />
+   <html:h2 xmi:id="1404" sofa="11659" begin="1408" end="1424" />
+   <html:h2 xmi:id="1411" sofa="11659" begin="1809" end="1818" />
+   <html:h2 xmi:id="1418" sofa="11659" begin="2130" end="2145" />
+   <html:li xmi:id="1425" sofa="11659" begin="1819" end="2129" />
+   <html:li xmi:id="1432" sofa="11659" begin="2146" end="2168" id="cite_note-0" />
+   <html:li xmi:id="1439" sofa="11659" begin="2168" end="2467" id="cite_note-PMID20853433-1" />
+   <html:li xmi:id="1446" sofa="11659" begin="2467" end="2808" id="cite_note-PMID19918148-2" />
+   <html:li xmi:id="1453" sofa="11659" begin="2808" end="2987" id="cite_note-3" />
+   <html:li xmi:id="1460" sofa="11659" begin="2987" end="3302" id="cite_note-4" />
+   <html:ul xmi:id="1467" sofa="11659" begin="1819" end="2129" />
+   <html:ol xmi:id="1474" sofa="11659" begin="2146" end="3302" klass="references" />
+   <type6:Sentence xmi:id="1481" sofa="11659" begin="14" end="130" />
+   <type6:Sentence xmi:id="1486" sofa="11659" begin="131" end="190" />
+   <type6:Sentence xmi:id="1491" sofa="11659" begin="191" end="268" />
+   <type6:Sentence xmi:id="1496" sofa="11659" begin="269" end="380" />
+   <type6:Sentence xmi:id="1501" sofa="11659" begin="970" end="1089" />
+   <type6:Sentence xmi:id="1506" sofa="11659" begin="1090" end="1200" />
+   <type6:Sentence xmi:id="1511" sofa="11659" begin="1214" end="1407" />
+   <type6:Sentence xmi:id="1516" sofa="11659" begin="1425" end="1808" />
+   <type6:Token xmi:id="1521" sofa="11659" begin="14" end="17" lemma="4694" pos="3699" morph="7281" />
+   <type6:Token xmi:id="1531" sofa="11659" begin="18" end="30" lemma="4699" pos="3829" morph="7303" />
+   <type6:Token xmi:id="1541" sofa="11659" begin="31" end="37" lemma="4704" pos="4074" morph="7325" />
+   <type6:Token xmi:id="1551" sofa="11659" begin="38" end="44" lemma="4709" pos="3834" morph="7347" />
+   <type6:Token xmi:id="1561" sofa="11659" begin="45" end="55" lemma="4714" pos="4079" morph="7369" />
+   <type6:Token xmi:id="1571" sofa="11659" begin="55" end="56" lemma="4719" pos="4184" morph="7391" />
+   <type6:Token xmi:id="1581" sofa="11659" begin="57" end="63" lemma="4724" pos="4279" morph="7413" />
+   <type6:Token xmi:id="1591" sofa="11659" begin="64" end="67" lemma="4729" pos="4339" morph="7435" />
+   <type6:Token xmi:id="1601" sofa="11659" begin="68" end="81" lemma="4734" pos="3839" morph="7457" />
+   <type6:Token xmi:id="1611" sofa="11659" begin="82" end="90" lemma="4739" pos="3704" morph="7479" />
+   <type6:Token xmi:id="1621" sofa="11659" begin="91" end="97" lemma="4744" pos="4414" morph="7501" />
+   <type6:Token xmi:id="1631" sofa="11659" begin="98" end="101" lemma="4749" pos="4444" morph="7523" />
+   <type6:Token xmi:id="1641" sofa="11659" begin="102" end="109" lemma="4754" pos="4464" morph="7545" />
+   <type6:Token xmi:id="1651" sofa="11659" begin="110" end="121" lemma="4759" pos="3844" morph="7567" />
+   <type6:Token xmi:id="1661" sofa="11659" begin="122" end="129" lemma="4764" pos="4084" morph="7589" />
+   <type6:Token xmi:id="1671" sofa="11659" begin="129" end="130" lemma="4769" pos="4189" morph="7611" />
+   <type6:Token xmi:id="1681" sofa="11659" begin="131" end="136" lemma="4774" pos="4509" morph="7633" />
+   <type6:Token xmi:id="1691" sofa="11659" begin="137" end="141" lemma="4779" pos="4089" morph="7655" />
+   <type6:Token xmi:id="1701" sofa="11659" begin="142" end="147" lemma="4784" pos="4284" morph="7677" />
+   <type6:Token xmi:id="1711" sofa="11659" begin="148" end="157" lemma="4789" pos="3849" morph="7699" />
+   <type6:Token xmi:id="1721" sofa="11659" begin="158" end="160" lemma="4794" pos="3709" morph="7721" />
+   <type6:Token xmi:id="1731" sofa="11659" begin="161" end="164" lemma="4799" pos="4344" morph="7743" />
+   <type6:Token xmi:id="1741" sofa="11659" begin="165" end="169" lemma="4804" pos="3854" morph="7765" />
+   <type6:Token xmi:id="1751" sofa="11659" begin="169" end="170" lemma="4809" pos="4194" morph="7787" />
+   <type6:Token xmi:id="1761" sofa="11659" begin="171" end="179" lemma="4814" pos="3859" morph="7809" />
+   <type6:Token xmi:id="1771" sofa="11659" begin="180" end="189" lemma="4819" pos="4094" morph="7831" />
+   <type6:Token xmi:id="1781" sofa="11659" begin="189" end="190" lemma="4824" pos="4199" morph="7853" />
+   <type6:Token xmi:id="1791" sofa="11659" begin="191" end="194" lemma="4829" pos="4289" morph="7875" />
+   <type6:Token xmi:id="1801" sofa="11659" begin="195" end="201" lemma="4834" pos="4099" morph="7897" />
+   <type6:Token xmi:id="1811" sofa="11659" begin="202" end="204" lemma="4839" pos="3714" morph="7919" />
+   <type6:Token xmi:id="1821" sofa="11659" begin="205" end="212" lemma="4844" pos="4469" morph="7941" />
+   <type6:Token xmi:id="1831" sofa="11659" begin="213" end="219" lemma="4849" pos="3864" morph="7963" />
+   <type6:Token xmi:id="1841" sofa="11659" begin="220" end="221" lemma="4854" pos="4529" morph="7985" />
+   <type6:Token xmi:id="1851" sofa="11659" begin="221" end="230" lemma="4859" pos="3869" morph="8007" />
+   <type6:Token xmi:id="1861" sofa="11659" begin="230" end="231" lemma="4864" pos="4534" morph="8029" />
+   <type6:Token xmi:id="1871" sofa="11659" begin="231" end="232" lemma="4869" pos="4204" morph="8051" />
+   <type6:Token xmi:id="1881" sofa="11659" begin="233" end="242" lemma="4874" pos="3874" morph="8073" />
+   <type6:Token xmi:id="1891" sofa="11659" begin="243" end="246" lemma="4879" pos="4449" morph="8095" />
+   <type6:Token xmi:id="1901" sofa="11659" begin="247" end="254" lemma="4884" pos="4294" morph="8117" />
+   <type6:Token xmi:id="1911" sofa="11659" begin="255" end="263" lemma="4889" pos="3879" morph="8139" />
+   <type6:Token xmi:id="1921" sofa="11659" begin="264" end="267" lemma="4894" pos="4104" morph="8161" />
+   <type6:Token xmi:id="1931" sofa="11659" begin="267" end="268" lemma="4899" pos="4209" morph="8183" />
+   <type6:Token xmi:id="1941" sofa="11659" begin="269" end="273" lemma="4904" pos="3719" morph="8205" />
+   <type6:Token xmi:id="1951" sofa="11659" begin="274" end="282" lemma="4909" pos="3884" morph="8227" />
+   <type6:Token xmi:id="1961" sofa="11659" begin="283" end="287" lemma="4914" pos="4109" morph="8249" />
+   <type6:Token xmi:id="1971" sofa="11659" begin="288" end="292" lemma="4919" pos="4624" morph="8271" />
+   <type6:Token xmi:id="1981" sofa="11659" begin="293" end="305" lemma="4924" pos="3889" morph="8293" />
+   <type6:Token xmi:id="1991" sofa="11659" begin="306" end="313" lemma="4929" pos="4474" morph="8315" />
+   <type6:Token xmi:id="2001" sofa="11659" begin="313" end="314" lemma="4934" pos="4214" morph="8337" />
+   <type6:Token xmi:id="2011" sofa="11659" begin="315" end="318" lemma="4939" pos="4299" morph="8359" />
+   <type6:Token xmi:id="2021" sofa="11659" begin="319" end="323" lemma="4944" pos="4304" morph="8381" />
+   <type6:Token xmi:id="2031" sofa="11659" begin="324" end="326" lemma="4949" pos="3724" morph="8403" />
+   <type6:Token xmi:id="2041" sofa="11659" begin="327" end="330" lemma="4954" pos="4349" morph="8425" />
+   <type6:Token xmi:id="2051" sofa="11659" begin="331" end="354" lemma="4959" pos="3894" morph="8447" />
+   <type6:Token xmi:id="2061" sofa="11659" begin="355" end="356" lemma="4964" pos="4539" morph="8469" />
+   <type6:Token xmi:id="2071" sofa="11659" begin="356" end="358" lemma="4969" pos="3899" morph="8491" />
+   <type6:Token xmi:id="2081" sofa="11659" begin="358" end="359" lemma="4974" pos="4629" morph="8513" />
+   <type6:Token xmi:id="2091" sofa="11659" begin="359" end="360" lemma="4979" pos="4634" morph="8535" />
+   <type6:Token xmi:id="2101" sofa="11659" begin="360" end="361" lemma="4984" pos="4219" morph="8557" />
+   <type6:Token xmi:id="2111" sofa="11659" begin="361" end="362" lemma="4989" pos="4639" morph="8579" />
+   <type6:Token xmi:id="2121" sofa="11659" begin="362" end="363" lemma="4994" pos="4224" morph="8601" />
+   <type6:Token xmi:id="2131" sofa="11659" begin="363" end="365" lemma="4999" pos="4644" morph="8623" />
+   <type6:Token xmi:id="2141" sofa="11659" begin="365" end="366" lemma="5004" pos="4229" morph="8645" />
+   <type6:Token xmi:id="2151" sofa="11659" begin="366" end="367" lemma="5009" pos="4544" morph="8667" />
+   <type6:Token xmi:id="2161" sofa="11659" begin="367" end="368" lemma="5014" pos="4549" morph="8689" />
+   <type6:Token xmi:id="2171" sofa="11659" begin="369" end="376" lemma="5019" pos="4114" morph="8711" />
+   <type6:Token xmi:id="2181" sofa="11659" begin="376" end="377" lemma="5024" pos="4234" morph="8733" />
+   <type6:Token xmi:id="2191" sofa="11659" begin="377" end="378" lemma="5029" pos="4554" morph="8755" />
+   <type6:Token xmi:id="2201" sofa="11659" begin="378" end="379" lemma="5034" pos="4649" morph="8777" />
+   <type6:Token xmi:id="2211" sofa="11659" begin="379" end="380" lemma="5039" pos="4559" morph="8799" />
+   <type6:Token xmi:id="2221" sofa="11659" begin="970" end="973" lemma="5044" pos="3729" morph="8821" />
+   <type6:Token xmi:id="2231" sofa="11659" begin="974" end="979" lemma="5049" pos="3904" morph="8843" />
+   <type6:Token xmi:id="2241" sofa="11659" begin="980" end="986" lemma="5054" pos="4309" morph="8865" />
+   <type6:Token xmi:id="2251" sofa="11659" begin="987" end="993" lemma="5059" pos="3909" morph="8887" />
+   <type6:Token xmi:id="2261" sofa="11659" begin="994" end="1000" lemma="5064" pos="4119" morph="8909" />
+   <type6:Token xmi:id="2271" sofa="11659" begin="1001" end="1005" lemma="5069" pos="4314" morph="8931" />
+   <type6:Token xmi:id="2281" sofa="11659" begin="1006" end="1017" lemma="5074" pos="4419" morph="8953" />
+   <type6:Token xmi:id="2291" sofa="11659" begin="1018" end="1023" lemma="5079" pos="3734" morph="8975" />
+   <type6:Token xmi:id="2301" sofa="11659" begin="1024" end="1027" lemma="5084" pos="4354" morph="8997" />
+   <type6:Token xmi:id="2311" sofa="11659" begin="1028" end="1033" lemma="5089" pos="3914" morph="9019" />
+   <type6:Token xmi:id="2321" sofa="11659" begin="1034" end="1037" lemma="5094" pos="3739" morph="9041" />
+   <type6:Token xmi:id="2331" sofa="11659" begin="1038" end="1046" lemma="5099" pos="3919" morph="9063" />
+   <type6:Token xmi:id="2341" sofa="11659" begin="1047" end="1049" lemma="5104" pos="3744" morph="9085" />
+   <type6:Token xmi:id="2351" sofa="11659" begin="1050" end="1061" lemma="5109" pos="3924" morph="9107" />
+   <type6:Token xmi:id="2361" sofa="11659" begin="1062" end="1071" lemma="5114" pos="4514" morph="9129" />
+   <type6:Token xmi:id="2371" sofa="11659" begin="1072" end="1077" lemma="5119" pos="4479" morph="9151" />
+   <type6:Token xmi:id="2381" sofa="11659" begin="1078" end="1088" lemma="5124" pos="4124" morph="9173" />
+   <type6:Token xmi:id="2391" sofa="11659" begin="1088" end="1089" lemma="5129" pos="4239" morph="9195" />
+   <type6:Token xmi:id="2401" sofa="11659" begin="1090" end="1099" lemma="5134" pos="4484" morph="9217" />
+   <type6:Token xmi:id="2411" sofa="11659" begin="1100" end="1104" lemma="5139" pos="4129" morph="9239" />
+   <type6:Token xmi:id="2421" sofa="11659" begin="1105" end="1116" lemma="5144" pos="3929" morph="9261" />
+   <type6:Token xmi:id="2431" sofa="11659" begin="1117" end="1120" lemma="5149" pos="3749" morph="9283" />
+   <type6:Token xmi:id="2441" sofa="11659" begin="1121" end="1132" lemma="5154" pos="3934" morph="9305" />
+   <type6:Token xmi:id="2451" sofa="11659" begin="1133" end="1136" lemma="5159" pos="3754" morph="9327" />
+   <type6:Token xmi:id="2461" sofa="11659" begin="1137" end="1150" lemma="5164" pos="3939" morph="9349" />
+   <type6:Token xmi:id="2471" sofa="11659" begin="1151" end="1154" lemma="5169" pos="4359" morph="9371" />
+   <type6:Token xmi:id="2481" sofa="11659" begin="1155" end="1166" lemma="5174" pos="3944" morph="9393" />
+   <type6:Token xmi:id="2491" sofa="11659" begin="1167" end="1168" lemma="5179" pos="4564" morph="9415" />
+   <type6:Token xmi:id="2501" sofa="11659" begin="1168" end="1179" lemma="5184" pos="3949" morph="9437" />
+   <type6:Token xmi:id="2511" sofa="11659" begin="1179" end="1180" lemma="5189" pos="4569" morph="9459" />
+   <type6:Token xmi:id="2521" sofa="11659" begin="1181" end="1190" lemma="5194" pos="4134" morph="9481" />
+   <type6:Token xmi:id="2531" sofa="11659" begin="1190" end="1191" lemma="5199" pos="4244" morph="9503" />
+   <type6:Token xmi:id="2541" sofa="11659" begin="1191" end="1192" lemma="5204" pos="4574" morph="9525" />
+   <type6:Token xmi:id="2551" sofa="11659" begin="1192" end="1193" lemma="5209" pos="4654" morph="9547" />
+   <type6:Token xmi:id="2561" sofa="11659" begin="1193" end="1194" lemma="5214" pos="4579" morph="9569" />
+   <type6:Token xmi:id="2571" sofa="11659" begin="1194" end="1195" lemma="5219" pos="4584" morph="9591" />
+   <type6:Token xmi:id="2581" sofa="11659" begin="1195" end="1196" lemma="5224" pos="4659" morph="9613" />
+   <type6:Token xmi:id="2591" sofa="11659" begin="1196" end="1197" lemma="5229" pos="4589" morph="9635" />
+   <type6:Token xmi:id="2601" sofa="11659" begin="1197" end="1198" lemma="5234" pos="4594" morph="9657" />
+   <type6:Token xmi:id="2611" sofa="11659" begin="1198" end="1199" lemma="5239" pos="4664" morph="9679" />
+   <type6:Token xmi:id="2621" sofa="11659" begin="1199" end="1200" lemma="5244" pos="4599" morph="9701" />
+   <type6:Token xmi:id="2631" sofa="11659" begin="1214" end="1226" lemma="5249" pos="3954" morph="9723" />
+   <type6:Token xmi:id="2641" sofa="11659" begin="1227" end="1230" lemma="5254" pos="4364" morph="9745" />
+   <type6:Token xmi:id="2651" sofa="11659" begin="1231" end="1242" lemma="5259" pos="3959" morph="9767" />
+   <type6:Token xmi:id="2661" sofa="11659" begin="1243" end="1252" lemma="5264" pos="4139" morph="9789" />
+   <type6:Token xmi:id="2671" sofa="11659" begin="1253" end="1261" lemma="5269" pos="4519" morph="9811" />
+   <type6:Token xmi:id="2681" sofa="11659" begin="1262" end="1264" lemma="5274" pos="3759" morph="9833" />
+   <type6:Token xmi:id="2691" sofa="11659" begin="1265" end="1269" lemma="5279" pos="3964" morph="9855" />
+   <type6:Token xmi:id="2701" sofa="11659" begin="1270" end="1273" lemma="5284" pos="3764" morph="9877" />
+   <type6:Token xmi:id="2711" sofa="11659" begin="1274" end="1293" lemma="5289" pos="3969" morph="9899" />
+   <type6:Token xmi:id="2721" sofa="11659" begin="1294" end="1297" lemma="5294" pos="3769" morph="9921" />
+   <type6:Token xmi:id="2731" sofa="11659" begin="1298" end="1313" lemma="5299" pos="3974" morph="9943" />
+   <type6:Token xmi:id="2741" sofa="11659" begin="1313" end="1314" lemma="5304" pos="4249" morph="9965" />
+   <type6:Token xmi:id="2751" sofa="11659" begin="1314" end="1315" lemma="5309" pos="4604" morph="9987" />
+   <type6:Token xmi:id="2761" sofa="11659" begin="1315" end="1316" lemma="5314" pos="4669" morph="10009" />
+   <type6:Token xmi:id="2771" sofa="11659" begin="1316" end="1317" lemma="5319" pos="4609" morph="10031" />
+   <type6:Token xmi:id="2781" sofa="11659" begin="1318" end="1324" lemma="5324" pos="4319" morph="10053" />
+   <type6:Token xmi:id="2791" sofa="11659" begin="1325" end="1342" lemma="5329" pos="4489" morph="10075" />
+   <type6:Token xmi:id="2801" sofa="11659" begin="1343" end="1346" lemma="5334" pos="3774" morph="10097" />
+   <type6:Token xmi:id="2811" sofa="11659" begin="1347" end="1354" lemma="5339" pos="3979" morph="10119" />
+   <type6:Token xmi:id="2821" sofa="11659" begin="1355" end="1360" lemma="5344" pos="3779" morph="10141" />
+   <type6:Token xmi:id="2831" sofa="11659" begin="1361" end="1373" lemma="5349" pos="4494" morph="10163" />
+   <type6:Token xmi:id="2841" sofa="11659" begin="1374" end="1382" lemma="5354" pos="3984" morph="10185" />
+   <type6:Token xmi:id="2851" sofa="11659" begin="1383" end="1392" lemma="5359" pos="4144" morph="10207" />
+   <type6:Token xmi:id="2861" sofa="11659" begin="1393" end="1399" lemma="5364" pos="4149" morph="10229" />
+   <type6:Token xmi:id="2871" sofa="11659" begin="1400" end="1406" lemma="5369" pos="4154" morph="10251" />
+   <type6:Token xmi:id="2881" sofa="11659" begin="1406" end="1407" lemma="5374" pos="4254" morph="10273" />
+   <type6:Token xmi:id="2891" sofa="11659" begin="1425" end="1428" lemma="5379" pos="3784" morph="10295" />
+   <type6:Token xmi:id="2901" sofa="11659" begin="1429" end="1432" lemma="5384" pos="4369" morph="10317" />
+   <type6:Token xmi:id="2911" sofa="11659" begin="1433" end="1443" lemma="5389" pos="3989" morph="10339" />
+   <type6:Token xmi:id="2921" sofa="11659" begin="1444" end="1447" lemma="5394" pos="4374" morph="10361" />
+   <type6:Token xmi:id="2931" sofa="11659" begin="1448" end="1460" lemma="5399" pos="4499" morph="10383" />
+   <type6:Token xmi:id="2941" sofa="11659" begin="1461" end="1468" lemma="5404" pos="3994" morph="10405" />
+   <type6:Token xmi:id="2951" sofa="11659" begin="1469" end="1471" lemma="5409" pos="3789" morph="10427" />
+   <type6:Token xmi:id="2961" sofa="11659" begin="1472" end="1475" lemma="5414" pos="4379" morph="10449" />
+   <type6:Token xmi:id="2971" sofa="11659" begin="1476" end="1484" lemma="5419" pos="3999" morph="10471" />
+   <type6:Token xmi:id="2981" sofa="11659" begin="1485" end="1488" lemma="5424" pos="4454" morph="10493" />
+   <type6:Token xmi:id="2991" sofa="11659" begin="1489" end="1491" lemma="5429" pos="3794" morph="10515" />
+   <type6:Token xmi:id="3001" sofa="11659" begin="1492" end="1495" lemma="5434" pos="4384" morph="10537" />
+   <type6:Token xmi:id="3011" sofa="11659" begin="1496" end="1503" lemma="5439" pos="4004" morph="10559" />
+   <type6:Token xmi:id="3021" sofa="11659" begin="1504" end="1508" lemma="5444" pos="3799" morph="10581" />
+   <type6:Token xmi:id="3031" sofa="11659" begin="1509" end="1515" lemma="5449" pos="4009" morph="10603" />
+   <type6:Token xmi:id="3041" sofa="11659" begin="1516" end="1525" lemma="5454" pos="4014" morph="10625" />
+   <type6:Token xmi:id="3051" sofa="11659" begin="1526" end="1531" lemma="5459" pos="4159" morph="10647" />
+   <type6:Token xmi:id="3061" sofa="11659" begin="1532" end="1534" lemma="5464" pos="3804" morph="10669" />
+   <type6:Token xmi:id="3071" sofa="11659" begin="1535" end="1538" lemma="5469" pos="4019" morph="10691" />
+   <type6:Token xmi:id="3081" sofa="11659" begin="1539" end="1543" lemma="5474" pos="4674" morph="10713" />
+   <type6:Token xmi:id="3091" sofa="11659" begin="1544" end="1546" lemma="5479" pos="3809" morph="10735" />
+   <type6:Token xmi:id="3101" sofa="11659" begin="1547" end="1550" lemma="5484" pos="4389" morph="10757" />
+   <type6:Token xmi:id="3111" sofa="11659" begin="1551" end="1563" lemma="5489" pos="4504" morph="10779" />
+   <type6:Token xmi:id="3121" sofa="11659" begin="1564" end="1569" lemma="5494" pos="4024" morph="10801" />
+   <type6:Token xmi:id="3131" sofa="11659" begin="1570" end="1574" lemma="5499" pos="4394" morph="10823" />
+   <type6:Token xmi:id="3141" sofa="11659" begin="1575" end="1586" lemma="5504" pos="4029" morph="10845" />
+   <type6:Token xmi:id="3151" sofa="11659" begin="1587" end="1598" lemma="5509" pos="4034" morph="10867" />
+   <type6:Token xmi:id="3161" sofa="11659" begin="1599" end="1600" lemma="5514" pos="4614" morph="10889" />
+   <type6:Token xmi:id="3171" sofa="11659" begin="1600" end="1611" lemma="5519" pos="4039" morph="10911" />
+   <type6:Token xmi:id="3181" sofa="11659" begin="1612" end="1618" lemma="5524" pos="4424" morph="10933" />
+   <type6:Token xmi:id="3191" sofa="11659" begin="1618" end="1619" lemma="5529" pos="4259" morph="10955" />
+   <type6:Token xmi:id="3201" sofa="11659" begin="1620" end="1630" lemma="5534" pos="4044" morph="10977" />
+   <type6:Token xmi:id="3211" sofa="11659" begin="1631" end="1637" lemma="5539" pos="4429" morph="10999" />
+   <type6:Token xmi:id="3221" sofa="11659" begin="1637" end="1638" lemma="5544" pos="4619" morph="11021" />
+   <type6:Token xmi:id="3231" sofa="11659" begin="1639" end="1649" lemma="5549" pos="4164" morph="11043" />
+   <type6:Token xmi:id="3241" sofa="11659" begin="1649" end="1650" lemma="5554" pos="4264" morph="11065" />
+   <type6:Token xmi:id="3251" sofa="11659" begin="1651" end="1654" lemma="5559" pos="4324" morph="11087" />
+   <type6:Token xmi:id="3261" sofa="11659" begin="1655" end="1658" lemma="5564" pos="3814" morph="11109" />
+   <type6:Token xmi:id="3271" sofa="11659" begin="1659" end="1662" lemma="5569" pos="4399" morph="11131" />
+   <type6:Token xmi:id="3281" sofa="11659" begin="1663" end="1667" lemma="5574" pos="4679" morph="11153" />
+   <type6:Token xmi:id="3291" sofa="11659" begin="1668" end="1687" lemma="5579" pos="4049" morph="11175" />
+   <type6:Token xmi:id="3301" sofa="11659" begin="1688" end="1691" lemma="5584" pos="4434" morph="11197" />
+   <type6:Token xmi:id="3311" sofa="11659" begin="1692" end="1693" lemma="5589" pos="4684" morph="11219" />
+   <type6:Token xmi:id="3321" sofa="11659" begin="1694" end="1697" lemma="5594" pos="4459" morph="11241" />
+   <type6:Token xmi:id="3331" sofa="11659" begin="1698" end="1701" lemma="5599" pos="4439" morph="11263" />
+   <type6:Token xmi:id="3341" sofa="11659" begin="1702" end="1704" lemma="5604" pos="4689" morph="11285" />
+   <type6:Token xmi:id="3351" sofa="11659" begin="1705" end="1708" lemma="5609" pos="4404" morph="11307" />
+   <type6:Token xmi:id="3361" sofa="11659" begin="1709" end="1719" lemma="5614" pos="4054" morph="11329" />
+   <type6:Token xmi:id="3371" sofa="11659" begin="1720" end="1731" lemma="5619" pos="4059" morph="11351" />
+   <type6:Token xmi:id="3381" sofa="11659" begin="1732" end="1744" lemma="5624" pos="4524" morph="11373" />
+   <type6:Token xmi:id="3391" sofa="11659" begin="1745" end="1752" lemma="5629" pos="4169" morph="11395" />
+   <type6:Token xmi:id="3401" sofa="11659" begin="1752" end="1753" lemma="5634" pos="4269" morph="11417" />
+   <type6:Token xmi:id="3411" sofa="11659" begin="1754" end="1757" lemma="5639" pos="4329" morph="11439" />
+   <type6:Token xmi:id="3421" sofa="11659" begin="1758" end="1761" lemma="5644" pos="3819" morph="11461" />
+   <type6:Token xmi:id="3431" sofa="11659" begin="1762" end="1771" lemma="5649" pos="4064" morph="11483" />
+   <type6:Token xmi:id="3441" sofa="11659" begin="1772" end="1774" lemma="5654" pos="3824" morph="11505" />
+   <type6:Token xmi:id="3451" sofa="11659" begin="1775" end="1778" lemma="5659" pos="4409" morph="11527" />
+   <type6:Token xmi:id="3461" sofa="11659" begin="1779" end="1785" lemma="5664" pos="4069" morph="11549" />
+   <type6:Token xmi:id="3471" sofa="11659" begin="1786" end="1791" lemma="5669" pos="4334" morph="11571" />
+   <type6:Token xmi:id="3481" sofa="11659" begin="1792" end="1800" lemma="5674" pos="4174" morph="11593" />
+   <type6:Token xmi:id="3491" sofa="11659" begin="1801" end="1807" lemma="5679" pos="4179" morph="11615" />
+   <type6:Token xmi:id="3501" sofa="11659" begin="1807" end="1808" lemma="5684" pos="4274" morph="11637" />
+   <type4:TagsetDescription xmi:id="3511" sofa="11659" begin="0" end="3304" layer="de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS" name="stts" tags="11666 11668 11670 11672 11674 11676 11678 11680 11682 11684 11686 11688 11690 11692 11694 11696 11698 11700 11702 11704 11706 11708 11710 11712 11714 11716 11718 11720 11722 11724 11726 11728 11730 11732 11734 11736 11738 11740 11742 11744 11746 11748 11750 11752 11754 11756 11758 11760 11762 11764 11766 11768 11770 11772 11774" />
+   <type4:TagsetDescription xmi:id="3644" sofa="11659" begin="0" end="3304" layer="de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency" name="negra" tags="11896 11898 11900 11902 11904 11906 11908 11910 11912 11914 11916 11918 11920 11922 11924 11926 11928 11930 11932 11934 11936 11938 11940 11942 11944 11946 11948 11950 11952 11954 11956 11958 11960 11962 11964 11966 11968 11970 11972 11974 11976 11978 11980 11982 11984 11986" />
+   <type4:TagsetDescription xmi:id="3575" sofa="11659" begin="0" end="3304" layer="de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS" name="stts" tags="11776 11778 11780 11782 11784 11786 11788 11790 11792 11794 11796 11798 11800 11802 11804 11806 11808 11810 11812 11814 11816 11818 11820 11822 11824 11826 11828 11830 11832 11834 11836 11838 11840 11842 11844 11846 11848 11850 11852 11854 11856 11858 11860 11862 11864 11866 11868 11870 11872 11874 11876 11878 11880 11882 11884 11886 11888 11890 11892 11894" />
+   <pos:PP xmi:id="3699" sofa="11659" begin="14" end="17" PosValue="APPR" />
+   <pos:PP xmi:id="3704" sofa="11659" begin="82" end="90" PosValue="APPR" />
+   <pos:PP xmi:id="3709" sofa="11659" begin="158" end="160" PosValue="APPR" />
+   <pos:PP xmi:id="3714" sofa="11659" begin="202" end="204" PosValue="APPR" />
+   <pos:PP xmi:id="3719" sofa="11659" begin="269" end="273" PosValue="APPRART" />
+   <pos:PP xmi:id="3724" sofa="11659" begin="324" end="326" PosValue="APPR" />
+   <pos:PP xmi:id="3729" sofa="11659" begin="970" end="973" PosValue="APPR" />
+   <pos:PP xmi:id="3734" sofa="11659" begin="1018" end="1023" PosValue="APPR" />
+   <pos:PP xmi:id="3739" sofa="11659" begin="1034" end="1037" PosValue="APPR" />
+   <pos:PP xmi:id="3744" sofa="11659" begin="1047" end="1049" PosValue="APPRART" />
+   <pos:PP xmi:id="3749" sofa="11659" begin="1117" end="1120" PosValue="APPR" />
+   <pos:PP xmi:id="3754" sofa="11659" begin="1133" end="1136" PosValue="APPRART" />
+   <pos:PP xmi:id="3759" sofa="11659" begin="1262" end="1264" PosValue="APPR" />
+   <pos:PP xmi:id="3764" sofa="11659" begin="1270" end="1273" PosValue="APPR" />
+   <pos:PP xmi:id="3769" sofa="11659" begin="1294" end="1297" PosValue="APPR" />
+   <pos:PP xmi:id="3774" sofa="11659" begin="1343" end="1346" PosValue="APPR" />
+   <pos:PP xmi:id="3779" sofa="11659" begin="1355" end="1360" PosValue="APPR" />
+   <pos:PP xmi:id="3784" sofa="11659" begin="1425" end="1428" PosValue="APPR" />
+   <pos:PP xmi:id="3789" sofa="11659" begin="1469" end="1471" PosValue="APPR" />
+   <pos:PP xmi:id="3794" sofa="11659" begin="1489" end="1491" PosValue="APPR" />
+   <pos:PP xmi:id="3799" sofa="11659" begin="1504" end="1508" PosValue="APPRART" />
+   <pos:PP xmi:id="3804" sofa="11659" begin="1532" end="1534" PosValue="APPRART" />
+   <pos:PP xmi:id="3809" sofa="11659" begin="1544" end="1546" PosValue="APPR" />
+   <pos:PP xmi:id="3814" sofa="11659" begin="1655" end="1658" PosValue="APPR" />
+   <pos:PP xmi:id="3819" sofa="11659" begin="1758" end="1761" PosValue="APPR" />
+   <pos:PP xmi:id="3824" sofa="11659" begin="1772" end="1774" PosValue="APPR" />
+   <pos:NN xmi:id="3829" sofa="11659" begin="18" end="30" PosValue="NN" />
+   <pos:NN xmi:id="3834" sofa="11659" begin="38" end="44" PosValue="NN" />
+   <pos:NN xmi:id="3839" sofa="11659" begin="68" end="81" PosValue="NN" />
+   <pos:NN xmi:id="3844" sofa="11659" begin="110" end="121" PosValue="NN" />
+   <pos:NN xmi:id="3849" sofa="11659" begin="148" end="157" PosValue="NN" />
+   <pos:NN xmi:id="3854" sofa="11659" begin="165" end="169" PosValue="NN" />
+   <pos:NN xmi:id="3859" sofa="11659" begin="171" end="179" PosValue="NN" />
+   <pos:NN xmi:id="3864" sofa="11659" begin="213" end="219" PosValue="NN" />
+   <pos:NN xmi:id="3869" sofa="11659" begin="221" end="230" PosValue="NN" />
+   <pos:NN xmi:id="3874" sofa="11659" begin="233" end="242" PosValue="NN" />
+   <pos:NN xmi:id="3879" sofa="11659" begin="255" end="263" PosValue="NN" />
+   <pos:NN xmi:id="3884" sofa="11659" begin="274" end="282" PosValue="NN" />
+   <pos:NN xmi:id="3889" sofa="11659" begin="293" end="305" PosValue="NN" />
+   <pos:NN xmi:id="3894" sofa="11659" begin="331" end="354" PosValue="NN" />
+   <pos:NN xmi:id="3899" sofa="11659" begin="356" end="358" PosValue="NN" />
+   <pos:NN xmi:id="3904" sofa="11659" begin="974" end="979" PosValue="NN" />
+   <pos:NN xmi:id="3909" sofa="11659" begin="987" end="993" PosValue="NN" />
+   <pos:NN xmi:id="3914" sofa="11659" begin="1028" end="1033" PosValue="NN" />
+   <pos:NN xmi:id="3919" sofa="11659" begin="1038" end="1046" PosValue="NN" />
+   <pos:NN xmi:id="3924" sofa="11659" begin="1050" end="1061" PosValue="NN" />
+   <pos:NN xmi:id="3929" sofa="11659" begin="1105" end="1116" PosValue="NN" />
+   <pos:NN xmi:id="3934" sofa="11659" begin="1121" end="1132" PosValue="NN" />
+   <pos:NN xmi:id="3939" sofa="11659" begin="1137" end="1150" PosValue="NN" />
+   <pos:NN xmi:id="3944" sofa="11659" begin="1155" end="1166" PosValue="NN" />
+   <pos:NN xmi:id="3949" sofa="11659" begin="1168" end="1179" PosValue="NN" />
+   <pos:NN xmi:id="3954" sofa="11659" begin="1214" end="1226" PosValue="NN" />
+   <pos:NN xmi:id="3959" sofa="11659" begin="1231" end="1242" PosValue="NN" />
+   <pos:NN xmi:id="3964" sofa="11659" begin="1265" end="1269" PosValue="NN" />
+   <pos:NN xmi:id="3969" sofa="11659" begin="1274" end="1293" PosValue="NN" />
+   <pos:NN xmi:id="3974" sofa="11659" begin="1298" end="1313" PosValue="NN" />
+   <pos:NN xmi:id="3979" sofa="11659" begin="1347" end="1354" PosValue="NN" />
+   <pos:NN xmi:id="3984" sofa="11659" begin="1374" end="1382" PosValue="NN" />
+   <pos:NN xmi:id="3989" sofa="11659" begin="1433" end="1443" PosValue="NN" />
+   <pos:NN xmi:id="3994" sofa="11659" begin="1461" end="1468" PosValue="NN" />
+   <pos:NN xmi:id="3999" sofa="11659" begin="1476" end="1484" PosValue="NN" />
+   <pos:NN xmi:id="4004" sofa="11659" begin="1496" end="1503" PosValue="NN" />
+   <pos:NN xmi:id="4009" sofa="11659" begin="1509" end="1515" PosValue="NN" />
+   <pos:NN xmi:id="4014" sofa="11659" begin="1516" end="1525" PosValue="NN" />
+   <pos:NN xmi:id="4019" sofa="11659" begin="1535" end="1538" PosValue="NN" />
+   <pos:NN xmi:id="4024" sofa="11659" begin="1564" end="1569" PosValue="NN" />
+   <pos:NN xmi:id="4029" sofa="11659" begin="1575" end="1586" PosValue="NN" />
+   <pos:NN xmi:id="4034" sofa="11659" begin="1587" end="1598" PosValue="NN" />
+   <pos:NN xmi:id="4039" sofa="11659" begin="1600" end="1611" PosValue="NN" />
+   <pos:NN xmi:id="4044" sofa="11659" begin="1620" end="1630" PosValue="NN" />
+   <pos:NN xmi:id="4049" sofa="11659" begin="1668" end="1687" PosValue="NN" />
+   <pos:NN xmi:id="4054" sofa="11659" begin="1709" end="1719" PosValue="NN" />
+   <pos:NN xmi:id="4059" sofa="11659" begin="1720" end="1731" PosValue="NN" />
+   <pos:NN xmi:id="4064" sofa="11659" begin="1762" end="1771" PosValue="NN" />
+   <pos:NN xmi:id="4069" sofa="11659" begin="1779" end="1785" PosValue="NN" />
+   <pos:V xmi:id="4074" sofa="11659" begin="31" end="37" PosValue="VAFIN" />
+   <pos:V xmi:id="4079" sofa="11659" begin="45" end="55" PosValue="VVPP" />
+   <pos:V xmi:id="4084" sofa="11659" begin="122" end="129" PosValue="VVFIN" />
+   <pos:V xmi:id="4089" sofa="11659" begin="137" end="141" PosValue="VAFIN" />
+   <pos:V xmi:id="4094" sofa="11659" begin="180" end="189" PosValue="VVIZU" />
+   <pos:V xmi:id="4099" sofa="11659" begin="195" end="201" PosValue="VVFIN" />
+   <pos:V xmi:id="4104" sofa="11659" begin="264" end="267" PosValue="PTKVZ" />
+   <pos:V xmi:id="4109" sofa="11659" begin="283" end="287" PosValue="VAFIN" />
+   <pos:V xmi:id="4114" sofa="11659" begin="369" end="376" PosValue="VVFIN" />
+   <pos:V xmi:id="4119" sofa="11659" begin="994" end="1000" PosValue="VMFIN" />
+   <pos:V xmi:id="4124" sofa="11659" begin="1078" end="1088" PosValue="VVINF" />
+   <pos:V xmi:id="4129" sofa="11659" begin="1100" end="1104" PosValue="VAFIN" />
+   <pos:V xmi:id="4134" sofa="11659" begin="1181" end="1190" PosValue="VVPP" />
+   <pos:V xmi:id="4139" sofa="11659" begin="1243" end="1252" PosValue="VVFIN" />
+   <pos:V xmi:id="4144" sofa="11659" begin="1383" end="1392" PosValue="VVPP" />
+   <pos:V xmi:id="4149" sofa="11659" begin="1393" end="1399" PosValue="VAINF" />
+   <pos:V xmi:id="4154" sofa="11659" begin="1400" end="1406" PosValue="VMFIN" />
+   <pos:V xmi:id="4159" sofa="11659" begin="1526" end="1531" PosValue="VAFIN" />
+   <pos:V xmi:id="4164" sofa="11659" begin="1639" end="1649" PosValue="VVPP" />
+   <pos:V xmi:id="4169" sofa="11659" begin="1745" end="1752" PosValue="VVFIN" />
+   <pos:V xmi:id="4174" sofa="11659" begin="1792" end="1800" PosValue="VVINF" />
+   <pos:V xmi:id="4179" sofa="11659" begin="1801" end="1807" PosValue="VMFIN" />
+   <pos:PUNC xmi:id="4184" sofa="11659" begin="55" end="56" PosValue="$," />
+   <pos:PUNC xmi:id="4189" sofa="11659" begin="129" end="130" PosValue="$." />
+   <pos:PUNC xmi:id="4194" sofa="11659" begin="169" end="170" PosValue="$," />
+   <pos:PUNC xmi:id="4199" sofa="11659" begin="189" end="190" PosValue="$." />
+   <pos:PUNC xmi:id="4204" sofa="11659" begin="231" end="232" PosValue="$," />
+   <pos:PUNC xmi:id="4209" sofa="11659" begin="267" end="268" PosValue="$." />
+   <pos:PUNC xmi:id="4214" sofa="11659" begin="313" end="314" PosValue="$," />
+   <pos:PUNC xmi:id="4219" sofa="11659" begin="360" end="361" PosValue="$." />
+   <pos:PUNC xmi:id="4224" sofa="11659" begin="362" end="363" PosValue="$." />
+   <pos:PUNC xmi:id="4229" sofa="11659" begin="365" end="366" PosValue="$." />
+   <pos:PUNC xmi:id="4234" sofa="11659" begin="376" end="377" PosValue="$." />
+   <pos:PUNC xmi:id="4239" sofa="11659" begin="1088" end="1089" PosValue="$." />
+   <pos:PUNC xmi:id="4244" sofa="11659" begin="1190" end="1191" PosValue="$." />
+   <pos:PUNC xmi:id="4249" sofa="11659" begin="1313" end="1314" PosValue="$," />
+   <pos:PUNC xmi:id="4254" sofa="11659" begin="1406" end="1407" PosValue="$." />
+   <pos:PUNC xmi:id="4259" sofa="11659" begin="1618" end="1619" PosValue="$." />
+   <pos:PUNC xmi:id="4264" sofa="11659" begin="1649" end="1650" PosValue="$," />
+   <pos:PUNC xmi:id="4269" sofa="11659" begin="1752" end="1753" PosValue="$," />
+   <pos:PUNC xmi:id="4274" sofa="11659" begin="1807" end="1808" PosValue="$." />
+   <pos:PR xmi:id="4279" sofa="11659" begin="57" end="63" PosValue="PWAT" />
+   <pos:PR xmi:id="4284" sofa="11659" begin="142" end="147" PosValue="PDAT" />
+   <pos:PR xmi:id="4289" sofa="11659" begin="191" end="194" PosValue="PPER" />
+   <pos:PR xmi:id="4294" sofa="11659" begin="247" end="254" PosValue="PIAT" />
+   <pos:PR xmi:id="4299" sofa="11659" begin="315" end="318" PosValue="PRELS" />
+   <pos:PR xmi:id="4304" sofa="11659" begin="319" end="323" PosValue="PIS" />
+   <pos:PR xmi:id="4309" sofa="11659" begin="980" end="986" PosValue="PDAT" />
+   <pos:PR xmi:id="4314" sofa="11659" begin="1001" end="1005" PosValue="PRF" />
+   <pos:PR xmi:id="4319" sofa="11659" begin="1318" end="1324" PosValue="PWAT" />
+   <pos:PR xmi:id="4324" sofa="11659" begin="1651" end="1654" PosValue="PRELS" />
+   <pos:PR xmi:id="4329" sofa="11659" begin="1754" end="1757" PosValue="PRELS" />
+   <pos:PR xmi:id="4334" sofa="11659" begin="1786" end="1791" PosValue="PDAT" />
+   <pos:ART xmi:id="4339" sofa="11659" begin="64" end="67" PosValue="ART" />
+   <pos:ART xmi:id="4344" sofa="11659" begin="161" end="164" PosValue="ART" />
+   <pos:ART xmi:id="4349" sofa="11659" begin="327" end="330" PosValue="ART" />
+   <pos:ART xmi:id="4354" sofa="11659" begin="1024" end="1027" PosValue="ART" />
+   <pos:ART xmi:id="4359" sofa="11659" begin="1151" end="1154" PosValue="ART" />
+   <pos:ART xmi:id="4364" sofa="11659" begin="1227" end="1230" PosValue="ART" />
+   <pos:ART xmi:id="4369" sofa="11659" begin="1429" end="1432" PosValue="ART" />
+   <pos:ART xmi:id="4374" sofa="11659" begin="1444" end="1447" PosValue="ART" />
+   <pos:ART xmi:id="4379" sofa="11659" begin="1472" end="1475" PosValue="ART" />
+   <pos:ART xmi:id="4384" sofa="11659" begin="1492" end="1495" PosValue="ART" />
+   <pos:ART xmi:id="4389" sofa="11659" begin="1547" end="1550" PosValue="ART" />
+   <pos:ART xmi:id="4394" sofa="11659" begin="1570" end="1574" PosValue="ART" />
+   <pos:ART xmi:id="4399" sofa="11659" begin="1659" end="1662" PosValue="ART" />
+   <pos:ART xmi:id="4404" sofa="11659" begin="1705" end="1708" PosValue="ART" />
+   <pos:ART xmi:id="4409" sofa="11659" begin="1775" end="1778" PosValue="ART" />
+   <pos:NP xmi:id="4414" sofa="11659" begin="91" end="97" PosValue="NE" />
+   <pos:NP xmi:id="4419" sofa="11659" begin="1006" end="1017" PosValue="NE" />
+   <pos:NP xmi:id="4424" sofa="11659" begin="1612" end="1618" PosValue="NE" />
+   <pos:NP xmi:id="4429" sofa="11659" begin="1631" end="1637" PosValue="NE" />
+   <pos:NP xmi:id="4434" sofa="11659" begin="1688" end="1691" PosValue="NE" />
+   <pos:NP xmi:id="4439" sofa="11659" begin="1698" end="1701" PosValue="NE" />
+   <pos:CONJ xmi:id="4444" sofa="11659" begin="98" end="101" PosValue="KON" />
+   <pos:CONJ xmi:id="4449" sofa="11659" begin="243" end="246" PosValue="KON" />
+   <pos:CONJ xmi:id="4454" sofa="11659" begin="1485" end="1488" PosValue="KON" />
+   <pos:CONJ xmi:id="4459" sofa="11659" begin="1694" end="1697" PosValue="KON" />
+   <pos:ADJ xmi:id="4464" sofa="11659" begin="102" end="109" PosValue="ADJA" />
+   <pos:ADJ xmi:id="4469" sofa="11659" begin="205" end="212" PosValue="ADJA" />
+   <pos:ADJ xmi:id="4474" sofa="11659" begin="306" end="313" PosValue="ADJD" />
+   <pos:ADJ xmi:id="4479" sofa="11659" begin="1072" end="1077" PosValue="ADJD" />
+   <pos:ADJ xmi:id="4484" sofa="11659" begin="1090" end="1099" PosValue="ADJD" />
+   <pos:ADJ xmi:id="4489" sofa="11659" begin="1325" end="1342" PosValue="ADJD" />
+   <pos:ADJ xmi:id="4494" sofa="11659" begin="1361" end="1373" PosValue="ADJA" />
+   <pos:ADJ xmi:id="4499" sofa="11659" begin="1448" end="1460" PosValue="ADJA" />
+   <pos:ADJ xmi:id="4504" sofa="11659" begin="1551" end="1563" PosValue="ADJA" />
+   <pos:ADV xmi:id="4509" sofa="11659" begin="131" end="136" PosValue="PROAV" />
+   <pos:ADV xmi:id="4514" sofa="11659" begin="1062" end="1071" PosValue="ADV" />
+   <pos:ADV xmi:id="4519" sofa="11659" begin="1253" end="1261" PosValue="ADV" />
+   <pos:ADV xmi:id="4524" sofa="11659" begin="1732" end="1744" PosValue="ADV" />
+   <pos:O xmi:id="4529" sofa="11659" begin="220" end="221" PosValue="TRUNC" />
+   <pos:O xmi:id="4534" sofa="11659" begin="230" end="231" PosValue="TRUNC" />
+   <pos:O xmi:id="4539" sofa="11659" begin="355" end="356" PosValue="TRUNC" />
+   <pos:O xmi:id="4544" sofa="11659" begin="366" end="367" PosValue="$[" />
+   <pos:O xmi:id="4549" sofa="11659" begin="367" end="368" PosValue="TRUNC" />
+   <pos:O xmi:id="4554" sofa="11659" begin="377" end="378" PosValue="TRUNC" />
+   <pos:O xmi:id="4559" sofa="11659" begin="379" end="380" PosValue="TRUNC" />
+   <pos:O xmi:id="4564" sofa="11659" begin="1167" end="1168" PosValue="TRUNC" />
+   <pos:O xmi:id="4569" sofa="11659" begin="1179" end="1180" PosValue="TRUNC" />
+   <pos:O xmi:id="4574" sofa="11659" begin="1191" end="1192" PosValue="TRUNC" />
+   <pos:O xmi:id="4579" sofa="11659" begin="1193" end="1194" PosValue="TRUNC" />
+   <pos:O xmi:id="4584" sofa="11659" begin="1194" end="1195" PosValue="TRUNC" />
+   <pos:O xmi:id="4589" sofa="11659" begin="1196" end="1197" PosValue="TRUNC" />
+   <pos:O xmi:id="4594" sofa="11659" begin="1197" end="1198" PosValue="TRUNC" />
+   <pos:O xmi:id="4599" sofa="11659" begin="1199" end="1200" PosValue="TRUNC" />
+   <pos:O xmi:id="4604" sofa="11659" begin="1314" end="1315" PosValue="TRUNC" />
+   <pos:O xmi:id="4609" sofa="11659" begin="1316" end="1317" PosValue="TRUNC" />
+   <pos:O xmi:id="4614" sofa="11659" begin="1599" end="1600" PosValue="TRUNC" />
+   <pos:O xmi:id="4619" sofa="11659" begin="1637" end="1638" PosValue="TRUNC" />
+   <pos:CARD xmi:id="4624" sofa="11659" begin="288" end="292" PosValue="CARD" />
+   <pos:CARD xmi:id="4629" sofa="11659" begin="358" end="359" PosValue="CARD" />
+   <pos:CARD xmi:id="4634" sofa="11659" begin="359" end="360" PosValue="CARD" />
+   <pos:CARD xmi:id="4639" sofa="11659" begin="361" end="362" PosValue="CARD" />
+   <pos:CARD xmi:id="4644" sofa="11659" begin="363" end="365" PosValue="CARD" />
+   <pos:CARD xmi:id="4649" sofa="11659" begin="378" end="379" PosValue="CARD" />
+   <pos:CARD xmi:id="4654" sofa="11659" begin="1192" end="1193" PosValue="CARD" />
+   <pos:CARD xmi:id="4659" sofa="11659" begin="1195" end="1196" PosValue="CARD" />
+   <pos:CARD xmi:id="4664" sofa="11659" begin="1198" end="1199" PosValue="CARD" />
+   <pos:CARD xmi:id="4669" sofa="11659" begin="1315" end="1316" PosValue="CARD" />
+   <pos:CARD xmi:id="4674" sofa="11659" begin="1539" end="1543" PosValue="CARD" />
+   <pos:CARD xmi:id="4679" sofa="11659" begin="1663" end="1667" PosValue="CARD" />
+   <pos:CARD xmi:id="4684" sofa="11659" begin="1692" end="1693" PosValue="CARD" />
+   <pos:CARD xmi:id="4689" sofa="11659" begin="1702" end="1704" PosValue="CARD" />
+   <type6:Lemma xmi:id="4694" sofa="11659" begin="14" end="17" value="als" />
+   <type6:Lemma xmi:id="4699" sofa="11659" begin="18" end="30" value="Kollagenasen" />
+   <type6:Lemma xmi:id="4704" sofa="11659" begin="31" end="37" value="werden" />
+   <type6:Lemma xmi:id="4709" sofa="11659" begin="38" end="44" value="Enzym" />
+   <type6:Lemma xmi:id="4714" sofa="11659" begin="45" end="55" value="bezeichnet" />
+   <type6:Lemma xmi:id="4719" sofa="11659" begin="55" end="56" value="," />
+   <type6:Lemma xmi:id="4724" sofa="11659" begin="57" end="63" value="welch" />
+   <type6:Lemma xmi:id="4729" sofa="11659" begin="64" end="67" value="der" />
+   <type6:Lemma xmi:id="4734" sofa="11659" begin="68" end="81" value="Peptidbindung" />
+   <type6:Lemma xmi:id="4739" sofa="11659" begin="82" end="90" value="zwischen" />
+   <type6:Lemma xmi:id="4744" sofa="11659" begin="91" end="97" value="Prolin" />
+   <type6:Lemma xmi:id="4749" sofa="11659" begin="98" end="101" value="und" />
+   <type6:Lemma xmi:id="4754" sofa="11659" begin="102" end="109" value="ander" />
+   <type6:Lemma xmi:id="4759" sofa="11659" begin="110" end="121" value="Aminosäuren" />
+   <type6:Lemma xmi:id="4764" sofa="11659" begin="122" end="129" value="spalten" />
+   <type6:Lemma xmi:id="4769" sofa="11659" begin="129" end="130" value="." />
+   <type6:Lemma xmi:id="4774" sofa="11659" begin="131" end="136" value="damit" />
+   <type6:Lemma xmi:id="4779" sofa="11659" begin="137" end="141" value="sein" />
+   <type6:Lemma xmi:id="4784" sofa="11659" begin="142" end="147" value="dies" />
+   <type6:Lemma xmi:id="4789" sofa="11659" begin="148" end="157" value="Proteasen" />
+   <type6:Lemma xmi:id="4794" sofa="11659" begin="158" end="160" value="in" />
+   <type6:Lemma xmi:id="4799" sofa="11659" begin="161" end="164" value="der" />
+   <type6:Lemma xmi:id="4804" sofa="11659" begin="165" end="169" value="Lage" />
+   <type6:Lemma xmi:id="4809" sofa="11659" begin="169" end="170" value="," />
+   <type6:Lemma xmi:id="4814" sofa="11659" begin="171" end="179" value="Kollagen" />
+   <type6:Lemma xmi:id="4819" sofa="11659" begin="180" end="189" value="abbauen" />
+   <type6:Lemma xmi:id="4824" sofa="11659" begin="189" end="190" value="." />
+   <type6:Lemma xmi:id="4829" sofa="11659" begin="191" end="194" value="ich" />
+   <type6:Lemma xmi:id="4834" sofa="11659" begin="195" end="201" value="kommen" />
+   <type6:Lemma xmi:id="4839" sofa="11659" begin="202" end="204" value="in" />
+   <type6:Lemma xmi:id="4844" sofa="11659" begin="205" end="212" value="hoch" />
+   <type6:Lemma xmi:id="4849" sofa="11659" begin="213" end="219" value="Tier" />
+   <type6:Lemma xmi:id="4854" sofa="11659" begin="220" end="221" value="(" />
+   <type6:Lemma xmi:id="4859" sofa="11659" begin="221" end="230" value="Coelomata" />
+   <type6:Lemma xmi:id="4864" sofa="11659" begin="230" end="231" value=")" />
+   <type6:Lemma xmi:id="4869" sofa="11659" begin="231" end="232" value="," />
+   <type6:Lemma xmi:id="4874" sofa="11659" begin="233" end="242" value="Bakterie" />
+   <type6:Lemma xmi:id="4879" sofa="11659" begin="243" end="246" value="und" />
+   <type6:Lemma xmi:id="4884" sofa="11659" begin="247" end="254" value="manch" />
+   <type6:Lemma xmi:id="4889" sofa="11659" begin="255" end="263" value="Archaeen" />
+   <type6:Lemma xmi:id="4894" sofa="11659" begin="264" end="267" value="vor" />
+   <type6:Lemma xmi:id="4899" sofa="11659" begin="267" end="268" value="." />
+   <type6:Lemma xmi:id="4904" sofa="11659" begin="269" end="273" value="beim" />
+   <type6:Lemma xmi:id="4909" sofa="11659" begin="274" end="282" value="Mensch" />
+   <type6:Lemma xmi:id="4914" sofa="11659" begin="283" end="287" value="sein" />
+   <type6:Lemma xmi:id="4919" sofa="11659" begin="288" end="292" value="fünf" />
+   <type6:Lemma xmi:id="4924" sofa="11659" begin="293" end="305" value="Kollagenasen" />
+   <type6:Lemma xmi:id="4929" sofa="11659" begin="306" end="313" value="bekannt" />
+   <type6:Lemma xmi:id="4934" sofa="11659" begin="313" end="314" value="," />
+   <type6:Lemma xmi:id="4939" sofa="11659" begin="315" end="318" value="der" />
+   <type6:Lemma xmi:id="4944" sofa="11659" begin="319" end="323" value="all" />
+   <type6:Lemma xmi:id="4949" sofa="11659" begin="324" end="326" value="zu" />
+   <type6:Lemma xmi:id="4954" sofa="11659" begin="327" end="330" value="der" />
+   <type6:Lemma xmi:id="4959" sofa="11659" begin="331" end="354" value="Matrix-Metalloproteasen" />
+   <type6:Lemma xmi:id="4964" sofa="11659" begin="355" end="356" value="(" />
+   <type6:Lemma xmi:id="4969" sofa="11659" begin="356" end="358" value="EC" />
+   <type6:Lemma xmi:id="4974" sofa="11659" begin="358" end="359" value=" " />
+   <type6:Lemma xmi:id="4979" sofa="11659" begin="359" end="360" value="3" />
+   <type6:Lemma xmi:id="4984" sofa="11659" begin="360" end="361" value="." />
+   <type6:Lemma xmi:id="4989" sofa="11659" begin="361" end="362" value="4" />
+   <type6:Lemma xmi:id="4994" sofa="11659" begin="362" end="363" value="." />
+   <type6:Lemma xmi:id="4999" sofa="11659" begin="363" end="365" value="24" />
+   <type6:Lemma xmi:id="5004" sofa="11659" begin="365" end="366" value="." />
+   <type6:Lemma xmi:id="5009" sofa="11659" begin="366" end="367" value="-" />
+   <type6:Lemma xmi:id="5014" sofa="11659" begin="367" end="368" value=")" />
+   <type6:Lemma xmi:id="5019" sofa="11659" begin="369" end="376" value="gehören" />
+   <type6:Lemma xmi:id="5024" sofa="11659" begin="376" end="377" value=":" />
+   <type6:Lemma xmi:id="5029" sofa="11659" begin="377" end="378" value="[" />
+   <type6:Lemma xmi:id="5034" sofa="11659" begin="378" end="379" value="1" />
+   <type6:Lemma xmi:id="5039" sofa="11659" begin="379" end="380" value="]" />
+   <type6:Lemma xmi:id="5044" sofa="11659" begin="970" end="973" value="mit" />
+   <type6:Lemma xmi:id="5049" sofa="11659" begin="974" end="979" value="Hilfe" />
+   <type6:Lemma xmi:id="5054" sofa="11659" begin="980" end="986" value="dies" />
+   <type6:Lemma xmi:id="5059" sofa="11659" begin="987" end="993" value="Enzym" />
+   <type6:Lemma xmi:id="5064" sofa="11659" begin="994" end="1000" value="können" />
+   <type6:Lemma xmi:id="5069" sofa="11659" begin="1001" end="1005" value="sich" />
+   <type6:Lemma xmi:id="5074" sofa="11659" begin="1006" end="1017" value="Clostridien" />
+   <type6:Lemma xmi:id="5079" sofa="11659" begin="1018" end="1023" value="durch" />
+   <type6:Lemma xmi:id="5084" sofa="11659" begin="1024" end="1027" value="der" />
+   <type6:Lemma xmi:id="5089" sofa="11659" begin="1028" end="1033" value="Abbau" />
+   <type6:Lemma xmi:id="5094" sofa="11659" begin="1034" end="1037" value="von" />
+   <type6:Lemma xmi:id="5099" sofa="11659" begin="1038" end="1046" value="Kollagen" />
+   <type6:Lemma xmi:id="5104" sofa="11659" begin="1047" end="1049" value="im" />
+   <type6:Lemma xmi:id="5109" sofa="11659" begin="1050" end="1061" value="Bindegewebe" />
+   <type6:Lemma xmi:id="5114" sofa="11659" begin="1062" end="1071" value="besonders" />
+   <type6:Lemma xmi:id="5119" sofa="11659" begin="1072" end="1077" value="rasch" />
+   <type6:Lemma xmi:id="5124" sofa="11659" begin="1078" end="1088" value="ausbreiten" />
+   <type6:Lemma xmi:id="5129" sofa="11659" begin="1088" end="1089" value="." />
+   <type6:Lemma xmi:id="5134" sofa="11659" begin="1090" end="1099" value="umkehren" />
+   <type6:Lemma xmi:id="5139" sofa="11659" begin="1100" end="1104" value="werden" />
+   <type6:Lemma xmi:id="5144" sofa="11659" begin="1105" end="1116" value="Kollagenase" />
+   <type6:Lemma xmi:id="5149" sofa="11659" begin="1117" end="1120" value="aus" />
+   <type6:Lemma xmi:id="5154" sofa="11659" begin="1121" end="1132" value="Clostridien" />
+   <type6:Lemma xmi:id="5159" sofa="11659" begin="1133" end="1136" value="zur" />
+   <type6:Lemma xmi:id="5164" sofa="11659" begin="1137" end="1150" value="Unterstützung" />
+   <type6:Lemma xmi:id="5169" sofa="11659" begin="1151" end="1154" value="der" />
+   <type6:Lemma xmi:id="5174" sofa="11659" begin="1155" end="1166" value="Wundheilung" />
+   <type6:Lemma xmi:id="5179" sofa="11659" begin="1167" end="1168" value="(" />
+   <type6:Lemma xmi:id="5184" sofa="11659" begin="1168" end="1179" value="Débridement" />
+   <type6:Lemma xmi:id="5189" sofa="11659" begin="1179" end="1180" value=")" />
+   <type6:Lemma xmi:id="5194" sofa="11659" begin="1181" end="1190" value="verwendet" />
+   <type6:Lemma xmi:id="5199" sofa="11659" begin="1190" end="1191" value="." />
+   <type6:Lemma xmi:id="5204" sofa="11659" begin="1191" end="1192" value="[" />
+   <type6:Lemma xmi:id="5209" sofa="11659" begin="1192" end="1193" value="2" />
+   <type6:Lemma xmi:id="5214" sofa="11659" begin="1193" end="1194" value="]" />
+   <type6:Lemma xmi:id="5219" sofa="11659" begin="1194" end="1195" value="[" />
+   <type6:Lemma xmi:id="5224" sofa="11659" begin="1195" end="1196" value="3" />
+   <type6:Lemma xmi:id="5229" sofa="11659" begin="1196" end="1197" value="]" />
+   <type6:Lemma xmi:id="5234" sofa="11659" begin="1197" end="1198" value="[" />
+   <type6:Lemma xmi:id="5239" sofa="11659" begin="1198" end="1199" value="4" />
+   <type6:Lemma xmi:id="5244" sofa="11659" begin="1199" end="1200" value="]" />
+   <type6:Lemma xmi:id="5249" sofa="11659" begin="1214" end="1226" value="Kollagenasen" />
+   <type6:Lemma xmi:id="5254" sofa="11659" begin="1227" end="1230" value="der" />
+   <type6:Lemma xmi:id="5259" sofa="11659" begin="1231" end="1242" value="Wirbeltier" />
+   <type6:Lemma xmi:id="5264" sofa="11659" begin="1243" end="1252" value="entstehen" />
+   <type6:Lemma xmi:id="5269" sofa="11659" begin="1253" end="1261" value="zunächst" />
+   <type6:Lemma xmi:id="5274" sofa="11659" begin="1262" end="1264" value="in" />
+   <type6:Lemma xmi:id="5279" sofa="11659" begin="1265" end="1269" value="Form" />
+   <type6:Lemma xmi:id="5284" sofa="11659" begin="1270" end="1273" value="von" />
+   <type6:Lemma xmi:id="5289" sofa="11659" begin="1274" end="1293" value="Präkursor-Proteinen" />
+   <type6:Lemma xmi:id="5294" sofa="11659" begin="1294" end="1297" value="als" />
+   <type6:Lemma xmi:id="5299" sofa="11659" begin="1298" end="1313" value="Prokollagenasen" />
+   <type6:Lemma xmi:id="5304" sofa="11659" begin="1313" end="1314" value="," />
+   <type6:Lemma xmi:id="5309" sofa="11659" begin="1314" end="1315" value="[" />
+   <type6:Lemma xmi:id="5314" sofa="11659" begin="1315" end="1316" value="5" />
+   <type6:Lemma xmi:id="5319" sofa="11659" begin="1316" end="1317" value="]" />
+   <type6:Lemma xmi:id="5324" sofa="11659" begin="1318" end="1324" value="welch" />
+   <type6:Lemma xmi:id="5329" sofa="11659" begin="1325" end="1342" value="posttranslational" />
+   <type6:Lemma xmi:id="5334" sofa="11659" begin="1343" end="1346" value="vor" />
+   <type6:Lemma xmi:id="5339" sofa="11659" begin="1347" end="1354" value="Einsatz" />
+   <type6:Lemma xmi:id="5344" sofa="11659" begin="1355" end="1360" value="durch" />
+   <type6:Lemma xmi:id="5349" sofa="11659" begin="1361" end="1373" value="enzymatische" />
+   <type6:Lemma xmi:id="5354" sofa="11659" begin="1374" end="1382" value="Spaltung" />
+   <type6:Lemma xmi:id="5359" sofa="11659" begin="1383" end="1392" value="aktiviert" />
+   <type6:Lemma xmi:id="5364" sofa="11659" begin="1393" end="1399" value="werden" />
+   <type6:Lemma xmi:id="5369" sofa="11659" begin="1400" end="1406" value="müssen" />
+   <type6:Lemma xmi:id="5374" sofa="11659" begin="1406" end="1407" value="." />
+   <type6:Lemma xmi:id="5379" sofa="11659" begin="1425" end="1428" value="für" />
+   <type6:Lemma xmi:id="5384" sofa="11659" begin="1429" end="1432" value="der" />
+   <type6:Lemma xmi:id="5389" sofa="11659" begin="1433" end="1443" value="Behandlung" />
+   <type6:Lemma xmi:id="5394" sofa="11659" begin="1444" end="1447" value="der" />
+   <type6:Lemma xmi:id="5399" sofa="11659" begin="1448" end="1460" value="fibrotischen" />
+   <type6:Lemma xmi:id="5404" sofa="11659" begin="1461" end="1468" value="Stränge" />
+   <type6:Lemma xmi:id="5409" sofa="11659" begin="1469" end="1471" value="in" />
+   <type6:Lemma xmi:id="5414" sofa="11659" begin="1472" end="1475" value="der" />
+   <type6:Lemma xmi:id="5419" sofa="11659" begin="1476" end="1484" value="Hohlhand" />
+   <type6:Lemma xmi:id="5424" sofa="11659" begin="1485" end="1488" value="und" />
+   <type6:Lemma xmi:id="5429" sofa="11659" begin="1489" end="1491" value="an" />
+   <type6:Lemma xmi:id="5434" sofa="11659" begin="1492" end="1495" value="der" />
+   <type6:Lemma xmi:id="5439" sofa="11659" begin="1496" end="1503" value="Finger" />
+   <type6:Lemma xmi:id="5444" sofa="11659" begin="1504" end="1508" value="beim" />
+   <type6:Lemma xmi:id="5449" sofa="11659" begin="1509" end="1515" value="Morbus" />
+   <type6:Lemma xmi:id="5454" sofa="11659" begin="1516" end="1525" value="Dupuytren" />
+   <type6:Lemma xmi:id="5459" sofa="11659" begin="1526" end="1531" value="werden" />
+   <type6:Lemma xmi:id="5464" sofa="11659" begin="1532" end="1534" value="im" />
+   <type6:Lemma xmi:id="5469" sofa="11659" begin="1535" end="1538" value="Mai" />
+   <type6:Lemma xmi:id="5474" sofa="11659" begin="1539" end="1543" value="2011" />
+   <type6:Lemma xmi:id="5479" sofa="11659" begin="1544" end="1546" value="in" />
+   <type6:Lemma xmi:id="5484" sofa="11659" begin="1547" end="1550" value="der" />
+   <type6:Lemma xmi:id="5489" sofa="11659" begin="1551" end="1563" value="Europäische" />
+   <type6:Lemma xmi:id="5494" sofa="11659" begin="1564" end="1569" value="Union" />
+   <type6:Lemma xmi:id="5499" sofa="11659" begin="1570" end="1574" value="ein" />
+   <type6:Lemma xmi:id="5504" sofa="11659" begin="1575" end="1586" value="Mikrobielle" />
+   <type6:Lemma xmi:id="5509" sofa="11659" begin="1587" end="1598" value="Kollagenase" />
+   <type6:Lemma xmi:id="5514" sofa="11659" begin="1599" end="1600" value="(" />
+   <type6:Lemma xmi:id="5519" sofa="11659" begin="1600" end="1611" value="Handelsname" />
+   <type6:Lemma xmi:id="5524" sofa="11659" begin="1612" end="1618" value="Xiapex" />
+   <type6:Lemma xmi:id="5529" sofa="11659" begin="1618" end="1619" value=";" />
+   <type6:Lemma xmi:id="5534" sofa="11659" begin="1620" end="1630" value="Hersteller" />
+   <type6:Lemma xmi:id="5539" sofa="11659" begin="1631" end="1637" value="Pfizer" />
+   <type6:Lemma xmi:id="5544" sofa="11659" begin="1637" end="1638" value=")" />
+   <type6:Lemma xmi:id="5549" sofa="11659" begin="1639" end="1649" value="zugelassen" />
+   <type6:Lemma xmi:id="5554" sofa="11659" begin="1649" end="1650" value="," />
+   <type6:Lemma xmi:id="5559" sofa="11659" begin="1651" end="1654" value="der" />
+   <type6:Lemma xmi:id="5564" sofa="11659" begin="1655" end="1658" value="aus" />
+   <type6:Lemma xmi:id="5569" sofa="11659" begin="1659" end="1662" value="der" />
+   <type6:Lemma xmi:id="5574" sofa="11659" begin="1663" end="1667" value="zwei" />
+   <type6:Lemma xmi:id="5579" sofa="11659" begin="1668" end="1687" value="Kollagenase-Enzymen" />
+   <type6:Lemma xmi:id="5584" sofa="11659" begin="1688" end="1691" value="AUX" />
+   <type6:Lemma xmi:id="5589" sofa="11659" begin="1692" end="1693" value="I" />
+   <type6:Lemma xmi:id="5594" sofa="11659" begin="1694" end="1697" value="und" />
+   <type6:Lemma xmi:id="5599" sofa="11659" begin="1698" end="1701" value="AUX" />
+   <type6:Lemma xmi:id="5604" sofa="11659" begin="1702" end="1704" value="II" />
+   <type6:Lemma xmi:id="5609" sofa="11659" begin="1705" end="1708" value="der" />
+   <type6:Lemma xmi:id="5614" sofa="11659" begin="1709" end="1719" value="Bakteriums" />
+   <type6:Lemma xmi:id="5619" sofa="11659" begin="1720" end="1731" value="Clostridium" />
+   <type6:Lemma xmi:id="5624" sofa="11659" begin="1732" end="1744" value="histolyticum" />
+   <type6:Lemma xmi:id="5629" sofa="11659" begin="1745" end="1752" value="bestehen" />
+   <type6:Lemma xmi:id="5634" sofa="11659" begin="1752" end="1753" value="," />
+   <type6:Lemma xmi:id="5639" sofa="11659" begin="1754" end="1757" value="der" />
+   <type6:Lemma xmi:id="5644" sofa="11659" begin="1758" end="1761" value="bei" />
+   <type6:Lemma xmi:id="5649" sofa="11659" begin="1762" end="1771" value="Injektion" />
+   <type6:Lemma xmi:id="5654" sofa="11659" begin="1772" end="1774" value="in" />
+   <type6:Lemma xmi:id="5659" sofa="11659" begin="1775" end="1778" value="der" />
+   <type6:Lemma xmi:id="5664" sofa="11659" begin="1779" end="1785" value="Knoten" />
+   <type6:Lemma xmi:id="5669" sofa="11659" begin="1786" end="1791" value="dies" />
+   <type6:Lemma xmi:id="5674" sofa="11659" begin="1792" end="1800" value="auflösen" />
+   <type6:Lemma xmi:id="5679" sofa="11659" begin="1801" end="1807" value="können" />
+   <type6:Lemma xmi:id="5684" sofa="11659" begin="1807" end="1808" value="." />
+   <dependency:Dependency xmi:id="5689" sofa="11659" begin="14" end="17" Governor="1561" Dependent="1521" DependencyType="MO" />
+   <dependency:Dependency xmi:id="5697" sofa="11659" begin="18" end="30" Governor="1521" Dependent="1531" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5705" sofa="11659" begin="38" end="44" Governor="1541" Dependent="1551" DependencyType="SB" />
+   <dependency:Dependency xmi:id="5713" sofa="11659" begin="55" end="56" Governor="1561" Dependent="1571" DependencyType="--" />
+   <dependency:Dependency xmi:id="5721" sofa="11659" begin="57" end="63" Governor="1661" Dependent="1581" DependencyType="MO" />
+   <dependency:Dependency xmi:id="5729" sofa="11659" begin="64" end="67" Governor="1601" Dependent="1591" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5737" sofa="11659" begin="82" end="90" Governor="1601" Dependent="1611" DependencyType="MNR" />
+   <dependency:Dependency xmi:id="5745" sofa="11659" begin="91" end="97" Governor="1611" Dependent="1621" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5753" sofa="11659" begin="98" end="101" Governor="1621" Dependent="1631" DependencyType="CD" />
+   <dependency:Dependency xmi:id="5761" sofa="11659" begin="102" end="109" Governor="1651" Dependent="1641" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5769" sofa="11659" begin="129" end="130" Governor="1661" Dependent="1671" DependencyType="--" />
+   <dependency:Dependency xmi:id="5777" sofa="11659" begin="131" end="136" Governor="1691" Dependent="1681" DependencyType="MO" />
+   <dependency:Dependency xmi:id="5785" sofa="11659" begin="142" end="147" Governor="1711" Dependent="1701" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5793" sofa="11659" begin="148" end="157" Governor="1691" Dependent="1711" DependencyType="SB" />
+   <dependency:Dependency xmi:id="5801" sofa="11659" begin="158" end="160" Governor="1691" Dependent="1721" DependencyType="MO" />
+   <dependency:Dependency xmi:id="5809" sofa="11659" begin="161" end="164" Governor="1741" Dependent="1731" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5817" sofa="11659" begin="165" end="169" Governor="1721" Dependent="1741" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5825" sofa="11659" begin="169" end="170" Governor="1741" Dependent="1751" DependencyType="--" />
+   <dependency:Dependency xmi:id="5833" sofa="11659" begin="189" end="190" Governor="1771" Dependent="1781" DependencyType="--" />
+   <dependency:Dependency xmi:id="5841" sofa="11659" begin="191" end="194" Governor="1801" Dependent="1791" DependencyType="SB" />
+   <dependency:Dependency xmi:id="5849" sofa="11659" begin="202" end="204" Governor="1801" Dependent="1811" DependencyType="MO" />
+   <dependency:Dependency xmi:id="5857" sofa="11659" begin="205" end="212" Governor="1831" Dependent="1821" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5865" sofa="11659" begin="213" end="219" Governor="1811" Dependent="1831" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5873" sofa="11659" begin="221" end="230" Governor="1801" Dependent="1851" DependencyType="SB" />
+   <dependency:Dependency xmi:id="5881" sofa="11659" begin="231" end="232" Governor="1861" Dependent="1871" DependencyType="--" />
+   <dependency:Dependency xmi:id="5889" sofa="11659" begin="233" end="242" Governor="1851" Dependent="1881" DependencyType="APP" />
+   <dependency:Dependency xmi:id="5897" sofa="11659" begin="243" end="246" Governor="1881" Dependent="1891" DependencyType="CD" />
+   <dependency:Dependency xmi:id="5905" sofa="11659" begin="247" end="254" Governor="1911" Dependent="1901" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5913" sofa="11659" begin="264" end="267" Governor="1801" Dependent="1921" DependencyType="SVP" />
+   <dependency:Dependency xmi:id="5921" sofa="11659" begin="267" end="268" Governor="1921" Dependent="1931" DependencyType="--" />
+   <dependency:Dependency xmi:id="5929" sofa="11659" begin="269" end="273" Governor="1961" Dependent="1941" DependencyType="MO" />
+   <dependency:Dependency xmi:id="5937" sofa="11659" begin="274" end="282" Governor="1941" Dependent="1951" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5945" sofa="11659" begin="288" end="292" Governor="1981" Dependent="1971" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5953" sofa="11659" begin="293" end="305" Governor="1961" Dependent="1981" DependencyType="SB" />
+   <dependency:Dependency xmi:id="5961" sofa="11659" begin="306" end="313" Governor="1961" Dependent="1991" DependencyType="PD" />
+   <dependency:Dependency xmi:id="5969" sofa="11659" begin="313" end="314" Governor="1991" Dependent="2001" DependencyType="--" />
+   <dependency:Dependency xmi:id="5977" sofa="11659" begin="315" end="318" Governor="2021" Dependent="2011" DependencyType="NK" />
+   <dependency:Dependency xmi:id="5985" sofa="11659" begin="319" end="323" Governor="2171" Dependent="2021" DependencyType="SB" />
+   <dependency:Dependency xmi:id="5993" sofa="11659" begin="324" end="326" Governor="2171" Dependent="2031" DependencyType="OP" />
+   <dependency:Dependency xmi:id="6001" sofa="11659" begin="327" end="330" Governor="2071" Dependent="2041" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6009" sofa="11659" begin="331" end="354" Governor="2061" Dependent="2051" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6017" sofa="11659" begin="356" end="358" Governor="2031" Dependent="2071" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6025" sofa="11659" begin="358" end="359" Governor="2131" Dependent="2081" DependencyType="NMC" />
+   <dependency:Dependency xmi:id="6033" sofa="11659" begin="359" end="360" Governor="2131" Dependent="2091" DependencyType="NMC" />
+   <dependency:Dependency xmi:id="6041" sofa="11659" begin="360" end="361" Governor="2091" Dependent="2101" DependencyType="--" />
+   <dependency:Dependency xmi:id="6049" sofa="11659" begin="361" end="362" Governor="2131" Dependent="2111" DependencyType="NMC" />
+   <dependency:Dependency xmi:id="6057" sofa="11659" begin="362" end="363" Governor="2111" Dependent="2121" DependencyType="--" />
+   <dependency:Dependency xmi:id="6065" sofa="11659" begin="363" end="365" Governor="2071" Dependent="2131" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6073" sofa="11659" begin="365" end="366" Governor="2131" Dependent="2141" DependencyType="--" />
+   <dependency:Dependency xmi:id="6081" sofa="11659" begin="366" end="367" Governor="2161" Dependent="2151" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6089" sofa="11659" begin="369" end="376" Governor="1961" Dependent="2171" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6097" sofa="11659" begin="376" end="377" Governor="2171" Dependent="2181" DependencyType="--" />
+   <dependency:Dependency xmi:id="6105" sofa="11659" begin="377" end="378" Governor="1961" Dependent="2191" DependencyType="PD" />
+   <dependency:Dependency xmi:id="6113" sofa="11659" begin="378" end="379" Governor="2211" Dependent="2201" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6121" sofa="11659" begin="379" end="380" Governor="1961" Dependent="2211" DependencyType="PD" />
+   <dependency:Dependency xmi:id="6129" sofa="11659" begin="970" end="973" Governor="2261" Dependent="2221" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6137" sofa="11659" begin="974" end="979" Governor="2221" Dependent="2231" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6145" sofa="11659" begin="980" end="986" Governor="2251" Dependent="2241" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6153" sofa="11659" begin="987" end="993" Governor="2231" Dependent="2251" DependencyType="AG" />
+   <dependency:Dependency xmi:id="6161" sofa="11659" begin="1006" end="1017" Governor="2261" Dependent="2281" DependencyType="SB" />
+   <dependency:Dependency xmi:id="6169" sofa="11659" begin="1018" end="1023" Governor="2381" Dependent="2291" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6177" sofa="11659" begin="1024" end="1027" Governor="2311" Dependent="2301" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6185" sofa="11659" begin="1028" end="1033" Governor="2291" Dependent="2311" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6193" sofa="11659" begin="1034" end="1037" Governor="2311" Dependent="2321" DependencyType="PG" />
+   <dependency:Dependency xmi:id="6201" sofa="11659" begin="1038" end="1046" Governor="2321" Dependent="2331" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6209" sofa="11659" begin="1047" end="1049" Governor="2331" Dependent="2341" DependencyType="MNR" />
+   <dependency:Dependency xmi:id="6217" sofa="11659" begin="1050" end="1061" Governor="2341" Dependent="2351" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6225" sofa="11659" begin="1062" end="1071" Governor="2371" Dependent="2361" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6233" sofa="11659" begin="1072" end="1077" Governor="2381" Dependent="2371" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6241" sofa="11659" begin="1088" end="1089" Governor="2381" Dependent="2391" DependencyType="--" />
+   <dependency:Dependency xmi:id="6249" sofa="11659" begin="1090" end="1099" Governor="2521" Dependent="2401" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6257" sofa="11659" begin="1105" end="1116" Governor="2411" Dependent="2421" DependencyType="SB" />
+   <dependency:Dependency xmi:id="6265" sofa="11659" begin="1117" end="1120" Governor="2421" Dependent="2431" DependencyType="MNR" />
+   <dependency:Dependency xmi:id="6273" sofa="11659" begin="1121" end="1132" Governor="2431" Dependent="2441" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6281" sofa="11659" begin="1133" end="1136" Governor="2441" Dependent="2451" DependencyType="MNR" />
+   <dependency:Dependency xmi:id="6289" sofa="11659" begin="1137" end="1150" Governor="2451" Dependent="2461" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6297" sofa="11659" begin="1151" end="1154" Governor="2501" Dependent="2471" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6305" sofa="11659" begin="1155" end="1166" Governor="2491" Dependent="2481" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6313" sofa="11659" begin="1168" end="1179" Governor="2461" Dependent="2501" DependencyType="AG" />
+   <dependency:Dependency xmi:id="6321" sofa="11659" begin="1179" end="1180" Governor="2441" Dependent="2511" DependencyType="PNC" />
+   <dependency:Dependency xmi:id="6329" sofa="11659" begin="1190" end="1191" Governor="2521" Dependent="2531" DependencyType="--" />
+   <dependency:Dependency xmi:id="6337" sofa="11659" begin="1192" end="1193" Governor="2611" Dependent="2551" DependencyType="NMC" />
+   <dependency:Dependency xmi:id="6345" sofa="11659" begin="1195" end="1196" Governor="2611" Dependent="2581" DependencyType="NMC" />
+   <dependency:Dependency xmi:id="6353" sofa="11659" begin="1198" end="1199" Governor="2621" Dependent="2611" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6361" sofa="11659" begin="1199" end="1200" Governor="2521" Dependent="2621" DependencyType="DA" />
+   <dependency:Dependency xmi:id="6369" sofa="11659" begin="1214" end="1226" Governor="2661" Dependent="2631" DependencyType="SB" />
+   <dependency:Dependency xmi:id="6377" sofa="11659" begin="1227" end="1230" Governor="2651" Dependent="2641" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6385" sofa="11659" begin="1231" end="1242" Governor="2631" Dependent="2651" DependencyType="AG" />
+   <dependency:Dependency xmi:id="6393" sofa="11659" begin="1253" end="1261" Governor="2661" Dependent="2671" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6401" sofa="11659" begin="1262" end="1264" Governor="2661" Dependent="2681" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6409" sofa="11659" begin="1265" end="1269" Governor="2681" Dependent="2691" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6417" sofa="11659" begin="1270" end="1273" Governor="2691" Dependent="2701" DependencyType="PG" />
+   <dependency:Dependency xmi:id="6425" sofa="11659" begin="1274" end="1293" Governor="2701" Dependent="2711" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6433" sofa="11659" begin="1294" end="1297" Governor="2711" Dependent="2721" DependencyType="MNR" />
+   <dependency:Dependency xmi:id="6441" sofa="11659" begin="1298" end="1313" Governor="2721" Dependent="2731" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6449" sofa="11659" begin="1313" end="1314" Governor="2731" Dependent="2741" DependencyType="--" />
+   <dependency:Dependency xmi:id="6457" sofa="11659" begin="1315" end="1316" Governor="2771" Dependent="2761" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6465" sofa="11659" begin="1316" end="1317" Governor="2871" Dependent="2771" DependencyType="SB" />
+   <dependency:Dependency xmi:id="6473" sofa="11659" begin="1318" end="1324" Governor="2771" Dependent="2781" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6481" sofa="11659" begin="1325" end="1342" Governor="2871" Dependent="2791" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6489" sofa="11659" begin="1343" end="1346" Governor="2851" Dependent="2801" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6497" sofa="11659" begin="1347" end="1354" Governor="2801" Dependent="2811" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6505" sofa="11659" begin="1355" end="1360" Governor="2811" Dependent="2821" DependencyType="MNR" />
+   <dependency:Dependency xmi:id="6513" sofa="11659" begin="1361" end="1373" Governor="2841" Dependent="2831" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6521" sofa="11659" begin="1374" end="1382" Governor="2821" Dependent="2841" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6529" sofa="11659" begin="1400" end="1406" Governor="2711" Dependent="2871" DependencyType="RC" />
+   <dependency:Dependency xmi:id="6537" sofa="11659" begin="1406" end="1407" Governor="2871" Dependent="2881" DependencyType="--" />
+   <dependency:Dependency xmi:id="6545" sofa="11659" begin="1425" end="1428" Governor="3231" Dependent="2891" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6553" sofa="11659" begin="1429" end="1432" Governor="2911" Dependent="2901" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6561" sofa="11659" begin="1433" end="1443" Governor="2891" Dependent="2911" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6569" sofa="11659" begin="1444" end="1447" Governor="2941" Dependent="2921" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6577" sofa="11659" begin="1448" end="1460" Governor="2941" Dependent="2931" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6585" sofa="11659" begin="1461" end="1468" Governor="2911" Dependent="2941" DependencyType="AG" />
+   <dependency:Dependency xmi:id="6593" sofa="11659" begin="1469" end="1471" Governor="2941" Dependent="2951" DependencyType="MNR" />
+   <dependency:Dependency xmi:id="6601" sofa="11659" begin="1472" end="1475" Governor="2971" Dependent="2961" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6609" sofa="11659" begin="1476" end="1484" Governor="2951" Dependent="2971" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6617" sofa="11659" begin="1485" end="1488" Governor="2951" Dependent="2981" DependencyType="CD" />
+   <dependency:Dependency xmi:id="6625" sofa="11659" begin="1492" end="1495" Governor="3011" Dependent="3001" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6633" sofa="11659" begin="1496" end="1503" Governor="2991" Dependent="3011" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6641" sofa="11659" begin="1504" end="1508" Governor="3011" Dependent="3021" DependencyType="MNR" />
+   <dependency:Dependency xmi:id="6649" sofa="11659" begin="1509" end="1515" Governor="3021" Dependent="3031" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6657" sofa="11659" begin="1516" end="1525" Governor="3031" Dependent="3041" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6665" sofa="11659" begin="1532" end="1534" Governor="3231" Dependent="3061" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6673" sofa="11659" begin="1535" end="1538" Governor="3061" Dependent="3071" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6681" sofa="11659" begin="1539" end="1543" Governor="3071" Dependent="3081" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6689" sofa="11659" begin="1544" end="1546" Governor="3231" Dependent="3091" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6697" sofa="11659" begin="1547" end="1550" Governor="3121" Dependent="3101" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6705" sofa="11659" begin="1551" end="1563" Governor="3121" Dependent="3111" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6713" sofa="11659" begin="1564" end="1569" Governor="3091" Dependent="3121" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6721" sofa="11659" begin="1570" end="1574" Governor="3141" Dependent="3131" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6729" sofa="11659" begin="1587" end="1598" Governor="3161" Dependent="3151" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6737" sofa="11659" begin="1599" end="1600" Governor="3141" Dependent="3161" DependencyType="PNC" />
+   <dependency:Dependency xmi:id="6745" sofa="11659" begin="1600" end="1611" Governor="3181" Dependent="3171" DependencyType="PNC" />
+   <dependency:Dependency xmi:id="6753" sofa="11659" begin="1612" end="1618" Governor="3141" Dependent="3181" DependencyType="PAR" />
+   <dependency:Dependency xmi:id="6761" sofa="11659" begin="1618" end="1619" Governor="3181" Dependent="3191" DependencyType="--" />
+   <dependency:Dependency xmi:id="6769" sofa="11659" begin="1620" end="1630" Governor="3211" Dependent="3201" DependencyType="PNC" />
+   <dependency:Dependency xmi:id="6777" sofa="11659" begin="1631" end="1637" Governor="3141" Dependent="3211" DependencyType="PAR" />
+   <dependency:Dependency xmi:id="6785" sofa="11659" begin="1637" end="1638" Governor="3211" Dependent="3221" DependencyType="PNC" />
+   <dependency:Dependency xmi:id="6793" sofa="11659" begin="1649" end="1650" Governor="3231" Dependent="3241" DependencyType="--" />
+   <dependency:Dependency xmi:id="6801" sofa="11659" begin="1651" end="1654" Governor="3391" Dependent="3251" DependencyType="SB" />
+   <dependency:Dependency xmi:id="6809" sofa="11659" begin="1655" end="1658" Governor="3391" Dependent="3261" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6817" sofa="11659" begin="1659" end="1662" Governor="3301" Dependent="3271" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6825" sofa="11659" begin="1663" end="1667" Governor="3301" Dependent="3281" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6833" sofa="11659" begin="1668" end="1687" Governor="3301" Dependent="3291" DependencyType="PNC" />
+   <dependency:Dependency xmi:id="6841" sofa="11659" begin="1688" end="1691" Governor="3261" Dependent="3301" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6849" sofa="11659" begin="1692" end="1693" Governor="3301" Dependent="3311" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6857" sofa="11659" begin="1694" end="1697" Governor="3301" Dependent="3321" DependencyType="CD" />
+   <dependency:Dependency xmi:id="6865" sofa="11659" begin="1702" end="1704" Governor="3391" Dependent="3341" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6873" sofa="11659" begin="1705" end="1708" Governor="3361" Dependent="3351" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6881" sofa="11659" begin="1709" end="1719" Governor="3391" Dependent="3361" DependencyType="SB" />
+   <dependency:Dependency xmi:id="6889" sofa="11659" begin="1720" end="1731" Governor="3361" Dependent="3371" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6897" sofa="11659" begin="1732" end="1744" Governor="3391" Dependent="3381" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6905" sofa="11659" begin="1745" end="1752" Governor="3201" Dependent="3391" DependencyType="RC" />
+   <dependency:Dependency xmi:id="6913" sofa="11659" begin="1752" end="1753" Governor="3391" Dependent="3401" DependencyType="--" />
+   <dependency:Dependency xmi:id="6921" sofa="11659" begin="1754" end="1757" Governor="3491" Dependent="3411" DependencyType="SB" />
+   <dependency:Dependency xmi:id="6929" sofa="11659" begin="1758" end="1761" Governor="3491" Dependent="3421" DependencyType="MO" />
+   <dependency:Dependency xmi:id="6937" sofa="11659" begin="1762" end="1771" Governor="3421" Dependent="3431" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6945" sofa="11659" begin="1772" end="1774" Governor="3431" Dependent="3441" DependencyType="MNR" />
+   <dependency:Dependency xmi:id="6953" sofa="11659" begin="1775" end="1778" Governor="3461" Dependent="3451" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6961" sofa="11659" begin="1779" end="1785" Governor="3441" Dependent="3461" DependencyType="NK" />
+   <dependency:Dependency xmi:id="6969" sofa="11659" begin="1801" end="1807" Governor="3291" Dependent="3491" DependencyType="RC" />
+   <dependency:Dependency xmi:id="6977" sofa="11659" begin="1807" end="1808" Governor="3491" Dependent="3501" DependencyType="--" />
+   <dependency:ROOT xmi:id="6985" sofa="11659" begin="31" end="37" Governor="1541" Dependent="1541" DependencyType="--" />
+   <dependency:ROOT xmi:id="6993" sofa="11659" begin="137" end="141" Governor="1691" Dependent="1691" DependencyType="--" />
+   <dependency:ROOT xmi:id="7001" sofa="11659" begin="195" end="201" Governor="1801" Dependent="1801" DependencyType="--" />
+   <dependency:ROOT xmi:id="7009" sofa="11659" begin="283" end="287" Governor="1961" Dependent="1961" DependencyType="--" />
+   <dependency:ROOT xmi:id="7017" sofa="11659" begin="994" end="1000" Governor="2261" Dependent="2261" DependencyType="--" />
+   <dependency:ROOT xmi:id="7025" sofa="11659" begin="1100" end="1104" Governor="2411" Dependent="2411" DependencyType="--" />
+   <dependency:ROOT xmi:id="7033" sofa="11659" begin="1243" end="1252" Governor="2661" Dependent="2661" DependencyType="--" />
+   <dependency:ROOT xmi:id="7041" sofa="11659" begin="1526" end="1531" Governor="3051" Dependent="3051" DependencyType="--" />
+   <dependency:CCOMP xmi:id="7049" sofa="11659" begin="45" end="55" Governor="1541" Dependent="1561" DependencyType="OC" />
+   <dependency:CCOMP xmi:id="7057" sofa="11659" begin="180" end="189" Governor="1741" Dependent="1771" DependencyType="OC" />
+   <dependency:CCOMP xmi:id="7065" sofa="11659" begin="1078" end="1088" Governor="2261" Dependent="2381" DependencyType="OC" />
+   <dependency:CCOMP xmi:id="7073" sofa="11659" begin="1181" end="1190" Governor="2411" Dependent="2521" DependencyType="OC" />
+   <dependency:CCOMP xmi:id="7081" sofa="11659" begin="1383" end="1392" Governor="2861" Dependent="2851" DependencyType="OC" />
+   <dependency:CCOMP xmi:id="7089" sofa="11659" begin="1393" end="1399" Governor="2871" Dependent="2861" DependencyType="OC" />
+   <dependency:CCOMP xmi:id="7097" sofa="11659" begin="1639" end="1649" Governor="3051" Dependent="3231" DependencyType="OC" />
+   <dependency:CCOMP xmi:id="7105" sofa="11659" begin="1792" end="1800" Governor="3491" Dependent="3481" DependencyType="OC" />
+   <dependency:DOBJ xmi:id="7113" sofa="11659" begin="68" end="81" Governor="1661" Dependent="1601" DependencyType="OA" />
+   <dependency:DOBJ xmi:id="7121" sofa="11659" begin="171" end="179" Governor="1771" Dependent="1761" DependencyType="OA" />
+   <dependency:DOBJ xmi:id="7129" sofa="11659" begin="1001" end="1005" Governor="2381" Dependent="2271" DependencyType="OA" />
+   <dependency:DOBJ xmi:id="7137" sofa="11659" begin="1575" end="1586" Governor="3231" Dependent="3141" DependencyType="OA" />
+   <dependency:DOBJ xmi:id="7145" sofa="11659" begin="1786" end="1791" Governor="3481" Dependent="3471" DependencyType="OA" />
+   <dependency:CONJ xmi:id="7153" sofa="11659" begin="110" end="121" Governor="1631" Dependent="1651" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7161" sofa="11659" begin="122" end="129" Governor="1541" Dependent="1661" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7169" sofa="11659" begin="220" end="221" Governor="1851" Dependent="1841" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7177" sofa="11659" begin="230" end="231" Governor="1881" Dependent="1861" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7185" sofa="11659" begin="255" end="263" Governor="1891" Dependent="1911" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7193" sofa="11659" begin="355" end="356" Governor="2071" Dependent="2061" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7201" sofa="11659" begin="367" end="368" Governor="2071" Dependent="2161" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7209" sofa="11659" begin="1167" end="1168" Governor="2501" Dependent="2491" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7217" sofa="11659" begin="1191" end="1192" Governor="2561" Dependent="2541" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7225" sofa="11659" begin="1193" end="1194" Governor="2571" Dependent="2561" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7233" sofa="11659" begin="1194" end="1195" Governor="2591" Dependent="2571" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7241" sofa="11659" begin="1196" end="1197" Governor="2601" Dependent="2591" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7249" sofa="11659" begin="1197" end="1198" Governor="2621" Dependent="2601" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7257" sofa="11659" begin="1314" end="1315" Governor="2731" Dependent="2751" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7265" sofa="11659" begin="1489" end="1491" Governor="2981" Dependent="2991" DependencyType="CJ" />
+   <dependency:CONJ xmi:id="7273" sofa="11659" begin="1698" end="1701" Governor="3321" Dependent="3331" DependencyType="CJ" />
+   <morph:MorphologicalFeatures xmi:id="7281" sofa="11659" begin="14" end="17" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7303" sofa="11659" begin="18" end="30" value="case=nom|number=pl|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="7325" sofa="11659" begin="31" end="37" value="number=pl|person=3|tense=pres|mood=ind" />
+   <morph:MorphologicalFeatures xmi:id="7347" sofa="11659" begin="38" end="44" value="case=nom|number=pl|gender=neut" />
+   <morph:MorphologicalFeatures xmi:id="7369" sofa="11659" begin="45" end="55" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7391" sofa="11659" begin="55" end="56" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7413" sofa="11659" begin="57" end="63" value="case=nom|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="7435" sofa="11659" begin="64" end="67" value="case=nom|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="7457" sofa="11659" begin="68" end="81" value="case=nom|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="7479" sofa="11659" begin="82" end="90" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7501" sofa="11659" begin="91" end="97" value="case=dat|number=sg|gender=neut" />
+   <morph:MorphologicalFeatures xmi:id="7523" sofa="11659" begin="98" end="101" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7545" sofa="11659" begin="102" end="109" value="case=gen|number=sg|gender=*|degree=pos" />
+   <morph:MorphologicalFeatures xmi:id="7567" sofa="11659" begin="110" end="121" value="case=acc|number=pl|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="7589" sofa="11659" begin="122" end="129" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7611" sofa="11659" begin="129" end="130" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7633" sofa="11659" begin="131" end="136" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7655" sofa="11659" begin="137" end="141" value="number=pl|person=3|tense=pres|mood=ind" />
+   <morph:MorphologicalFeatures xmi:id="7677" sofa="11659" begin="142" end="147" value="case=nom|number=pl|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="7699" sofa="11659" begin="148" end="157" value="case=nom|number=pl|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="7721" sofa="11659" begin="158" end="160" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7743" sofa="11659" begin="161" end="164" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="7765" sofa="11659" begin="165" end="169" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="7787" sofa="11659" begin="169" end="170" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7809" sofa="11659" begin="171" end="179" value="case=acc|number=pl|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="7831" sofa="11659" begin="180" end="189" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7853" sofa="11659" begin="189" end="190" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7875" sofa="11659" begin="191" end="194" value="case=nom|number=pl|gender=*|person=3" />
+   <morph:MorphologicalFeatures xmi:id="7897" sofa="11659" begin="195" end="201" value="number=pl|person=3|tense=pres|mood=ind" />
+   <morph:MorphologicalFeatures xmi:id="7919" sofa="11659" begin="202" end="204" value="_" />
+   <morph:MorphologicalFeatures xmi:id="7941" sofa="11659" begin="205" end="212" value="case=dat|number=pl|gender=neut" />
+   <morph:MorphologicalFeatures xmi:id="7963" sofa="11659" begin="213" end="219" value="case=dat|number=pl|gender=neut" />
+   <morph:MorphologicalFeatures xmi:id="7985" sofa="11659" begin="220" end="221" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8007" sofa="11659" begin="221" end="230" value="case=nom|number=sg|gender=*" />
+   <morph:MorphologicalFeatures xmi:id="8029" sofa="11659" begin="230" end="231" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8051" sofa="11659" begin="231" end="232" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8073" sofa="11659" begin="233" end="242" value="case=acc|number=pl|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="8095" sofa="11659" begin="243" end="246" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8117" sofa="11659" begin="247" end="254" value="case=acc|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="8139" sofa="11659" begin="255" end="263" value="case=acc|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="8161" sofa="11659" begin="264" end="267" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8183" sofa="11659" begin="267" end="268" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8205" sofa="11659" begin="269" end="273" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8227" sofa="11659" begin="274" end="282" value="case=nom|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="8249" sofa="11659" begin="283" end="287" value="number=pl|person=3|tense=pres|mood=ind" />
+   <morph:MorphologicalFeatures xmi:id="8271" sofa="11659" begin="288" end="292" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8293" sofa="11659" begin="293" end="305" value="case=nom|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="8315" sofa="11659" begin="306" end="313" value="degree=pos" />
+   <morph:MorphologicalFeatures xmi:id="8337" sofa="11659" begin="313" end="314" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8359" sofa="11659" begin="315" end="318" value="case=nom|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="8381" sofa="11659" begin="319" end="323" value="case=nom|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="8403" sofa="11659" begin="324" end="326" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8425" sofa="11659" begin="327" end="330" value="case=dat|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="8447" sofa="11659" begin="331" end="354" value="case=dat|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="8469" sofa="11659" begin="355" end="356" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8491" sofa="11659" begin="356" end="358" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8513" sofa="11659" begin="358" end="359" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8535" sofa="11659" begin="359" end="360" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8557" sofa="11659" begin="360" end="361" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8579" sofa="11659" begin="361" end="362" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8601" sofa="11659" begin="362" end="363" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8623" sofa="11659" begin="363" end="365" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8645" sofa="11659" begin="365" end="366" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8667" sofa="11659" begin="366" end="367" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8689" sofa="11659" begin="367" end="368" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8711" sofa="11659" begin="369" end="376" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8733" sofa="11659" begin="376" end="377" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8755" sofa="11659" begin="377" end="378" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8777" sofa="11659" begin="378" end="379" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8799" sofa="11659" begin="379" end="380" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8821" sofa="11659" begin="970" end="973" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8843" sofa="11659" begin="974" end="979" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="8865" sofa="11659" begin="980" end="986" value="case=gen|number=sg|gender=neut" />
+   <morph:MorphologicalFeatures xmi:id="8887" sofa="11659" begin="987" end="993" value="case=gen|number=sg|gender=neut" />
+   <morph:MorphologicalFeatures xmi:id="8909" sofa="11659" begin="994" end="1000" value="number=pl|person=3|tense=pres|mood=ind" />
+   <morph:MorphologicalFeatures xmi:id="8931" sofa="11659" begin="1001" end="1005" value="case=acc|number=pl|person=3" />
+   <morph:MorphologicalFeatures xmi:id="8953" sofa="11659" begin="1006" end="1017" value="case=nom|number=pl|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="8975" sofa="11659" begin="1018" end="1023" value="_" />
+   <morph:MorphologicalFeatures xmi:id="8997" sofa="11659" begin="1024" end="1027" value="case=acc|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="9019" sofa="11659" begin="1028" end="1033" value="case=acc|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="9041" sofa="11659" begin="1034" end="1037" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9063" sofa="11659" begin="1038" end="1046" value="case=dat|number=pl|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="9085" sofa="11659" begin="1047" end="1049" value="case=dat|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="9107" sofa="11659" begin="1050" end="1061" value="case=dat|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="9129" sofa="11659" begin="1062" end="1071" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9151" sofa="11659" begin="1072" end="1077" value="degree=pos" />
+   <morph:MorphologicalFeatures xmi:id="9173" sofa="11659" begin="1078" end="1088" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9195" sofa="11659" begin="1088" end="1089" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9217" sofa="11659" begin="1090" end="1099" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9239" sofa="11659" begin="1100" end="1104" value="number=sg|person=3|tense=pres|mood=ind" />
+   <morph:MorphologicalFeatures xmi:id="9261" sofa="11659" begin="1105" end="1116" value="case=nom|number=sg|gender=*" />
+   <morph:MorphologicalFeatures xmi:id="9283" sofa="11659" begin="1117" end="1120" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9305" sofa="11659" begin="1121" end="1132" value="case=dat|number=sg|gender=neut" />
+   <morph:MorphologicalFeatures xmi:id="9327" sofa="11659" begin="1133" end="1136" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="9349" sofa="11659" begin="1137" end="1150" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="9371" sofa="11659" begin="1151" end="1154" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="9393" sofa="11659" begin="1155" end="1166" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="9415" sofa="11659" begin="1167" end="1168" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9437" sofa="11659" begin="1168" end="1179" value="case=nom|number=sg|gender=neut" />
+   <morph:MorphologicalFeatures xmi:id="9459" sofa="11659" begin="1179" end="1180" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9481" sofa="11659" begin="1181" end="1190" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9503" sofa="11659" begin="1190" end="1191" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9525" sofa="11659" begin="1191" end="1192" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9547" sofa="11659" begin="1192" end="1193" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9569" sofa="11659" begin="1193" end="1194" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9591" sofa="11659" begin="1194" end="1195" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9613" sofa="11659" begin="1195" end="1196" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9635" sofa="11659" begin="1196" end="1197" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9657" sofa="11659" begin="1197" end="1198" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9679" sofa="11659" begin="1198" end="1199" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9701" sofa="11659" begin="1199" end="1200" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9723" sofa="11659" begin="1214" end="1226" value="case=nom|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="9745" sofa="11659" begin="1227" end="1230" value="case=nom|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="9767" sofa="11659" begin="1231" end="1242" value="case=acc|number=pl|gender=fem|degree=comp" />
+   <morph:MorphologicalFeatures xmi:id="9789" sofa="11659" begin="1243" end="1252" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9811" sofa="11659" begin="1253" end="1261" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9833" sofa="11659" begin="1262" end="1264" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9855" sofa="11659" begin="1265" end="1269" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="9877" sofa="11659" begin="1270" end="1273" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9899" sofa="11659" begin="1274" end="1293" value="case=dat|number=pl|gender=*" />
+   <morph:MorphologicalFeatures xmi:id="9921" sofa="11659" begin="1294" end="1297" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9943" sofa="11659" begin="1298" end="1313" value="case=dat|number=pl|gender=*" />
+   <morph:MorphologicalFeatures xmi:id="9965" sofa="11659" begin="1313" end="1314" value="_" />
+   <morph:MorphologicalFeatures xmi:id="9987" sofa="11659" begin="1314" end="1315" value="case=dat|number=pl|gender=*" />
+   <morph:MorphologicalFeatures xmi:id="10009" sofa="11659" begin="1315" end="1316" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10031" sofa="11659" begin="1316" end="1317" value="case=nom|number=pl|gender=*" />
+   <morph:MorphologicalFeatures xmi:id="10053" sofa="11659" begin="1318" end="1324" value="case=nom|number=pl|gender=*" />
+   <morph:MorphologicalFeatures xmi:id="10075" sofa="11659" begin="1325" end="1342" value="degree=pos" />
+   <morph:MorphologicalFeatures xmi:id="10097" sofa="11659" begin="1343" end="1346" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10119" sofa="11659" begin="1347" end="1354" value="case=dat|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="10141" sofa="11659" begin="1355" end="1360" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10163" sofa="11659" begin="1361" end="1373" value="case=*|number=sg|gender=fem|degree=pos" />
+   <morph:MorphologicalFeatures xmi:id="10185" sofa="11659" begin="1374" end="1382" value="case=*|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="10207" sofa="11659" begin="1383" end="1392" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10229" sofa="11659" begin="1393" end="1399" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10251" sofa="11659" begin="1400" end="1406" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10273" sofa="11659" begin="1406" end="1407" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10295" sofa="11659" begin="1425" end="1428" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10317" sofa="11659" begin="1429" end="1432" value="case=acc|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="10339" sofa="11659" begin="1433" end="1443" value="case=acc|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="10361" sofa="11659" begin="1444" end="1447" value="case=gen|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="10383" sofa="11659" begin="1448" end="1460" value="case=gen|number=pl|gender=masc|degree=pos" />
+   <morph:MorphologicalFeatures xmi:id="10405" sofa="11659" begin="1461" end="1468" value="case=gen|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="10427" sofa="11659" begin="1469" end="1471" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10449" sofa="11659" begin="1472" end="1475" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="10471" sofa="11659" begin="1476" end="1484" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="10493" sofa="11659" begin="1485" end="1488" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10515" sofa="11659" begin="1489" end="1491" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10537" sofa="11659" begin="1492" end="1495" value="case=dat|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="10559" sofa="11659" begin="1496" end="1503" value="case=dat|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="10581" sofa="11659" begin="1504" end="1508" value="case=dat|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="10603" sofa="11659" begin="1509" end="1515" value="case=nom|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="10625" sofa="11659" begin="1516" end="1525" value="case=nom|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="10647" sofa="11659" begin="1526" end="1531" value="number=sg|person=3|tense=past|mood=ind" />
+   <morph:MorphologicalFeatures xmi:id="10669" sofa="11659" begin="1532" end="1534" value="case=dat|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="10691" sofa="11659" begin="1535" end="1538" value="case=dat|number=sg|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="10713" sofa="11659" begin="1539" end="1543" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10735" sofa="11659" begin="1544" end="1546" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10757" sofa="11659" begin="1547" end="1550" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="10779" sofa="11659" begin="1551" end="1563" value="case=dat|number=sg|gender=fem|degree=pos" />
+   <morph:MorphologicalFeatures xmi:id="10801" sofa="11659" begin="1564" end="1569" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="10823" sofa="11659" begin="1570" end="1574" value="case=nom|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="10845" sofa="11659" begin="1575" end="1586" value="case=nom|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="10867" sofa="11659" begin="1587" end="1598" value="case=nom|number=sg|gender=fem|degree=pos" />
+   <morph:MorphologicalFeatures xmi:id="10889" sofa="11659" begin="1599" end="1600" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10911" sofa="11659" begin="1600" end="1611" value="case=nom|number=sg|gender=fem|degree=pos" />
+   <morph:MorphologicalFeatures xmi:id="10933" sofa="11659" begin="1612" end="1618" value="case=nom|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="10955" sofa="11659" begin="1618" end="1619" value="_" />
+   <morph:MorphologicalFeatures xmi:id="10977" sofa="11659" begin="1620" end="1630" value="case=*|number=*|gender=*|degree=pos" />
+   <morph:MorphologicalFeatures xmi:id="10999" sofa="11659" begin="1631" end="1637" value="case=*|number=*|gender=*|degree=pos" />
+   <morph:MorphologicalFeatures xmi:id="11021" sofa="11659" begin="1637" end="1638" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11043" sofa="11659" begin="1639" end="1649" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11065" sofa="11659" begin="1649" end="1650" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11087" sofa="11659" begin="1651" end="1654" value="case=nom|number=sg|gender=neut" />
+   <morph:MorphologicalFeatures xmi:id="11109" sofa="11659" begin="1655" end="1658" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11131" sofa="11659" begin="1659" end="1662" value="case=dat|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="11153" sofa="11659" begin="1663" end="1667" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11175" sofa="11659" begin="1668" end="1687" value="case=dat|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="11197" sofa="11659" begin="1688" end="1691" value="case=dat|number=pl|gender=masc|degree=pos" />
+   <morph:MorphologicalFeatures xmi:id="11219" sofa="11659" begin="1692" end="1693" value="case=dat|number=pl|gender=masc" />
+   <morph:MorphologicalFeatures xmi:id="11241" sofa="11659" begin="1694" end="1697" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11263" sofa="11659" begin="1698" end="1701" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11285" sofa="11659" begin="1702" end="1704" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11307" sofa="11659" begin="1705" end="1708" value="case=gen|number=sg|gender=neut" />
+   <morph:MorphologicalFeatures xmi:id="11329" sofa="11659" begin="1709" end="1719" value="case=gen|number=sg|gender=neut" />
+   <morph:MorphologicalFeatures xmi:id="11351" sofa="11659" begin="1720" end="1731" value="case=nom|number=sg|gender=neut" />
+   <morph:MorphologicalFeatures xmi:id="11373" sofa="11659" begin="1732" end="1744" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11395" sofa="11659" begin="1745" end="1752" value="number=sg|person=3|tense=pres|mood=ind" />
+   <morph:MorphologicalFeatures xmi:id="11417" sofa="11659" begin="1752" end="1753" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11439" sofa="11659" begin="1754" end="1757" value="case=nom|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="11461" sofa="11659" begin="1758" end="1761" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11483" sofa="11659" begin="1762" end="1771" value="case=dat|number=sg|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="11505" sofa="11659" begin="1772" end="1774" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11527" sofa="11659" begin="1775" end="1778" value="case=acc|number=pl|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="11549" sofa="11659" begin="1779" end="1785" value="case=acc|number=pl|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="11571" sofa="11659" begin="1786" end="1791" value="case=acc|number=pl|gender=fem" />
+   <morph:MorphologicalFeatures xmi:id="11593" sofa="11659" begin="1792" end="1800" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11615" sofa="11659" begin="1801" end="1807" value="_" />
+   <morph:MorphologicalFeatures xmi:id="11637" sofa="11659" begin="1807" end="1808" value="_" />
+   <type11:WikiDataHyponym xmi:id="12037" sofa="11659" begin="38" end="44" id="Q174211" depth="1" />
+   <type11:WikiDataHyponym xmi:id="12044" sofa="11659" begin="38" end="44" id="Q8047" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="12058" sofa="11659" begin="38" end="44" id="Q12385831" depth="0" />
+   <type11:WikiDataHyponym xmi:id="12079" sofa="11659" begin="38" end="44" id="Q35120" depth="3" />
+   <type11:WikiDataHyponym xmi:id="12072" sofa="11659" begin="38" end="44" id="Q11173" depth="2" />
+   <type11:WikiDataHyponym xmi:id="12065" sofa="11659" begin="38" end="44" id="Q35758" depth="2" />
+   <type11:WikiDataHyponym xmi:id="12051" sofa="11659" begin="38" end="44" id="Q79529" depth="1" />
+   <type11:WikiDataHyponym xmi:id="12086" sofa="11659" begin="38" end="44" id="Q206229" depth="0" />
+   <type11:WikiDataHyponym xmi:id="12100" sofa="11659" begin="38" end="44" id="Q426799" depth="0" />
+   <type11:WikiDataHyponym xmi:id="12093" sofa="11659" begin="38" end="44" id="Q79529" depth="3" />
+   <type11:WikiDataHyponym xmi:id="11988" sofa="11659" begin="68" end="81" id="Q11402" depth="3" />
+   <type11:WikiDataHyponym xmi:id="12002" sofa="11659" begin="68" end="81" id="Q127920" depth="0" />
+   <type11:WikiDataHyponym xmi:id="12016" sofa="11659" begin="68" end="81" id="Q44424" depth="1" />
+   <type11:WikiDataHyponym xmi:id="12030" sofa="11659" begin="68" end="81" id="Q5090444" depth="1" />
+   <type11:WikiDataHyponym xmi:id="12023" sofa="11659" begin="68" end="81" id="Q44424" depth="2" />
+   <type11:WikiDataHyponym xmi:id="12009" sofa="11659" begin="68" end="81" id="Q1571801" depth="2" />
+   <type11:WikiDataHyponym xmi:id="11995" sofa="11659" begin="68" end="81" id="Q33293" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="12163" sofa="11659" begin="91" end="97" id="Q484583" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="12191" sofa="11659" begin="91" end="97" id="Q35120" depth="3" />
+   <type11:WikiDataHyponym xmi:id="12170" sofa="11659" begin="91" end="97" id="Q79529" depth="1" />
+   <type11:WikiDataHyponym xmi:id="12184" sofa="11659" begin="91" end="97" id="Q35758" depth="2" />
+   <type11:WikiDataHyponym xmi:id="12177" sofa="11659" begin="91" end="97" id="Q8066" depth="0" />
+   <type11:WikiDataHyponym xmi:id="15110" sofa="11659" begin="110" end="121" id="Q79529" depth="0" />
+   <type11:WikiDataHyponym xmi:id="15117" sofa="11659" begin="110" end="121" id="Q8066" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="15131" sofa="11659" begin="110" end="121" id="Q35120" depth="2" />
+   <type11:WikiDataHyponym xmi:id="15124" sofa="11659" begin="110" end="121" id="Q35758" depth="1" />
+   <type11:WikiDataHyponym xmi:id="12107" sofa="11659" begin="171" end="179" id="Q4503801" depth="4" />
+   <type11:WikiDataHyponym xmi:id="12156" sofa="11659" begin="171" end="179" id="Q35120" depth="3" />
+   <type11:WikiDataHyponym xmi:id="12149" sofa="11659" begin="171" end="179" id="Q35120" depth="4" />
+   <type11:WikiDataHyponym xmi:id="12128" sofa="11659" begin="171" end="179" id="Q5058355" depth="2" />
+   <type11:WikiDataHyponym xmi:id="12135" sofa="11659" begin="171" end="179" id="Q26868" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="12142" sofa="11659" begin="171" end="179" id="Q15989253" depth="3" />
+   <type11:WikiDataHyponym xmi:id="12121" sofa="11659" begin="171" end="179" id="Q22325163" depth="1" />
+   <type11:WikiDataHyponym xmi:id="12114" sofa="11659" begin="171" end="179" id="Q420927" depth="0" />
+   <type11:WikiDataHyponym xmi:id="12471" sofa="11659" begin="233" end="242" id="Q488383" depth="10" />
+   <type11:WikiDataHyponym xmi:id="12492" sofa="11659" begin="233" end="242" id="Q9081" depth="10" />
+   <type11:WikiDataHyponym xmi:id="12506" sofa="11659" begin="233" end="242" id="Q42848" depth="7" />
+   <type11:WikiDataHyponym xmi:id="12520" sofa="11659" begin="233" end="242" id="Q151885" depth="7" />
+   <type11:WikiDataHyponym xmi:id="12527" sofa="11659" begin="233" end="242" id="Q7184903" depth="9" />
+   <type11:WikiDataHyponym xmi:id="12513" sofa="11659" begin="233" end="242" id="Q5127848" depth="1" />
+   <type11:WikiDataHyponym xmi:id="12499" sofa="11659" begin="233" end="242" id="Q10876" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="12485" sofa="11659" begin="233" end="242" id="Q246672" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12478" sofa="11659" begin="233" end="242" id="Q16887380" depth="2" />
+   <type11:WikiDataHyponym xmi:id="12534" sofa="11659" begin="233" end="242" id="Q3695082" depth="9" />
+   <type11:WikiDataHyponym xmi:id="12548" sofa="11659" begin="233" end="242" id="Q217594" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12562" sofa="11659" begin="233" end="242" id="Q36161" depth="4" />
+   <type11:WikiDataHyponym xmi:id="12576" sofa="11659" begin="233" end="242" id="Q2145290" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12590" sofa="11659" begin="233" end="242" id="Q11028" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12604" sofa="11659" begin="233" end="242" id="Q4393498" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12618" sofa="11659" begin="233" end="242" id="Q937228" depth="7" />
+   <type11:WikiDataHyponym xmi:id="12632" sofa="11659" begin="233" end="242" id="Q494756" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12646" sofa="11659" begin="233" end="242" id="Q21146257" depth="3" />
+   <type11:WikiDataHyponym xmi:id="12660" sofa="11659" begin="233" end="242" id="Q7184903" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12674" sofa="11659" begin="233" end="242" id="Q7184903" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12688" sofa="11659" begin="233" end="242" id="Q35120" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12702" sofa="11659" begin="233" end="242" id="Q16889133" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12716" sofa="11659" begin="233" end="242" id="Q5469988" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12730" sofa="11659" begin="233" end="242" id="Q16889133" depth="0" />
+   <type11:WikiDataHyponym xmi:id="12723" sofa="11659" begin="233" end="242" id="Q35120" depth="2" />
+   <type11:WikiDataHyponym xmi:id="12709" sofa="11659" begin="233" end="242" id="Q17553950" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12695" sofa="11659" begin="233" end="242" id="Q11028" depth="11" />
+   <type11:WikiDataHyponym xmi:id="12681" sofa="11659" begin="233" end="242" id="Q714737" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12667" sofa="11659" begin="233" end="242" id="Q17008256" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12653" sofa="11659" begin="233" end="242" id="Q246672" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12639" sofa="11659" begin="233" end="242" id="Q853614" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12625" sofa="11659" begin="233" end="242" id="Q1272626" depth="9" />
+   <type11:WikiDataHyponym xmi:id="12611" sofa="11659" begin="233" end="242" id="Q488383" depth="7" />
+   <type11:WikiDataHyponym xmi:id="12597" sofa="11659" begin="233" end="242" id="Q11028" depth="10" />
+   <type11:WikiDataHyponym xmi:id="12583" sofa="11659" begin="233" end="242" id="Q24034552" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12569" sofa="11659" begin="233" end="242" id="Q151885" depth="11" />
+   <type11:WikiDataHyponym xmi:id="12555" sofa="11659" begin="233" end="242" id="Q35120" depth="9" />
+   <type11:WikiDataHyponym xmi:id="12541" sofa="11659" begin="233" end="242" id="Q23956024" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12198" sofa="11659" begin="255" end="263" id="Q10872" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="12422" sofa="11659" begin="255" end="263" id="Q35120" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12436" sofa="11659" begin="255" end="263" id="Q16889133" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12450" sofa="11659" begin="255" end="263" id="Q5469988" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12464" sofa="11659" begin="255" end="263" id="Q16889133" depth="0" />
+   <type11:WikiDataHyponym xmi:id="12457" sofa="11659" begin="255" end="263" id="Q35120" depth="2" />
+   <type11:WikiDataHyponym xmi:id="12443" sofa="11659" begin="255" end="263" id="Q17553950" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12429" sofa="11659" begin="255" end="263" id="Q11028" depth="11" />
+   <type11:WikiDataHyponym xmi:id="12415" sofa="11659" begin="255" end="263" id="Q714737" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12275" sofa="11659" begin="255" end="263" id="Q217594" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12282" sofa="11659" begin="255" end="263" id="Q35120" depth="9" />
+   <type11:WikiDataHyponym xmi:id="12296" sofa="11659" begin="255" end="263" id="Q151885" depth="11" />
+   <type11:WikiDataHyponym xmi:id="12303" sofa="11659" begin="255" end="263" id="Q2145290" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12310" sofa="11659" begin="255" end="263" id="Q24034552" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12324" sofa="11659" begin="255" end="263" id="Q11028" depth="10" />
+   <type11:WikiDataHyponym xmi:id="12331" sofa="11659" begin="255" end="263" id="Q4393498" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12338" sofa="11659" begin="255" end="263" id="Q488383" depth="7" />
+   <type11:WikiDataHyponym xmi:id="12352" sofa="11659" begin="255" end="263" id="Q1272626" depth="9" />
+   <type11:WikiDataHyponym xmi:id="12359" sofa="11659" begin="255" end="263" id="Q494756" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12366" sofa="11659" begin="255" end="263" id="Q853614" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12380" sofa="11659" begin="255" end="263" id="Q246672" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12387" sofa="11659" begin="255" end="263" id="Q7184903" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12373" sofa="11659" begin="255" end="263" id="Q21146257" depth="3" />
+   <type11:WikiDataHyponym xmi:id="12408" sofa="11659" begin="255" end="263" id="Q7184903" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12401" sofa="11659" begin="255" end="263" id="Q17008256" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12345" sofa="11659" begin="255" end="263" id="Q937228" depth="7" />
+   <type11:WikiDataHyponym xmi:id="12317" sofa="11659" begin="255" end="263" id="Q11028" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12289" sofa="11659" begin="255" end="263" id="Q36161" depth="4" />
+   <type11:WikiDataHyponym xmi:id="12233" sofa="11659" begin="255" end="263" id="Q42848" depth="7" />
+   <type11:WikiDataHyponym xmi:id="12240" sofa="11659" begin="255" end="263" id="Q5127848" depth="1" />
+   <type11:WikiDataHyponym xmi:id="12247" sofa="11659" begin="255" end="263" id="Q151885" depth="7" />
+   <type11:WikiDataHyponym xmi:id="12254" sofa="11659" begin="255" end="263" id="Q7184903" depth="9" />
+   <type11:WikiDataHyponym xmi:id="12268" sofa="11659" begin="255" end="263" id="Q23956024" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12261" sofa="11659" begin="255" end="263" id="Q3695082" depth="9" />
+   <type11:WikiDataHyponym xmi:id="12219" sofa="11659" begin="255" end="263" id="Q246672" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12226" sofa="11659" begin="255" end="263" id="Q9081" depth="10" />
+   <type11:WikiDataHyponym xmi:id="12212" sofa="11659" begin="255" end="263" id="Q16887380" depth="2" />
+   <type11:WikiDataHyponym xmi:id="12205" sofa="11659" begin="255" end="263" id="Q488383" depth="10" />
+   <type11:WikiDataHyponym xmi:id="12394" sofa="11659" begin="331" end="354" id="Q424216" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="14907" sofa="11659" begin="356" end="358" id="Q488383" depth="8" />
+   <type11:WikiDataHyponym xmi:id="15026" sofa="11659" begin="356" end="358" id="Q4393498" depth="4" />
+   <type11:WikiDataHyponym xmi:id="15054" sofa="11659" begin="356" end="358" id="Q937228" depth="5" />
+   <type11:WikiDataHyponym xmi:id="15082" sofa="11659" begin="356" end="358" id="Q17553950" depth="6" />
+   <type11:WikiDataHyponym xmi:id="15103" sofa="11659" begin="356" end="358" id="Q11028" depth="9" />
+   <type11:WikiDataHyponym xmi:id="15096" sofa="11659" begin="356" end="358" id="Q24249534" depth="0" />
+   <type11:WikiDataHyponym xmi:id="15089" sofa="11659" begin="356" end="358" id="Q5962346" depth="1" />
+   <type11:WikiDataHyponym xmi:id="15075" sofa="11659" begin="356" end="358" id="Q7184903" depth="4" />
+   <type11:WikiDataHyponym xmi:id="15068" sofa="11659" begin="356" end="358" id="Q714737" depth="6" />
+   <type11:WikiDataHyponym xmi:id="15061" sofa="11659" begin="356" end="358" id="Q6423319" depth="2" />
+   <type11:WikiDataHyponym xmi:id="15047" sofa="11659" begin="356" end="358" id="Q7184903" depth="10" />
+   <type11:WikiDataHyponym xmi:id="15040" sofa="11659" begin="356" end="358" id="Q853614" depth="6" />
+   <type11:WikiDataHyponym xmi:id="15033" sofa="11659" begin="356" end="358" id="Q488383" depth="5" />
+   <type11:WikiDataHyponym xmi:id="15019" sofa="11659" begin="356" end="358" id="Q1272626" depth="11" />
+   <type11:WikiDataHyponym xmi:id="15012" sofa="11659" begin="356" end="358" id="Q741108" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="15005" sofa="11659" begin="356" end="358" id="Q11028" depth="8" />
+   <type11:WikiDataHyponym xmi:id="14928" sofa="11659" begin="356" end="358" id="Q2145290" depth="10" />
+   <type11:WikiDataHyponym xmi:id="14921" sofa="11659" begin="356" end="358" id="Q3622126" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14914" sofa="11659" begin="356" end="358" id="Q1979154" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14942" sofa="11659" begin="356" end="358" id="Q3695082" depth="7" />
+   <type11:WikiDataHyponym xmi:id="14970" sofa="11659" begin="356" end="358" id="Q7184903" depth="5" />
+   <type11:WikiDataHyponym xmi:id="14991" sofa="11659" begin="356" end="358" id="Q386724" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14984" sofa="11659" begin="356" end="358" id="Q35120" depth="7" />
+   <type11:WikiDataHyponym xmi:id="14977" sofa="11659" begin="356" end="358" id="Q16686448" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14963" sofa="11659" begin="356" end="358" id="Q7184903" depth="7" />
+   <type11:WikiDataHyponym xmi:id="14956" sofa="11659" begin="356" end="358" id="Q7184903" depth="9" />
+   <type11:WikiDataHyponym xmi:id="14949" sofa="11659" begin="356" end="358" id="Q9081" depth="8" />
+   <type11:WikiDataHyponym xmi:id="14935" sofa="11659" begin="356" end="358" id="Q151885" depth="9" />
+   <type11:WikiDataHyponym xmi:id="14998" sofa="11659" begin="356" end="358" id="Q58778" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14711" sofa="11659" begin="799" end="818" id="Q488383" depth="6" />
+   <type11:WikiDataHyponym xmi:id="14725" sofa="11659" begin="799" end="818" id="Q18479330" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14718" sofa="11659" begin="799" end="818" id="Q1272626" depth="10" />
+   <type11:WikiDataHyponym xmi:id="14746" sofa="11659" begin="799" end="818" id="Q697117" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="14774" sofa="11659" begin="799" end="818" id="Q3505845" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14802" sofa="11659" begin="799" end="818" id="Q11028" depth="8" />
+   <type11:WikiDataHyponym xmi:id="14830" sofa="11659" begin="799" end="818" id="Q1149305" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14844" sofa="11659" begin="799" end="818" id="Q151885" depth="8" />
+   <type11:WikiDataHyponym xmi:id="14837" sofa="11659" begin="799" end="818" id="Q2057971" depth="0" />
+   <type11:WikiDataHyponym xmi:id="14823" sofa="11659" begin="799" end="818" id="Q488383" depth="7" />
+   <type11:WikiDataHyponym xmi:id="14816" sofa="11659" begin="799" end="818" id="Q621184" depth="1" />
+   <type11:WikiDataHyponym xmi:id="14809" sofa="11659" begin="799" end="818" id="Q58778" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14795" sofa="11659" begin="799" end="818" id="Q853614" depth="5" />
+   <type11:WikiDataHyponym xmi:id="14788" sofa="11659" begin="799" end="818" id="Q35120" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14781" sofa="11659" begin="799" end="818" id="Q17553950" depth="7" />
+   <type11:WikiDataHyponym xmi:id="14767" sofa="11659" begin="799" end="818" id="Q714737" depth="5" />
+   <type11:WikiDataHyponym xmi:id="14760" sofa="11659" begin="799" end="818" id="Q7184903" depth="5" />
+   <type11:WikiDataHyponym xmi:id="14753" sofa="11659" begin="799" end="818" id="Q7189713" depth="1" />
+   <type11:WikiDataHyponym xmi:id="14739" sofa="11659" begin="799" end="818" id="Q937228" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14732" sofa="11659" begin="799" end="818" id="Q7184903" depth="9" />
+   <type11:WikiDataHyponym xmi:id="14858" sofa="11659" begin="799" end="818" id="Q9081" depth="7" />
+   <type11:WikiDataHyponym xmi:id="14872" sofa="11659" begin="799" end="818" id="Q7184903" depth="6" />
+   <type11:WikiDataHyponym xmi:id="14886" sofa="11659" begin="799" end="818" id="Q2145290" depth="9" />
+   <type11:WikiDataHyponym xmi:id="14900" sofa="11659" begin="799" end="818" id="Q11028" depth="7" />
+   <type11:WikiDataHyponym xmi:id="14893" sofa="11659" begin="799" end="818" id="Q35120" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14879" sofa="11659" begin="799" end="818" id="Q35120" depth="8" />
+   <type11:WikiDataHyponym xmi:id="14865" sofa="11659" begin="799" end="818" id="Q7184903" depth="8" />
+   <type11:WikiDataHyponym xmi:id="14851" sofa="11659" begin="799" end="818" id="Q3695082" depth="6" />
+   <type11:WikiDataHyponym xmi:id="14704" sofa="11659" begin="837" end="846" id="Q427157" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="12737" sofa="11659" begin="939" end="949" id="Q1128996" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="12744" sofa="11659" begin="1006" end="1017" id="Q488383" depth="10" />
+   <type11:WikiDataHyponym xmi:id="13003" sofa="11659" begin="1006" end="1017" id="Q16889133" depth="0" />
+   <type11:WikiDataHyponym xmi:id="12856" sofa="11659" begin="1006" end="1017" id="Q24034552" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12863" sofa="11659" begin="1006" end="1017" id="Q11028" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12870" sofa="11659" begin="1006" end="1017" id="Q11028" depth="10" />
+   <type11:WikiDataHyponym xmi:id="12884" sofa="11659" begin="1006" end="1017" id="Q488383" depth="7" />
+   <type11:WikiDataHyponym xmi:id="12891" sofa="11659" begin="1006" end="1017" id="Q937228" depth="7" />
+   <type11:WikiDataHyponym xmi:id="12898" sofa="11659" begin="1006" end="1017" id="Q1272626" depth="9" />
+   <type11:WikiDataHyponym xmi:id="12905" sofa="11659" begin="1006" end="1017" id="Q494756" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12912" sofa="11659" begin="1006" end="1017" id="Q853614" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12919" sofa="11659" begin="1006" end="1017" id="Q21146257" depth="3" />
+   <type11:WikiDataHyponym xmi:id="12926" sofa="11659" begin="1006" end="1017" id="Q246672" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12940" sofa="11659" begin="1006" end="1017" id="Q17008256" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12947" sofa="11659" begin="1006" end="1017" id="Q7184903" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12954" sofa="11659" begin="1006" end="1017" id="Q714737" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12961" sofa="11659" begin="1006" end="1017" id="Q35120" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12968" sofa="11659" begin="1006" end="1017" id="Q11028" depth="11" />
+   <type11:WikiDataHyponym xmi:id="12975" sofa="11659" begin="1006" end="1017" id="Q16889133" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12982" sofa="11659" begin="1006" end="1017" id="Q17553950" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12996" sofa="11659" begin="1006" end="1017" id="Q35120" depth="2" />
+   <type11:WikiDataHyponym xmi:id="12989" sofa="11659" begin="1006" end="1017" id="Q5469988" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12933" sofa="11659" begin="1006" end="1017" id="Q7184903" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12877" sofa="11659" begin="1006" end="1017" id="Q4393498" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12800" sofa="11659" begin="1006" end="1017" id="Q3695082" depth="9" />
+   <type11:WikiDataHyponym xmi:id="12807" sofa="11659" begin="1006" end="1017" id="Q23956024" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12814" sofa="11659" begin="1006" end="1017" id="Q217594" depth="5" />
+   <type11:WikiDataHyponym xmi:id="12821" sofa="11659" begin="1006" end="1017" id="Q35120" depth="9" />
+   <type11:WikiDataHyponym xmi:id="12828" sofa="11659" begin="1006" end="1017" id="Q327663" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="12835" sofa="11659" begin="1006" end="1017" id="Q36161" depth="4" />
+   <type11:WikiDataHyponym xmi:id="12842" sofa="11659" begin="1006" end="1017" id="Q151885" depth="11" />
+   <type11:WikiDataHyponym xmi:id="12849" sofa="11659" begin="1006" end="1017" id="Q2145290" depth="8" />
+   <type11:WikiDataHyponym xmi:id="12772" sofa="11659" begin="1006" end="1017" id="Q42848" depth="7" />
+   <type11:WikiDataHyponym xmi:id="12779" sofa="11659" begin="1006" end="1017" id="Q5127848" depth="1" />
+   <type11:WikiDataHyponym xmi:id="12786" sofa="11659" begin="1006" end="1017" id="Q151885" depth="7" />
+   <type11:WikiDataHyponym xmi:id="12793" sofa="11659" begin="1006" end="1017" id="Q7184903" depth="9" />
+   <type11:WikiDataHyponym xmi:id="12758" sofa="11659" begin="1006" end="1017" id="Q246672" depth="6" />
+   <type11:WikiDataHyponym xmi:id="12765" sofa="11659" begin="1006" end="1017" id="Q9081" depth="10" />
+   <type11:WikiDataHyponym xmi:id="12751" sofa="11659" begin="1006" end="1017" id="Q16887380" depth="2" />
+   <type11:WikiDataHyponym xmi:id="13010" sofa="11659" begin="1050" end="1061" id="Q488383" depth="7" />
+   <type11:WikiDataHyponym xmi:id="13080" sofa="11659" begin="1050" end="1061" id="Q27043948" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13087" sofa="11659" begin="1050" end="1061" id="Q15989253" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13094" sofa="11659" begin="1050" end="1061" id="Q16686022" depth="1" />
+   <type11:WikiDataHyponym xmi:id="13108" sofa="11659" begin="1050" end="1061" id="Q35120" depth="5" />
+   <type11:WikiDataHyponym xmi:id="13115" sofa="11659" begin="1050" end="1061" id="Q15710813" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13122" sofa="11659" begin="1050" end="1061" id="Q35120" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13129" sofa="11659" begin="1050" end="1061" id="Q2145290" depth="6" />
+   <type11:WikiDataHyponym xmi:id="13136" sofa="11659" begin="1050" end="1061" id="Q6671777" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13143" sofa="11659" begin="1050" end="1061" id="Q25615" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="13150" sofa="11659" begin="1050" end="1061" id="Q17553950" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13101" sofa="11659" begin="1050" end="1061" id="Q223557" depth="2" />
+   <type11:WikiDataHyponym xmi:id="13045" sofa="11659" begin="1050" end="1061" id="Q27043950" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13052" sofa="11659" begin="1050" end="1061" id="Q7184903" depth="6" />
+   <type11:WikiDataHyponym xmi:id="13059" sofa="11659" begin="1050" end="1061" id="Q4503801" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13066" sofa="11659" begin="1050" end="1061" id="Q27062218" depth="1" />
+   <type11:WikiDataHyponym xmi:id="13073" sofa="11659" begin="1050" end="1061" id="Q4936952" depth="2" />
+   <type11:WikiDataHyponym xmi:id="13031" sofa="11659" begin="1050" end="1061" id="Q151885" depth="5" />
+   <type11:WikiDataHyponym xmi:id="13038" sofa="11659" begin="1050" end="1061" id="Q40397" depth="0" />
+   <type11:WikiDataHyponym xmi:id="13024" sofa="11659" begin="1050" end="1061" id="Q488383" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13017" sofa="11659" begin="1050" end="1061" id="Q1272626" depth="7" />
+   <type11:WikiDataHyponym xmi:id="13157" sofa="11659" begin="1155" end="1166" id="Q1190554" depth="6" />
+   <type11:WikiDataHyponym xmi:id="13241" sofa="11659" begin="1155" end="1166" id="Q35120" depth="7" />
+   <type11:WikiDataHyponym xmi:id="13248" sofa="11659" begin="1155" end="1166" id="Q3249551" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13255" sofa="11659" begin="1155" end="1166" id="Q14859560" depth="2" />
+   <type11:WikiDataHyponym xmi:id="13199" sofa="11659" begin="1155" end="1166" id="Q1190554" depth="5" />
+   <type11:WikiDataHyponym xmi:id="13206" sofa="11659" begin="1155" end="1166" id="Q1509074" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="13213" sofa="11659" begin="1155" end="1166" id="Q4026292" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13220" sofa="11659" begin="1155" end="1166" id="Q26907166" depth="6" />
+   <type11:WikiDataHyponym xmi:id="13227" sofa="11659" begin="1155" end="1166" id="Q9332" depth="6" />
+   <type11:WikiDataHyponym xmi:id="13234" sofa="11659" begin="1155" end="1166" id="Q9332" depth="5" />
+   <type11:WikiDataHyponym xmi:id="13178" sofa="11659" begin="1155" end="1166" id="Q1914636" depth="5" />
+   <type11:WikiDataHyponym xmi:id="13185" sofa="11659" begin="1155" end="1166" id="Q14819463" depth="0" />
+   <type11:WikiDataHyponym xmi:id="13192" sofa="11659" begin="1155" end="1166" id="Q14819911" depth="1" />
+   <type11:WikiDataHyponym xmi:id="13171" sofa="11659" begin="1155" end="1166" id="Q2996394" depth="6" />
+   <type11:WikiDataHyponym xmi:id="13164" sofa="11659" begin="1155" end="1166" id="Q2996394" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13262" sofa="11659" begin="1168" end="1179" id="Q1914636" depth="0" />
+   <type11:WikiDataHyponym xmi:id="13304" sofa="11659" begin="1168" end="1179" id="Q26907166" depth="2" />
+   <type11:WikiDataHyponym xmi:id="13311" sofa="11659" begin="1168" end="1179" id="Q9332" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13318" sofa="11659" begin="1168" end="1179" id="Q9332" depth="1" />
+   <type11:WikiDataHyponym xmi:id="13332" sofa="11659" begin="1168" end="1179" id="Q3249551" depth="0" />
+   <type11:WikiDataHyponym xmi:id="13339" sofa="11659" begin="1168" end="1179" id="Q3249551" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13346" sofa="11659" begin="1168" end="1179" id="Q4026292" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13325" sofa="11659" begin="1168" end="1179" id="Q35120" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13283" sofa="11659" begin="1168" end="1179" id="Q1190554" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13290" sofa="11659" begin="1168" end="1179" id="Q2996394" depth="2" />
+   <type11:WikiDataHyponym xmi:id="13297" sofa="11659" begin="1168" end="1179" id="Q1270448" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="13276" sofa="11659" begin="1168" end="1179" id="Q1190554" depth="1" />
+   <type11:WikiDataHyponym xmi:id="13269" sofa="11659" begin="1168" end="1179" id="Q1914636" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13353" sofa="11659" begin="1243" end="1261" id="Q185917" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="13360" sofa="11659" begin="1274" end="1293" id="Q258658" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="13367" sofa="11659" begin="1325" end="1342" id="Q898362" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="13374" sofa="11659" begin="1509" end="1525" id="Q58778" depth="9" />
+   <type11:WikiDataHyponym xmi:id="13577" sofa="11659" begin="1509" end="1525" id="Q18479330" depth="7" />
+   <type11:WikiDataHyponym xmi:id="13584" sofa="11659" begin="1509" end="1525" id="Q1149305" depth="7" />
+   <type11:WikiDataHyponym xmi:id="13591" sofa="11659" begin="1509" end="1525" id="Q2057971" depth="5" />
+   <type11:WikiDataHyponym xmi:id="13598" sofa="11659" begin="1509" end="1525" id="Q11028" depth="13" />
+   <type11:WikiDataHyponym xmi:id="13472" sofa="11659" begin="1509" end="1525" id="Q853614" depth="10" />
+   <type11:WikiDataHyponym xmi:id="13479" sofa="11659" begin="1509" end="1525" id="Q937228" depth="9" />
+   <type11:WikiDataHyponym xmi:id="13486" sofa="11659" begin="1509" end="1525" id="Q18557436" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13493" sofa="11659" begin="1509" end="1525" id="Q488383" depth="11" />
+   <type11:WikiDataHyponym xmi:id="13500" sofa="11659" begin="1509" end="1525" id="Q17553950" depth="12" />
+   <type11:WikiDataHyponym xmi:id="13507" sofa="11659" begin="1509" end="1525" id="Q7184903" depth="14" />
+   <type11:WikiDataHyponym xmi:id="13514" sofa="11659" begin="1509" end="1525" id="Q7189713" depth="6" />
+   <type11:WikiDataHyponym xmi:id="13521" sofa="11659" begin="1509" end="1525" id="Q7184903" depth="10" />
+   <type11:WikiDataHyponym xmi:id="13528" sofa="11659" begin="1509" end="1525" id="Q7554046" depth="1" />
+   <type11:WikiDataHyponym xmi:id="13535" sofa="11659" begin="1509" end="1525" id="Q3505845" depth="8" />
+   <type11:WikiDataHyponym xmi:id="13542" sofa="11659" begin="1509" end="1525" id="Q621184" depth="6" />
+   <type11:WikiDataHyponym xmi:id="13556" sofa="11659" begin="1509" end="1525" id="Q35120" depth="8" />
+   <type11:WikiDataHyponym xmi:id="13563" sofa="11659" begin="1509" end="1525" id="Q714737" depth="10" />
+   <type11:WikiDataHyponym xmi:id="13570" sofa="11659" begin="1509" end="1525" id="Q1410851" depth="0" />
+   <type11:WikiDataHyponym xmi:id="13549" sofa="11659" begin="1509" end="1525" id="Q4116663" depth="2" />
+   <type11:WikiDataHyponym xmi:id="13423" sofa="11659" begin="1509" end="1525" id="Q35120" depth="13" />
+   <type11:WikiDataHyponym xmi:id="13430" sofa="11659" begin="1509" end="1525" id="Q151885" depth="13" />
+   <type11:WikiDataHyponym xmi:id="13437" sofa="11659" begin="1509" end="1525" id="Q35120" depth="7" />
+   <type11:WikiDataHyponym xmi:id="13444" sofa="11659" begin="1509" end="1525" id="Q11028" depth="12" />
+   <type11:WikiDataHyponym xmi:id="13451" sofa="11659" begin="1509" end="1525" id="Q12136" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13458" sofa="11659" begin="1509" end="1525" id="Q1272626" depth="15" />
+   <type11:WikiDataHyponym xmi:id="13465" sofa="11659" begin="1509" end="1525" id="Q1330254" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="13402" sofa="11659" begin="1509" end="1525" id="Q7184903" depth="13" />
+   <type11:WikiDataHyponym xmi:id="13409" sofa="11659" begin="1509" end="1525" id="Q7184903" depth="11" />
+   <type11:WikiDataHyponym xmi:id="13416" sofa="11659" begin="1509" end="1525" id="Q3695082" depth="11" />
+   <type11:WikiDataHyponym xmi:id="13388" sofa="11659" begin="1509" end="1525" id="Q488383" depth="12" />
+   <type11:WikiDataHyponym xmi:id="13395" sofa="11659" begin="1509" end="1525" id="Q9081" depth="12" />
+   <type11:WikiDataHyponym xmi:id="13381" sofa="11659" begin="1509" end="1525" id="Q2145290" depth="14" />
+   <type11:WikiDataHyponym xmi:id="13605" sofa="11659" begin="1600" end="1611" id="Q1417728" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="13612" sofa="11659" begin="1631" end="1637" id="Q853614" depth="11" />
+   <type11:WikiDataHyponym xmi:id="13850" sofa="11659" begin="1631" end="1637" id="Q206921" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="13857" sofa="11659" begin="1631" end="1637" id="Q488383" depth="5" />
+   <type11:WikiDataHyponym xmi:id="13864" sofa="11659" begin="1631" end="1637" id="Q43229" depth="1" />
+   <type11:WikiDataHyponym xmi:id="13871" sofa="11659" begin="1631" end="1637" id="Q9081" depth="13" />
+   <type11:WikiDataHyponym xmi:id="13878" sofa="11659" begin="1631" end="1637" id="Q5469988" depth="8" />
+   <type11:WikiDataHyponym xmi:id="13892" sofa="11659" begin="1631" end="1637" id="Q42848" depth="10" />
+   <type11:WikiDataHyponym xmi:id="13899" sofa="11659" begin="1631" end="1637" id="Q151885" depth="10" />
+   <type11:WikiDataHyponym xmi:id="13906" sofa="11659" begin="1631" end="1637" id="Q23956024" depth="8" />
+   <type11:WikiDataHyponym xmi:id="13913" sofa="11659" begin="1631" end="1637" id="Q21146257" depth="9" />
+   <type11:WikiDataHyponym xmi:id="13920" sofa="11659" begin="1631" end="1637" id="Q16334295" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13927" sofa="11659" begin="1631" end="1637" id="Q36161" depth="7" />
+   <type11:WikiDataHyponym xmi:id="13934" sofa="11659" begin="1631" end="1637" id="Q151885" depth="14" />
+   <type11:WikiDataHyponym xmi:id="13948" sofa="11659" begin="1631" end="1637" id="Q24034552" depth="9" />
+   <type11:WikiDataHyponym xmi:id="13955" sofa="11659" begin="1631" end="1637" id="Q11028" depth="13" />
+   <type11:WikiDataHyponym xmi:id="13962" sofa="11659" begin="1631" end="1637" id="Q58778" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13941" sofa="11659" begin="1631" end="1637" id="Q217594" depth="8" />
+   <type11:WikiDataHyponym xmi:id="13885" sofa="11659" begin="1631" end="1637" id="Q246672" depth="9" />
+   <type11:WikiDataHyponym xmi:id="13724" sofa="11659" begin="1631" end="1637" id="Q3695082" depth="12" />
+   <type11:WikiDataHyponym xmi:id="13731" sofa="11659" begin="1631" end="1637" id="Q7184903" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13738" sofa="11659" begin="1631" end="1637" id="Q35120" depth="8" />
+   <type11:WikiDataHyponym xmi:id="13745" sofa="11659" begin="1631" end="1637" id="Q17553950" depth="6" />
+   <type11:WikiDataHyponym xmi:id="13752" sofa="11659" begin="1631" end="1637" id="Q11028" depth="11" />
+   <type11:WikiDataHyponym xmi:id="13759" sofa="11659" begin="1631" end="1637" id="Q16889133" depth="6" />
+   <type11:WikiDataHyponym xmi:id="13766" sofa="11659" begin="1631" end="1637" id="Q517966" depth="5" />
+   <type11:WikiDataHyponym xmi:id="13780" sofa="11659" begin="1631" end="1637" id="Q1272626" depth="12" />
+   <type11:WikiDataHyponym xmi:id="13787" sofa="11659" begin="1631" end="1637" id="Q7184903" depth="9" />
+   <type11:WikiDataHyponym xmi:id="13794" sofa="11659" begin="1631" end="1637" id="Q16887380" depth="8" />
+   <type11:WikiDataHyponym xmi:id="13801" sofa="11659" begin="1631" end="1637" id="Q16334298" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13808" sofa="11659" begin="1631" end="1637" id="Q17519152" depth="5" />
+   <type11:WikiDataHyponym xmi:id="13815" sofa="11659" begin="1631" end="1637" id="Q4830453" depth="0" />
+   <type11:WikiDataHyponym xmi:id="13822" sofa="11659" begin="1631" end="1637" id="Q714737" depth="11" />
+   <type11:WikiDataHyponym xmi:id="13829" sofa="11659" begin="1631" end="1637" id="Q35120" depth="7" />
+   <type11:WikiDataHyponym xmi:id="13836" sofa="11659" begin="1631" end="1637" id="Q35120" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13843" sofa="11659" begin="1631" end="1637" id="Q488383" depth="13" />
+   <type11:WikiDataHyponym xmi:id="13773" sofa="11659" begin="1631" end="1637" id="Q18844919" depth="6" />
+   <type11:WikiDataHyponym xmi:id="13668" sofa="11659" begin="1631" end="1637" id="Q874405" depth="2" />
+   <type11:WikiDataHyponym xmi:id="13675" sofa="11659" begin="1631" end="1637" id="Q35120" depth="9" />
+   <type11:WikiDataHyponym xmi:id="13682" sofa="11659" begin="1631" end="1637" id="Q17008256" depth="8" />
+   <type11:WikiDataHyponym xmi:id="13689" sofa="11659" begin="1631" end="1637" id="Q16889133" depth="9" />
+   <type11:WikiDataHyponym xmi:id="13696" sofa="11659" begin="1631" end="1637" id="Q24229398" depth="2" />
+   <type11:WikiDataHyponym xmi:id="13703" sofa="11659" begin="1631" end="1637" id="Q11028" depth="14" />
+   <type11:WikiDataHyponym xmi:id="13710" sofa="11659" begin="1631" end="1637" id="Q2145290" depth="11" />
+   <type11:WikiDataHyponym xmi:id="13717" sofa="11659" begin="1631" end="1637" id="Q7184903" depth="12" />
+   <type11:WikiDataHyponym xmi:id="13640" sofa="11659" begin="1631" end="1637" id="Q246672" depth="8" />
+   <type11:WikiDataHyponym xmi:id="13647" sofa="11659" begin="1631" end="1637" id="Q937228" depth="10" />
+   <type11:WikiDataHyponym xmi:id="13654" sofa="11659" begin="1631" end="1637" id="Q7184903" depth="11" />
+   <type11:WikiDataHyponym xmi:id="13661" sofa="11659" begin="1631" end="1637" id="Q36161" depth="10" />
+   <type11:WikiDataHyponym xmi:id="13626" sofa="11659" begin="1631" end="1637" id="Q4393498" depth="9" />
+   <type11:WikiDataHyponym xmi:id="13633" sofa="11659" begin="1631" end="1637" id="Q5127848" depth="7" />
+   <type11:WikiDataHyponym xmi:id="13619" sofa="11659" begin="1631" end="1637" id="Q494756" depth="9" />
+   <type11:WikiDataHyponym xmi:id="13969" sofa="11659" begin="2065" end="2068" id="Q11028" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14039" sofa="11659" begin="2065" end="2068" id="Q7184903" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14046" sofa="11659" begin="2065" end="2068" id="Q35120" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14053" sofa="11659" begin="2065" end="2068" id="Q2145290" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14060" sofa="11659" begin="2065" end="2068" id="Q17553950" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14067" sofa="11659" begin="2065" end="2068" id="Q853614" depth="0" />
+   <type11:WikiDataHyponym xmi:id="14004" sofa="11659" begin="2065" end="2068" id="Q488383" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14011" sofa="11659" begin="2065" end="2068" id="Q151885" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14018" sofa="11659" begin="2065" end="2068" id="Q25670" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="14025" sofa="11659" begin="2065" end="2068" id="Q9081" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14032" sofa="11659" begin="2065" end="2068" id="Q7184903" depth="3" />
+   <type11:WikiDataHyponym xmi:id="13990" sofa="11659" begin="2065" end="2068" id="Q1272626" depth="5" />
+   <type11:WikiDataHyponym xmi:id="13997" sofa="11659" begin="2065" end="2068" id="Q488383" depth="4" />
+   <type11:WikiDataHyponym xmi:id="13983" sofa="11659" begin="2065" end="2068" id="Q11028" depth="2" />
+   <type11:WikiDataHyponym xmi:id="13976" sofa="11659" begin="2065" end="2068" id="Q3695082" depth="1" />
+   <type11:WikiDataHyponym xmi:id="14074" sofa="11659" begin="2430" end="2433" id="Q11028" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14144" sofa="11659" begin="2430" end="2433" id="Q7184903" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14151" sofa="11659" begin="2430" end="2433" id="Q35120" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14158" sofa="11659" begin="2430" end="2433" id="Q2145290" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14165" sofa="11659" begin="2430" end="2433" id="Q17553950" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14172" sofa="11659" begin="2430" end="2433" id="Q853614" depth="0" />
+   <type11:WikiDataHyponym xmi:id="14109" sofa="11659" begin="2430" end="2433" id="Q488383" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14116" sofa="11659" begin="2430" end="2433" id="Q151885" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14123" sofa="11659" begin="2430" end="2433" id="Q25670" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="14130" sofa="11659" begin="2430" end="2433" id="Q9081" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14137" sofa="11659" begin="2430" end="2433" id="Q7184903" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14095" sofa="11659" begin="2430" end="2433" id="Q1272626" depth="5" />
+   <type11:WikiDataHyponym xmi:id="14102" sofa="11659" begin="2430" end="2433" id="Q488383" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14088" sofa="11659" begin="2430" end="2433" id="Q11028" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14081" sofa="11659" begin="2430" end="2433" id="Q3695082" depth="1" />
+   <type11:WikiDataHyponym xmi:id="14179" sofa="11659" begin="2750" end="2753" id="Q11028" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14256" sofa="11659" begin="2750" end="2753" id="Q35120" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14263" sofa="11659" begin="2750" end="2753" id="Q2145290" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14270" sofa="11659" begin="2750" end="2753" id="Q17553950" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14277" sofa="11659" begin="2750" end="2753" id="Q853614" depth="0" />
+   <type11:WikiDataHyponym xmi:id="14214" sofa="11659" begin="2750" end="2753" id="Q488383" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14228" sofa="11659" begin="2750" end="2753" id="Q25670" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="14235" sofa="11659" begin="2750" end="2753" id="Q9081" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14242" sofa="11659" begin="2750" end="2753" id="Q7184903" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14249" sofa="11659" begin="2750" end="2753" id="Q7184903" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14221" sofa="11659" begin="2750" end="2753" id="Q151885" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14200" sofa="11659" begin="2750" end="2753" id="Q1272626" depth="5" />
+   <type11:WikiDataHyponym xmi:id="14207" sofa="11659" begin="2750" end="2753" id="Q488383" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14193" sofa="11659" begin="2750" end="2753" id="Q11028" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14186" sofa="11659" begin="2750" end="2753" id="Q3695082" depth="1" />
+   <type11:WikiDataHyponym xmi:id="14284" sofa="11659" begin="2902" end="2967" id="Q488383" depth="6" />
+   <type11:WikiDataHyponym xmi:id="14620" sofa="11659" begin="2902" end="2967" id="Q517966" depth="6" />
+   <type11:WikiDataHyponym xmi:id="14627" sofa="11659" begin="2902" end="2967" id="Q1272626" depth="13" />
+   <type11:WikiDataHyponym xmi:id="14634" sofa="11659" begin="2902" end="2967" id="Q853614" depth="12" />
+   <type11:WikiDataHyponym xmi:id="14641" sofa="11659" begin="2902" end="2967" id="Q5127848" depth="8" />
+   <type11:WikiDataHyponym xmi:id="14648" sofa="11659" begin="2902" end="2967" id="Q246672" depth="9" />
+   <type11:WikiDataHyponym xmi:id="14655" sofa="11659" begin="2902" end="2967" id="Q174834" depth="1" />
+   <type11:WikiDataHyponym xmi:id="14662" sofa="11659" begin="2902" end="2967" id="Q7184903" depth="10" />
+   <type11:WikiDataHyponym xmi:id="14676" sofa="11659" begin="2902" end="2967" id="Q36161" depth="11" />
+   <type11:WikiDataHyponym xmi:id="14683" sofa="11659" begin="2902" end="2967" id="Q895526" depth="1" />
+   <type11:WikiDataHyponym xmi:id="14690" sofa="11659" begin="2902" end="2967" id="Q35120" depth="10" />
+   <type11:WikiDataHyponym xmi:id="14697" sofa="11659" begin="2902" end="2967" id="Q488383" depth="14" />
+   <type11:WikiDataHyponym xmi:id="14669" sofa="11659" begin="2902" end="2967" id="Q16887380" depth="9" />
+   <type11:WikiDataHyponym xmi:id="14613" sofa="11659" begin="2902" end="2967" id="Q24034552" depth="10" />
+   <type11:WikiDataHyponym xmi:id="14438" sofa="11659" begin="2902" end="2967" id="Q11028" depth="15" />
+   <type11:WikiDataHyponym xmi:id="14452" sofa="11659" begin="2902" end="2967" id="Q35120" depth="8" />
+   <type11:WikiDataHyponym xmi:id="14459" sofa="11659" begin="2902" end="2967" id="Q17519152" depth="6" />
+   <type11:WikiDataHyponym xmi:id="14466" sofa="11659" begin="2902" end="2967" id="Q24229398" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14473" sofa="11659" begin="2902" end="2967" id="Q714737" depth="12" />
+   <type11:WikiDataHyponym xmi:id="14480" sofa="11659" begin="2902" end="2967" id="Q35120" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14487" sofa="11659" begin="2902" end="2967" id="Q4146613" depth="1" />
+   <type11:WikiDataHyponym xmi:id="14494" sofa="11659" begin="2902" end="2967" id="Q737480" depth="-1" />
+   <type11:WikiDataHyponym xmi:id="14501" sofa="11659" begin="2902" end="2967" id="Q2145290" depth="12" />
+   <type11:WikiDataHyponym xmi:id="14508" sofa="11659" begin="2902" end="2967" id="Q246672" depth="10" />
+   <type11:WikiDataHyponym xmi:id="14515" sofa="11659" begin="2902" end="2967" id="Q43229" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14522" sofa="11659" begin="2902" end="2967" id="Q5469988" depth="9" />
+   <type11:WikiDataHyponym xmi:id="14529" sofa="11659" begin="2902" end="2967" id="Q7184903" depth="13" />
+   <type11:WikiDataHyponym xmi:id="14536" sofa="11659" begin="2902" end="2967" id="Q42848" depth="11" />
+   <type11:WikiDataHyponym xmi:id="14543" sofa="11659" begin="2902" end="2967" id="Q7184903" depth="5" />
+   <type11:WikiDataHyponym xmi:id="14550" sofa="11659" begin="2902" end="2967" id="Q36161" depth="8" />
+   <type11:WikiDataHyponym xmi:id="14564" sofa="11659" begin="2902" end="2967" id="Q151885" depth="15" />
+   <type11:WikiDataHyponym xmi:id="14571" sofa="11659" begin="2902" end="2967" id="Q25107" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14578" sofa="11659" begin="2902" end="2967" id="Q217594" depth="9" />
+   <type11:WikiDataHyponym xmi:id="14585" sofa="11659" begin="2902" end="2967" id="Q151885" depth="11" />
+   <type11:WikiDataHyponym xmi:id="14592" sofa="11659" begin="2902" end="2967" id="Q11028" depth="12" />
+   <type11:WikiDataHyponym xmi:id="14599" sofa="11659" begin="2902" end="2967" id="Q16889133" depth="7" />
+   <type11:WikiDataHyponym xmi:id="14606" sofa="11659" begin="2902" end="2967" id="Q58778" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14557" sofa="11659" begin="2902" end="2967" id="Q16334295" depth="4" />
+   <type11:WikiDataHyponym xmi:id="14445" sofa="11659" begin="2902" end="2967" id="Q16889133" depth="10" />
+   <type11:WikiDataHyponym xmi:id="14361" sofa="11659" begin="2902" end="2967" id="Q11028" depth="14" />
+   <type11:WikiDataHyponym xmi:id="14368" sofa="11659" begin="2902" end="2967" id="Q494756" depth="10" />
+   <type11:WikiDataHyponym xmi:id="14375" sofa="11659" begin="2902" end="2967" id="Q4393498" depth="10" />
+   <type11:WikiDataHyponym xmi:id="14382" sofa="11659" begin="2902" end="2967" id="Q937228" depth="11" />
+   <type11:WikiDataHyponym xmi:id="14389" sofa="11659" begin="2902" end="2967" id="Q2101636" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14396" sofa="11659" begin="2902" end="2967" id="Q7184903" depth="12" />
+   <type11:WikiDataHyponym xmi:id="14403" sofa="11659" begin="2902" end="2967" id="Q16334298" depth="5" />
+   <type11:WikiDataHyponym xmi:id="14410" sofa="11659" begin="2902" end="2967" id="Q25107" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14417" sofa="11659" begin="2902" end="2967" id="Q17008256" depth="9" />
+   <type11:WikiDataHyponym xmi:id="14424" sofa="11659" begin="2902" end="2967" id="Q874405" depth="3" />
+   <type11:WikiDataHyponym xmi:id="14431" sofa="11659" begin="2902" end="2967" id="Q15708736" depth="0" />
+   <type11:WikiDataHyponym xmi:id="14326" sofa="11659" begin="2902" end="2967" id="Q3695082" depth="13" />
+   <type11:WikiDataHyponym xmi:id="14333" sofa="11659" begin="2902" end="2967" id="Q895526" depth="0" />
+   <type11:WikiDataHyponym xmi:id="14340" sofa="11659" begin="2902" end="2967" id="Q35120" depth="9" />
+   <type11:WikiDataHyponym xmi:id="14347" sofa="11659" begin="2902" end="2967" id="Q17553950" depth="7" />
+   <type11:WikiDataHyponym xmi:id="14354" sofa="11659" begin="2902" end="2967" id="Q18844919" depth="7" />
+   <type11:WikiDataHyponym xmi:id="14305" sofa="11659" begin="2902" end="2967" id="Q23956024" depth="9" />
+   <type11:WikiDataHyponym xmi:id="14312" sofa="11659" begin="2902" end="2967" id="Q174834" depth="2" />
+   <type11:WikiDataHyponym xmi:id="14319" sofa="11659" begin="2902" end="2967" id="Q21146257" depth="10" />
+   <type11:WikiDataHyponym xmi:id="14298" sofa="11659" begin="2902" end="2967" id="Q2101636" depth="1" />
+   <type11:WikiDataHyponym xmi:id="14291" sofa="11659" begin="2902" end="2967" id="Q9081" depth="14" />
+   <cas:Sofa xmi:id="11659" sofaNum="1" sofaID="_InitialView" mimeType="text" sofaString="Kollagenasen&amp;#10;&amp;#10;Als Kollagenasen werden Enzyme bezeichnet, welche die Peptidbindung zwischen Prolin und anderen Aminosäuren spalten. Damit sind diese Proteasen in der Lage, Kollagen abzubauen. Sie kommen in höheren Tieren (Coelomata), Bakterien und manchen Archaeen vor. Beim Menschen sind fünf Kollagenasen bekannt, die alle zu den Matrix-Metalloproteasen (EC 3.4.24.-) gehören:[1]&amp;#10;ProteinGen&amp;#10;(HGNC)UniProtLänge&amp;#10;(AA)BemerkungenInterstitielle KollagenaseMMP1P03956170, 200Spaltung in zwei Enzyme (22 kDa, 27 kDa); spaltet Kollagen I, II, III, VII und X, HIV-Protein TatGelatinase AMMP2P08253551ubiquitär; Torg-Winchester-Syndrom; spaltet Gelatin I, Kollagen IV, V, VII, XNeutrophile KollagenaseMMP8P22894367spaltet fibrilläres Kollagen I, II, IIIGelatinase BMMP9P14780(92, 82, 67 kDa)Anfälligkeit für Bandscheibenvorfall, Anadysplasie der Metaphyse; kleinere Enzymvarianten; spaltet Gelatin I, V und Kollagen IV, VKollagenase 3MMP13P45452368Dysplasien; spaltet Kollagen I&amp;#10;Mit Hilfe dieses Enzyms können sich Clostridien durch den Abbau von Kollagen im Bindegewebe besonders rasch ausbreiten. Umgekehrt wird Kollagenase aus Clostridien zur Unterstützung der Wundheilung (Débridement) verwendet.[2][3][4]&amp;#10;&amp;#10;Biosynthese&amp;#10;Kollagenasen der Wirbeltiere entstehen zunächst in Form von Präkursor-Proteinen als Prokollagenasen,[5] welche posttranslational vor Einsatz durch enzymatische Spaltung aktiviert werden müssen.&amp;#10;Morbus Dupuytren&amp;#10;Für die Behandlung der fibrotischen Stränge in der Hohlhand und an den Fingern beim Morbus Dupuytren wurde im Mai 2011 in der Europäischen Union eine Mikrobielle Kollagenase (Handelsname Xiapex; Hersteller Pfizer) zugelassen, das aus den zwei Kollagenase-Enzymen AUX I und AUX II des Bakteriums Clostridium histolyticum besteht, die bei Injektion in die Knoten diese auflösen können.&amp;#10;Literatur&amp;#10;J. Ramundo, M. Gray: Enzymatic wound debridement. In: Journal of wound, ostomy, and continence nursing : official publication of The Wound, Ostomy and Continence Nurses Society / WOCN. Band 35, Nummer 3, 2008 May-Jun, S. 273?280, ISSN 1071-5754. doi:10.1097/01.WON.0000319125.21854.78. PMID 18496083. (Review).&amp;#10;Einzelnachweise&amp;#10;^ UniProt Suchergebnis^ M. Pruteanu, N. P. Hyland u.a.: Degradation of the extracellular matrix components by bacterial-derived metalloproteases: implications for inflammatory bowel diseases. In: Inflammatory bowel diseases. Band 17, Nummer 5, Mai 2011, S. 1189?1200, ISSN 1536-4844. doi:10.1002/ibd.21475. PMID 20853433.^ J. Ramundo, M. Gray: Collagenase for enzymatic debridement: a systematic review. In: Journal of wound, ostomy, and continence nursing : official publication of The Wound, Ostomy and Continence Nurses Society / WOCN. Band 36, Nummer 6 Suppl, 2009 Nov-Dec, S. S4?11, ISSN 1528-3976. doi:10.1097/WON.0b013e3181bfdf83. PMID 19918148. (Review).^ Collagenase bei Dupuytren´scher Kontraktur: Zusatznutzen nicht belegt, Pressemitteilung des Instituts für Qualität und Wirtschaftlichkeit im Gesundheitswesen vom 1. Januar 2012.^ Edward J. Campbell, J. Davis Cury, Cathy J. Lazarus, and Howard G. Welgus: Monocyte procollagenase and tissue inhibitor metalloproteinases. Identification, characterization, and regulation.  (PDF) In: The Journal of Biological Chemistry. 262, Nr. 33,  25. November 1987, S. 15862-15868. Abgerufen am 3. März 2013.&amp;#10;&amp;#10;" />
+   <type4:TagDescription xmi:id="11666" name="$," />
+   <type4:TagDescription xmi:id="11668" name="$." />
+   <type4:TagDescription xmi:id="11670" name="$[" />
+   <type4:TagDescription xmi:id="11672" name=".$$." />
+   <type4:TagDescription xmi:id="11674" name="ADJA" />
+   <type4:TagDescription xmi:id="11676" name="ADJD" />
+   <type4:TagDescription xmi:id="11678" name="ADV" />
+   <type4:TagDescription xmi:id="11680" name="APPO" />
+   <type4:TagDescription xmi:id="11682" name="APPR" />
+   <type4:TagDescription xmi:id="11684" name="APPRART" />
+   <type4:TagDescription xmi:id="11686" name="APZR" />
+   <type4:TagDescription xmi:id="11688" name="ART" />
+   <type4:TagDescription xmi:id="11690" name="CARD" />
+   <type4:TagDescription xmi:id="11692" name="FM" />
+   <type4:TagDescription xmi:id="11694" name="ITJ" />
+   <type4:TagDescription xmi:id="11696" name="KOKOM" />
+   <type4:TagDescription xmi:id="11698" name="KON" />
+   <type4:TagDescription xmi:id="11700" name="KOUI" />
+   <type4:TagDescription xmi:id="11702" name="KOUS" />
+   <type4:TagDescription xmi:id="11704" name="NE" />
+   <type4:TagDescription xmi:id="11706" name="NN" />
+   <type4:TagDescription xmi:id="11708" name="PDAT" />
+   <type4:TagDescription xmi:id="11710" name="PDS" />
+   <type4:TagDescription xmi:id="11712" name="PIAT" />
+   <type4:TagDescription xmi:id="11714" name="PIDAT" />
+   <type4:TagDescription xmi:id="11716" name="PIS" />
+   <type4:TagDescription xmi:id="11718" name="PPER" />
+   <type4:TagDescription xmi:id="11720" name="PPOSAT" />
+   <type4:TagDescription xmi:id="11722" name="PPOSS" />
+   <type4:TagDescription xmi:id="11724" name="PRELAT" />
+   <type4:TagDescription xmi:id="11726" name="PRELS" />
+   <type4:TagDescription xmi:id="11728" name="PRF" />
+   <type4:TagDescription xmi:id="11730" name="PROAV" />
+   <type4:TagDescription xmi:id="11732" name="PTKA" />
+   <type4:TagDescription xmi:id="11734" name="PTKANT" />
+   <type4:TagDescription xmi:id="11736" name="PTKNEG" />
+   <type4:TagDescription xmi:id="11738" name="PTKVZ" />
+   <type4:TagDescription xmi:id="11740" name="PTKZU" />
+   <type4:TagDescription xmi:id="11742" name="PWAT" />
+   <type4:TagDescription xmi:id="11744" name="PWAV" />
+   <type4:TagDescription xmi:id="11746" name="PWS" />
+   <type4:TagDescription xmi:id="11748" name="TRUNC" />
+   <type4:TagDescription xmi:id="11750" name="VAFIN" />
+   <type4:TagDescription xmi:id="11752" name="VAIMP" />
+   <type4:TagDescription xmi:id="11754" name="VAINF" />
+   <type4:TagDescription xmi:id="11756" name="VAPP" />
+   <type4:TagDescription xmi:id="11758" name="VMFIN" />
+   <type4:TagDescription xmi:id="11760" name="VMINF" />
+   <type4:TagDescription xmi:id="11762" name="VMPP" />
+   <type4:TagDescription xmi:id="11764" name="VVFIN" />
+   <type4:TagDescription xmi:id="11766" name="VVIMP" />
+   <type4:TagDescription xmi:id="11768" name="VVINF" />
+   <type4:TagDescription xmi:id="11770" name="VVIZU" />
+   <type4:TagDescription xmi:id="11772" name="VVPP" />
+   <type4:TagDescription xmi:id="11774" name="XY" />
+   <type4:TagDescription xmi:id="11896" name="--" />
+   <type4:TagDescription xmi:id="11898" name="&amp;lt;None&amp;gt;" />
+   <type4:TagDescription xmi:id="11900" name="&amp;lt;no-type&amp;gt;" />
+   <type4:TagDescription xmi:id="11902" name="&amp;lt;root-type&amp;gt;" />
+   <type4:TagDescription xmi:id="11904" name="AC" />
+   <type4:TagDescription xmi:id="11906" name="ADC" />
+   <type4:TagDescription xmi:id="11908" name="AG" />
+   <type4:TagDescription xmi:id="11910" name="AMS" />
+   <type4:TagDescription xmi:id="11912" name="APP" />
+   <type4:TagDescription xmi:id="11914" name="AVC" />
+   <type4:TagDescription xmi:id="11916" name="CC" />
+   <type4:TagDescription xmi:id="11918" name="CD" />
+   <type4:TagDescription xmi:id="11920" name="CJ" />
+   <type4:TagDescription xmi:id="11922" name="CM" />
+   <type4:TagDescription xmi:id="11924" name="CP" />
+   <type4:TagDescription xmi:id="11926" name="CVC" />
+   <type4:TagDescription xmi:id="11928" name="DA" />
+   <type4:TagDescription xmi:id="11930" name="DM" />
+   <type4:TagDescription xmi:id="11932" name="END" />
+   <type4:TagDescription xmi:id="11934" name="EP" />
+   <type4:TagDescription xmi:id="11936" name="JU" />
+   <type4:TagDescription xmi:id="11938" name="MNR" />
+   <type4:TagDescription xmi:id="11940" name="MO" />
+   <type4:TagDescription xmi:id="11942" name="NG" />
+   <type4:TagDescription xmi:id="11944" name="NK" />
+   <type4:TagDescription xmi:id="11946" name="NMC" />
+   <type4:TagDescription xmi:id="11948" name="OA" />
+   <type4:TagDescription xmi:id="11950" name="OA2" />
+   <type4:TagDescription xmi:id="11952" name="OC" />
+   <type4:TagDescription xmi:id="11954" name="OG" />
+   <type4:TagDescription xmi:id="11956" name="OP" />
+   <type4:TagDescription xmi:id="11958" name="PAR" />
+   <type4:TagDescription xmi:id="11960" name="PD" />
+   <type4:TagDescription xmi:id="11962" name="PG" />
+   <type4:TagDescription xmi:id="11964" name="PH" />
+   <type4:TagDescription xmi:id="11966" name="PM" />
+   <type4:TagDescription xmi:id="11968" name="PNC" />
+   <type4:TagDescription xmi:id="11970" name="RC" />
+   <type4:TagDescription xmi:id="11972" name="RE" />
+   <type4:TagDescription xmi:id="11974" name="RS" />
+   <type4:TagDescription xmi:id="11976" name="SB" />
+   <type4:TagDescription xmi:id="11978" name="SBP" />
+   <type4:TagDescription xmi:id="11980" name="SP" />
+   <type4:TagDescription xmi:id="11982" name="SVP" />
+   <type4:TagDescription xmi:id="11984" name="UC" />
+   <type4:TagDescription xmi:id="11986" name="VO" />
+   <type4:TagDescription xmi:id="11776" name="$(" />
+   <type4:TagDescription xmi:id="11778" name="$," />
+   <type4:TagDescription xmi:id="11780" name="$." />
+   <type4:TagDescription xmi:id="11782" name="&amp;lt;None&amp;gt;" />
+   <type4:TagDescription xmi:id="11784" name="&amp;lt;root-POS&amp;gt;" />
+   <type4:TagDescription xmi:id="11786" name="ADJA" />
+   <type4:TagDescription xmi:id="11788" name="ADJD" />
+   <type4:TagDescription xmi:id="11790" name="ADV" />
+   <type4:TagDescription xmi:id="11792" name="APPO" />
+   <type4:TagDescription xmi:id="11794" name="APPR" />
+   <type4:TagDescription xmi:id="11796" name="APPRART" />
+   <type4:TagDescription xmi:id="11798" name="APZR" />
+   <type4:TagDescription xmi:id="11800" name="ART" />
+   <type4:TagDescription xmi:id="11802" name="CARD" />
+   <type4:TagDescription xmi:id="11804" name="END" />
+   <type4:TagDescription xmi:id="11806" name="FM" />
+   <type4:TagDescription xmi:id="11808" name="ITJ" />
+   <type4:TagDescription xmi:id="11810" name="KOKOM" />
+   <type4:TagDescription xmi:id="11812" name="KON" />
+   <type4:TagDescription xmi:id="11814" name="KOUI" />
+   <type4:TagDescription xmi:id="11816" name="KOUS" />
+   <type4:TagDescription xmi:id="11818" name="MID" />
+   <type4:TagDescription xmi:id="11820" name="NE" />
+   <type4:TagDescription xmi:id="11822" name="NN" />
+   <type4:TagDescription xmi:id="11824" name="NNE" />
+   <type4:TagDescription xmi:id="11826" name="PDAT" />
+   <type4:TagDescription xmi:id="11828" name="PDS" />
+   <type4:TagDescription xmi:id="11830" name="PIAT" />
+   <type4:TagDescription xmi:id="11832" name="PIS" />
+   <type4:TagDescription xmi:id="11834" name="PPER" />
+   <type4:TagDescription xmi:id="11836" name="PPOSAT" />
+   <type4:TagDescription xmi:id="11838" name="PPOSS" />
+   <type4:TagDescription xmi:id="11840" name="PRELAT" />
+   <type4:TagDescription xmi:id="11842" name="PRELS" />
+   <type4:TagDescription xmi:id="11844" name="PRF" />
+   <type4:TagDescription xmi:id="11846" name="PROAV" />
+   <type4:TagDescription xmi:id="11848" name="PTKA" />
+   <type4:TagDescription xmi:id="11850" name="PTKANT" />
+   <type4:TagDescription xmi:id="11852" name="PTKNEG" />
+   <type4:TagDescription xmi:id="11854" name="PTKVZ" />
+   <type4:TagDescription xmi:id="11856" name="PTKZU" />
+   <type4:TagDescription xmi:id="11858" name="PWAT" />
+   <type4:TagDescription xmi:id="11860" name="PWAV" />
+   <type4:TagDescription xmi:id="11862" name="PWS" />
+   <type4:TagDescription xmi:id="11864" name="STPOS" />
+   <type4:TagDescription xmi:id="11866" name="STR" />
+   <type4:TagDescription xmi:id="11868" name="TRUNC" />
+   <type4:TagDescription xmi:id="11870" name="VAFIN" />
+   <type4:TagDescription xmi:id="11872" name="VAIMP" />
+   <type4:TagDescription xmi:id="11874" name="VAINF" />
+   <type4:TagDescription xmi:id="11876" name="VAPP" />
+   <type4:TagDescription xmi:id="11878" name="VMFIN" />
+   <type4:TagDescription xmi:id="11880" name="VMINF" />
+   <type4:TagDescription xmi:id="11882" name="VMPP" />
+   <type4:TagDescription xmi:id="11884" name="VVFIN" />
+   <type4:TagDescription xmi:id="11886" name="VVIMP" />
+   <type4:TagDescription xmi:id="11888" name="VVINF" />
+   <type4:TagDescription xmi:id="11890" name="VVIZU" />
+   <type4:TagDescription xmi:id="11892" name="VVPP" />
+   <type4:TagDescription xmi:id="11894" name="XY" />
+   <cas:View sofa="11659" members="1 12 19 26 33 40 47 54 61 68 77 86 95 104 113 122 131 140 149 158 167 176 185 194 203 212 221 230 239 248 257 266 275 284 293 302 311 320 329 338 347 356 365 374 383 392 401 410 419 428 437 446 455 464 473 482 491 500 509 518 527 536 545 554 563 572 581 590 599 608 617 624 631 638 645 652 659 666 673 680 687 694 701 708 715 722 729 736 743 750 757 764 771 778 785 792 799 806 813 820 827 834 841 848 855 862 868 874 880 886 893 900 907 914 921 928 935 942 949 956 963 970 977 984 991 998 1005 1012 1019 1026 1033 1040 1047 1054 1061 1068 1075 1082 1089 1096 1103 1110 1117 1124 1131 1138 1145 1152 1159 1166 1173 1180 1187 1194 1201 1208 1215 1222 1229 1236 1243 1250 1257 1264 1271 1278 1285 1292 1299 1306 1313 1320 1327 1334 1341 1348 1355 1362 1369 1376 1383 1390 1397 1404 1411 1418 1425 1432 1439 1446 1453 1460 1467 1474 1481 1486 1491 1496 1501 1506 1511 1516 1521 1531 1541 1551 1561 1571 1581 1591 1601 1611 1621 1631 1641 1651 1661 1671 1681 1691 1701 1711 1721 1731 1741 1751 1761 1771 1781 1791 1801 1811 1821 1831 1841 1851 1861 1871 1881 1891 1901 1911 1921 1931 1941 1951 1961 1971 1981 1991 2001 2011 2021 2031 2041 2051 2061 2071 2081 2091 2101 2111 2121 2131 2141 2151 2161 2171 2181 2191 2201 2211 2221 2231 2241 2251 2261 2271 2281 2291 2301 2311 2321 2331 2341 2351 2361 2371 2381 2391 2401 2411 2421 2431 2441 2451 2461 2471 2481 2491 2501 2511 2521 2531 2541 2551 2561 2571 2581 2591 2601 2611 2621 2631 2641 2651 2661 2671 2681 2691 2701 2711 2721 2731 2741 2751 2761 2771 2781 2791 2801 2811 2821 2831 2841 2851 2861 2871 2881 2891 2901 2911 2921 2931 2941 2951 2961 2971 2981 2991 3001 3011 3021 3031 3041 3051 3061 3071 3081 3091 3101 3111 3121 3131 3141 3151 3161 3171 3181 3191 3201 3211 3221 3231 3241 3251 3261 3271 3281 3291 3301 3311 3321 3331 3341 3351 3361 3371 3381 3391 3401 3411 3421 3431 3441 3451 3461 3471 3481 3491 3501 3511 3644 3575 3699 3704 3709 3714 3719 3724 3729 3734 3739 3744 3749 3754 3759 3764 3769 3774 3779 3784 3789 3794 3799 3804 3809 3814 3819 3824 3829 3834 3839 3844 3849 3854 3859 3864 3869 3874 3879 3884 3889 3894 3899 3904 3909 3914 3919 3924 3929 3934 3939 3944 3949 3954 3959 3964 3969 3974 3979 3984 3989 3994 3999 4004 4009 4014 4019 4024 4029 4034 4039 4044 4049 4054 4059 4064 4069 4074 4079 4084 4089 4094 4099 4104 4109 4114 4119 4124 4129 4134 4139 4144 4149 4154 4159 4164 4169 4174 4179 4184 4189 4194 4199 4204 4209 4214 4219 4224 4229 4234 4239 4244 4249 4254 4259 4264 4269 4274 4279 4284 4289 4294 4299 4304 4309 4314 4319 4324 4329 4334 4339 4344 4349 4354 4359 4364 4369 4374 4379 4384 4389 4394 4399 4404 4409 4414 4419 4424 4429 4434 4439 4444 4449 4454 4459 4464 4469 4474 4479 4484 4489 4494 4499 4504 4509 4514 4519 4524 4529 4534 4539 4544 4549 4554 4559 4564 4569 4574 4579 4584 4589 4594 4599 4604 4609 4614 4619 4624 4629 4634 4639 4644 4649 4654 4659 4664 4669 4674 4679 4684 4689 4694 4699 4704 4709 4714 4719 4724 4729 4734 4739 4744 4749 4754 4759 4764 4769 4774 4779 4784 4789 4794 4799 4804 4809 4814 4819 4824 4829 4834 4839 4844 4849 4854 4859 4864 4869 4874 4879 4884 4889 4894 4899 4904 4909 4914 4919 4924 4929 4934 4939 4944 4949 4954 4959 4964 4969 4974 4979 4984 4989 4994 4999 5004 5009 5014 5019 5024 5029 5034 5039 5044 5049 5054 5059 5064 5069 5074 5079 5084 5089 5094 5099 5104 5109 5114 5119 5124 5129 5134 5139 5144 5149 5154 5159 5164 5169 5174 5179 5184 5189 5194 5199 5204 5209 5214 5219 5224 5229 5234 5239 5244 5249 5254 5259 5264 5269 5274 5279 5284 5289 5294 5299 5304 5309 5314 5319 5324 5329 5334 5339 5344 5349 5354 5359 5364 5369 5374 5379 5384 5389 5394 5399 5404 5409 5414 5419 5424 5429 5434 5439 5444 5449 5454 5459 5464 5469 5474 5479 5484 5489 5494 5499 5504 5509 5514 5519 5524 5529 5534 5539 5544 5549 5554 5559 5564 5569 5574 5579 5584 5589 5594 5599 5604 5609 5614 5619 5624 5629 5634 5639 5644 5649 5654 5659 5664 5669 5674 5679 5684 5689 5697 5705 5713 5721 5729 5737 5745 5753 5761 5769 5777 5785 5793 5801 5809 5817 5825 5833 5841 5849 5857 5865 5873 5881 5889 5897 5905 5913 5921 5929 5937 5945 5953 5961 5969 5977 5985 5993 6001 6009 6017 6025 6033 6041 6049 6057 6065 6073 6081 6089 6097 6105 6113 6121 6129 6137 6145 6153 6161 6169 6177 6185 6193 6201 6209 6217 6225 6233 6241 6249 6257 6265 6273 6281 6289 6297 6305 6313 6321 6329 6337 6345 6353 6361 6369 6377 6385 6393 6401 6409 6417 6425 6433 6441 6449 6457 6465 6473 6481 6489 6497 6505 6513 6521 6529 6537 6545 6553 6561 6569 6577 6585 6593 6601 6609 6617 6625 6633 6641 6649 6657 6665 6673 6681 6689 6697 6705 6713 6721 6729 6737 6745 6753 6761 6769 6777 6785 6793 6801 6809 6817 6825 6833 6841 6849 6857 6865 6873 6881 6889 6897 6905 6913 6921 6929 6937 6945 6953 6961 6969 6977 6985 6993 7001 7009 7017 7025 7033 7041 7049 7057 7065 7073 7081 7089 7097 7105 7113 7121 7129 7137 7145 7153 7161 7169 7177 7185 7193 7201 7209 7217 7225 7233 7241 7249 7257 7265 7273 7281 7303 7325 7347 7369 7391 7413 7435 7457 7479 7501 7523 7545 7567 7589 7611 7633 7655 7677 7699 7721 7743 7765 7787 7809 7831 7853 7875 7897 7919 7941 7963 7985 8007 8029 8051 8073 8095 8117 8139 8161 8183 8205 8227 8249 8271 8293 8315 8337 8359 8381 8403 8425 8447 8469 8491 8513 8535 8557 8579 8601 8623 8645 8667 8689 8711 8733 8755 8777 8799 8821 8843 8865 8887 8909 8931 8953 8975 8997 9019 9041 9063 9085 9107 9129 9151 9173 9195 9217 9239 9261 9283 9305 9327 9349 9371 9393 9415 9437 9459 9481 9503 9525 9547 9569 9591 9613 9635 9657 9679 9701 9723 9745 9767 9789 9811 9833 9855 9877 9899 9921 9943 9965 9987 10009 10031 10053 10075 10097 10119 10141 10163 10185 10207 10229 10251 10273 10295 10317 10339 10361 10383 10405 10427 10449 10471 10493 10515 10537 10559 10581 10603 10625 10647 10669 10691 10713 10735 10757 10779 10801 10823 10845 10867 10889 10911 10933 10955 10977 10999 11021 11043 11065 11087 11109 11131 11153 11175 11197 11219 11241 11263 11285 11307 11329 11351 11373 11395 11417 11439 11461 11483 11505 11527 11549 11571 11593 11615 11637 12037 12044 12058 12079 12072 12065 12051 12086 12100 12093 11988 12002 12016 12030 12023 12009 11995 12163 12191 12170 12184 12177 15110 15117 15131 15124 12107 12156 12149 12128 12135 12142 12121 12114 12471 12492 12506 12520 12527 12513 12499 12485 12478 12534 12548 12562 12576 12590 12604 12618 12632 12646 12660 12674 12688 12702 12716 12730 12723 12709 12695 12681 12667 12653 12639 12625 12611 12597 12583 12569 12555 12541 12198 12422 12436 12450 12464 12457 12443 12429 12415 12275 12282 12296 12303 12310 12324 12331 12338 12352 12359 12366 12380 12387 12373 12408 12401 12345 12317 12289 12233 12240 12247 12254 12268 12261 12219 12226 12212 12205 12394 14907 15026 15054 15082 15103 15096 15089 15075 15068 15061 15047 15040 15033 15019 15012 15005 14928 14921 14914 14942 14970 14991 14984 14977 14963 14956 14949 14935 14998 14711 14725 14718 14746 14774 14802 14830 14844 14837 14823 14816 14809 14795 14788 14781 14767 14760 14753 14739 14732 14858 14872 14886 14900 14893 14879 14865 14851 14704 12737 12744 13003 12856 12863 12870 12884 12891 12898 12905 12912 12919 12926 12940 12947 12954 12961 12968 12975 12982 12996 12989 12933 12877 12800 12807 12814 12821 12828 12835 12842 12849 12772 12779 12786 12793 12758 12765 12751 13010 13080 13087 13094 13108 13115 13122 13129 13136 13143 13150 13101 13045 13052 13059 13066 13073 13031 13038 13024 13017 13157 13241 13248 13255 13199 13206 13213 13220 13227 13234 13178 13185 13192 13171 13164 13262 13304 13311 13318 13332 13339 13346 13325 13283 13290 13297 13276 13269 13353 13360 13367 13374 13577 13584 13591 13598 13472 13479 13486 13493 13500 13507 13514 13521 13528 13535 13542 13556 13563 13570 13549 13423 13430 13437 13444 13451 13458 13465 13402 13409 13416 13388 13395 13381 13605 13612 13850 13857 13864 13871 13878 13892 13899 13906 13913 13920 13927 13934 13948 13955 13962 13941 13885 13724 13731 13738 13745 13752 13759 13766 13780 13787 13794 13801 13808 13815 13822 13829 13836 13843 13773 13668 13675 13682 13689 13696 13703 13710 13717 13640 13647 13654 13661 13626 13633 13619 13969 14039 14046 14053 14060 14067 14004 14011 14018 14025 14032 13990 13997 13983 13976 14074 14144 14151 14158 14165 14172 14109 14116 14123 14130 14137 14095 14102 14088 14081 14179 14256 14263 14270 14277 14214 14228 14235 14242 14249 14221 14200 14207 14193 14186 14284 14620 14627 14634 14641 14648 14655 14662 14676 14683 14690 14697 14669 14613 14438 14452 14459 14466 14473 14480 14487 14494 14501 14508 14515 14522 14529 14536 14543 14550 14564 14571 14578 14585 14592 14599 14606 14557 14445 14361 14368 14375 14382 14389 14396 14403 14410 14417 14424 14431 14326 14333 14340 14347 14354 14305 14312 14319 14298 14291" />
+</xmi:XMI>

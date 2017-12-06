@@ -1,0 +1,18 @@
+# legacy
+.svn/
+
+# IDE
+.settings/
+.classpath
+.project
+
+# maven
+target/
+
+# binaries
+*.jar
+*.war
+*.class
+
+# OS
+.DS_Store

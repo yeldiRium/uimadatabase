@@ -1,0 +1,4 @@
+<context-param>
+  <param-name>org.basex.dbpath</param-name>
+  <param-value>/var/data</param-value>
+</context-param>
