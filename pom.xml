@@ -5,7 +5,7 @@
 	<artifactId>uimadatabase</artifactId>
 	<version>0.0.1</version>
 	<build>
-		<finalName>dbeval-${version}</finalName>
+		<finalName>dbeval-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
