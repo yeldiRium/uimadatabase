@@ -4,6 +4,7 @@
 	<groupId>org.hucompute.services</groupId>
 	<artifactId>uimadatabase</artifactId>
 	<version>0.0.1</version>
+	<packaging>jar</packaging>
 	<build>
 		<finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
@@ -31,15 +32,15 @@
 		</plugins>
 	</build>
 	<repositories>
-	<repository>
-      <id>central</id>
-      <name>Maven Repository Switchboard</name>
-      <layout>default</layout>
-      <url>http://repo1.maven.org/maven2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
+		<repository>
+			<id>central</id>
+			<name>Maven Repository Switchboard</name>
+			<layout>default</layout>
+			<url>http://repo1.maven.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
 		<repository>
 			<id>basex</id>
 			<name>BaseX Maven Repository</name>
@@ -50,7 +51,6 @@
 			<url>http://service.hucompute.org/artifactory/libs-snapshot</url>
 		</repository>
 	</repositories>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.sparkjava</groupId>
@@ -173,10 +173,10 @@
 			<version>3.1.3</version>
 		</dependency>
 		<dependency>
-        	<groupId>org.neo4j.driver</groupId>
-        	<artifactId>neo4j-java-driver</artifactId>
-        	<version>1.4.0</version>
-   		</dependency>
+			<groupId>org.neo4j.driver</groupId>
+			<artifactId>neo4j-java-driver</artifactId>
+			<version>1.4.0</version>
+		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
@@ -189,7 +189,6 @@
 			</artifactId>
 			<version>1.8.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
@@ -205,12 +204,10 @@
 			<artifactId>slf4j-simple</artifactId>
 			<version>1.7.25</version>
 		</dependency>
-
 		<dependency>
 			<groupId>it.unimi.dsi</groupId>
 			<artifactId>fastutil</artifactId>
 			<version>7.2.1</version>
 		</dependency>
-
 	</dependencies>
 </project>
