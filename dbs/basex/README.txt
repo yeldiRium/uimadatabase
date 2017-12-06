@@ -1,7 +1,7 @@
-The credentials for the BaseXHTTP server are configured in the web.xml file.
-They are by default set to root:root.
+The credentials for the BaseXHTTP server are set to default admin:admin.
+They can be changed by supplying a startup command to the server in the Dockerfile.
+See [here](http://docs.basex.org/wiki/User_Management how) how.
 
-They are again set in the docker-compose.yml file, so that they can be accessed
-in the java code and easily changed.
-The values in web.xml and docker-compose.yml _must_ always be changed together,
-otherwise the BaseXClient can't connect to the BaseXHTTP server.  
+The credentials, hostname and port must also be set in the docker-compose.yml file.
+If the credentials are changed in the Dockerfile, docker-compose.yml must be adjusted
+accordingly.

@@ -12,8 +12,6 @@ services:
     build: ./dbs/basex
     ports:
       - 1984:1984
-      - 8984:8984
-      - 8985:8985
 
   cassandra:
     build: ./dbs/cassandra
@@ -44,6 +42,9 @@ services:
     ports:
       - 4567:4567
     environment:
-      - CRED_BASEX_USER=root
-      - CRED_BASEX_PASS=root
+      # See README.txt in dbs/basex for details on:
+      - BASEX_HOST=basex
+      - BASEX_PORT=1984
+      - BASEX_USER=admin
+      - BASEX_PASS=admin
     command: ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "target.jar"]
