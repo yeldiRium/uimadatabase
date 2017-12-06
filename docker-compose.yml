@@ -5,6 +5,8 @@ services:
    build: ./dbs/arangodb
    ports:
      - 8529:8529
+   environment:
+     - ARANGO_ROOT_PASSWORD=root
 
   basex:
     build: ./dbs/basex
