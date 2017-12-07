@@ -14,6 +14,8 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.AuthenticationException;
 import com.datastax.driver.core.exceptions.NoHostAvailableException;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
 
 /**
  * This tests the connection to all configured databases.
@@ -164,9 +166,24 @@ public class MainContainerTest {
 	 * Tests the connection to the Mongo DB container.
 	 */
 	private class MongoDBTest extends DBConnectionTest {
+		protected MongoClient client;
 		@Override
 		protected void tryToConnect() {
-			System.out.println("MongoDBTest running...");
+			// If the connection is already established, nothing further has to be done
+			if(this.client != null) {
+				System.out.println("MongoDB: connected.");
+				return;
+			}
+			
+			try {
+				this.client = new MongoClient(
+					System.getenv("MONGODB_HOST"),
+					Integer.parseInt(System.getenv("MONGODB_PORT"))
+				);
+				System.out.println("MongoDB: Connection successful!");
+			} catch(MongoException e) {
+				System.out.println("MongoDB: Connection failed. Retrying...");
+			}
 		}
 	}
 	
