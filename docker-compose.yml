@@ -42,13 +42,18 @@ services:
     ports:
       - 4567:4567
     environment:
-      # See README.txt in dbs/basex for details on:
       - ARANGODB_HOST=arangodb
       - ARANGODB_PORT=8529
       - ARANGODB_USER=root
       - ARANGODB_PASS=root
+      # See README.txt in dbs/basex for details on:
       - BASEX_HOST=basex
       - BASEX_PORT=1984
       - BASEX_USER=admin
       - BASEX_PASS=admin
+      # See README.txt in dbs/cassandra for details on:
+      - CASSANDRA_HOST=cassandra
+      - CASSANDRA_PORT=9042
+      - CASSANDRA_USER=cassandra
+      - CASSANDRA_PASS=cassandra
     command: ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "target.jar"]
