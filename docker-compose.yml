@@ -43,6 +43,10 @@ services:
       - 4567:4567
     environment:
       # See README.txt in dbs/basex for details on:
+      - ARANGODB_HOST=arangodb
+      - ARANGODB_PORT=8529
+      - ARANGODB_USER=root
+      - ARANGODB_PASS=root
       - BASEX_HOST=basex
       - BASEX_PORT=1984
       - BASEX_USER=admin
