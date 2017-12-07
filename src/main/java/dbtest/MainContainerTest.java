@@ -71,10 +71,13 @@ public class MainContainerTest {
 	 */
 	private class ArangoDBTest extends DBConnectionTest {
 		protected ArangoDB arangoDB;
+		protected ArangoDBVersion version;
 		@Override
 		protected void tryToConnect() {
 			// If the connection is already established, nothing further has to be done
-			if(this.arangoDB != null) {
+			// has to check connection, since the ArangoDB object can be created while
+			// the actual connection when calling getVersion fails
+			if(this.version != null) {
 				System.out.println("ArangoDB: Connected.");
 				return;
 			}
@@ -91,7 +94,7 @@ public class MainContainerTest {
 					.build();
 				// Request version to check, if the connection was successful
 				// Without executing anything, the connection is not actually established
-				ArangoDBVersion version = arangoDB.getVersion();
+				this.version = arangoDB.getVersion();
 				System.out.println("ArangoDB: Connection successful!");
 				System.out.println("ArangoDB: Server is called \"" + version.getServer() + "\" with version " + version.getVersion());
 			} catch (ArangoDBException e) {
