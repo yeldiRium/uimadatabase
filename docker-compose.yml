@@ -45,6 +45,7 @@ services:
     ports:
       - 4567:4567
     environment:
+      # See README.txt in dbs/arangodb for details on:
       - ARANGODB_HOST=arangodb
       - ARANGODB_PORT=8529
       - ARANGODB_USER=root
