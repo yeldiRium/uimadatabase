@@ -1,6 +1,7 @@
 package dbtest;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -99,6 +100,9 @@ public class MainContainerTest {
 					.build();
 				// Request version to check, if the connection was successful
 				// Without executing anything, the connection is not actually established
+				// If the server is not reachable, this will log a ConnectException, which is
+				// handled by arango and can't be prevented
+				// So that will always pollute the logs.
 				this.version = arangoDB.getVersion();
 				System.out.println("ArangoDB: Connection successful!");
 				System.out.println("ArangoDB: Server is called \"" + version.getServer() + "\" with version " + version.getVersion());
