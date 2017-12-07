@@ -2,6 +2,9 @@ package dbtest;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -191,9 +194,37 @@ public class MainContainerTest {
 	 * Tests the connection to the MySQL container.
 	 */
 	private class MySQLTest extends DBConnectionTest {
+		protected Connection connection;
 		@Override
 		protected void tryToConnect() {
-			System.out.println("MySQLTest running...");
+			// If the connection is already established, nothing further has to be done
+			if(this.connection != null) {
+				System.out.println("MySQL: connected.");
+				return;
+			}
+			
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+				
+				String host = System.getenv("MYSQL_HOST");
+				int port = Integer.parseInt(System.getenv("MYSQL_PORT"));
+				String dbname = System.getenv("MYSQL_DBNAME");
+				String username = System.getenv("MYSQL_USER");
+				String password = System.getenv("MYSQL_PASS");
+				
+				// MySQL Driver needs some strange url for connection, so we build it:
+				String url = "jdbc:mysql://" + host + ":" + port + "/" + dbname + "?useSSL=false";
+				
+				this.connection = DriverManager.getConnection(
+					url,
+					username,
+					password
+				);
+				System.out.println("MySQL: Connection successful!");
+			} catch (SQLException|ClassNotFoundException e) {
+				System.out.println("MySQL: Connection failed. Retrying...");
+				System.out.println("MySQL: Error was \"" + e.getMessage() + "\"");
+			}
 		}
 	}
 	

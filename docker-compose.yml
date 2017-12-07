@@ -25,8 +25,11 @@ services:
 
   mysql:
     build: ./dbs/mysql
+    # Port not specified here since it somehow conflicts
+    # Port is 3306 though
     environment:
       - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=uimadatabase
 
   neo4j:
     build: ./dbs/neo4j
@@ -61,4 +64,10 @@ services:
       - MONGODB_PORT=27017
       - MONGODB_USER=
       - MONGODB_PASS=
+      # See README.txt in dbs/mysql for details on:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASS=root
+      - MYSQL_DBNAME=uimadatabase
     command: ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "target.jar"]
