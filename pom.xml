@@ -41,7 +41,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>libs/</classpathPrefix>
-							<mainClass>dbtest.MainContainerTest</mainClass>
+							<mainClass>dbtest.connection_check.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
