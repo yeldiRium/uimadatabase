@@ -1,6 +1,8 @@
 package dbtest.connection;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * The ConnectionRequest is used to transfer a number of Connection classes to the ConnectionManager.
@@ -10,7 +12,7 @@ import java.util.LinkedList;
  */
 public class ConnectionRequest {
 	private AcceptsConnectionResponse responseEndpoint;
-	private LinkedList<Class<?extends Connection>> connections;
+	private HashSet<Class<?extends Connection>> connections;
 	
 	/**
 	 * Constructs the ConnectionRequest from an endpoint and creates an empty list for the connection classes.
@@ -18,7 +20,7 @@ public class ConnectionRequest {
 	 */
 	public ConnectionRequest(AcceptsConnectionResponse responseEndpoint) {
 		this.responseEndpoint = responseEndpoint;
-		this.connections = new LinkedList<>(); 
+		this.connections = new HashSet<>(); 
 	}
 	
 	/**
@@ -29,7 +31,7 @@ public class ConnectionRequest {
 	@SafeVarargs
 	public ConnectionRequest(AcceptsConnectionResponse responseEndpoint, Class<?extends Connection>... connectionClasses) {
 		this.responseEndpoint = responseEndpoint;
-		this.connections = new LinkedList<>();
+		this.connections = new HashSet<>();
 		for(Class<?extends Connection> connectionClass: connectionClasses) {
 			this.connections.add(connectionClass);
 		}
@@ -54,7 +56,7 @@ public class ConnectionRequest {
 	 * @return the iterable of connection classes.
 	 */
 	@SuppressWarnings("unchecked")
-	public Iterable<Class<?extends Connection>> getRequestedConnections() {
-		return (Iterable<Class<? extends Connection>>) this.connections.clone();
+	public Set<Class<?extends Connection>> getRequestedConnections() {
+		return (Set<Class<? extends Connection>>) this.connections.clone();
 	}
 }

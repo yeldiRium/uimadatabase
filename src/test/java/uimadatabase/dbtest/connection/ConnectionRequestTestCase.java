@@ -5,8 +5,10 @@ import org.junit.BeforeClass;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import dbtest.connection.AcceptsConnectionResponse;
 import dbtest.connection.Connection;
@@ -31,17 +33,16 @@ class ConnectionRequestTestCase {
 	}
 	
 	@Test
-	void Given_EmptyRequestObject_When_RetrievingRequestInformation_Then_EmptyIterableIsReturned() {
+	void Given_EmptyRequestObject_When_RetrievingRequestInformation_Then_EmptySetIsReturned() {
 		ConnectionRequest request = new ConnectionRequest(this.requestor);
-		Iterable res = request.getRequestedConnections();
-		assertFalse(res.iterator().hasNext());
+		assertEquals(0, request.getRequestedConnections().size());
 	}
 
 	@Test
-	void Given_RequestObjectConstructedWithParameterList_When_RetrievingRequestInformation_Then_ListOfConnectionClassesIsReturnedAsIterable() {
-		List<Class> list = new LinkedList<>();
-		list.add(TestConnectionA.class);
-		list.add(TestConnectionC.class);
+	void Given_RequestObjectConstructedWithParameterList_When_RetrievingRequestInformation_Then_SetOfConnectionClassesIsReturned() {
+		Set<Class> set = new HashSet<>();
+		set.add(TestConnectionA.class);
+		set.add(TestConnectionC.class);
 		
 		ConnectionRequest request = new ConnectionRequest(
 				this.requestor,
@@ -49,31 +50,34 @@ class ConnectionRequestTestCase {
 				TestConnectionC.class
 		);
 		
-		assertIterableEquals(list, request.getRequestedConnections());
+		assertEquals(set.size(), request.getRequestedConnections().size());
+		assertTrue(set.containsAll(request.getRequestedConnections()));
 	}
 	
 	@Test
-	void Given_RequestObjectConstructedWithAddMethod_When_RetrievingRequestInformation_Then_ListOfConnectionClassesIsReturnedAsIterable() {
-		List<Class> list = new LinkedList<>();
-		list.add(TestConnectionA.class);
-		list.add(TestConnectionB.class);
+	void Given_RequestObjectConstructedWithAddMethod_When_RetrievingRequestInformation_Then_SetOfConnectionClassesIsReturned() {
+		Set<Class> set = new HashSet<>();
+		set.add(TestConnectionA.class);
+		set.add(TestConnectionB.class);
 		
 		ConnectionRequest request = new ConnectionRequest(this.requestor);
 		request.addRequestedConnection(TestConnectionA.class);
 		request.addRequestedConnection(TestConnectionB.class);
-		
-		assertIterableEquals(list, request.getRequestedConnections());
+
+		assertEquals(set.size(), request.getRequestedConnections().size());
+		assertTrue(set.containsAll(request.getRequestedConnections()));
 	}
 	
 	@Test
-	void Given_RequestObjectConstructedWithParameterListAndAddMethod_When_RetrievingRequestInformation_Then_ListOfConnectionClassesIsReturnedAsIterable() {
-		List<Class> list = new LinkedList<>();
-		list.add(TestConnectionB.class);
-		list.add(TestConnectionC.class);
+	void Given_RequestObjectConstructedWithParameterListAndAddMethod_When_RetrievingRequestInformation_Then_SetOfConnectionClassesIsReturned() {
+		Set<Class> set = new HashSet<>();
+		set.add(TestConnectionB.class);
+		set.add(TestConnectionC.class);
 		
 		ConnectionRequest request = new ConnectionRequest(this.requestor, TestConnectionB.class);
 		request.addRequestedConnection(TestConnectionC.class);
-		
-		assertIterableEquals(list, request.getRequestedConnections());
+
+		assertEquals(set.size(), request.getRequestedConnections().size());
+		assertTrue(set.containsAll(request.getRequestedConnections()));
 	}
 }
