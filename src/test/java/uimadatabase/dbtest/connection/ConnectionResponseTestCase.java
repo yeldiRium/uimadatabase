@@ -2,8 +2,8 @@ package uimadatabase.dbtest.connection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,24 +40,25 @@ class ConnectionResponseTestCase {
 	}
 	
 	@Test
-	void Given_EmptyConnectionResponse_When_GettingConnectionList_Then_EmptyIterableIsReturned() {
+	void Given_EmptyConnectionResponse_When_GettingConnectionList_Then_EmptySetIsReturned() {
 		ConnectionResponse response = new ConnectionResponse();
-		assertFalse(response.getConnections().iterator().hasNext());
+		assertEquals(0, response.getConnections().size());
 	}
 
 	@Test
-	void Given_ConnectionResponseWithFewResults_When_GettingConnectionList_Then_IterableOfConnectionsIsReturned() {
+	void Given_ConnectionResponseWithFewResults_When_GettingConnectionList_Then_SetOfConnectionsIsReturned() {
 		Connection a = new TestConnectionA();
 		Connection b = new TestConnectionB();
 		
-		List<Connection> list = new LinkedList<>();
-		list.add(a);
-		list.add(b);
+		Set<Connection> set = new HashSet<>();
+		set.add(a);
+		set.add(b);
 		
 		ConnectionResponse response = new ConnectionResponse();
 		response.addConnection(a);
 		response.addConnection(b);
 		
-		assertIterableEquals(list, response.getConnections());
+		assertEquals(set.size(), response.getConnections().size());
+		assertTrue(set.containsAll(response.getConnections()));
 	}
 }

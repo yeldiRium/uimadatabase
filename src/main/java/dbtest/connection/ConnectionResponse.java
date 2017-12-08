@@ -1,6 +1,7 @@
 package dbtest.connection;
 
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Used to encapsulate Connection objects returned from the ConnectionManager.
@@ -9,11 +10,11 @@ import java.util.LinkedList;
  */
 public class ConnectionResponse {
 	protected boolean finished;
-	protected LinkedList<Connection> connections;
+	protected HashSet<Connection> connections;
 
 	public ConnectionResponse() {
 		this.finished = false;
-		this.connections = new LinkedList<>();
+		this.connections = new HashSet<>();
 	}
 	
 	/**
@@ -32,7 +33,7 @@ public class ConnectionResponse {
 	}
 	
 	/**
-	 * Add a connection object.
+	 * Add a connection object. If it is already there, nothing happens.
 	 * @param connection
 	 * @throws ConnectionResponseAlreadyFinishedException
 	 */
@@ -40,14 +41,16 @@ public class ConnectionResponse {
 		if (this.isFinished()) {
 			throw new ConnectionResponseAlreadyFinishedException();
 		}
-		this.connections.add(connection);
+		if (!this.connections.contains(connection)) {
+			this.connections.add(connection);
+		}
 	}
 	
 	/**
 	 * @return the stored connections.
 	 */
 	@SuppressWarnings("unchecked")
-	public Iterable<Connection> getConnections() {
-		return (Iterable<Connection>) this.connections.clone();
+	public Set<Connection> getConnections() {
+		return (Set<Connection>) this.connections.clone();
 	}
 }
