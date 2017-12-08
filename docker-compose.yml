@@ -34,7 +34,7 @@ services:
   neo4j:
     build: ./dbs/neo4j
     ports:
-      - 7474:7474
+      # Only enable the port for binary protocol connection
       - 7687:7687
     environment:
       - NEO4J_AUTH=none
@@ -71,4 +71,9 @@ services:
       - MYSQL_USER=root
       - MYSQL_PASS=root
       - MYSQL_DBNAME=uimadatabase
+      # See README.txt in dbs/neo4j for details on:
+      - NEO4J_HOST=neo4j
+      - NEO4J_PORT=7687
+      - NEO4J_USER=
+      - NEO4J_PASS=
     command: ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "target.jar"]

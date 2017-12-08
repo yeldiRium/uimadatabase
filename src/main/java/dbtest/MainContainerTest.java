@@ -10,6 +10,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.basex.api.client.ClientSession;
+import org.neo4j.driver.v1.AuthTokens;
+import org.neo4j.driver.v1.Driver;
+import org.neo4j.driver.v1.GraphDatabase;
+import org.neo4j.driver.v1.exceptions.ServiceUnavailableException;
 
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
@@ -42,7 +46,7 @@ public class MainContainerTest {
 		list.add(outer.new CassandraTest());
 		list.add(outer.new MongoDBTest());
 		list.add(outer.new MySQLTest());
-		list.add(outer.new Neo4JTest());
+		list.add(outer.new Neo4jTest());
 		
 		// Iterate over the Runnables
 		for (Runnable rnbl: list) {
@@ -235,10 +239,30 @@ public class MainContainerTest {
 	/**
 	 * Tests the connection to the Neo4J container.
 	 */
-	private class Neo4JTest extends DBConnectionTest {
+	private class Neo4jTest extends DBConnectionTest {
+		protected Driver driver;
 		@Override
 		protected void tryToConnect() {
-			System.out.println("Neo4JTest running...");
+			// If the connection is already established, nothing further has to be done
+			if(this.driver!= null) {
+				System.out.println("Neo4j: connected.");
+				return;
+			}
+			
+			try {
+				String host = System.getenv("NEO4J_HOST");
+				String port = System.getenv("NEO4J_PORT");
+				String username = System.getenv("NEO4J_USER");
+				String password = System.getenv("NEO4J_PASS");
+				
+				this.driver= GraphDatabase.driver(
+					"bolt://" + host + ":" + port,
+					AuthTokens.basic(username, password)
+				);
+				System.out.println("Neo4j: Connection successful!");
+			} catch(ServiceUnavailableException e) {
+				System.out.println("Neo4j: Connection failed. Retrying...");
+			}
 		}
 	}
 }
