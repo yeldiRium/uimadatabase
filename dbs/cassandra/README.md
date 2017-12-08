@@ -1,3 +1,6 @@
+Cassandra
+=========
+
 The credentials for the Cassandra server are set to default cassandra:cassandra.
 I'm not sure how they can be changed on docker creation. Probably some script has
 to be provided that executes a few Cassandra queries.
