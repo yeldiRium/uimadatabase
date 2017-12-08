@@ -215,7 +215,7 @@ public class MainContainerTest {
 				Class.forName("com.mysql.jdbc.Driver");
 				
 				String host = System.getenv("MYSQL_HOST");
-				int port = Integer.parseInt(System.getenv("MYSQL_PORT"));
+				String port = System.getenv("MYSQL_PORT");
 				String dbname = System.getenv("MYSQL_DBNAME");
 				String username = System.getenv("MYSQL_USER");
 				String password = System.getenv("MYSQL_PASS");
