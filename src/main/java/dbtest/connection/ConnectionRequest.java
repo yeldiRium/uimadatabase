@@ -9,14 +9,17 @@ import java.util.LinkedList;
  * @author Hannes Leutloff <hannes.leutloff@aol.de>
  */
 public class ConnectionRequest {
+	private AcceptsConnectionResponse responseEndpoint;
 	private LinkedList<Class<?extends Connection>> connections;
 	
-	public ConnectionRequest() {
+	public ConnectionRequest(AcceptsConnectionResponse responseEndpoint) {
+		this.responseEndpoint = responseEndpoint;
 		this.connections = new LinkedList<>(); 
 	}
 	
 	@SafeVarargs
-	public ConnectionRequest(Class<?extends Connection>... connectionClasses) {
+	public ConnectionRequest(AcceptsConnectionResponse responseEndpoint, Class<?extends Connection>... connectionClasses) {
+		this.responseEndpoint = responseEndpoint;
 		this.connections = new LinkedList<>();
 		for(Class<?extends Connection> connectionClass: connectionClasses) {
 			this.connections.add(connectionClass);
@@ -25,6 +28,10 @@ public class ConnectionRequest {
 	
 	public void addRequestedConnection(Class<?extends Connection> connectionClass) {
 		this.connections.add(connectionClass);
+	}
+	
+	public AcceptsConnectionResponse getResponseEndpoint() {
+		return this.responseEndpoint;
 	}
 	
 	@SuppressWarnings("unchecked")
