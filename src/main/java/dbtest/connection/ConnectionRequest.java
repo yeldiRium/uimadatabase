@@ -2,6 +2,12 @@ package dbtest.connection;
 
 import java.util.LinkedList;
 
+/**
+ * The ConnectionRequest is used to transfer a number of Connection classes to the ConnectionManager.
+ * It tells the Manager, which Connections should be prepared and who should be called with them.
+ * 
+ * @author Hannes Leutloff <hannes.leutloff@aol.de>
+ */
 public class ConnectionRequest {
 	private LinkedList<Class<?extends Connection>> connections;
 	
