@@ -1,4 +1,4 @@
-package dbtest.connection_check;
+package dbtest;
 
 import dbtest.connection.AcceptsConnectionResponse;
 import dbtest.connection.ConnectionManager;
@@ -18,10 +18,10 @@ import dbtest.connection.implementation.Neo4jConnection;
  * 
  * @author Hannes Leutloff <hannes.leutloff@aol.de>
  */
-public class Main implements AcceptsConnectionResponse {
+public class DBConnectionTest implements AcceptsConnectionResponse {
 	public static void main(String[] args) {
 		ConnectionManager connectionManager = new ConnectionManager();
-		Main main = new Main();
+		DBConnectionTest main = new DBConnectionTest();
 		ConnectionRequest connectionRequest = new ConnectionRequest(main);
 		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
 		connectionRequest.addRequestedConnection(BaseXConnection.class);
