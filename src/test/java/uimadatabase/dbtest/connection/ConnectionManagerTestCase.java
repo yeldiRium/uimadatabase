@@ -40,6 +40,11 @@ class ConnectionManagerTestCase {
 			// Let's ask 5 times, then returns true.
 			return this.isEstablishedCounter >= 5;
 		}
+
+		@Override
+		protected boolean tryToConnect() {
+			return false;
+		}
 	}
 	
 	/**
@@ -48,6 +53,10 @@ class ConnectionManagerTestCase {
 	public static class NoConnection extends Connection {
 		public NoConnection() {
 			
+		}
+		@Override
+		protected boolean tryToConnect() {
+			return false;
 		}
 	}
 	
