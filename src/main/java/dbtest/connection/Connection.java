@@ -1,6 +1,5 @@
 package dbtest.connection;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -16,36 +15,29 @@ public abstract class Connection {
 	
 	protected final int sleepTime = 500;
 	protected boolean isEstablished = false;
-	protected Thread connectionEstablisher;
-	
-	protected class ConnectionEstablisher implements Runnable {
-		@Override
-		public void run() {
-			// Allow interruption of thread from outside.
-			while (!Thread.currentThread().isInterrupted()) {
-				try {
-					LOGGER.fine("Trying to connect... - " + this.getClass().getName());
-					if(tryToConnect()) {
-						LOGGER.fine("Connection for " + this.getClass().getName() + " successful!");
-						isEstablished = true;
-						Thread.currentThread().interrupt();
-					} else {
-						LOGGER.fine("Connection for " + this.getClass().getName() + " failed.");
-					}
-					Thread.sleep(sleepTime);
-				} catch (InterruptedException ex) {
-					Thread.currentThread().interrupt();
-				}
-			}
-		}
-	}
 	
 	/**
 	 * Tries regularly to establish the connection via calling #tryToConnect.
+	 * 
+	 * Check for interruption since this probably will be executed in a concurrent context.
 	 */
 	public void establish() {
-		this.connectionEstablisher = new Thread(new ConnectionEstablisher());
-		this.connectionEstablisher.start();
+		// Allow interruption of thread from outside.
+		while (!Thread.currentThread().isInterrupted()) {
+			try {
+				LOGGER.fine("Trying to connect... - " + this.getClass().getName());
+				if(tryToConnect()) {
+					LOGGER.fine("Connection for " + this.getClass().getName() + " successful!");
+					isEstablished = true;
+					return;
+				} else {
+					LOGGER.fine("Connection for " + this.getClass().getName() + " failed.");
+				}
+				Thread.sleep(sleepTime);
+			} catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+		}
 	}
 	
 	/**

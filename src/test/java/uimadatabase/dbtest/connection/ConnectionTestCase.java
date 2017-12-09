@@ -26,15 +26,7 @@ class ConnectionTestCase {
 		when(connection.tryToConnect()).thenReturn(false, false, false, true);
 		
 		connection.establish();
-		assertEquals(false, connection.isEstablished());
-		// Since the Connection currently sleep 500ms between connection tries
-		// (see Connection.sleepTime), and we make it take four calls, 3000ms
-		// should be enough.
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// IDGAF
-		}
+		
 		verify(connection, times(4)).tryToConnect();
 		assertEquals(true, connection.isEstablished());
 	}
