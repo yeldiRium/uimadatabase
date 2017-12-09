@@ -21,7 +21,7 @@ public class ConnectionRequest {
 	}
 	
 	/**
-	 * Constructs the ConnectionRequest from an endpoint and a list of connection classes.
+	 * Constructs the ConnectionRequest from an endpoint and a number of connection classes.
 	 * @param responseEndpoint
 	 * @param connectionClasses
 	 */
@@ -34,7 +34,7 @@ public class ConnectionRequest {
 	}
 	
 	/**
-	 * Adds a connectionClass to the collection.
+	 * Adds a connectionClass to the set.
 	 * @param connectionClass
 	 */
 	public void addRequestedConnection(Class<?extends Connection> connectionClass) {
@@ -42,7 +42,7 @@ public class ConnectionRequest {
 	}
 	
 	/**
-	 * @return the iterable of connection classes.
+	 * @return the set of connection classes.
 	 */
 	@SuppressWarnings("unchecked")
 	public Set<Class<?extends Connection>> getRequestedConnections() {
