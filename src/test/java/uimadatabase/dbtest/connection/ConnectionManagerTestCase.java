@@ -1,10 +1,9 @@
 package uimadatabase.dbtest.connection;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

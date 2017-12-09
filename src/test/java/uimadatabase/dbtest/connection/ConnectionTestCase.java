@@ -1,8 +1,7 @@
 package uimadatabase.dbtest.connection;
 
-
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 
