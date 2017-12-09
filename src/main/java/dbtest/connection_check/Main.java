@@ -1,31 +1,39 @@
 package dbtest.connection_check;
 
-import java.util.HashSet;
-import java.util.Set;
+import dbtest.connection.AcceptsConnectionResponse;
+import dbtest.connection.ConnectionManager;
+import dbtest.connection.ConnectionRequest;
+import dbtest.connection.ConnectionResponse;
+import dbtest.connection.implementation.ArangoDBConnection;
+import dbtest.connection.implementation.BaseXConnection;
+import dbtest.connection.implementation.CassandraConnection;
+import dbtest.connection.implementation.MongoDBConnection;
+import dbtest.connection.implementation.MySQLConnection;
+import dbtest.connection.implementation.Neo4jConnection;
 
 /**
- * This tests the connection to all configured databases.
- * It will retry an infinite amount of times and report each time if it was successful or not.
+ * Requests all Connections from the ConnectionManager.
  * 
  * This is meant to test if the docker setup works correctly.
  * 
  * @author Hannes Leutloff <hannes.leutloff@aol.de>
  */
-public class Main {
+public class Main implements AcceptsConnectionResponse {
 	public static void main(String[] args) {
-		// Create a set of all test Runnables so that they can be started in a simple loop.
-		Set<Runnable> list = new HashSet<>();
-		list.add(new ArangoDBTest());
-		list.add(new BaseXTest());
-		list.add(new CassandraTest());
-		list.add(new MongoDBTest());
-		list.add(new MySQLTest());
-		list.add(new Neo4jTest());
-		
-		// Iterate over the Runnables
-		for (Runnable rnbl: list) {
-			// create Thread and start
-			(new Thread(rnbl)).start();
-		}
+		ConnectionManager connectionManager = new ConnectionManager();
+		Main main = new Main();
+		ConnectionRequest connectionRequest = new ConnectionRequest(main);
+		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
+		connectionRequest.addRequestedConnection(BaseXConnection.class);
+		connectionRequest.addRequestedConnection(CassandraConnection.class);
+		connectionRequest.addRequestedConnection(MongoDBConnection.class);
+		connectionRequest.addRequestedConnection(MySQLConnection.class);
+		connectionRequest.addRequestedConnection(Neo4jConnection.class);
+		connectionManager.submitRequest(connectionRequest);
+	}
+
+	@Override
+	public void acceptResponse(ConnectionResponse response) {
+		System.out.println("Response received. Connection to all databases established.");
 	}
 }
