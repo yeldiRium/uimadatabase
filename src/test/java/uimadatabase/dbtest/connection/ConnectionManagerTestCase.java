@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import dbtest.connection.AcceptsConnectionResponse;
 import dbtest.connection.Connection;
 import dbtest.connection.ConnectionManager;
 import dbtest.connection.ConnectionRequest;
@@ -59,9 +58,8 @@ class ConnectionManagerTestCase {
 	@Tag("slow")
 	@Test
 	void Given_ConnectionManagerAndMockedConnection_When_SubmittingRequestForMockedConnection_Then_EstablishAndIsEstablishedWillBeCalledOnMock() throws InterruptedException, ExecutionException {
-		AcceptsConnectionResponse mockedResponseEndpoint = Mockito.mock(AcceptsConnectionResponse.class);
 		ConnectionManager connectionManager = new ConnectionManager();
-		ConnectionRequest connectionRequest = new ConnectionRequest(mockedResponseEndpoint);
+		ConnectionRequest connectionRequest = new ConnectionRequest();
 		connectionRequest.addRequestedConnection(MockConnection.class);
 		
 		Future<ConnectionResponse> futureConnectionResponse = connectionManager.submitRequest(connectionRequest);

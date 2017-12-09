@@ -11,8 +11,6 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import dbtest.connection.exception.ConnectionRequestAlreadySubmittedException;
-
 public class ConnectionManager {
 	protected static final Logger LOGGER = Logger.getLogger(ConnectionManager.class.getName());
 	protected static final int threadCount = 10;

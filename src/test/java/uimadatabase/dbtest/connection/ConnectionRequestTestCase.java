@@ -2,14 +2,11 @@ package uimadatabase.dbtest.connection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import dbtest.connection.AcceptsConnectionResponse;
 import dbtest.connection.Connection;
 import dbtest.connection.ConnectionRequest;
 
@@ -19,36 +16,26 @@ class ConnectionRequestTestCase {
 		protected boolean tryToConnect() {
 			// TODO Auto-generated method stub
 			return false;
-		}}
+		}
+	}
 	protected class TestConnectionB extends Connection {
 		@Override
 		protected boolean tryToConnect() {
 			// TODO Auto-generated method stub
 			return false;
-		}}
+		}
+	}
 	protected class TestConnectionC extends Connection {
 		@Override
 		protected boolean tryToConnect() {
 			// TODO Auto-generated method stub
 			return false;
-		}}
-	
-	protected static AcceptsConnectionResponse requestor;
-	
-	@BeforeAll
-	static void BeforeClass() {
-		ConnectionRequestTestCase.requestor = Mockito.mock(AcceptsConnectionResponse.class);
-	}
-	
-	@Test
-	void Given_EmptyRequestObject_When_RetrievingRequestor_Then_GivenRequestorIsReturned() {
-		ConnectionRequest request = new ConnectionRequest(ConnectionRequestTestCase.requestor);
-		assertSame(ConnectionRequestTestCase.requestor, request.getResponseEndpoint());
+		}
 	}
 	
 	@Test
 	void Given_EmptyRequestObject_When_RetrievingRequestInformation_Then_EmptySetIsReturned() {
-		ConnectionRequest request = new ConnectionRequest(ConnectionRequestTestCase.requestor);
+		ConnectionRequest request = new ConnectionRequest();
 		assertEquals(0, request.getRequestedConnections().size());
 	}
 
@@ -59,7 +46,6 @@ class ConnectionRequestTestCase {
 		set.add(TestConnectionC.class);
 		
 		ConnectionRequest request = new ConnectionRequest(
-				ConnectionRequestTestCase.requestor,
 				TestConnectionA.class,
 				TestConnectionC.class
 		);
@@ -74,7 +60,7 @@ class ConnectionRequestTestCase {
 		set.add(TestConnectionA.class);
 		set.add(TestConnectionB.class);
 		
-		ConnectionRequest request = new ConnectionRequest(ConnectionRequestTestCase.requestor);
+		ConnectionRequest request = new ConnectionRequest();
 		request.addRequestedConnection(TestConnectionA.class);
 		request.addRequestedConnection(TestConnectionB.class);
 
@@ -88,7 +74,7 @@ class ConnectionRequestTestCase {
 		set.add(TestConnectionB.class);
 		set.add(TestConnectionC.class);
 		
-		ConnectionRequest request = new ConnectionRequest(ConnectionRequestTestCase.requestor, TestConnectionB.class);
+		ConnectionRequest request = new ConnectionRequest(TestConnectionB.class);
 		request.addRequestedConnection(TestConnectionC.class);
 
 		assertEquals(set.size(), request.getRequestedConnections().size());

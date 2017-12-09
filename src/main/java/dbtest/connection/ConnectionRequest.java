@@ -1,7 +1,6 @@
 package dbtest.connection;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 
 /**
@@ -11,15 +10,13 @@ import java.util.Set;
  * @author Hannes Leutloff <hannes.leutloff@aol.de>
  */
 public class ConnectionRequest {
-	private AcceptsConnectionResponse responseEndpoint;
 	private HashSet<Class<?extends Connection>> connections;
 	
 	/**
 	 * Constructs the ConnectionRequest from an endpoint and creates an empty list for the connection classes.
 	 * @param responseEndpoint
 	 */
-	public ConnectionRequest(AcceptsConnectionResponse responseEndpoint) {
-		this.responseEndpoint = responseEndpoint;
+	public ConnectionRequest() {
 		this.connections = new HashSet<>(); 
 	}
 	
@@ -29,8 +26,7 @@ public class ConnectionRequest {
 	 * @param connectionClasses
 	 */
 	@SafeVarargs
-	public ConnectionRequest(AcceptsConnectionResponse responseEndpoint, Class<?extends Connection>... connectionClasses) {
-		this.responseEndpoint = responseEndpoint;
+	public ConnectionRequest(Class<?extends Connection>... connectionClasses) {
 		this.connections = new HashSet<>();
 		for(Class<?extends Connection> connectionClass: connectionClasses) {
 			this.connections.add(connectionClass);
@@ -43,13 +39,6 @@ public class ConnectionRequest {
 	 */
 	public void addRequestedConnection(Class<?extends Connection> connectionClass) {
 		this.connections.add(connectionClass);
-	}
-	
-	/**
-	 * @return the stored object that shall receive a response.
-	 */
-	public AcceptsConnectionResponse getResponseEndpoint() {
-		return this.responseEndpoint;
 	}
 	
 	/**
