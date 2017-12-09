@@ -3,8 +3,12 @@ package dbtest.connection;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ConnectionManager {
+	protected static final Logger LOGGER = Logger.getLogger(ConnectionManager.class.getName());
+	
 	/**
 	 * How long the Thread should wait between checking the connections.
 	 */
@@ -24,16 +28,19 @@ public class ConnectionManager {
 		public void run() {
 			while (!Thread.currentThread().isInterrupted()) {
 				try {
+					LOGGER.fine("Starting connection check.");
 					for(ConnectionRequest connectionRequest: connectionRequests.keySet()) {
 						processRequest(connectionRequest);
 					}
 					// If there are no requests pending, stop the watching thread.
 					// It will be restarted once new requests come in.
 					if(connectionRequests.size() == 0) {
+						LOGGER.fine("No Request in queue, stopping ConnectionChecker.");
 						throw new InterruptedException();
 					}
 					Thread.sleep(sleepTime);
 				} catch (InterruptedException ex) {
+					LOGGER.fine("ConnectionChecker stopped.");
 					Thread.currentThread().interrupt();
 					this.interrupted = true;
 				}
@@ -44,6 +51,7 @@ public class ConnectionManager {
 	public ConnectionManager() {
 		this.connectionRequests = new HashMap<>();
 		this.connections = new HashMap<>();
+		LOGGER.info("ConnectionManager initialized.");
 	}
 	
 	/**
@@ -55,6 +63,7 @@ public class ConnectionManager {
 			ConnectionChecker checker = new ConnectionChecker();
 			this.checkThread = new Thread(checker);
 			this.checkThread.start();
+			LOGGER.fine("ConnectionChecker started.");
 		}
 	}
 
@@ -66,7 +75,9 @@ public class ConnectionManager {
 	 * @param connectionRequest
 	 */
 	public void submitRequest(ConnectionRequest connectionRequest) {
+		LOGGER.finer("Request received. Endpoint is " + connectionRequest.getResponseEndpoint().getClass().getName());
 		if(this.connectionRequests.get(connectionRequest) != null) {
+			LOGGER.finer("Request already in queue. Aborting submission...");
 			throw new ConnectionRequestAlreadySubmittedException();
 		}
 		ConnectionResponse connectionResponse = new ConnectionResponse();
@@ -86,6 +97,7 @@ public class ConnectionManager {
 	 * @param connectionRequest
 	 */
 	protected void processRequest(ConnectionRequest connectionRequest) {
+		LOGGER.finer("Processing request...");
 		ConnectionResponse connectionResponse = this.connectionRequests.get(connectionRequest);
 		// Will be set to false by any not yet established connection.
 		boolean isRequestComplete = true;
@@ -105,18 +117,22 @@ public class ConnectionManager {
 				// This starts a thread that tries to connect several times.
 				// There will be no immediate effect.
 				connection.establish();
+				LOGGER.info("Started connection to " + cls.getName());
 			}
 			// Will usually not be true, if the above block was executed.
 			// There is no harm in testing it immediately, though.
 			if(connection.isEstablished()) {
 				connectionResponse.addConnection(connection);
 				isRequestComplete &= true;
+				LOGGER.fine("Connection to " + connection.getClass().getName() + " is open.");
 				continue;
 			}
+			LOGGER.fine("Connection to " + connection.getClass().getName() + " is not yet open.");
 			isRequestComplete &= false;
 		}
 		if(isRequestComplete) {
 			// Call endpoint with Response object.
+			LOGGER.info("Request finished. Sending response to " + connectionRequest.getResponseEndpoint().getClass().getName());
 			connectionResponse.finish();
 			connectionRequest.getResponseEndpoint().acceptResponse(connectionResponse);
 			this.connectionRequests.remove(connectionRequest);
