@@ -3,6 +3,8 @@ package dbtest.connection;
 import java.util.HashSet;
 import java.util.Set;
 
+import dbtest.connection.exception.ConnectionResponseAlreadyFinishedException;
+
 /**
  * Used to encapsulate Connection objects returned from the ConnectionManager.
  * 

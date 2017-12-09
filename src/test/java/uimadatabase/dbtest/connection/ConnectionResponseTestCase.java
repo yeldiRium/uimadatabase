@@ -7,7 +7,7 @@ import java.util.Set;
 
 import dbtest.connection.Connection;
 import dbtest.connection.ConnectionResponse;
-import dbtest.connection.ConnectionResponseAlreadyFinishedException;
+import dbtest.connection.exception.ConnectionResponseAlreadyFinishedException;
 
 class ConnectionResponseTestCase {
 	protected class TestConnectionA extends Connection {

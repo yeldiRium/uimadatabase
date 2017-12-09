@@ -1,4 +1,4 @@
-package dbtest.connection;
+package dbtest.connection.exception;
 
 public class ConnectionResponseAlreadyFinishedException extends RuntimeException {
 

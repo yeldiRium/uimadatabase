@@ -14,8 +14,8 @@ import dbtest.connection.AcceptsConnectionResponse;
 import dbtest.connection.Connection;
 import dbtest.connection.ConnectionManager;
 import dbtest.connection.ConnectionRequest;
-import dbtest.connection.ConnectionRequestAlreadySubmittedException;
 import dbtest.connection.ConnectionResponse;
+import dbtest.connection.exception.ConnectionRequestAlreadySubmittedException;
 
 class ConnectionManagerTestCase {
 	/**

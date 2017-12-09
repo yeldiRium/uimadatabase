@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import dbtest.connection.exception.ConnectionRequestAlreadySubmittedException;
+
 public class ConnectionManager {
 	protected static final Logger LOGGER = Logger.getLogger(ConnectionManager.class.getName());
 	
