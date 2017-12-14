@@ -6,6 +6,7 @@ What this is:
 
 This project evaluates a number of different DBMSs in the context of Apache UIMA NLP.
 The DBMSs are:
+
 - Arango DB
 - BaseX
 - Cassandra
@@ -14,6 +15,7 @@ The DBMSs are:
 - Neo4J
 
 Still undecided:
+
 - Microsoft Cosmos DB
 
 The DBMSs are spun up in separate docker containers (if necessary and not externally hosted)
