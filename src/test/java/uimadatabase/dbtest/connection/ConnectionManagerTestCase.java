@@ -15,7 +15,7 @@ import dbtest.connection.ConnectionManager;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 
-class ConnectionManagerTestCase {
+public class ConnectionManagerTestCase {
 	/**
 	 * Will count method calls for testing purposes.
 	 */

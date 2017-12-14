@@ -10,7 +10,7 @@ import java.util.Set;
 import dbtest.connection.Connection;
 import dbtest.connection.ConnectionRequest;
 
-class ConnectionRequestTestCase {
+public class ConnectionRequestTestCase {
 	protected class TestConnectionA extends Connection {
 		@Override
 		protected boolean tryToConnect() {

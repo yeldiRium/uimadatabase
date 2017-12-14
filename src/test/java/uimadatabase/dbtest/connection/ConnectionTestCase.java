@@ -7,7 +7,7 @@ import static org.mockito.Mockito.*;
 
 import dbtest.connection.Connection;
 
-class ConnectionTestCase {
+public class ConnectionTestCase {
 	
 	class TestConnection extends Connection {
 		@Override

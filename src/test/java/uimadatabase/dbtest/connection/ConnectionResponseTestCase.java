@@ -9,7 +9,7 @@ import dbtest.connection.Connection;
 import dbtest.connection.ConnectionResponse;
 import dbtest.connection.exception.ConnectionResponseAlreadyFinishedException;
 
-class ConnectionResponseTestCase {
+public class ConnectionResponseTestCase {
 	protected class TestConnectionA extends Connection {
 		@Override
 		protected boolean tryToConnect() {
