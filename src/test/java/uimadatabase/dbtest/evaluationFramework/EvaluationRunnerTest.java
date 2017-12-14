@@ -67,4 +67,20 @@ public class EvaluationRunnerTest
 			e.printStackTrace();
 		}
 	}
+
+	@Test
+	void Given_SimpleConfigFile_When_RunningEvaluationRunner_Then_ConnectionManagerReceivesRequests() {
+		try
+		{
+			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
+			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
+			evaluationRunner.run();
+
+			verify(mockConnectionManager).submitRequest(TestEvaluationA.connectionRequest);
+			verify(mockConnectionManager).submitRequest(TestEvaluationB.connectionRequest);
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
 }

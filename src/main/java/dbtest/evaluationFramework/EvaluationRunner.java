@@ -2,10 +2,13 @@ package dbtest.evaluationFramework;
 
 import dbtest.connection.ConnectionManager;
 import dbtest.connection.ConnectionRequest;
+import dbtest.connection.ConnectionResponse;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.InputStream;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class EvaluationRunner implements Runnable
 {
@@ -26,9 +29,18 @@ public class EvaluationRunner implements Runnable
 	@Override
 	public void run()
 	{
-		for(EvaluationCase evaluationCase: this.configuration.getEvaluations()) {
+		for(EvaluationCase evaluationCase: this.configuration.getEvaluations())
+		{
 			ConnectionRequest connectionRequest = evaluationCase.requestConnection();
-			evaluationCase.run(null, null, null);
+			ConnectionResponse connectionResponse = null;
+			try
+			{
+				connectionResponse = this.connectionManager.submitRequest(connectionRequest).get();
+			} catch (InterruptedException | ExecutionException e)
+			{
+				Thread.currentThread().interrupt();
+			}
+			evaluationCase.run(null, null, connectionResponse);
 		}
 	}
 }
