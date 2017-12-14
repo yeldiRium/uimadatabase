@@ -13,7 +13,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.concurrent.*;
+import java.util.logging.Level;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -95,6 +97,38 @@ public class EvaluationRunnerTest
 
 			assertSame(this.mockConnectionResponse, TestEvaluationA.connectionResponse);
 			assertSame(this.mockConnectionResponse, TestEvaluationB.connectionResponse);
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCasesReceiveUsableLogger() {
+		try
+		{
+			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
+			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
+			evaluationRunner.run();
+
+			assertNotNull(TestEvaluationA.logger);
+			assertNotNull(TestEvaluationB.logger);
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCasesReceiveUsableResourceProvider() {
+		try
+		{
+			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
+			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
+			evaluationRunner.run();
+
+			assertNotNull(TestEvaluationA.resourceProvider);
+			assertNotNull(TestEvaluationB.resourceProvider);
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
