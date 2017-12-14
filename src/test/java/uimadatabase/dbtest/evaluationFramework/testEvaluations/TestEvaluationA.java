@@ -11,6 +11,7 @@ public class TestEvaluationA implements EvaluationCase
 {
 	public static boolean wasInstantiated = false;
 	public static boolean wasRun = false;
+	public static ConnectionRequest connectionRequest = null;
 
 	public TestEvaluationA() {
 		TestEvaluationA.wasInstantiated = true;
@@ -19,7 +20,10 @@ public class TestEvaluationA implements EvaluationCase
 	@Override
 	public ConnectionRequest requestConnection()
 	{
-		return null;
+		ConnectionRequest connectionRequest = new ConnectionRequest();
+		connectionRequest.addRequestedConnection(TestConnection.class);
+		TestEvaluationA.connectionRequest = connectionRequest;
+		return connectionRequest;
 	}
 
 	@Override
