@@ -22,30 +22,6 @@ public class ConnectionResponseTestCase {
 			// TODO Auto-generated method stub
 			return false;
 		}}
-
-	@Test
-	void Given_EmptyConnectionResponse_When_AskingIsFinished_Then_ReturnsFalse() {
-		ConnectionResponse response = new ConnectionResponse();
-		assertFalse(response.isFinished());
-	}
-	
-	@Test
-	void Given_FinishedConnectionResponse_When_AskingIsFinished_Then_ReturnsTrue() {
-		ConnectionResponse response = new ConnectionResponse();
-		response.finish();
-		assertTrue(response.isFinished());
-	}
-	
-	@Test
-	void Given_FinishedConnectionResponse_When_TryingToAddConnection_Then_ExceptionIsThrown() {
-		Connection a = new TestConnectionA();
-		ConnectionResponse response = new ConnectionResponse();
-		response.finish();
-		assertThrows(
-			ConnectionResponseAlreadyFinishedException.class,
-			() -> response.addConnection(a)
-		);
-	}
 	
 	@Test
 	void Given_EmptyConnectionResponse_When_GettingConnectionList_Then_EmptySetIsReturned() {

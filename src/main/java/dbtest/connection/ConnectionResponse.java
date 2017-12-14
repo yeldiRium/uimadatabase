@@ -11,27 +11,10 @@ import dbtest.connection.exception.ConnectionResponseAlreadyFinishedException;
  * @author Hannes Leutloff <hannes.leutloff@aol.de>
  */
 public class ConnectionResponse {
-	protected boolean finished;
 	protected HashSet<Connection> connections;
 
 	public ConnectionResponse() {
-		this.finished = false;
 		this.connections = new HashSet<>();
-	}
-	
-	/**
-	 * Finishes the Response and disallows adding any further connections.
-	 */
-	public void finish() {
-		this.finished = true;
-	}
-	
-	/**
-	 * Returns true, if the Response was finished.
-	 * @return
-	 */
-	public boolean isFinished() {
-		return this.finished;
 	}
 	
 	/**
@@ -40,9 +23,6 @@ public class ConnectionResponse {
 	 * @throws ConnectionResponseAlreadyFinishedException
 	 */
 	public void addConnection(Connection connection) {
-		if (this.isFinished()) {
-			throw new ConnectionResponseAlreadyFinishedException();
-		}
 		if (!this.connections.contains(connection)) {
 			this.connections.add(connection);
 		}
