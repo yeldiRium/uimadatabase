@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationA;
 import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationB;
+import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestResourceProvider;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -50,6 +51,20 @@ public class EvaluationRunnerTest
 			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
 			assertTrue(TestEvaluationA.wasInstantiated);
 			assertTrue(TestEvaluationB.wasInstantiated);
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	void Given_TestConfigFile_When_InstantiatingEvaluationRunner_Then_ResourceProviderIsInstantiatedCorrectly()
+	{
+		try
+		{
+			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
+			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
+			assertTrue(TestResourceProvider.wasInstantiated);
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();

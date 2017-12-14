@@ -6,6 +6,18 @@ public class Configuration
 {
 	List<EvaluationCase> evaluations;
 
+	public ResourceProvider getResourceProvider()
+	{
+		return resourceProvider;
+	}
+
+	public void setResourceProvider(ResourceProvider resourceProvider)
+	{
+		this.resourceProvider = resourceProvider;
+	}
+
+	ResourceProvider resourceProvider;
+
 	public List<EvaluationCase> getEvaluations()
 	{
 		return evaluations;
