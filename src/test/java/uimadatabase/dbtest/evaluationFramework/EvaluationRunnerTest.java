@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.concurrent.*;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -78,6 +79,22 @@ public class EvaluationRunnerTest
 
 			verify(mockConnectionManager).submitRequest(TestEvaluationA.connectionRequest);
 			verify(mockConnectionManager).submitRequest(TestEvaluationB.connectionRequest);
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCasesAreRunWithCorrectConnectionResponse() {
+		try
+		{
+			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
+			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
+			evaluationRunner.run();
+
+			assertSame(this.mockConnectionResponse, TestEvaluationA.connectionResponse);
+			assertSame(this.mockConnectionResponse, TestEvaluationB.connectionResponse);
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();

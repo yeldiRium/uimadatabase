@@ -10,8 +10,12 @@ import java.util.logging.Logger;
 public class TestEvaluationA implements EvaluationCase
 {
 	public static boolean wasInstantiated = false;
-	public static boolean wasRun = false;
 	public static ConnectionRequest connectionRequest = null;
+
+	public static boolean wasRun = false;
+	public static ResourceProvider resourceProvider = null;
+	public static Logger logger = null;
+	public static ConnectionResponse connectionResponse = null;
 
 	public TestEvaluationA() {
 		TestEvaluationA.wasInstantiated = true;
@@ -30,5 +34,8 @@ public class TestEvaluationA implements EvaluationCase
 	public void run(ResourceProvider resourceProvider, Logger logger, ConnectionResponse connectionResponse)
 	{
 		TestEvaluationA.wasRun = true;
+		TestEvaluationA.resourceProvider = resourceProvider;
+		TestEvaluationA.logger = logger;
+		TestEvaluationA.connectionResponse = connectionResponse;
 	}
 }
