@@ -1,5 +1,7 @@
 package dbtest.evaluationFramework;
 
+import dbtest.connection.ConnectionManager;
+import dbtest.connection.ConnectionRequest;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -8,9 +10,11 @@ import java.io.InputStream;
 public class EvaluationRunner implements Runnable
 {
 	protected Configuration configuration;
+	protected ConnectionManager connectionManager;
 
-	public EvaluationRunner(InputStream configFile) {
+	public EvaluationRunner(InputStream configFile, ConnectionManager connectionManager) {
 		this.loadConfig(configFile);
+		this.connectionManager = connectionManager;
 	}
 
 	protected void loadConfig(InputStream configFile) {
@@ -22,6 +26,9 @@ public class EvaluationRunner implements Runnable
 	@Override
 	public void run()
 	{
-
+		for(EvaluationCase evaluationCase: this.configuration.getEvaluations()) {
+			ConnectionRequest connectionRequest = evaluationCase.requestConnection();
+			evaluationCase.run(null, null, null);
+		}
 	}
 }

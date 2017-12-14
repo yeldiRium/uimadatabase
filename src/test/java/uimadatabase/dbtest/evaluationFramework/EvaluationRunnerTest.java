@@ -19,9 +19,24 @@ public class EvaluationRunnerTest
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
-			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile);
+			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, null);
 			assertTrue(TestEvaluationA.wasInstantiated);
 			assertTrue(TestEvaluationB.wasInstantiated);
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	void Given_SimpleConfigFile_When_RunningEvaluationRunner_Then_EvaluationCaseObjectsAreRun() {
+		try
+		{
+			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
+			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, null);
+			evaluationRunner.run();
+			assertTrue(TestEvaluationA.wasRun);
+			assertTrue(TestEvaluationB.wasRun);
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();

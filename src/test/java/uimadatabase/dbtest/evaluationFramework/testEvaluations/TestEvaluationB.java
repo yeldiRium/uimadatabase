@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 public class TestEvaluationB implements EvaluationCase
 {
 	public static boolean wasInstantiated = false;
+	public static boolean wasRun = false;
 
 	public TestEvaluationB() {
 		TestEvaluationB.wasInstantiated = true;
@@ -24,6 +25,6 @@ public class TestEvaluationB implements EvaluationCase
 	@Override
 	public void run(ResourceProvider resourceProvider, Logger logger, ConnectionResponse connectionResponse)
 	{
-
+		TestEvaluationB.wasRun = true;
 	}
 }
