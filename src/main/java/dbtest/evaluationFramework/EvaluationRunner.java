@@ -8,7 +8,6 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class EvaluationRunner implements Runnable
 {
@@ -40,7 +39,7 @@ public class EvaluationRunner implements Runnable
 			{
 				Thread.currentThread().interrupt();
 			}
-			evaluationCase.run(null, null, connectionResponse);
+			evaluationCase.run(this.configuration.getResourceProvider(), null, connectionResponse);
 		}
 	}
 }

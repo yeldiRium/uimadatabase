@@ -4,19 +4,8 @@ import java.util.List;
 
 public class Configuration
 {
-	List<EvaluationCase> evaluations;
-
-	public ResourceProvider getResourceProvider()
-	{
-		return resourceProvider;
-	}
-
-	public void setResourceProvider(ResourceProvider resourceProvider)
-	{
-		this.resourceProvider = resourceProvider;
-	}
-
-	ResourceProvider resourceProvider;
+	protected List<EvaluationCase> evaluations;
+	protected ResourceProvider resourceProvider;
 
 	public List<EvaluationCase> getEvaluations()
 	{
@@ -26,5 +15,15 @@ public class Configuration
 	public void setEvaluations(List<EvaluationCase> evaluations)
 	{
 		this.evaluations = evaluations;
+	}
+
+	public ResourceProvider getResourceProvider()
+	{
+		return resourceProvider;
+	}
+
+	public void setResourceProvider(ResourceProvider resourceProvider)
+	{
+		this.resourceProvider = resourceProvider;
 	}
 }
