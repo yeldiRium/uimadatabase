@@ -39,7 +39,7 @@ public class EvaluationRunnerTest
 	}
 
 	@Test
-	void Given_SimpleConfigFile_When_InstantiatingEvaluationRunner_Then_EvaluationCaseObjectsAreCreatedCorrectly()
+	void Given_TestConfigFile_When_InstantiatingEvaluationRunner_Then_EvaluationCaseObjectsAreCreatedCorrectly()
 	{
 		try
 		{
@@ -54,7 +54,7 @@ public class EvaluationRunnerTest
 	}
 
 	@Test
-	void Given_SimpleConfigFile_When_RunningEvaluationRunner_Then_EvaluationCaseObjectsAreRun() {
+	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCaseObjectsAreRun() {
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
@@ -69,7 +69,7 @@ public class EvaluationRunnerTest
 	}
 
 	@Test
-	void Given_SimpleConfigFile_When_RunningEvaluationRunner_Then_ConnectionManagerReceivesRequests() {
+	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_ConnectionManagerReceivesRequests() {
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
