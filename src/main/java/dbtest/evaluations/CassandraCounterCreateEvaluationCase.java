@@ -1,6 +1,5 @@
 package dbtest.evaluations;
 
-import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import dbtest.connection.Connection;
 import dbtest.connection.ConnectionRequest;
@@ -46,6 +45,7 @@ public class CassandraCounterCreateEvaluationCase implements EvaluationCase
 			int tfidfCount = 0;
 			int tfidfRCount = 0;
 
+			session.execute("create keyspace if not exists textimager with replication = {'class': 'SimpleStrategy', 'replication_factor': 1};");
 			session.execute("use textimager;");
 
 			start = System.currentTimeMillis();
