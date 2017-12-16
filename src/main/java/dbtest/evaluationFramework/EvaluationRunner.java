@@ -40,7 +40,6 @@ public class EvaluationRunner implements Runnable
 				Thread.currentThread().interrupt();
 			}
 			evaluationCase.run(
-				null,
 				connectionResponse
 			);
 		}

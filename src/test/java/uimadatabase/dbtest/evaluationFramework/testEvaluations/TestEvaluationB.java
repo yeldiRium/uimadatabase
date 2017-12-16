@@ -12,7 +12,6 @@ public class TestEvaluationB implements EvaluationCase
 	public static ConnectionRequest connectionRequest = null;
 
 	public static boolean wasRun = false;
-	public static OutputStream outputStream = null;
 	public static ConnectionResponse connectionResponse = null;
 
 	public TestEvaluationB() {
@@ -29,10 +28,9 @@ public class TestEvaluationB implements EvaluationCase
 	}
 
 	@Override
-	public void run(OutputStream outputStream, ConnectionResponse connectionResponse)
+	public void run(ConnectionResponse connectionResponse)
 	{
 		TestEvaluationB.wasRun = true;
-		TestEvaluationB.outputStream = outputStream;
 		TestEvaluationB.connectionResponse = connectionResponse;
 	}
 }

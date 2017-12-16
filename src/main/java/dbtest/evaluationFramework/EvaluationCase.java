@@ -10,7 +10,6 @@ public interface EvaluationCase
 	ConnectionRequest requestConnection();
 
 	void run(
-			OutputStream outputStream,
 			ConnectionResponse connectionResponse
 	);
 }
