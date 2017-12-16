@@ -41,7 +41,7 @@ public class Neo4jConnection extends Connection {
 	@Override
 	public void close()
 	{
-		// TODO: implement
+		this.driver.close();
 	}
 
 }

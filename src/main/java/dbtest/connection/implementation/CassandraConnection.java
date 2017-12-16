@@ -41,7 +41,8 @@ public class CassandraConnection extends Connection {
 	@Override
 	public void close()
 	{
-		// TODO: implement
+		this.session.close();
+		this.cluster.close();
 	}
 
 	public Cluster getCluster()

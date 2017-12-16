@@ -34,7 +34,7 @@ public class MongoDBConnection extends Connection {
 	@Override
 	public void close()
 	{
-		// TODO: implement
+		this.client.close();
 	}
 
 }

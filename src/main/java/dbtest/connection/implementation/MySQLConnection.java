@@ -44,6 +44,12 @@ public class MySQLConnection extends Connection {
 	@Override
 	public void close()
 	{
-		// TODO: implement
+		try
+		{
+			this.connection.close();
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
