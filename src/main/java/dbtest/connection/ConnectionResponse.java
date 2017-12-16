@@ -3,8 +3,6 @@ package dbtest.connection;
 import java.util.HashSet;
 import java.util.Set;
 
-import dbtest.connection.exception.ConnectionResponseAlreadyFinishedException;
-
 /**
  * Used to encapsulate Connection objects returned from the ConnectionManager.
  * 
@@ -20,7 +18,6 @@ public class ConnectionResponse {
 	/**
 	 * Add a connection object. If it is already there, nothing happens.
 	 * @param connection
-	 * @throws ConnectionResponseAlreadyFinishedException
 	 */
 	public void addConnection(Connection connection) {
 		if (!this.connections.contains(connection)) {
