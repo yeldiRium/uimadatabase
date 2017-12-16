@@ -18,6 +18,7 @@ public class Main
 				connectionManager
 			);
 			evaluationRunner.run();
+			connectionManager.close();
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
