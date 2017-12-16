@@ -38,4 +38,13 @@ public class CassandraConnection extends Connection {
 		}
 	}
 
+	public Cluster getCluster()
+	{
+		return cluster;
+	}
+
+	public Session getSession()
+	{
+		return session;
+	}
 }
