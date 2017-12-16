@@ -18,8 +18,13 @@ RUN ["mvn", "clean", "package"]
 # move libs and jar to code root
 RUN mv /code/target/libs /code
 RUN mv /code/target/target.jar /code
-# remove source code and other superfluous stuff
-RUN rm -rf /code/src
-RUN rm /code/pom.xml
+
+# removing source code, tests and target folder
+# but keeping resources
+RUN rm -rf /code/src/main/java
+RUN rm -rf /code/src/test
 RUN rm -rf /code/target
-RUN mkdir /code/output
+RUN rm /code/pom.xml
+
+# prepare output directory
+ADD output /code/output
