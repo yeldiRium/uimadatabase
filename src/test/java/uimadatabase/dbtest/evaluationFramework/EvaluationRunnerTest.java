@@ -14,7 +14,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.concurrent.*;
-import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -119,15 +118,15 @@ public class EvaluationRunnerTest
 	}
 
 	@Test
-	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCasesReceiveUsableLogger() {
+	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCasesReceiveUsableOutputService() {
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
 			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
 			evaluationRunner.run();
 
-			assertNotNull(TestEvaluationA.logger);
-			assertNotNull(TestEvaluationB.logger);
+			assertNotNull(TestEvaluationA.outputService);
+			assertNotNull(TestEvaluationB.outputService);
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();

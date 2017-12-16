@@ -39,7 +39,11 @@ public class EvaluationRunner implements Runnable
 			{
 				Thread.currentThread().interrupt();
 			}
-			evaluationCase.run(this.configuration.getResourceProvider(), null, connectionResponse);
+			evaluationCase.run(
+				this.configuration.getResourceProvider(),
+				this.configuration.getOutputService(),
+				connectionResponse
+			);
 		}
 	}
 }

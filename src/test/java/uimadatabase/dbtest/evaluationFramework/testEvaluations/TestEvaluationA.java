@@ -3,6 +3,7 @@ package uimadatabase.dbtest.evaluationFramework.testEvaluations;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.evaluationFramework.EvaluationCase;
+import dbtest.evaluationFramework.OutputService;
 import dbtest.evaluationFramework.ResourceProvider;
 
 import java.util.logging.Logger;
@@ -14,7 +15,7 @@ public class TestEvaluationA implements EvaluationCase
 
 	public static boolean wasRun = false;
 	public static ResourceProvider resourceProvider = null;
-	public static Logger logger = null;
+	public static OutputService outputService = null;
 	public static ConnectionResponse connectionResponse = null;
 
 	public TestEvaluationA() {
@@ -31,11 +32,11 @@ public class TestEvaluationA implements EvaluationCase
 	}
 
 	@Override
-	public void run(ResourceProvider resourceProvider, Logger logger, ConnectionResponse connectionResponse)
+	public void run(ResourceProvider resourceProvider, OutputService outputService, ConnectionResponse connectionResponse)
 	{
 		TestEvaluationA.wasRun = true;
 		TestEvaluationA.resourceProvider = resourceProvider;
-		TestEvaluationA.logger = logger;
+		TestEvaluationA.outputService = outputService;
 		TestEvaluationA.connectionResponse = connectionResponse;
 	}
 }
