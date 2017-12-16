@@ -42,7 +42,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>libs/</classpathPrefix>
-							<mainClass>dbtest.DBConnectionTest</mainClass>
+							<mainClass>dbtest.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
