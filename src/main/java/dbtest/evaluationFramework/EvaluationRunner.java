@@ -39,6 +39,7 @@ public class EvaluationRunner implements Runnable
 			{
 				Thread.currentThread().interrupt();
 			}
+			System.out.println("Running EvaluationCase " + evaluationCase.getClass().getName());
 			evaluationCase.run(
 				connectionResponse
 			);
