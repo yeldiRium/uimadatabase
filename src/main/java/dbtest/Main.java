@@ -17,8 +17,12 @@ public class Main
 				new FileInputStream("src/main/resoures/config.yml"),
 				connectionManager
 			);
+			System.out.println("Running Evaluations...");
 			evaluationRunner.run();
+			System.out.println("Evaluations done. Closing connections...");
 			connectionManager.close();
+			System.out.println("Connections closed. Exiting...");
+
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
