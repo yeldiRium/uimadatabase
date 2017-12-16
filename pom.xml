@@ -74,6 +74,8 @@
 			<groupId>org.hucompute.services</groupId>
 			<artifactId>services-types</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/services-types-0.0.1-20170922.145357-27.jar</systemPath>
 		</dependency>
 		
 		<dependency>
@@ -86,7 +88,7 @@
 			<artifactId>mockito-core</artifactId>
 			<version>2.13.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.uima</groupId>
 			<artifactId>uimaj-core</artifactId>

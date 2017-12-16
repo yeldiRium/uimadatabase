@@ -14,5 +14,8 @@ target/
 *.war
 *.class
 
+# libraries
+!lib/services-types-0.0.1-20170922.145357-27.jar
+
 # OS
 .DS_Store
