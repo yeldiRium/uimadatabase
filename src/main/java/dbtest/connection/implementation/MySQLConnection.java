@@ -40,4 +40,10 @@ public class MySQLConnection extends Connection {
 			return false;
 		}
 	}
+
+	@Override
+	public void close()
+	{
+		// TODO: implement
+	}
 }

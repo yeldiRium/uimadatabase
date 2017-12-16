@@ -74,4 +74,25 @@ public class ConnectionManager {
 			}
 		});
 	}
+
+	/**
+	 * Closes all connections that are open.
+	 * Cancels all futures, which have not yet been completed.
+	 */
+	public void close()
+	{
+		for(Future<Connection> futureConnection: this.connections.values()) {
+			if(futureConnection.isDone()) {
+				try
+				{
+					futureConnection.get().close();
+				} catch (InterruptedException | ExecutionException e)
+				{
+					e.printStackTrace();
+				}
+			} else {
+				futureConnection.cancel(true);
+			}
+		}
+	}
 }

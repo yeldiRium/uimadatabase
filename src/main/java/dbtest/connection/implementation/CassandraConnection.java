@@ -38,6 +38,12 @@ public class CassandraConnection extends Connection {
 		}
 	}
 
+	@Override
+	public void close()
+	{
+		// TODO: implement
+	}
+
 	public Cluster getCluster()
 	{
 		return cluster;

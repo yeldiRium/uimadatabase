@@ -14,7 +14,13 @@ public class ConnectionTestCase {
 		protected boolean tryToConnect() {
 			return false;
 		}
-		
+
+		@Override
+		public void close()
+		{
+
+		}
+
 	}
 
 	@Test

@@ -17,6 +17,12 @@ public class ConnectionRequestTestCase {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public void close()
+		{
+
+		}
 	}
 	protected class TestConnectionB extends Connection {
 		@Override
@@ -24,12 +30,24 @@ public class ConnectionRequestTestCase {
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+		@Override
+		public void close()
+		{
+
+		}
 	}
 	protected class TestConnectionC extends Connection {
 		@Override
 		protected boolean tryToConnect() {
 			// TODO Auto-generated method stub
 			return false;
+		}
+
+		@Override
+		public void close()
+		{
+
 		}
 	}
 	

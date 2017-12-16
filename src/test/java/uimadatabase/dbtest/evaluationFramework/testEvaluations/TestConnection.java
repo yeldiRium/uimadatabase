@@ -9,4 +9,10 @@ public class TestConnection extends Connection
 	{
 		return true;
 	}
+
+	@Override
+	public void close()
+	{
+
+	}
 }

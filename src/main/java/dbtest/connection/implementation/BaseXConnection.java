@@ -34,4 +34,10 @@ public class BaseXConnection extends Connection {
 		}
 	}
 
+	@Override
+	public void close()
+	{
+		// TODO: implement
+	}
+
 }

@@ -46,7 +46,12 @@ public abstract class Connection {
 	 * @return
 	 */
 	protected abstract boolean tryToConnect();
-	
+
+	/**
+	 * Closes the connection.
+	 */
+	public abstract void close();
+
 	/**
 	 * @return
 	 */

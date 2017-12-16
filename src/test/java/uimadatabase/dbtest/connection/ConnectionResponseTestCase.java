@@ -14,13 +14,27 @@ public class ConnectionResponseTestCase {
 		protected boolean tryToConnect() {
 			// TODO Auto-generated method stub
 			return false;
-		}}
+		}
+
+		@Override
+		public void close()
+		{
+
+		}
+	}
 	protected class TestConnectionB extends Connection {
 		@Override
 		protected boolean tryToConnect() {
 			// TODO Auto-generated method stub
 			return false;
-		}}
+		}
+
+		@Override
+		public void close()
+		{
+
+		}
+	}
 	
 	@Test
 	void Given_EmptyConnectionResponse_When_GettingConnectionList_Then_EmptySetIsReturned() {
