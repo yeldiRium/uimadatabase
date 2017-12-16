@@ -21,3 +21,4 @@ RUN mv /code/target/target.jar /code
 RUN rm -rf /code/src
 RUN rm /code/pom.xml
 RUN rm -rf /code/target
+RUN mkdir /code/output
