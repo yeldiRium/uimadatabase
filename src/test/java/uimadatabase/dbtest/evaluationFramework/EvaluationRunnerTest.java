@@ -8,14 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationA;
 import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationB;
-import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestResourceProvider;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.concurrent.*;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,20 +48,6 @@ public class EvaluationRunnerTest
 			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
 			assertTrue(TestEvaluationA.wasInstantiated);
 			assertTrue(TestEvaluationB.wasInstantiated);
-		} catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	@Test
-	void Given_TestConfigFile_When_InstantiatingEvaluationRunner_Then_ResourceProviderIsInstantiatedCorrectly()
-	{
-		try
-		{
-			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
-			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
-			assertTrue(TestResourceProvider.wasInstantiated);
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
@@ -111,38 +95,6 @@ public class EvaluationRunnerTest
 
 			assertSame(this.mockConnectionResponse, TestEvaluationA.connectionResponse);
 			assertSame(this.mockConnectionResponse, TestEvaluationB.connectionResponse);
-		} catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	@Test
-	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCasesReceiveUsableOutputService() {
-		try
-		{
-			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
-			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
-			evaluationRunner.run();
-
-			assertNotNull(TestEvaluationA.outputService);
-			assertNotNull(TestEvaluationB.outputService);
-		} catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	@Test
-	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCasesReceiveUsableResourceProvider() {
-		try
-		{
-			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
-			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
-			evaluationRunner.run();
-
-			assertNotNull(TestEvaluationA.resourceProvider);
-			assertNotNull(TestEvaluationB.resourceProvider);
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
