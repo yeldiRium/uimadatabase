@@ -19,7 +19,7 @@ import com.datastax.driver.core.exceptions.NoHostAvailableException;
 /**
  * The entry point to query for data in all running databases. Currently we can
  * connect to a Neo4J and a CassandraDB instance. Extend
- * {@link #RequestHandler} and implement Callable to plug in another
+ * this and implement Callable to plug in another
  * database. Callable in {@link #stringRequestHandler(String)} returns first
  * valid result and ignores slow answers.
  * 

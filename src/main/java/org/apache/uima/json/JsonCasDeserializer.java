@@ -111,17 +111,16 @@ public class JsonCasDeserializer {
 		for (String key : initialView.keySet()) {
 			for (Object object : initialView.getJSONArray(key)) {
 				if(context.getJSONObject("_context").getJSONObject("_types").has(key)){
-					createAnnotation(cas, (JSONObject)object, context.getJSONObject("_context").getJSONObject("_types").getJSONObject(key).getString("_id")).addToIndexes();;
+					createAnnotation(cas, (JSONObject)object, context.getJSONObject("_context").getJSONObject("_types").getJSONObject(key).getString("_id")).addToIndexes();
 				}
-			};
+			}
 		}
 	}
 
 	private Annotation createAnnotation(JCas cas, JSONObject object, String name){
 		switch (name) {
 		case "de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.NN":
-			NN output = new NN(cas, object.getInt("b"), object.getInt("e"));
-			return output;
+			return new NN(cas, object.getInt("b"), object.getInt("e"));
 		case "de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.morph.MorphologicalFeatures":
 			MorphologicalFeatures morph = new MorphologicalFeatures(cas, object.getInt("b"), object.getInt("e"));
 			morph.setValue(object.getString("value"));

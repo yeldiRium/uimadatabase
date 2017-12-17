@@ -6,10 +6,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.fit.component.CasCollectionReader_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
@@ -31,7 +31,7 @@ public abstract class AbstractCollectionReader extends CasCollectionReader_ImplB
 	public void initialize(UimaContext context)
 			throws ResourceInitializationException {
 		super.initialize(context);
-		logger = Logger.getLogger(this.getClass());
+		logger = Logger.getLogger(this.getClass().getName());
 		if(logFile != null)
 			logFile.delete();
 		stopWatch = new StopWatch();

@@ -86,7 +86,7 @@ public class CassandraCollectionReader extends AbstractCollectionReader {
 
 		reecreateMetaData(aCAS, row);
 
-		String xmi = row.getString("xmi");;
+		String xmi = row.getString("xmi");
 		StringBuilder sb = new StringBuilder();
 		for(String s : tables){
 			sb.setLength(0);

@@ -64,8 +64,7 @@ public class Neo4jDriver implements AutoCloseable {
         {
 	    	//TODO:Add parameters to run
         	System.out.println(query);
-	        StatementResult result = session.run(query);
-			return result;
+	        return session.run(query);
         }
 	}
 

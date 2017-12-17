@@ -15,76 +15,60 @@ public class Config extends Properties {
     }
 
     public String getMDBConfig() {
-        String lResult = getProperty("mdb", "mdb");
-        return lResult;
+        return getProperty("mdb", "mdb");
     }
 
     public String getAppName() {
-        String lResult = getProperty("appname", "ExampleCalamariApplication");
-        return lResult;
+        return getProperty("appname", "ExampleCalamariApplication");
     }
 
     public String getAppPath() {
-        String lResult = getProperty("classpath", "org.hucompute.services.calamari");
-        return lResult;
+        return getProperty("classpath", "org.hucompute.services.calamari");
     }
 
     public String getURL() {
-        String lResult = getProperty("url", "141.2.89.20");
-        return lResult;
+        return getProperty("url", "141.2.89.20");
     }
 
     public String getName() {
-        String lResult = getProperty("name", "TTCalmari");
-        return lResult;
+        return getProperty("name", "TTCalmari");
     }
 
     public String getDescription() {
-        String lResult = getProperty("description", "My TTCalmari");
-        return lResult;
+        return getProperty("description", "My TTCalmari");
     }
 
     public String getTempFolder() {
-        String sResult = getProperty("tmp_folder", "/tmp");
-        return sResult;
+        return getProperty("tmp_folder", "/tmp");
     }
 
     public String getHostName() {
-        String lResult = getProperty("host_name", "calamari.hucompute.org");
-        return lResult;
+        return getProperty("host_name", "calamari.hucompute.org");
     }
 
     public int getPort() {
-        int lResult = Integer.valueOf(getProperty("host_port", "8080"));
-        return lResult;
+        return Integer.valueOf(getProperty("host_port", "8080"));
     }
 
     public String getProtokoll() {
-        String lResult = getProperty("host_protocol", "http");
-        return lResult;
+        return getProperty("host_protocol", "http");
     }
 
     public int getMinThreads() {
-        int lResult = Integer.valueOf(getProperty("minthreads", "10"));
-        return lResult;
+        return Integer.valueOf(getProperty("minthreads", "10"));
     }
 
 
     public int getMaxThreads() {
-        int lResult = Integer.valueOf(getProperty("maxthreads", "20"));
-        return lResult;
+        return Integer.valueOf(getProperty("maxthreads", "20"));
     }
 
 
     public int getTimeOut() {
-        int lResult = Integer.valueOf(getProperty("timeout", "6000"));
-        return lResult;
+        return Integer.valueOf(getProperty("timeout", "6000"));
     }
 
     public String getCalamariNS() {
-        String lResult = getProperty("calamari_namespace", "element");
-        return lResult;
+        return getProperty("calamari_namespace", "element");
     }
-
-
 }

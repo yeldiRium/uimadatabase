@@ -105,7 +105,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	/**
 	 * Legacy function. Wraps array of Strings argument to {@link Collection}.
 	 * @param documentIds the specified document's id.
-	 * @return recursive call to {@link TTR_collection}.
+	 * @return recursive call to {@link #TTR_collection}.
 	 */
 	public Map<String, Double> getTTR (String documentIds[]) {
 		return TTR_collection (Arrays.asList(documentIds));
@@ -404,12 +404,12 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 		}
 		return tf;
 	}
-	
-	@Deprecated
+
 	/**
 	 * @param lemma
 	 * @return
 	 */
+	@Deprecated
 	public double documentsContaining (String lemma) {
 		long startTime = System.currentTimeMillis();
 		double dc = 0.0;
@@ -833,11 +833,11 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 		    System.err.format("IOException: %s%n", x);
 		}
 	}
-	
-	@Deprecated
+
 	/**
 	 * Legacy function, do not use.
 	 */
+	@Deprecated
 	public static void wellconnect() {
 		try (Transaction tx = MDB_Neo4J_Impl.gdbs.beginTx()) {
 			//Create a relationship between all documents and the lemmas of their tokens

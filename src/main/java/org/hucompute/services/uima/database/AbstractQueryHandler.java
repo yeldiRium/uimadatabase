@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.hucompute.services.uima.database;
 
 import java.util.ArrayDeque;

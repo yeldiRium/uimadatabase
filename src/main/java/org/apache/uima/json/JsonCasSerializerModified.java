@@ -555,7 +555,7 @@ public class JsonCasSerializerModified {
 				jch.writeNlJustBeforeNext();
 				String viewName = (0 == sofaAddr) ?  
 						CAS.NAME_DEFAULT_SOFA :
-							cds.cas.getStringValue(sofaAddr, cds.tsi.sofaIdFeatCode);
+							cds.cas.getStringValue(sofaAddr, TypeSystemImpl.sofaIdFeatCode);
 				jg.writeFieldName(viewName);  // view namne
 				jg.writeStartObject();
 				for (Integer fs : fssInView) {
@@ -888,7 +888,6 @@ public class JsonCasSerializerModified {
 				}
 			}
 			usedTypeName2XmlElementName.put(xmlElementName.localName, xmlElementName);
-			return;
 		}
 
 		@Override

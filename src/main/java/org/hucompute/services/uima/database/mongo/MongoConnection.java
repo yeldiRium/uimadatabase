@@ -31,9 +31,10 @@ public class MongoConnection {
 	}
 
 	/**
-	 * @param db_connection
-	 *            an array {host, dbName, collectionName, user, pw}. Leave user
-	 *            and pw empty ("") to skip authentication
+	 * @param host
+	 * @param dbName
+	 * @param collectionName
+	 * @param safe
 	 */
 	@SuppressWarnings("deprecation") // TODO replace with MongoClient
     public MongoConnection(String host,String dbName,String collectionName, boolean safe)
