@@ -6,46 +6,52 @@ import java.util.Set;
 /**
  * The ConnectionRequest is used to transfer a number of Connection classes to the ConnectionManager.
  * It tells the Manager, which Connections should be prepared and who should be called with them.
- * 
+ *
  * @author Hannes Leutloff <hannes.leutloff@aol.de>
  */
-public class ConnectionRequest {
-	private HashSet<Class<?extends Connection>> connections;
-	
+public class ConnectionRequest
+{
+	private HashSet<Class<? extends Connection>> connections;
+
 	/**
 	 * Constructs the ConnectionRequest from an endpoint and creates an empty list for the connection classes.
-	 * @param responseEndpoint
 	 */
-	public ConnectionRequest() {
-		this.connections = new HashSet<>(); 
+	public ConnectionRequest()
+	{
+		this.connections = new HashSet<>();
 	}
-	
+
 	/**
 	 * Constructs the ConnectionRequest from an endpoint and a number of connection classes.
-	 * @param responseEndpoint
+	 *
 	 * @param connectionClasses
 	 */
 	@SafeVarargs
-	public ConnectionRequest(Class<?extends Connection>... connectionClasses) {
+	public ConnectionRequest(Class<? extends Connection>... connectionClasses)
+	{
 		this.connections = new HashSet<>();
-		for(Class<?extends Connection> connectionClass: connectionClasses) {
+		for (Class<? extends Connection> connectionClass : connectionClasses)
+		{
 			this.connections.add(connectionClass);
 		}
 	}
-	
+
 	/**
 	 * Adds a connectionClass to the set.
+	 *
 	 * @param connectionClass
 	 */
-	public void addRequestedConnection(Class<?extends Connection> connectionClass) {
+	public void addRequestedConnection(Class<? extends Connection> connectionClass)
+	{
 		this.connections.add(connectionClass);
 	}
-	
+
 	/**
 	 * @return the set of connection classes.
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<Class<?extends Connection>> getRequestedConnections() {
+	public Set<Class<? extends Connection>> getRequestedConnections()
+	{
 		return (Set<Class<? extends Connection>>) this.connections.clone();
 	}
 }

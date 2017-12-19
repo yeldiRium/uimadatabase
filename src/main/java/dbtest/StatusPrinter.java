@@ -17,17 +17,20 @@ import org.apache.uima.jcas.JCas;
 		outputs = {
 				"de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.morph.Morpheme"
 		}
-		)
+)
 public class StatusPrinter
-extends JCasConsumer_ImplBase
+		extends JCasConsumer_ImplBase
 {
 	int processed;
+
 	@Override
-	public void process(JCas aJCas) throws AnalysisEngineProcessException {
+	public void process(JCas aJCas) throws AnalysisEngineProcessException
+	{
 	}
-	
+
 	@Override
-	public void collectionProcessComplete() throws AnalysisEngineProcessException {
+	public void collectionProcessComplete() throws AnalysisEngineProcessException
+	{
 		super.collectionProcessComplete();
 	}
 }

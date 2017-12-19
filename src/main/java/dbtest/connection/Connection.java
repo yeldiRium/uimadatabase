@@ -7,42 +7,50 @@ import java.util.logging.Logger;
  * How the connection is used is implentation specific. This pro-
  * vides only guidelines on establishing the connection and commu-
  * nicating with the ConnectionManager.
- * 
+ *
  * @author Hannes Leutloff <hannes.leutloff@aol.de>
  */
-public abstract class Connection {
+public abstract class Connection
+{
 	protected static final Logger LOGGER = Logger.getLogger(Connection.class.getName());
-	
+
 	protected final int sleepTime = 500;
 	protected boolean isEstablished = false;
-	
+
 	/**
 	 * Tries regularly to establish the connection via calling #tryToConnect.
-	 * 
+	 * <p>
 	 * Check for interruption since this probably will be executed in a concurrent context.
 	 */
-	public void establish() {
+	public void establish()
+	{
 		// Allow interruption of thread from outside.
-		while (!Thread.currentThread().isInterrupted()) {
-			try {
+		while (!Thread.currentThread().isInterrupted())
+		{
+			try
+			{
 				LOGGER.fine("Trying to connect... - " + this.getClass().getName());
-				if(tryToConnect()) {
+				if (tryToConnect())
+				{
 					LOGGER.fine("Connection for " + this.getClass().getName() + " successful!");
 					isEstablished = true;
 					return;
-				} else {
+				} else
+				{
 					LOGGER.fine("Connection for " + this.getClass().getName() + " failed.");
 				}
 				Thread.sleep(sleepTime);
-			} catch (InterruptedException ex) {
+			} catch (InterruptedException ex)
+			{
 				Thread.currentThread().interrupt();
 			}
 		}
 	}
-	
+
 	/**
 	 * Tries to connect to the implementation-specific database.
 	 * Returns true, if the connection was established and can be used.
+	 *
 	 * @return
 	 */
 	protected abstract boolean tryToConnect();
@@ -55,7 +63,8 @@ public abstract class Connection {
 	/**
 	 * @return
 	 */
-	public boolean isEstablished() {
+	public boolean isEstablished()
+	{
 		return this.isEstablished;
 	}
 }

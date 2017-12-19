@@ -2,45 +2,50 @@ package dbtest.connection.implementation;
 
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
-
 import dbtest.connection.Connection;
 
 /**
  * Establishes and exposes a connection to the ArangoDB Server.
- * 
+ *
  * @author Hannes Leutloff <hannes.leutloff@aol.de>
  */
-public class ArangoDBConnection extends Connection {
+public class ArangoDBConnection extends Connection
+{
 	protected ArangoDB arangoDB;
 	protected boolean connected = false;
-	
-	public ArangoDBConnection() {
-		
+
+	public ArangoDBConnection()
+	{
+
 	}
-	
-	public ArangoDB getArangoDB() {
+
+	public ArangoDB getArangoDB()
+	{
 		return this.arangoDB;
 	}
-	
+
 	@Override
-	protected boolean tryToConnect() {
+	protected boolean tryToConnect()
+	{
 		// If the connection is already established, nothing further has to be done
 		// has to check connection, since the ArangoDB object can be created while
 		// the actual connection when calling getVersion fails
-		if(this.connected) {
+		if (this.connected)
+		{
 			return true;
 		}
-		
-		try {
+
+		try
+		{
 			// Connect to ArangoDB with credentials from environment variables
 			this.arangoDB = new ArangoDB.Builder()
-				.host(
-					System.getenv("ARANGODB_HOST"),
-					Integer.parseInt(System.getenv("ARANGODB_PORT"))
-				)
-				.user(System.getenv("ARANGODB_USER"))
-				.password(System.getenv("ARANGODB_PASS"))
-				.build();
+					.host(
+							System.getenv("ARANGODB_HOST"),
+							Integer.parseInt(System.getenv("ARANGODB_PORT"))
+					)
+					.user(System.getenv("ARANGODB_USER"))
+					.password(System.getenv("ARANGODB_PASS"))
+					.build();
 			// Request version to check, if the connection was successful
 			// Without executing anything, the connection is not actually established
 			// If the server is not reachable, this will log a ConnectException, which is
@@ -49,11 +54,12 @@ public class ArangoDBConnection extends Connection {
 			arangoDB.getVersion();
 			this.connected = true;
 			return true;
-		} catch (ArangoDBException e) {
+		} catch (ArangoDBException e)
+		{
 			return false;
 		}
 	}
-	
+
 	@Override
 	public void close()
 	{

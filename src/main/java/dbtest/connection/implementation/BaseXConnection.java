@@ -1,27 +1,30 @@
 package dbtest.connection.implementation;
 
-import java.io.IOException;
-
+import dbtest.connection.Connection;
 import org.basex.api.client.ClientSession;
 
-import dbtest.connection.Connection;
+import java.io.IOException;
 
 /**
  * Establishes and exposes a connection to the BaseX Server.
- * 
+ *
  * @author Hannes Leutloff <hannes.leutloff@aol.de>
  */
-public class BaseXConnection extends Connection {
+public class BaseXConnection extends Connection
+{
 	protected ClientSession session;
 
 	@Override
-	protected boolean tryToConnect() {
+	protected boolean tryToConnect()
+	{
 		// If the connection is already established, nothing further has to be done
-		if(this.session != null) {
+		if (this.session != null)
+		{
 			return true;
 		}
-		
-		try {
+
+		try
+		{
 			final String host = System.getenv("BASEX_HOST");
 			final int port = Integer.parseInt(System.getenv("BASEX_PORT"));
 			final String username = System.getenv("BASEX_USER");
@@ -29,7 +32,8 @@ public class BaseXConnection extends Connection {
 			// Create client with credentials from environment variable
 			this.session = new ClientSession(host, port, username, password);
 			return true;
-		} catch (IOException e) {
+		} catch (IOException e)
+		{
 			return false;
 		}
 	}

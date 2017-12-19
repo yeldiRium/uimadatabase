@@ -13,11 +13,11 @@ import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationFai
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,7 +37,7 @@ public class EvaluationRunnerTest
 		this.futureMockConnectionResponse = executor.submit(() -> mockConnectionResponse);
 
 		when(mockConnectionManager.submitRequest(any())).thenReturn(
-			this.futureMockConnectionResponse
+				this.futureMockConnectionResponse
 		);
 	}
 
@@ -57,7 +57,8 @@ public class EvaluationRunnerTest
 	}
 
 	@Test
-	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCaseObjectsAreRun() {
+	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCaseObjectsAreRun()
+	{
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
@@ -72,7 +73,8 @@ public class EvaluationRunnerTest
 	}
 
 	@Test
-	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_ConnectionManagerReceivesRequests() {
+	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_ConnectionManagerReceivesRequests()
+	{
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
@@ -88,7 +90,8 @@ public class EvaluationRunnerTest
 	}
 
 	@Test
-	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCasesAreRunWithCorrectConnectionResponse() {
+	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCasesAreRunWithCorrectConnectionResponse()
+	{
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
@@ -104,7 +107,8 @@ public class EvaluationRunnerTest
 	}
 
 	@Test
-	void Given_TestConfigFileWithFailingEvaluation_When_RunngEvaluationRunnerAndEvaluationFailsWithRerunException_Then_EvaluationIsRerun() {
+	void Given_TestConfigFileWithFailingEvaluation_When_RunngEvaluationRunnerAndEvaluationFailsWithRerunException_Then_EvaluationIsRerun()
+	{
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfigWithFailingRerun.yml");

@@ -57,112 +57,173 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	public static void getPosXMI() throws UIMAException, IOException
 	{
 		long start = System.currentTimeMillis();
-		CollectionReader xmireader = CollectionReaderFactory.createReader(XmiReaderModified.class,
-				XmiReader.PARAM_SOURCE_LOCATION,"/media/ahemati/cea5347d-36d3-4856-a9be-bcd0bddbfd92/wikipedia_kategorien_sample/biologie",
-				//						XmiReader.PARAM_SOURCE_LOCATION,"/home/ahemati/workspace/services/services-io/src/main/resources/1",
-				XmiReader.PARAM_PATTERNS,"[+]**/*.xmi.gz",
-				//		XmiReader.PARAM_PATTERNS,"/949491.xmi",
-				XmiReader.PARAM_LANGUAGE,"de");
+		CollectionReader xmireader = CollectionReaderFactory.createReader(
+				XmiReaderModified.class,
+				XmiReader.PARAM_SOURCE_LOCATION,
+				"/media/ahemati/cea5347d-36d3-4856-a9be-bcd0bddbfd92/wikipedia_kategorien_sample/biologie",
+				XmiReader.PARAM_PATTERNS,
+				"[+]**/*.xmi.gz",
+				XmiReader.PARAM_LANGUAGE,
+				"de"
+		);
 
 		runPipeline(
 				xmireader,
-				createEngine(POSCounter.class));
-		FileUtils.writeStringToFile(new File("output/AllQueryEvaluationCase_xmiSumPos.log"), ""+(System.currentTimeMillis()-start));
-		System.out.println(System.currentTimeMillis()-start);
+				createEngine(POSCounter.class)
+		);
+		FileUtils.writeStringToFile(
+				new File("output/AllQueryEvaluationCase_xmiSumPos.log"),
+				"" + (System.currentTimeMillis() - start)
+		);
+		System.out.println(System.currentTimeMillis() - start);
 	}
 
-	public static void getLemmaXMI() throws UIMAException, IOException{
+	public static void getLemmaXMI() throws UIMAException, IOException
+	{
 		long start = System.currentTimeMillis();
-		CollectionReader xmireader = CollectionReaderFactory.createReader(XmiReaderModified.class,
-				XmiReader.PARAM_SOURCE_LOCATION,"/home/ahemati/biologie",
-				//						XmiReader.PARAM_SOURCE_LOCATION,"/home/ahemati/workspace/services/services-io/src/main/resources/1",
-				XmiReader.PARAM_PATTERNS,"[+]**/*.xmi.gz",
-				//		XmiReader.PARAM_PATTERNS,"/949491.xmi",
-				XmiReader.PARAM_LANGUAGE,"de");
+		CollectionReader xmireader = CollectionReaderFactory.createReader(
+				XmiReaderModified.class,
+				XmiReader.PARAM_SOURCE_LOCATION,
+				"/home/ahemati/biologie",
+				XmiReader.PARAM_PATTERNS,
+				"[+]**/*.xmi.gz",
+				XmiReader.PARAM_LANGUAGE,
+				"de"
+		);
 
 		runPipeline(
 				xmireader,
-				createEngine(POSCounter.class));
-		FileUtils.writeStringToFile(new File("output/AllQueryEvaluationCase_xmiSumLemma.log"), ""+(System.currentTimeMillis()-start));
-		System.out.println(System.currentTimeMillis()-start);
+				createEngine(POSCounter.class)
+		);
+		FileUtils.writeStringToFile(
+				new File("output/AllQueryEvaluationCase_xmiSumLemma.log"),
+				"" + (System.currentTimeMillis() - start)
+		);
+		System.out.println(System.currentTimeMillis() - start);
 	}
 
-	public static void getPosDistributionNeo4j() throws UIMAException, IOException{
+	public static void getPosDistributionNeo4j() throws UIMAException, IOException
+	{
 		long start = System.currentTimeMillis();
 
-		MDB_Neo4J_Impl pMDB = new MDB_Neo4J_Impl("/home/ahemati/workspace/XMI4Neo4J/conf.conf");
+		MDB_Neo4J_Impl pMDB = new MDB_Neo4J_Impl(
+				"/home/ahemati/workspace/XMI4Neo4J/conf.conf"
+		);
 
-		Iterator<Node> pos = pMDB.getNodes(Pos_Neo4J_Impl.getLabel()).iterator();
-		try (Transaction tx = MDB_Neo4J_Impl.gdbs.beginTx()) {
-			pos.forEachRemaining(n->{
+		Iterator<Node> pos =
+				pMDB.getNodes(Pos_Neo4J_Impl.getLabel()).iterator();
+		try (Transaction tx = MDB_Neo4J_Impl.gdbs.beginTx())
+		{
+			pos.forEachRemaining(n -> {
 				System.out.println(n.getProperty("value"));
-				System.out.println(Iterators.size(n.getRelationships(Direction.INCOMING, Const.RelationType.pos).iterator()));
+				System.out.println(Iterators.size(
+						n.getRelationships(
+								Direction.INCOMING,
+								Const.RelationType.pos
+						).iterator()));
 			});
 		}
-		FileUtils.writeStringToFile(new File("output/AllQueryEvaluationCase_neo4jSumPos.log"), ""+(System.currentTimeMillis()-start));
-		System.out.println(System.currentTimeMillis()-start);
+		FileUtils.writeStringToFile(
+				new File("output/AllQueryEvaluationCase_neo4jSumPos.log"),
+				"" + (System.currentTimeMillis() - start)
+		);
+		System.out.println(System.currentTimeMillis() - start);
 	}
 
 	static int i = 0;
-	public static void getLemmaDistributionNeo4j() throws UIMAException, IOException{
+
+	public static void getLemmaDistributionNeo4j()
+			throws UIMAException, IOException
+	{
 		long start = System.currentTimeMillis();
+		MDB_Neo4J_Impl pMDB = new MDB_Neo4J_Impl(
+				"/home/ahemati/workspace/XMI4Neo4J/conf.conf"
+		);
+		Iterator<Node> pos =
+				pMDB.getNodes(Lemma_Neo4J_Impl.getLabel()).iterator();
 
-		MDB_Neo4J_Impl pMDB = new MDB_Neo4J_Impl("/home/ahemati/workspace/XMI4Neo4J/conf.conf");
+		try (Transaction tx = MDB_Neo4J_Impl.gdbs.beginTx())
+		{
 
-		Iterator<Node> pos = pMDB.getNodes(Lemma_Neo4J_Impl.getLabel()).iterator();
-
-		try (Transaction tx = MDB_Neo4J_Impl.gdbs.beginTx()) {
-
-			pos.forEachRemaining(n->{
-				if(i++%1000==0)
+			pos.forEachRemaining(n -> {
+				if (i++ % 1000 == 0)
 					System.out.println(i);
-				Iterators.size(n.getRelationships(Direction.INCOMING, Const.RelationType.lemma).iterator());
+				Iterators.size(
+						n.getRelationships(
+								Direction.INCOMING,
+								Const.RelationType.lemma
+						).iterator());
 			});
 			System.out.println(i);
 		}
-		FileUtils.writeStringToFile(new File("output/AllQueryEvaluationCase_neo4jSumLemma.log"), ""+(System.currentTimeMillis()-start));
-		System.out.println(System.currentTimeMillis()-start);
+		FileUtils.writeStringToFile(
+				new File("output/AllQueryEvaluationCase_neo4jSumLemma.log"),
+				"" + (System.currentTimeMillis() - start)
+		);
+		System.out.println(System.currentTimeMillis() - start);
 	}
 
-	public static void getLemmaDistributionBaseX() throws UIMAException, IOException{
+	public static void getLemmaDistributionBaseX()
+			throws UIMAException, IOException
+	{
 		long start = System.currentTimeMillis();
+		MDB_Neo4J_Impl pMDB = new MDB_Neo4J_Impl(
+				"/home/ahemati/workspace/XMI4Neo4J/conf.conf"
+		);
+		Iterator<Node> pos =
+				pMDB.getNodes(Lemma_Neo4J_Impl.getLabel()).iterator();
 
-		MDB_Neo4J_Impl pMDB = new MDB_Neo4J_Impl("/home/ahemati/workspace/XMI4Neo4J/conf.conf");
+		try (Transaction tx = MDB_Neo4J_Impl.gdbs.beginTx())
+		{
 
-		Iterator<Node> pos = pMDB.getNodes(Lemma_Neo4J_Impl.getLabel()).iterator();
-
-		try (Transaction tx = MDB_Neo4J_Impl.gdbs.beginTx()) {
-
-			pos.forEachRemaining(n->{
-				if(i++%1000==0)
+			pos.forEachRemaining(n -> {
+				if (i++ % 1000 == 0)
 					System.out.println(i);
-				Iterators.size(n.getRelationships(Direction.INCOMING, Const.RelationType.lemma).iterator());
+				Iterators.size(
+						n.getRelationships(
+								Direction.INCOMING,
+								Const.RelationType.lemma
+						).iterator());
 			});
 			System.out.println(i);
 		}
-		FileUtils.writeStringToFile(new File("output/AllQueryEvaluationCase_neo4jSumLemma.log"), ""+(System.currentTimeMillis()-start));
-		System.out.println(System.currentTimeMillis()-start);
+		FileUtils.writeStringToFile(
+				new File("output/AllQueryEvaluationCase_neo4jSumLemma.log"),
+				"" + (System.currentTimeMillis() - start)
+		);
+		System.out.println(System.currentTimeMillis() - start);
 	}
 
-	public static void getTypeTokenDistributionNeo4j() throws UIMAException, IOException{
+	public static void getTypeTokenDistributionNeo4j()
+			throws UIMAException, IOException
+	{
 		long start = System.currentTimeMillis();
+		MDB_Neo4J_Impl pMDB = new MDB_Neo4J_Impl(
+				"/home/ahemati/workspace/XMI4Neo4J/conf.conf"
+		);
+		Iterator<Node> documents =
+				pMDB.getNodes(Document_Neo4J_Impl.getLabel()).iterator();
 
-		MDB_Neo4J_Impl pMDB = new MDB_Neo4J_Impl("/home/ahemati/workspace/XMI4Neo4J/conf.conf");
+		try (Transaction tx = MDB_Neo4J_Impl.gdbs.beginTx())
+		{
 
-		Iterator<Node> documents = pMDB.getNodes(Document_Neo4J_Impl.getLabel()).iterator();
-
-		try (Transaction tx = MDB_Neo4J_Impl.gdbs.beginTx()) {
-
-			documents.forEachRemaining(n->{
+			documents.forEachRemaining(n -> {
 
 //				System.out.println(n);
 //				if(i++%1000==0)
 //					System.out.println(i);
-//				Iterators.size(n.getRelationships(Direction.INCOMING, Const.RelationType.lemma).iterator());
+//				Iterators.size(
+//						n.getRelationships(
+//								Direction.INCOMING,
+//								Const.RelationType.lemma
+//						).iterator());
 			});
 			System.out.println(i);
 		}
-		FileUtils.writeStringToFile(new File("output/AllQueryEvaluationCase_neo4jTypeToken.log"), ""+(System.currentTimeMillis()-start));
-		System.out.println(System.currentTimeMillis()-start);
+		FileUtils.writeStringToFile(
+				new File("output/AllQueryEvaluationCase_neo4jTypeToken.log"),
+				"" + (System.currentTimeMillis() - start)
+		);
+		System.out.println(System.currentTimeMillis() - start);
 	}
 }

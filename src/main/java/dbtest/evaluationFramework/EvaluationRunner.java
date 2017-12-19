@@ -15,12 +15,14 @@ public class EvaluationRunner implements Runnable
 	protected Configuration configuration;
 	protected ConnectionManager connectionManager;
 
-	public EvaluationRunner(InputStream configFile, ConnectionManager connectionManager) {
+	public EvaluationRunner(InputStream configFile, ConnectionManager connectionManager)
+	{
 		this.loadConfig(configFile);
 		this.connectionManager = connectionManager;
 	}
 
-	protected void loadConfig(InputStream configFile) {
+	protected void loadConfig(InputStream configFile)
+	{
 		Constructor constructor = new Constructor(Configuration.class);
 		Yaml yaml = new Yaml(constructor);
 		this.configuration = yaml.load(configFile);
@@ -29,7 +31,7 @@ public class EvaluationRunner implements Runnable
 	@Override
 	public void run()
 	{
-		for(EvaluationCase evaluationCase: this.configuration.getEvaluations())
+		for (EvaluationCase evaluationCase : this.configuration.getEvaluations())
 		{
 			ConnectionRequest connectionRequest = evaluationCase.requestConnection();
 			ConnectionResponse connectionResponse = null;
@@ -42,12 +44,12 @@ public class EvaluationRunner implements Runnable
 			}
 			System.out.println("Running EvaluationCase " + evaluationCase.getClass().getName());
 			boolean success = false;
-			while(!success)
+			while (!success)
 			{
 				try
 				{
 					evaluationCase.run(
-						connectionResponse
+							connectionResponse
 					);
 					success = true;
 				} catch (EvaluationFailedRerunnableException e)

@@ -35,6 +35,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 	/**
 	 * Executes pipeline for each reader.
 	 * TODO: remove XMI, add ArangoDB
+	 *
 	 * @param connectionResponse
 	 */
 	@Override
@@ -43,21 +44,21 @@ public class AllReadEvaluationCase implements EvaluationCase
 		try
 		{
 			List<CollectionReader> readers = Arrays.asList(
-				getXMIReader(),
-				getNeo4jReader(),
-				getCassandraReader(),
-				getMongoReader(),
-				getXMIReader(),
-				getMysqlReader()
+					getXMIReader(),
+					getNeo4jReader(),
+					getCassandraReader(),
+					getMongoReader(),
+					getXMIReader(),
+					getMysqlReader()
 			);
-			for(CollectionReader reader: readers)
+			for (CollectionReader reader : readers)
 			{
 				runPipeline(
-					reader,
-					createEngine(StatusPrinter.class)
-	//				createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,"/home/ahemati/testDocuments/output",XmiWriter.PARAM_USE_DOCUMENT_ID,true,XmiWriter.PARAM_OVERWRITE,true)
-	//				createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,"/home/ahemati/testDocuments/output",XmiWriter.PARAM_USE_DOCUMENT_ID,true,XmiWriter.PARAM_OVERWRITE,true)
-	//				createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,"/home/voinea/testxmi",XmiWriter.PARAM_USE_DOCUMENT_ID,true,XmiWriter.PARAM_OVERWRITE,true)
+						reader,
+						createEngine(StatusPrinter.class)
+						//				createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,"/home/ahemati/testDocuments/output",XmiWriter.PARAM_USE_DOCUMENT_ID,true,XmiWriter.PARAM_OVERWRITE,true)
+						//				createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,"/home/ahemati/testDocuments/output",XmiWriter.PARAM_USE_DOCUMENT_ID,true,XmiWriter.PARAM_OVERWRITE,true)
+						//				createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,"/home/voinea/testxmi",XmiWriter.PARAM_USE_DOCUMENT_ID,true,XmiWriter.PARAM_OVERWRITE,true)
 				);
 			}
 		} catch (UIMAException | IOException e)
@@ -66,45 +67,72 @@ public class AllReadEvaluationCase implements EvaluationCase
 		}
 	}
 
-	public static CollectionReader getXMIReader() throws ResourceInitializationException
+	public static CollectionReader getXMIReader()
+			throws ResourceInitializationException
 	{
-		return  CollectionReaderFactory.createReader(XmiReaderModified.class,
-				XmiReaderModified.PARAM_SOURCE_LOCATION,"/home/ahemati/biologie",
-				XmiReaderModified.PARAM_PATTERNS,"[+]**/*.xmi.gz",
-				XmiReaderModified.PARAM_LOG_FILE_LOCATION, new File("output/AllReadEvaluationCase_xmi.log"),
-				XmiReaderModified.PARAM_LANGUAGE,"de");
+		return CollectionReaderFactory.createReader(
+				XmiReaderModified.class,
+				XmiReaderModified.PARAM_SOURCE_LOCATION,
+				"/home/ahemati/biologie",
+				XmiReaderModified.PARAM_PATTERNS,
+				"[+]**/*.xmi.gz",
+				XmiReaderModified.PARAM_LOG_FILE_LOCATION,
+				new File("output/AllReadEvaluationCase_xmi.log"),
+				XmiReaderModified.PARAM_LANGUAGE,
+				"de"
+		);
 	}
 
-	public static CollectionReader getMongoReader() throws ResourceInitializationException{
-		return  CollectionReaderFactory.createReader(MongoCollectionReader.class,
-				MongoCollectionReader.PARAM_DB_CONNECTION, new String[]{"localhost","test_with_index","wikipedia","",""},
-				MongoCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/AllReadEvaluationCase_mongo.log")
-				//				MongoCollectionReader.PARAM_QUERY,"{}",
-				);
+	public static CollectionReader getMongoReader()
+			throws ResourceInitializationException
+	{
+		return CollectionReaderFactory.createReader(
+				MongoCollectionReader.class,
+				MongoCollectionReader.PARAM_DB_CONNECTION,
+				new String[]{"localhost", "test_with_index", "wikipedia", "", ""},
+				MongoCollectionReader.PARAM_LOG_FILE_LOCATION,
+				new File("output/AllReadEvaluationCase_mongo.log")
+//			MongoCollectionReader.PARAM_QUERY,"{}",
+		);
 	}
 
-	public static CollectionReader getMysqlReader() throws ResourceInitializationException{
-		return  CollectionReaderFactory.createReader(MysqlCollectionReader.class,
-				MysqlCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/AllReadEvaluationCase_mysql.log")
-				);
+	public static CollectionReader getMysqlReader()
+			throws ResourceInitializationException
+	{
+		return CollectionReaderFactory.createReader(
+				MysqlCollectionReader.class,
+				MysqlCollectionReader.PARAM_LOG_FILE_LOCATION,
+				new File("output/AllReadEvaluationCase_mysql.log")
+		);
 	}
 
-	public static CollectionReader getNeo4jReader() throws ResourceInitializationException{
-		return  CollectionReaderFactory.createReader(Neo4jCollectionReader.class,
-				Neo4jCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/AllReadEvaluationCase_neo4j.log")
-				);
+	public static CollectionReader getNeo4jReader()
+			throws ResourceInitializationException
+	{
+		return CollectionReaderFactory.createReader(
+				Neo4jCollectionReader.class,
+				Neo4jCollectionReader.PARAM_LOG_FILE_LOCATION,
+				new File("output/AllReadEvaluationCase_neo4j.log")
+		);
 	}
 
-	public static CollectionReader getBasexReader() throws ResourceInitializationException{
-		return  CollectionReaderFactory.createReader(BasexCollectionReader.class,
-				BasexCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/AllReadEvaluationCase_basex.log")
-				);
+	public static CollectionReader getBasexReader()
+			throws ResourceInitializationException
+	{
+		return CollectionReaderFactory.createReader(
+				BasexCollectionReader.class,
+				BasexCollectionReader.PARAM_LOG_FILE_LOCATION,
+				new File("output/AllReadEvaluationCase_basex.log")
+		);
 	}
 
-	public static CollectionReader getCassandraReader() throws ResourceInitializationException{
-		return  CollectionReaderFactory.createReader(CassandraCollectionReader.class,
-				CassandraCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/AllReadEvaluationCase_cassandra.log")
-				);
+	public static CollectionReader getCassandraReader()
+			throws ResourceInitializationException
+	{
+		return CollectionReaderFactory.createReader(
+				CassandraCollectionReader.class,
+				CassandraCollectionReader.PARAM_LOG_FILE_LOCATION,
+				new File("output/AllReadEvaluationCase_cassandra.log")
+		);
 	}
-
 }

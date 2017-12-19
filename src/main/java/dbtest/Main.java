@@ -14,8 +14,8 @@ public class Main
 		{
 			ConnectionManager connectionManager = new ConnectionManager();
 			EvaluationRunner evaluationRunner = new EvaluationRunner(
-				new FileInputStream("src/main/resources/config.yml"),
-				connectionManager
+					new FileInputStream("src/main/resources/config.yml"),
+					connectionManager
 			);
 			System.out.println("Running Evaluations...");
 			evaluationRunner.run();

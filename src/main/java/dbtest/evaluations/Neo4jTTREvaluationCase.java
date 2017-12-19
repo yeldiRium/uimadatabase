@@ -31,7 +31,7 @@ public class Neo4jTTREvaluationCase implements EvaluationCase
 
 		builder.append("Testing getTTR(List of 2):");
 		long timeBegin = System.currentTimeMillis();
-		queryHandler.getTTR(new String[]{"105","159"});
+		queryHandler.getTTR(new String[]{"105", "159"});
 		builder.append("getTTR(List of 2) took: ")
 				.append(System.currentTimeMillis() - timeBegin)
 				.append("  ms\n")
@@ -49,7 +49,7 @@ public class Neo4jTTREvaluationCase implements EvaluationCase
 				.append("  ms\n")
 				.append("Testing count(DocId, TOKEN):");
 		timeBegin = System.currentTimeMillis();
-		queryHandler.count_type_in_document("105",Const.TYPE.TOKEN);
+		queryHandler.count_type_in_document("105", Const.TYPE.TOKEN);
 		builder.append("count(DocId, TOKEN) took: ")
 				.append(System.currentTimeMillis() - timeBegin)
 				.append("  ms\n")
@@ -63,8 +63,8 @@ public class Neo4jTTREvaluationCase implements EvaluationCase
 		try
 		{
 			FileUtils.writeStringToFile(
-				new File("output/Neo4jTTREvaluationCase.txt"),
-				builder.toString()
+					new File("output/Neo4jTTREvaluationCase.txt"),
+					builder.toString()
 			);
 		} catch (IOException e)
 		{
@@ -74,14 +74,16 @@ public class Neo4jTTREvaluationCase implements EvaluationCase
 
 	// TODO: check if this is needed in the AllQueryEvaluationCase
 	@Deprecated
-	public static String testQueryTimes (Neo4jQueryHandler queryHandler, int runs) throws Exception {
+	public static String testQueryTimes(Neo4jQueryHandler queryHandler, int runs) throws Exception
+	{
 		StopWatch a = new StopWatch();
 		a.start();
 		a.suspend();
 		StopWatch b = new StopWatch();
 		b.start();
 		b.suspend();
-		for(int i=0;i<runs;i++) {
+		for (int i = 0; i < runs; i++)
+		{
 			a.resume();
 			queryHandler.get_Lemmata("1063");
 			a.suspend();

@@ -4,8 +4,6 @@ import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.evaluationFramework.EvaluationCase;
 
-import java.io.OutputStream;
-
 public class TestEvaluationA implements EvaluationCase
 {
 	public static boolean wasInstantiated = false;
@@ -14,7 +12,8 @@ public class TestEvaluationA implements EvaluationCase
 	public static boolean wasRun = false;
 	public static ConnectionResponse connectionResponse = null;
 
-	public TestEvaluationA() {
+	public TestEvaluationA()
+	{
 		TestEvaluationA.wasInstantiated = true;
 	}
 

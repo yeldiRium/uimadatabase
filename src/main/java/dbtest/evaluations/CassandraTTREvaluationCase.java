@@ -37,10 +37,14 @@ public class CassandraTTREvaluationCase implements EvaluationCase
 		CassandraConnection cassandraConnection = (CassandraConnection) connections.iterator().next();
 		try
 		{
-			CollectionReader reader = CollectionReaderFactory.createReader(XmiReaderModified.class,
-				XmiReaderModified.PARAM_PATTERNS, "[+]**/*.xmi", //
-				XmiReaderModified.PARAM_SOURCE_LOCATION, "src/main/resources/testfiles",
-				XmiReaderModified.PARAM_LANGUAGE, "de"
+			CollectionReader reader = CollectionReaderFactory.createReader(
+					XmiReaderModified.class,
+					XmiReaderModified.PARAM_PATTERNS,
+					"[+]**/*.xmi",
+					XmiReaderModified.PARAM_SOURCE_LOCATION,
+					"src/main/resources/testfiles",
+					XmiReaderModified.PARAM_LANGUAGE,
+					"de"
 			);
 
 			long start;
@@ -63,7 +67,9 @@ public class CassandraTTREvaluationCase implements EvaluationCase
 			// TODO: use CassandraQueryHandler
 //			HashMap<String, Double> ttr = CassandraQueryUtil.getTTR(session);
 			end = System.currentTimeMillis();
-			builder.append("TTR took: ").append(end - start).append("ms.\n");
+			builder.append("TTR took: ")
+					.append(end - start)
+					.append("ms.\n");
 
 
 			// Testing tfidf
@@ -71,7 +77,9 @@ public class CassandraTTREvaluationCase implements EvaluationCase
 			// TODO: use CassandraQueryHandler
 //			HashMap<String, Double> tfidf = CassandraQueryUtil.tfidf(session, "sein");
 			end = System.currentTimeMillis();
-			builder.append("tfidf for one lemma took: ").append(end - start).append("ms.\n");
+			builder.append("tfidf for one lemma took: ")
+					.append(end - start)
+					.append("ms.\n");
 
 			// Testing Tfidf for all lemmata in a testset with different textlengths,
 			// horribly slow
@@ -81,7 +89,10 @@ public class CassandraTTREvaluationCase implements EvaluationCase
 				// TODO: use CassandraQueryHandler
 				// CassandraQueryUtil.getTfidfForDocument(session, xmi);
 				end = System.currentTimeMillis();
-				builder.append(xmi).append(": ").append(start - end).append("ms.\n");
+				builder.append(xmi)
+						.append(": ")
+						.append(start - end)
+						.append("ms.\n");
 			}
 			session.close();
 			FileUtils.writeStringToFile(new File("output/CassandraTTREvaluationCase.txt"), builder.toString());
@@ -92,10 +103,12 @@ public class CassandraTTREvaluationCase implements EvaluationCase
 	}
 
 	// TODO: is this method necessary?
-	static public HashMap<String, Double> calculateTTR(HashMap<String, Integer> tokens, HashMap<String, Integer> lemmata){
+	static public HashMap<String, Double> calculateTTR(HashMap<String, Integer> tokens, HashMap<String, Integer> lemmata)
+	{
 		HashMap<String, Double> ttr = new HashMap<>();
-		for (String key : tokens.keySet()){
-			ttr.put(key, (double)lemmata.get(key)/(double)tokens.get(key));
+		for (String key : tokens.keySet())
+		{
+			ttr.put(key, (double) lemmata.get(key) / (double) tokens.get(key));
 //			String key = e.getKey();
 //			ret.put(key, (double)l.get(key)/(double)e.getValue());
 		}

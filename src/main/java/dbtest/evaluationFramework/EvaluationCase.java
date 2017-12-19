@@ -12,7 +12,8 @@ public interface EvaluationCase
 	 * @param connectionResponse Contains all Connections requested in
 	 *                           #requestConnection().
 	 * @throws EvaluationFailedRerunnableException when a failing action can be
-	 *      fixed by rerunning the EvaluationCase.
+	 *                                             fixed by rerunning the
+	 *                                             EvaluationCase.
 	 */
 	void run(
 			ConnectionResponse connectionResponse
