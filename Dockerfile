@@ -9,7 +9,7 @@ WORKDIR /code
 # Prepare by adding and downloading dependencies
 ADD lib /code/lib
 ADD pom.xml /code/pom.xml
-RUN ["mvn", "dependency:resolve"]i
+RUN ["mvn", "dependency:resolve"]
 RUN ["mvn", "verify"]
 
 # Adding source, compile and package into jar with dependencies in lib folder
@@ -27,5 +27,7 @@ RUN rm -rf /code/target
 RUN rm /code/pom.xml
 
 # prepare input/output directory
-ADD input /code/input
-ADD output /code/output
+VOLUME input /code/input
+VOLUME output /code/output
+
+CMD ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "target.jar"]
