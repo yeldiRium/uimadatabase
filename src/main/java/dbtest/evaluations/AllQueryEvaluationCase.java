@@ -107,7 +107,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		long start = System.currentTimeMillis();
 
 		MDB_Neo4J_Impl pMDB = new MDB_Neo4J_Impl(
-				"/home/ahemati/workspace/XMI4Neo4J/conf.conf"
+				"src/main/resources/neo4j/conf.conf"
 		);
 
 		Iterator<Node> pos =
