@@ -19,3 +19,6 @@ target/
 
 # OS
 .DS_Store
+
+# fucking big files that really don't have to be under version control
+input/*
