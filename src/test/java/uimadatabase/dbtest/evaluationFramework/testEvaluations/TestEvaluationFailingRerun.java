@@ -22,7 +22,7 @@ public class TestEvaluationFailingRerun implements EvaluationCase
 	public void run(ConnectionResponse connectionResponse) throws EvaluationFailedRerunnableException
 	{
 		TestEvaluationFailingRerun.runCounter++;
-		if (TestEvaluationFailingRerun.runCounter < 2)
+		if (TestEvaluationFailingRerun.runCounter < 3)
 		{
 			// Fails two times
 			throw new EvaluationFailedRerunnableException();

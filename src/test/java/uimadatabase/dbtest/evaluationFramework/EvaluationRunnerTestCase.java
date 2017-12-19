@@ -115,7 +115,9 @@ public class EvaluationRunnerTestCase
 			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
 			evaluationRunner.run();
 
-			assertEquals(2, TestEvaluationFailingRerun.runCounter);
+			// See TestEvaluationFailingRerun
+			// It will fail two times before completing
+			assertEquals(3, TestEvaluationFailingRerun.runCounter);
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
