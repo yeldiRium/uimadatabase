@@ -44,6 +44,13 @@ services:
     restart: always
     ports:
       - 4567:4567
+    links:
+      - arangodb
+      - basex
+      - cassandra
+      - mongodb
+      - mysql
+      - neo4j
     environment:
       # See README.txt in dbs/arangodb for details on:
       - ARANGODB_HOST=arangodb
