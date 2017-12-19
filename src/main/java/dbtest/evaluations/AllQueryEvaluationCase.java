@@ -60,7 +60,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		CollectionReader xmireader = CollectionReaderFactory.createReader(
 				XmiReaderModified.class,
 				XmiReader.PARAM_SOURCE_LOCATION,
-				"/media/ahemati/cea5347d-36d3-4856-a9be-bcd0bddbfd92/wikipedia_kategorien_sample/biologie",
+				System.getenv("INPUT_DIR"),
 				XmiReader.PARAM_PATTERNS,
 				"[+]**/*.xmi.gz",
 				XmiReader.PARAM_LANGUAGE,
@@ -84,7 +84,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		CollectionReader xmireader = CollectionReaderFactory.createReader(
 				XmiReaderModified.class,
 				XmiReader.PARAM_SOURCE_LOCATION,
-				"/home/ahemati/biologie",
+				System.getenv("INPUT_DIR"),
 				XmiReader.PARAM_PATTERNS,
 				"[+]**/*.xmi.gz",
 				XmiReader.PARAM_LANGUAGE,

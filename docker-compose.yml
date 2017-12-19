@@ -52,6 +52,8 @@ services:
       - mysql
       - neo4j
     environment:
+      - INPUT_DIR=/code/input
+      - OUTPUT_DIR=/code/output
       # See README.txt in dbs/arangodb for details on:
       - ARANGODB_HOST=arangodb
       - ARANGODB_PORT=8529

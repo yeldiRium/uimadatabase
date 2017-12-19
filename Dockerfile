@@ -26,5 +26,6 @@ RUN rm -rf /code/src/test
 RUN rm -rf /code/target
 RUN rm /code/pom.xml
 
-# prepare output directory
+# prepare input/output directory
+ADD input /code/input
 ADD output /code/output

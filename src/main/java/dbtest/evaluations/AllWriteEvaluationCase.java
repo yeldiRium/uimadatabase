@@ -43,7 +43,7 @@ public class AllWriteEvaluationCase implements EvaluationCase
 					XmiReaderModified.PARAM_PATTERNS,
 					"[+]**/???.xmi.gz", //
 					XmiReaderModified.PARAM_SOURCE_LOCATION,
-					"/Users/peugeotbaguette/Downloads/biologie",
+					System.getenv("INPUT_DIR"),
 					XmiReaderModified.PARAM_LANGUAGE,
 					"de"
 			);
@@ -133,7 +133,7 @@ public class AllWriteEvaluationCase implements EvaluationCase
 		return createEngine(
 				XmiWriterModified.class,
 				XmiWriterModified.PARAM_TARGET_LOCATION,
-				"/home/ahemati/testDocuments/output",
+				System.getenv("OUTPUT_DIR"),
 				XmiWriterModified.PARAM_USE_DOCUMENT_ID,
 				true,
 				XmiWriterModified.PARAM_OVERWRITE,

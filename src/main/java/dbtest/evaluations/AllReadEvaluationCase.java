@@ -73,7 +73,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 		return CollectionReaderFactory.createReader(
 				XmiReaderModified.class,
 				XmiReaderModified.PARAM_SOURCE_LOCATION,
-				"/home/ahemati/biologie",
+				System.getenv("INPUT_DIR"),
 				XmiReaderModified.PARAM_PATTERNS,
 				"[+]**/*.xmi.gz",
 				XmiReaderModified.PARAM_LOG_FILE_LOCATION,
