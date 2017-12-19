@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class EvaluationRunnerTest
+public class EvaluationRunnerTestCase
 {
 	protected ConnectionManager mockConnectionManager;
 	protected Future<ConnectionResponse> futureMockConnectionResponse;
