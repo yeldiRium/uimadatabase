@@ -27,7 +27,7 @@ import java.util.Iterator;
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 import static org.apache.uima.fit.pipeline.SimplePipeline.runPipeline;
 
-public class DBQueryEvaluationCase implements EvaluationCase
+public class AllQueryEvaluationCase implements EvaluationCase
 {
 	@Override
 	public ConnectionRequest requestConnection()
@@ -42,12 +42,12 @@ public class DBQueryEvaluationCase implements EvaluationCase
 
 		try
 		{
-			DBQueryEvaluationCase.getPosXMI();
-			DBQueryEvaluationCase.getLemmaXMI();
+			AllQueryEvaluationCase.getPosXMI();
+			AllQueryEvaluationCase.getLemmaXMI();
 
-			DBQueryEvaluationCase.getPosDistributionNeo4j();
-			DBQueryEvaluationCase.getLemmaDistributionNeo4j();
-			DBQueryEvaluationCase.getTypeTokenDistributionNeo4j();
+			AllQueryEvaluationCase.getPosDistributionNeo4j();
+			AllQueryEvaluationCase.getLemmaDistributionNeo4j();
+			AllQueryEvaluationCase.getTypeTokenDistributionNeo4j();
 		} catch (UIMAException | IOException e)
 		{
 			e.printStackTrace();
@@ -67,7 +67,7 @@ public class DBQueryEvaluationCase implements EvaluationCase
 		runPipeline(
 				xmireader,
 				createEngine(POSCounter.class));
-		FileUtils.writeStringToFile(new File("dbtest/query/xmi_sum_pos.log"), ""+(System.currentTimeMillis()-start));
+		FileUtils.writeStringToFile(new File("output/AllQueryEvaluationCase_xmiSumPos.log"), ""+(System.currentTimeMillis()-start));
 		System.out.println(System.currentTimeMillis()-start);
 	}
 
@@ -83,7 +83,7 @@ public class DBQueryEvaluationCase implements EvaluationCase
 		runPipeline(
 				xmireader,
 				createEngine(POSCounter.class));
-		FileUtils.writeStringToFile(new File("output/DBQueryEvaluationCase_xmiSumLemma.log"), ""+(System.currentTimeMillis()-start));
+		FileUtils.writeStringToFile(new File("output/AllQueryEvaluationCase_xmiSumLemma.log"), ""+(System.currentTimeMillis()-start));
 		System.out.println(System.currentTimeMillis()-start);
 	}
 
@@ -99,7 +99,7 @@ public class DBQueryEvaluationCase implements EvaluationCase
 				System.out.println(Iterators.size(n.getRelationships(Direction.INCOMING, Const.RelationType.pos).iterator()));
 			});
 		}
-		FileUtils.writeStringToFile(new File("output/DBQueryEvaluationCase_neo4jSumPos.log"), ""+(System.currentTimeMillis()-start));
+		FileUtils.writeStringToFile(new File("output/AllQueryEvaluationCase_neo4jSumPos.log"), ""+(System.currentTimeMillis()-start));
 		System.out.println(System.currentTimeMillis()-start);
 	}
 
@@ -120,7 +120,7 @@ public class DBQueryEvaluationCase implements EvaluationCase
 			});
 			System.out.println(i);
 		}
-		FileUtils.writeStringToFile(new File("output/DBQueryEvaluationCase_neo4jSumLemma.log"), ""+(System.currentTimeMillis()-start));
+		FileUtils.writeStringToFile(new File("output/AllQueryEvaluationCase_neo4jSumLemma.log"), ""+(System.currentTimeMillis()-start));
 		System.out.println(System.currentTimeMillis()-start);
 	}
 
@@ -140,7 +140,7 @@ public class DBQueryEvaluationCase implements EvaluationCase
 			});
 			System.out.println(i);
 		}
-		FileUtils.writeStringToFile(new File("output/DBQueryEvaluationCase_neo4jSumLemma.log"), ""+(System.currentTimeMillis()-start));
+		FileUtils.writeStringToFile(new File("output/AllQueryEvaluationCase_neo4jSumLemma.log"), ""+(System.currentTimeMillis()-start));
 		System.out.println(System.currentTimeMillis()-start);
 	}
 
@@ -162,7 +162,7 @@ public class DBQueryEvaluationCase implements EvaluationCase
 			});
 			System.out.println(i);
 		}
-		FileUtils.writeStringToFile(new File("output/DBQueryEvaluationCase_neo4jTypeToken.log"), ""+(System.currentTimeMillis()-start));
+		FileUtils.writeStringToFile(new File("output/AllQueryEvaluationCase_neo4jTypeToken.log"), ""+(System.currentTimeMillis()-start));
 		System.out.println(System.currentTimeMillis()-start);
 	}
 }

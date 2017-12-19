@@ -23,7 +23,7 @@ import java.util.List;
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 import static org.apache.uima.fit.pipeline.SimplePipeline.runPipeline;
 
-public class DBReaderEvaluationCase implements EvaluationCase
+public class AllReaderEvaluationCase implements EvaluationCase
 {
 	@Override
 	public ConnectionRequest requestConnection()
@@ -71,39 +71,39 @@ public class DBReaderEvaluationCase implements EvaluationCase
 		return  CollectionReaderFactory.createReader(XmiReaderModified.class,
 				XmiReaderModified.PARAM_SOURCE_LOCATION,"/home/ahemati/biologie",
 				XmiReaderModified.PARAM_PATTERNS,"[+]**/*.xmi.gz",
-				XmiReaderModified.PARAM_LOG_FILE_LOCATION, new File("output/DBReaderEvaluationCase_xmi.log"),
+				XmiReaderModified.PARAM_LOG_FILE_LOCATION, new File("output/AllReaderEvaluationCase_xmi.log"),
 				XmiReaderModified.PARAM_LANGUAGE,"de");
 	}
 
 	public static CollectionReader getMongoReader() throws ResourceInitializationException{
 		return  CollectionReaderFactory.createReader(MongoCollectionReader.class,
 				MongoCollectionReader.PARAM_DB_CONNECTION, new String[]{"localhost","test_with_index","wikipedia","",""},
-				MongoCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/DBReaderEvaluationCase_mongo.log")
+				MongoCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/AllReaderEvaluationCase_mongo.log")
 				//				MongoCollectionReader.PARAM_QUERY,"{}",
 				);
 	}
 
 	public static CollectionReader getMysqlReader() throws ResourceInitializationException{
 		return  CollectionReaderFactory.createReader(MysqlCollectionReader.class,
-				MysqlCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/DBReaderEvaluationCase_mysql.log")
+				MysqlCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/AllReaderEvaluationCase_mysql.log")
 				);
 	}
 
 	public static CollectionReader getNeo4jReader() throws ResourceInitializationException{
 		return  CollectionReaderFactory.createReader(Neo4jCollectionReader.class,
-				Neo4jCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/DBReaderEvaluationCase_neo4j.log")
+				Neo4jCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/AllReaderEvaluationCase_neo4j.log")
 				);
 	}
 
 	public static CollectionReader getBasexReader() throws ResourceInitializationException{
 		return  CollectionReaderFactory.createReader(BasexCollectionReader.class,
-				BasexCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/DBReaderEvaluationCase_basex.log")
+				BasexCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/AllReaderEvaluationCase_basex.log")
 				);
 	}
 
 	public static CollectionReader getCassandraReader() throws ResourceInitializationException{
 		return  CollectionReaderFactory.createReader(CassandraCollectionReader.class,
-				CassandraCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/DBReaderEvaluationCase_cassandra.log")
+				CassandraCollectionReader.PARAM_LOG_FILE_LOCATION, new File("output/AllReaderEvaluationCase_cassandra.log")
 				);
 	}
 
