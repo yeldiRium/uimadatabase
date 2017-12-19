@@ -8,12 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationA;
 import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationB;
+import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationFailingRerun;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.concurrent.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -95,6 +97,21 @@ public class EvaluationRunnerTest
 
 			assertSame(this.mockConnectionResponse, TestEvaluationA.connectionResponse);
 			assertSame(this.mockConnectionResponse, TestEvaluationB.connectionResponse);
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	void Given_TestConfigFileWithFailingEvaluation_When_RunngEvaluationRunnerAndEvaluationFailsWithRerunException_Then_EvaluationIsRerun() {
+		try
+		{
+			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfigWithFailingRerun.yml");
+			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
+			evaluationRunner.run();
+
+			assertEquals(2, TestEvaluationFailingRerun.runCounter);
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();

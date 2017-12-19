@@ -3,6 +3,7 @@ package dbtest.evaluationFramework;
 import dbtest.connection.ConnectionManager;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
+import dbtest.evaluationFramework.exceptions.EvaluationFailedRerunnableException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -40,9 +41,20 @@ public class EvaluationRunner implements Runnable
 				Thread.currentThread().interrupt();
 			}
 			System.out.println("Running EvaluationCase " + evaluationCase.getClass().getName());
-			evaluationCase.run(
-				connectionResponse
-			);
+			boolean success = false;
+			while(!success)
+			{
+				try
+				{
+					evaluationCase.run(
+						connectionResponse
+					);
+					success = true;
+				} catch (EvaluationFailedRerunnableException e)
+				{
+					System.out.println("Evaluation failed. Rerunning...");
+				}
+			}
 		}
 	}
 }
