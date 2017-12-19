@@ -10,8 +10,12 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+/**
+ * Formats log files after their creation.
+ * Seems to look for specific time patterns and format them better.
+ * TODO: is this still necessary?
+ */
 public class TimeLogFormatter {
-
 	public static void main(String[] args) throws IOException, ParseException {
 		String file = "cassandra.log";
 		String modus ="read";
@@ -25,7 +29,7 @@ public class TimeLogFormatter {
 			if(string.length()>0){
 				if(!string.split(": ")[0].equals("Finish") && (Integer.parseInt(string.split(": ")[0])-1)%1000==0){
 					System.out.println(string.split(": ")[0]+"\t"+(Float.parseFloat(string.split(" ")[1])/1000));
-					sb.append(string.split(": ")[0]+"\t"+(Float.parseFloat(string.split(" ")[1])/1000)).append("\n");
+					sb.append(string.split(": ")[0]).append("\t").append(Float.parseFloat(string.split(" ")[1]) / 1000).append("\n");
 				}
 			}
 		}

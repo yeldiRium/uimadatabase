@@ -21,8 +21,6 @@ import org.apache.uima.jcas.JCas;
 public class StatusPrinter
 extends JCasConsumer_ImplBase
 {
-
-
 	int processed;
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
@@ -32,5 +30,4 @@ extends JCasConsumer_ImplBase
 	public void collectionProcessComplete() throws AnalysisEngineProcessException {
 		super.collectionProcessComplete();
 	}
-
 }
