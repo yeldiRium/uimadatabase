@@ -9,4 +9,4 @@ USER basex
 VOLUME data:/srv/BaseXData
 
 EXPOSE 1984
-CMD ["basexserver", "-nbasex"]
+CMD ["basexserver"]
