@@ -3,6 +3,7 @@ package uimadatabase.dbtest.evaluationFramework.testEvaluations;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.evaluationFramework.EvaluationCase;
+import dbtest.evaluationFramework.OutputProvider;
 
 public class TestEvaluationB implements EvaluationCase
 {
@@ -27,7 +28,10 @@ public class TestEvaluationB implements EvaluationCase
 	}
 
 	@Override
-	public void run(ConnectionResponse connectionResponse)
+	public void run(
+			ConnectionResponse connectionResponse,
+			OutputProvider outputProvider
+	)
 	{
 		TestEvaluationB.wasRun = true;
 		TestEvaluationB.connectionResponse = connectionResponse;

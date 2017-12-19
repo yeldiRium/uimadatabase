@@ -16,6 +16,7 @@ public interface EvaluationCase
 	 *                                             EvaluationCase.
 	 */
 	void run(
-			ConnectionResponse connectionResponse
+			ConnectionResponse connectionResponse,
+			OutputProvider outputProvider
 	) throws EvaluationFailedRerunnableException;
 }

@@ -7,6 +7,7 @@ import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.connection.implementation.CassandraConnection;
 import dbtest.evaluationFramework.EvaluationCase;
+import dbtest.evaluationFramework.OutputProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
@@ -31,7 +32,10 @@ public class CassandraTTREvaluationCase implements EvaluationCase
 	}
 
 	@Override
-	public void run(ConnectionResponse connectionResponse)
+	public void run(
+			ConnectionResponse connectionResponse,
+			OutputProvider outputProvider
+	)
 	{
 		Set<Connection> connections = connectionResponse.getConnections();
 		CassandraConnection cassandraConnection = (CassandraConnection) connections.iterator().next();

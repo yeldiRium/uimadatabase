@@ -49,7 +49,8 @@ public class EvaluationRunner implements Runnable
 				try
 				{
 					evaluationCase.run(
-							connectionResponse
+							connectionResponse,
+							this.configuration.getOutputProvider()
 					);
 					success = true;
 				} catch (EvaluationFailedRerunnableException e)

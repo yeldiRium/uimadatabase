@@ -4,6 +4,7 @@ import dbtest.StatusPrinter;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.evaluationFramework.EvaluationCase;
+import dbtest.evaluationFramework.OutputProvider;
 import org.apache.uima.UIMAException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
@@ -39,7 +40,10 @@ public class AllReadEvaluationCase implements EvaluationCase
 	 * @param connectionResponse
 	 */
 	@Override
-	public void run(ConnectionResponse connectionResponse)
+	public void run(
+			ConnectionResponse connectionResponse,
+			OutputProvider outputProvider
+	)
 	{
 		try
 		{

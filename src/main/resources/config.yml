@@ -5,3 +5,4 @@ evaluations:
   - !!dbtest.evaluations.CassandraCounterCreateEvaluationCase {}
   - !!dbtest.evaluations.CassandraTTREvaluationCase {}
   - !!dbtest.evaluations.Neo4jTTREvaluationCase {}
+outputProvider: !!dbtest.evaluationFramework.BaseOutputProvider {}

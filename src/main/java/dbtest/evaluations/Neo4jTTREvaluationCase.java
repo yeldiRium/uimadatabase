@@ -4,6 +4,7 @@ import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.connection.implementation.Neo4jConnection;
 import dbtest.evaluationFramework.EvaluationCase;
+import dbtest.evaluationFramework.OutputProvider;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.hucompute.services.uima.database.neo4j.Neo4jQueryHandler;
@@ -23,7 +24,10 @@ public class Neo4jTTREvaluationCase implements EvaluationCase
 	}
 
 	@Override
-	public void run(ConnectionResponse connectionResponse)
+	public void run(
+			ConnectionResponse connectionResponse,
+			OutputProvider outputProvider
+	)
 	{
 		// TODO: create QueryHandler correctly after rewriting it
 		Neo4jQueryHandler queryHandler = new Neo4jQueryHandler(new String[]{});

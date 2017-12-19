@@ -3,6 +3,7 @@ package uimadatabase.dbtest.evaluationFramework.testEvaluations;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.evaluationFramework.EvaluationCase;
+import dbtest.evaluationFramework.OutputProvider;
 import dbtest.evaluationFramework.exceptions.EvaluationFailedRerunnableException;
 
 public class TestEvaluationFailingRerun implements EvaluationCase
@@ -19,7 +20,10 @@ public class TestEvaluationFailingRerun implements EvaluationCase
 	}
 
 	@Override
-	public void run(ConnectionResponse connectionResponse) throws EvaluationFailedRerunnableException
+	public void run(
+			ConnectionResponse connectionResponse,
+			OutputProvider outputProvider
+	) throws EvaluationFailedRerunnableException
 	{
 		TestEvaluationFailingRerun.runCounter++;
 		if (TestEvaluationFailingRerun.runCounter < 3)

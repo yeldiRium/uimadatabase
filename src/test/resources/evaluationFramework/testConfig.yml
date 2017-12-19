@@ -1,3 +1,4 @@
 evaluations:
   - !!uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationA {}
   - !!uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationB {}
+outputProvider: !!uimadatabase.dbtest.evaluationFramework.testEvaluations.TestOutputProvider {}

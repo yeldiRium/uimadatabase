@@ -1,2 +1,3 @@
 evaluations:
   - !!uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationFailingRerun {}
+outputProvider: !!uimadatabase.dbtest.evaluationFramework.testEvaluations.TestOutputProvider {}

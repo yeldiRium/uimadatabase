@@ -4,6 +4,7 @@ import com.google.common.collect.Iterators;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.evaluationFramework.EvaluationCase;
+import dbtest.evaluationFramework.OutputProvider;
 import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiReader;
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.UIMAException;
@@ -37,7 +38,10 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	}
 
 	@Override
-	public void run(ConnectionResponse connectionResponse)
+	public void run(
+			ConnectionResponse connectionResponse,
+			OutputProvider outputProvider
+	)
 	{
 
 		try
