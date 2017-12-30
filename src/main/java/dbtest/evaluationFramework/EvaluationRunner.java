@@ -21,6 +21,11 @@ public class EvaluationRunner implements Runnable
 		this.connectionManager = connectionManager;
 	}
 
+	/**
+	 * Loads the yaml config.
+	 * This instantiates all EvaluationCases and the OutputProvider automatically.
+	 * @param configFile
+	 */
 	protected void loadConfig(InputStream configFile)
 	{
 		Constructor constructor = new Constructor(Configuration.class);
@@ -28,6 +33,11 @@ public class EvaluationRunner implements Runnable
 		this.configuration = yaml.load(configFile);
 	}
 
+	/**
+	 * Executes all configured EvaluationCases in order.
+	 * Passes each its according connectionResponse once it is ready and an
+	 * OutputProvider instance for logging.
+	 */
 	@Override
 	public void run()
 	{

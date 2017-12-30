@@ -6,6 +6,11 @@ import dbtest.evaluationFramework.EvaluationRunner;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+/**
+ * Main entrance point for the evaluation system.
+ * Creates a ConnectionManager and an EvaluationRunner, which will when run a
+ * list of preconfigured EvaluationCases.
+ */
 public class Main
 {
 	public static void main(String[] args)
