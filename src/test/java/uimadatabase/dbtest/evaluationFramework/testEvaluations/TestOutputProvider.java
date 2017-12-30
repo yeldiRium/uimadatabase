@@ -11,4 +11,10 @@ public class TestOutputProvider implements OutputProvider
 	{
 		return null;
 	}
+
+	@Override
+	public File createFile(String caller, String name, boolean keepOld)
+	{
+		return null;
+	}
 }
