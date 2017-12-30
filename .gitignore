@@ -22,3 +22,6 @@ target/
 
 # fucking big files that really don't have to be under version control
 input/*
+
+# outputs
+src/test/resources/outputDirectory/*
