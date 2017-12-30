@@ -53,6 +53,7 @@ services:
       - neo4j
     environment:
       - INPUT_DIR=/code/input
+      # Careful! This value is duplicated in src/main/resources/config.yml
       - OUTPUT_DIR=/code/output
       # See README.txt in dbs/arangodb for details on:
       - ARANGODB_HOST=arangodb

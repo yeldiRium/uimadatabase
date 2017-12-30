@@ -72,7 +72,7 @@ public class BaseOutputProviderTest
 	}
 
 	@Test
-	void Given_BaseOutputProviderInitializedWithTestDirectory_When_AskingForNewFileThatExistsAndTellingToBackup_WillCreateNewFileAndBackupOldOne()
+	void Given_BaseOutputProviderInitializedWithTestDirectory_When_AskingForNewFileThatExistsAndTellingToBackup_Will_CreateNewFileAndBackupOldOne()
 	{
 		try
 		{
@@ -100,7 +100,7 @@ public class BaseOutputProviderTest
 	}
 
 	@Test
-	void Given_BaseOutputProviderInitializedWithTestDirectory_When_AskingForNewFileThatExistsAndTellingNotToBackup_WillCreateNewFileAndNotBackupOldOne()
+	void Given_BaseOutputProviderInitializedWithTestDirectory_When_AskingForNewFileThatExistsAndTellingNotToBackup_Will_CreateNewFileAndNotBackupOldOne()
 	{
 		try
 		{
@@ -114,6 +114,29 @@ public class BaseOutputProviderTest
 					this.getClass().getName() + "_testFile_bak0.txt"
 			);
 			assertFalse(Files.exists(expectedPath));
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	void Given_BaseOutputProvider_When_InitializingWithAbsolutePath_Will_WorkAsIntended()
+	{
+		try {
+			String path = FileSystems.getDefault().getPath("src/test/resources/outputDirectory").toAbsolutePath().toString();
+			OutputProvider provider = new BaseOutputProvider(path);
+
+			File testFile = provider.createFile(this.getClass().getName(), "testFile");
+			Path expectedPath = FileSystems.getDefault().getPath(
+					"src/test/resources/outputDirectory",
+					this.getClass().getName() + "_testFile.txt"
+			);
+			assertTrue(Files.exists(expectedPath));
+			assertEquals(
+					expectedPath.toAbsolutePath().toString(),
+					testFile.getAbsolutePath()
+			);
 		} catch (IOException e)
 		{
 			e.printStackTrace();
