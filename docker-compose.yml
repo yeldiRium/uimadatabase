@@ -51,7 +51,7 @@ services:
       - mysql
       - neo4j
     volumes:
-      - ./input:/code/input
+      - ./input/biologie:/code/input
       - ./output:/code/output
     environment:
       - INPUT_DIR=/code/input
