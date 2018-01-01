@@ -22,6 +22,7 @@ target/
 
 # fucking big files that really don't have to be under version control
 input/*
+dbs/*/data
 
 # outputs
 src/test/resources/outputDirectory/*
