@@ -12,6 +12,7 @@ import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationFai
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,7 +51,7 @@ public class EvaluationRunnerTestCase
 			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
 			assertTrue(TestEvaluationA.wasInstantiated);
 			assertTrue(TestEvaluationB.wasInstantiated);
-		} catch (FileNotFoundException e)
+		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -66,7 +67,7 @@ public class EvaluationRunnerTestCase
 			evaluationRunner.run();
 			assertTrue(TestEvaluationA.wasRun);
 			assertTrue(TestEvaluationB.wasRun);
-		} catch (FileNotFoundException e)
+		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -83,7 +84,7 @@ public class EvaluationRunnerTestCase
 
 			verify(mockConnectionManager).submitRequest(TestEvaluationA.connectionRequest);
 			verify(mockConnectionManager).submitRequest(TestEvaluationB.connectionRequest);
-		} catch (FileNotFoundException e)
+		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -100,7 +101,7 @@ public class EvaluationRunnerTestCase
 
 			assertSame(this.mockConnectionResponse, TestEvaluationA.connectionResponse);
 			assertSame(this.mockConnectionResponse, TestEvaluationB.connectionResponse);
-		} catch (FileNotFoundException e)
+		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -118,7 +119,7 @@ public class EvaluationRunnerTestCase
 			// See TestEvaluationFailingRerun
 			// It will fail two times before completing
 			assertEquals(3, TestEvaluationFailingRerun.runCounter);
-		} catch (FileNotFoundException e)
+		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}

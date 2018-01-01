@@ -7,6 +7,7 @@ import dbtest.evaluationFramework.exceptions.EvaluationFailedRerunnableException
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
 
@@ -15,7 +16,7 @@ public class EvaluationRunner implements Runnable
 	protected Configuration configuration;
 	protected ConnectionManager connectionManager;
 
-	public EvaluationRunner(InputStream configFile, ConnectionManager connectionManager)
+	public EvaluationRunner(InputStream configFile, ConnectionManager connectionManager) throws IOException
 	{
 		this.loadConfig(configFile);
 		this.connectionManager = connectionManager;
@@ -26,11 +27,14 @@ public class EvaluationRunner implements Runnable
 	 * This instantiates all EvaluationCases and the OutputProvider automatically.
 	 * @param configFile
 	 */
-	protected void loadConfig(InputStream configFile)
+	protected void loadConfig(InputStream configFile) throws IOException
 	{
 		Constructor constructor = new Constructor(Configuration.class);
 		Yaml yaml = new Yaml(constructor);
 		this.configuration = yaml.load(configFile);
+		this.configuration.getOutputProvider().configurePath(
+				System.getenv("OUTPUT_DIR")
+		);
 	}
 
 	/**

@@ -5,6 +5,7 @@ import dbtest.evaluationFramework.EvaluationRunner;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Main entrance point for the evaluation system.
@@ -28,7 +29,7 @@ public class Main
 			connectionManager.close();
 			System.out.println("Connections closed. Exiting...");
 
-		} catch (FileNotFoundException e)
+		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}

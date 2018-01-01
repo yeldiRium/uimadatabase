@@ -53,7 +53,8 @@ public class BaseOutputProviderTest
 		try
 		{
 			String path = "src/test/resources/outputDirectory";
-			OutputProvider provider = new BaseOutputProvider(path);
+			OutputProvider provider = new BaseOutputProvider();
+			provider.configurePath(path);
 			File testFile = null;
 			testFile = provider.createFile(this.getClass().getName(), "testFile");
 			Path expectedPath = FileSystems.getDefault().getPath(
@@ -77,7 +78,8 @@ public class BaseOutputProviderTest
 		try
 		{
 			String path = "src/test/resources/outputDirectory";
-			OutputProvider provider = new BaseOutputProvider(path);
+			OutputProvider provider = new BaseOutputProvider();
+			provider.configurePath(path);
 			File testFileFirst = provider.createFile(this.getClass().getName(), "testFile");
 			File testFileSecond = provider.createFile(this.getClass().getName(), "testFile", true);
 			File testFileThird = provider.createFile(this.getClass().getName(), "testFile", true);
@@ -105,7 +107,8 @@ public class BaseOutputProviderTest
 		try
 		{
 			String path = "src/test/resources/outputDirectory";
-			OutputProvider provider = new BaseOutputProvider(path);
+			OutputProvider provider = new BaseOutputProvider();
+			provider.configurePath(path);
 			File testFileFirst = provider.createFile(this.getClass().getName(), "testFile");
 			File testFileSecond = provider.createFile(this.getClass().getName(), "testFile");
 
@@ -125,7 +128,8 @@ public class BaseOutputProviderTest
 	{
 		try {
 			String path = FileSystems.getDefault().getPath("src/test/resources/outputDirectory").toAbsolutePath().toString();
-			OutputProvider provider = new BaseOutputProvider(path);
+			OutputProvider provider = new BaseOutputProvider();
+			provider.configurePath(path);
 
 			File testFile = provider.createFile(this.getClass().getName(), "testFile");
 			Path expectedPath = FileSystems.getDefault().getPath(
