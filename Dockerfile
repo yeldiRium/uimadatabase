@@ -20,8 +20,4 @@ RUN ["mvn", "clean", "package"]
 RUN rm -rf /code/src/main/java
 RUN rm -rf /code/src/test
 
-# prepare input/output directory
-VOLUME /nlp_db_eval/input /code/input
-VOLUME /nlp_db_eval/output /code/output
-
 CMD ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "/code/target/target.jar"]
