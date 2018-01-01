@@ -1,3 +1,3 @@
 FROM mysql:5
 
-VOLUME data:/var/lib/mysql
+VOLUME /nlp_db_eval/dbs/mysql/data:/var/lib/mysql

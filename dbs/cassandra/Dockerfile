@@ -1,3 +1,3 @@
 FROM cassandra:3
 
-VOLUME data:/var/lib/cassandra
+VOLUME /nlp_db_eval/dbs/cassandra/data:/var/lib/cassandra

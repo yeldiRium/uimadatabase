@@ -1,3 +1,3 @@
 FROM mongo:3.6
 
-VOLUME data:/data/db
+VOLUME /nlp_db_eval/dbs/mongodb/data:/data/db
