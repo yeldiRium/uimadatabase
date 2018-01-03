@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -91,10 +92,10 @@ public class ConnectionManagerTestCase
 		Future<ConnectionResponse> futureConnectionResponse = connectionManager.submitRequest(connectionRequest);
 
 		ConnectionResponse connectionResponse = futureConnectionResponse.get();
-		Set<Connection> connections = connectionResponse.getConnections();
+		Collection<Connection> connections = connectionResponse.getConnections();
 
 		assertEquals(1, connections.size(), "One Connection was requested, one should be returned.");
-		MockConnection mockedConnection = (MockConnection) connections.toArray()[0];
+		MockConnection mockedConnection = (MockConnection) connectionResponse.getConnection(MockConnection.class);
 		assertEquals(1, mockedConnection.establishCounter, "Establish should've been called exactly once.");
 		assertEquals(true, mockedConnection.isEstablished(), "IsEstablished should be true by now.");
 	}
@@ -108,7 +109,7 @@ public class ConnectionManagerTestCase
 
 		Future<ConnectionResponse> futureConnectionResponse = connectionManager.submitRequest(connectionRequest);
 		ConnectionResponse connectionResponse = futureConnectionResponse.get();
-		MockConnection mockedConnection = (MockConnection) connectionResponse.getConnections().toArray()[0];
+		MockConnection mockedConnection = (MockConnection) connectionResponse.getConnection(MockConnection.class);
 
 		connectionManager.close();
 		assertTrue(mockedConnection.wasClosed);

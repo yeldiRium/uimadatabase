@@ -12,6 +12,7 @@ import org.hucompute.services.uima.database.cassandra.CassandraIndexWriter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -37,7 +38,7 @@ public class CassandraCounterCreateEvaluationCase implements EvaluationCase
 			OutputProvider outputProvider
 	)
 	{
-		Set<Connection> connections = connectionResponse.getConnections();
+		Collection<Connection> connections = connectionResponse.getConnections();
 		CassandraConnection cassandraConnection = (CassandraConnection) connections.iterator().next();
 		StringBuilder builder = new StringBuilder();
 

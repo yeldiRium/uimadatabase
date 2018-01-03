@@ -58,8 +58,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 		{
 			List<CollectionReader> readers = Arrays.asList(
 					getXMIReader(),
-					// TODO: update this once the ConnectionResponse has been rewritten
-					getNeo4jReader((Connection) connectionResponse.getConnections().stream().filter((connection) -> connection instanceof Neo4jConnection).toArray()[0]),
+					getNeo4jReader(connectionResponse.getConnection(Neo4jConnection.class)),
 					getCassandraReader(),
 					getMongoReader(),
 					getXMIReader(),

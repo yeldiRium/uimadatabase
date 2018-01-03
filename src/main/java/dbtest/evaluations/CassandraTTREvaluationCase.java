@@ -16,10 +16,7 @@ import org.hucompute.services.uima.database.xmi.XmiReaderModified;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class CassandraTTREvaluationCase implements EvaluationCase
 {
@@ -37,7 +34,7 @@ public class CassandraTTREvaluationCase implements EvaluationCase
 			OutputProvider outputProvider
 	)
 	{
-		Set<Connection> connections = connectionResponse.getConnections();
+		Collection<Connection> connections = connectionResponse.getConnections();
 		CassandraConnection cassandraConnection = (CassandraConnection) connections.iterator().next();
 		try
 		{

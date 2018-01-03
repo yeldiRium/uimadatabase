@@ -1,5 +1,7 @@
 package dbtest.connection;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,11 +12,11 @@ import java.util.Set;
  */
 public class ConnectionResponse
 {
-	protected HashSet<Connection> connections;
+	protected HashMap<Class<?extends Connection>,Connection> connections;
 
 	public ConnectionResponse()
 	{
-		this.connections = new HashSet<>();
+		this.connections = new HashMap<>();
 	}
 
 	/**
@@ -24,18 +26,23 @@ public class ConnectionResponse
 	 */
 	public void addConnection(Connection connection)
 	{
-		if (!this.connections.contains(connection))
-		{
-			this.connections.add(connection);
-		}
+		this.connections.put(connection.getClass(), connection);
 	}
 
 	/**
 	 * @return the stored connections.
 	 */
-	@SuppressWarnings("unchecked")
-	public Set<Connection> getConnections()
+	public Collection<Connection> getConnections()
 	{
-		return (Set<Connection>) this.connections.clone();
+		return this.connections.values();
+	}
+
+	/**
+	 * @param className The name of a connection class.
+	 * @return the stored connection.
+	 */
+	public Connection getConnection(Class<?extends Connection> className)
+	{
+		return this.connections.get(className);
 	}
 }

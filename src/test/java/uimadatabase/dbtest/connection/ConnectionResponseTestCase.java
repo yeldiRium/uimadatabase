@@ -4,7 +4,9 @@ import dbtest.connection.Connection;
 import dbtest.connection.ConnectionResponse;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,20 +54,21 @@ public class ConnectionResponseTestCase
 	}
 
 	@Test
-	void Given_ConnectionResponseWithFewResults_When_GettingConnectionList_Then_SetOfConnectionsIsReturned()
+	void Given_ConnectionResponseWithFewResults_When_GettingConnectionList_Then_MapOfConnectionsIsReturned()
 	{
 		Connection a = new TestConnectionA();
 		Connection b = new TestConnectionB();
 
-		Set<Connection> set = new HashSet<>();
-		set.add(a);
-		set.add(b);
+		Map<Class<?extends Connection>, Connection> map = new HashMap<>();
+		map.put(TestConnectionA.class, a);
+		map.put(TestConnectionB.class, b);
 
 		ConnectionResponse response = new ConnectionResponse();
 		response.addConnection(a);
 		response.addConnection(b);
 
-		assertEquals(set.size(), response.getConnections().size());
-		assertTrue(set.containsAll(response.getConnections()));
+		assertEquals(map.size(), response.getConnections().size());
+		assertEquals(a, response.getConnection(TestConnectionA.class));
+		assertEquals(b, response.getConnection(TestConnectionB.class));
 	}
 }
