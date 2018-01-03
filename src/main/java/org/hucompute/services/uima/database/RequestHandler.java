@@ -29,14 +29,14 @@ import com.datastax.driver.core.exceptions.NoHostAvailableException;
 public abstract class RequestHandler {
 
 	static public void main(String[] args) {
-//		stringRequestHandler("TTR_all|TTR_one 1063|TTR_collection 1107 1108|count_type lEmma|count_type_in_document 1063 ToKen");
-//		stringRequestHandler("count_type_with_value LemmA der|count_type_with_value_in_document 1108 LemmA der");
-//		stringRequestHandler("get_termFrequency_logNorm 1108 der|get_termFrequency_doubleNorm 1108 der");
-//		stringRequestHandler("get_termFrequencies 1108|get_documentsContaining Mensch");
-//		stringRequestHandler("get_inverseDocumentFrequency Mensch|get_inverseDocumentFrequencies 1108");
-//		stringRequestHandler("get_tfidf 1108 Mensch");
-//		stringRequestHandler("get_tfidf_all 1190");
-		stringRequestHandler("get_tfidf_all_all");
+//		stringRequestHandler("calculateTTRForAllDocuments|calculateTTRForDocument 1063|calculateTTRForCollectionOfDocuments 1107 1108|countElementsOfType lEmma|countElementsInDocumentOfType 1063 ToKen");
+//		stringRequestHandler("countElementsOfTypeWithValue LemmA der|countElementsInDocumentOfTypeWithValue 1108 LemmA der");
+//		stringRequestHandler("calculateTermFrequencyWithLogNermInDocumentForLemma 1108 der|calculateTermFrequencyWithDoubleNormInDocumentForLemma 1108 der");
+//		stringRequestHandler("calculateTermFrequenciesForLemmataInDocument 1108|countDocumentsContainingLemma Mensch");
+//		stringRequestHandler("calculateInverseDocumentFrequency Mensch|calculateInverseDocumentFrequenciesForLemmataInDocument 1108");
+//		stringRequestHandler("calculateTFIDFForLemmaInDocument 1108 Mensch");
+//		stringRequestHandler("calculateTFIDFForLemmataInDocument 1190");
+		stringRequestHandler("calculateTFIDFForLemmataInAllDocuments");
 	}
 
 	/**

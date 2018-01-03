@@ -10,7 +10,6 @@ import org.apache.commons.lang.time.StopWatch;
 import org.hucompute.services.uima.database.neo4j.Neo4jQueryHandler;
 import org.hucompute.services.uima.database.neo4j.data.Const;
 
-import java.io.File;
 import java.io.IOException;
 
 public class Neo4jTTREvaluationCase implements EvaluationCase
@@ -39,27 +38,27 @@ public class Neo4jTTREvaluationCase implements EvaluationCase
 		builder.append("getTTR(List of 2) took: ")
 				.append(System.currentTimeMillis() - timeBegin)
 				.append("  ms\n")
-				.append("Testing TTR_all():");
+				.append("Testing calculateTTRForAllDocuments():");
 		timeBegin = System.currentTimeMillis();
-		queryHandler.TTR_all();
-		builder.append("TTR_all() took: ")
+		queryHandler.calculateTTRForAllDocuments();
+		builder.append("calculateTTRForAllDocuments() took: ")
 				.append(System.currentTimeMillis() - timeBegin)
 				.append("  ms\n")
 				.append("Testing count(LEMMA):");
 		timeBegin = System.currentTimeMillis();
-		queryHandler.count_type(Const.TYPE.LEMMA);
+		queryHandler.countElementsOfType(Const.TYPE.LEMMA);
 		builder.append("count(LEMMA) took: ")
 				.append(System.currentTimeMillis() - timeBegin)
 				.append("  ms\n")
 				.append("Testing count(DocId, TOKEN):");
 		timeBegin = System.currentTimeMillis();
-		queryHandler.count_type_in_document("105", Const.TYPE.TOKEN);
+		queryHandler.countElementsInDocumentOfType("105", Const.TYPE.TOKEN);
 		builder.append("count(DocId, TOKEN) took: ")
 				.append(System.currentTimeMillis() - timeBegin)
 				.append("  ms\n")
 				.append("Testing count(LEMMA, Mensch):");
 		timeBegin = System.currentTimeMillis();
-		queryHandler.count_type_with_value(Const.TYPE.LEMMA, "Mensch");
+		queryHandler.countElementsOfTypeWithValue(Const.TYPE.LEMMA, "Mensch");
 		builder.append("count(LEMMA, Mensch) took: ")
 				.append(System.currentTimeMillis() - timeBegin)
 				.append(" ms\n");
@@ -89,7 +88,7 @@ public class Neo4jTTREvaluationCase implements EvaluationCase
 		for (int i = 0; i < runs; i++)
 		{
 			a.resume();
-			queryHandler.get_Lemmata("1063");
+			queryHandler.getLemmataForDocument("1063");
 			a.suspend();
 
 			b.resume();

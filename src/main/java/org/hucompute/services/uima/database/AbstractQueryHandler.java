@@ -32,104 +32,104 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface {
 		try{
 			String func = query.pop();
 			switch (func) {
-				case "TTR_all": {
-					output.put("TTR_all", TTR_all());
+				case "calculateTTRForAllDocuments": {
+					output.put("calculateTTRForAllDocuments", calculateTTRForAllDocuments());
 					break;
 				}
-				case "TTR_one": {
-					output.put("TTR_one", TTR_one(query.pop()));
+				case "calculateTTRForDocument": {
+					output.put("calculateTTRForDocument", calculateTTRForDocument(query.pop()));
 					break;
 				}
-				case "TTR_collection":{
-					output.put("TTR_collection", TTR_collection(query));
+				case "calculateTTRForCollectionOfDocuments":{
+					output.put("calculateTTRForCollectionOfDocuments", calculateTTRForCollectionOfDocuments(query));
 					break;
 				}
-				case "count_type": {
-					output.put("count_type", count_type(Const.TYPE.valueOf(query.pop().toUpperCase())));
+				case "countElementsOfType": {
+					output.put("countElementsOfType", countElementsOfType(Const.TYPE.valueOf(query.pop().toUpperCase())));
 					break;
 				}
-				case "count_type_in_document": {
-					output.put("count_type_in_document", count_type_in_document(
+				case "countElementsInDocumentOfType": {
+					output.put("countElementsInDocumentOfType", countElementsInDocumentOfType(
 							query.pop(),Const.TYPE.valueOf(query.pop().toUpperCase())));
 					break;
 				}
-				case "count_type_with_value": {
-					output.put("count_type_with_value", count_type_with_value(
+				case "countElementsOfTypeWithValue": {
+					output.put("countElementsOfTypeWithValue", countElementsOfTypeWithValue(
 							Const.TYPE.valueOf(query.pop().toUpperCase()),query.pop()));
 					break;
 				}
-				case "count_type_with_value_in_document": {
-					output.put("count_type_with_value_in_document", count_type_with_value_in_document(
+				case "countElementsInDocumentOfTypeWithValue": {
+					output.put("countElementsInDocumentOfTypeWithValue", countElementsInDocumentOfTypeWithValue(
 							query.pop(),Const.TYPE.valueOf(query.pop().toUpperCase()),query.pop()));
 					break;
 				}
 				case "count_tvd": {
-					output.put("count_type_with_value_in_document", count_type_with_value_in_document(
+					output.put("countElementsInDocumentOfTypeWithValue", countElementsInDocumentOfTypeWithValue(
 							query.pop(),Const.TYPE.valueOf(query.pop().toUpperCase()),query.pop()));
 					break;
 				}
-				case "get_termFrequency_doubleNorm": {
-					output.put("get_termFrequency_doubleNorm", get_termFrequency_doubleNorm(query.pop(),query.pop()));
+				case "calculateTermFrequencyWithDoubleNormInDocumentForLemma": {
+					output.put("calculateTermFrequencyWithDoubleNormInDocumentForLemma", calculateTermFrequencyWithDoubleNormForLemmaInDocument(query.pop(), query.pop()));
 					break;
 				}
-				case "get_termFrequency_logNorm": {
-					output.put("get_termFrequency_logNorm", get_termFrequency_logNorm(query.pop(),query.pop()));
+				case "calculateTermFrequencyWithLogNermInDocumentForLemma": {
+					output.put("calculateTermFrequencyWithLogNermInDocumentForLemma", calculateTermFrequencyWithLogNermForLemmaInDocument(query.pop(), query.pop()));
 					break;
 				}
-				case "get_termFrequencies": {
-					output.put("get_termFrequencies", get_termFrequencies(query.pop()));
+				case "calculateTermFrequenciesForLemmataInDocument": {
+					output.put("calculateTermFrequenciesForLemmataInDocument", calculateTermFrequenciesForLemmataInDocument(query.pop()));
 					break;
 				}
-				case "get_documentsContaining": {
-					output.put("get_documentsContaining", get_documentsContaining(query.pop()));
+				case "countDocumentsContainingLemma": {
+					output.put("countDocumentsContainingLemma", countDocumentsContainingLemma(query.pop()));
 					break;
 				}
-				case "get_inverseDocumentFrequency": {
-					output.put("get_inverseDocumentFrequency", get_inverseDocumentFrequency(query.pop()));
+				case "calculateInverseDocumentFrequency": {
+					output.put("calculateInverseDocumentFrequency", calculateInverseDocumentFrequency(query.pop()));
 					break;
 				}
-				case "get_inverseDocumentFrequencies": {
-					output.put("get_inverseDocumentFrequencies", get_inverseDocumentFrequencies(query.pop()));
+				case "calculateInverseDocumentFrequenciesForLemmataInDocument": {
+					output.put("calculateInverseDocumentFrequenciesForLemmataInDocument", calculateInverseDocumentFrequenciesForLemmataInDocument(query.pop()));
 					break;
 				}
-				case "get_tfidf": {
-					output.put("get_tfidf", get_tfidf(query.pop(),query.pop()));
+				case "calculateTFIDFForLemmaInDocument": {
+					output.put("calculateTFIDFForLemmaInDocument", calculateTFIDFForLemmaInDocument(query.pop(), query.pop()));
 					break;
 				}
-				case "get_tfidf_all": {
-					output.put("get_tfidf_all", get_tfidf_all(query.pop()));
+				case "calculateTFIDFForLemmataInDocument": {
+					output.put("calculateTFIDFForLemmataInDocument", calculateTFIDFForLemmataInDocument(query.pop()));
 					break;
 				}
-				case "get_tfidf_all_all": {
-					output.put("get_tfidf_all_all", get_tfidf_all_all());
+				case "calculateTFIDFForLemmataInAllDocuments": {
+					output.put("calculateTFIDFForLemmataInAllDocuments", calculateTFIDFForLemmataInAllDocuments());
 					break;
 				}
-				case "get_Lemmata": {
-					output.put("get_Lemmata", get_Lemmata(query.pop()));
+				case "getLemmataForDocument": {
+					output.put("getLemmataForDocument", getLemmataForDocument(query.pop()));
 					break;
 				}
-				case "get_bi_grams": {
-					output.put("get_bi_grams", get_bi_grams(query.pop()));
+				case "getBiGramsFromDocument": {
+					output.put("getBiGramsFromDocument", getBiGramsFromDocument(query.pop()));
 					break;
 				}
-				case "get_bi_grams_collection": {
-					output.put("get_bi_grams_collection", get_bi_grams_collection(query));
+				case "getBiGramsFromDocumentsInCollection": {
+					output.put("getBiGramsFromDocumentsInCollection", getBiGramsFromDocumentsInCollection(query));
 					break;
 				}
-				case "get_bi_grams_all": {
-					output.put("get_bi_grams_all", get_bi_grams_all());
+				case "getBiGramsFromAllDocuments": {
+					output.put("getBiGramsFromAllDocuments", getBiGramsFromAllDocuments());
 					break;
 				}
-				case "get_tri_grams": {
-					output.put("get_tri_grams", get_tri_grams(query.pop()));
+				case "getTriGramsFromDocument": {
+					output.put("getTriGramsFromDocument", getTriGramsFromDocument(query.pop()));
 					break;
 				}
-				case "get_tri_grams_collection": {
-					output.put("get_tri_grams_collection", get_tri_grams_collection(query));
+				case "getTriGramsFromDocumentsInCollection": {
+					output.put("getTriGramsFromDocumentsInCollection", getTriGramsFromDocumentsInCollection(query));
 					break;
 				}
-				case "get_tri_grams_all": {
-					output.put("get_tri_grams_all", get_tri_grams_all());
+				case "getTriGramsFromAllDocuments": {
+					output.put("getTriGramsFromAllDocuments", getTriGramsFromAllDocuments());
 					break;
 				}
 				default:{
@@ -157,27 +157,27 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface {
 	 * All methods that are know to be incompatible with at least one database.
 	 * Override in implementation!
 	 */
-	public ArrayList<String> get_bi_grams(String documentId) throws UnsupportedOperationException {
+	public ArrayList<String> getBiGramsFromDocument(String documentId) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 	
-	public ArrayList<String> get_bi_grams_all() throws UnsupportedOperationException {
+	public ArrayList<String> getBiGramsFromAllDocuments() throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 	
-	public ArrayList<String> get_bi_grams_collection(Collection<String> documentIds)
+	public ArrayList<String> getBiGramsFromDocumentsInCollection(Collection<String> documentIds)
 			throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
-	public ArrayList<String> get_tri_grams(String documentId) throws UnsupportedOperationException {
+	public ArrayList<String> getTriGramsFromDocument(String documentId) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 	
-	public ArrayList<String> get_tri_grams_all() throws UnsupportedOperationException {
+	public ArrayList<String> getTriGramsFromAllDocuments() throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 	
-	public ArrayList<String> get_tri_grams_collection(Collection<String> documentIds)
+	public ArrayList<String> getTriGramsFromDocumentsInCollection(Collection<String> documentIds)
 			throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}

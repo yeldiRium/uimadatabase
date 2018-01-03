@@ -52,7 +52,16 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @param documentId the specified document's id.
 	 * @return a HashSet(String lemma).
 	 */
-	HashSet<String> get_Lemmata(String documentId);
+	HashSet<String> getLemmataForDocument(String documentId);
+
+	/**
+	 * The amount of documents that contain at least one instance of
+	 * <i>lemma</i>.
+	 *
+	 * @param lemma the specified lemma.
+	 * @return a double (cast from int).
+	 */
+	int countDocumentsContainingLemma(String lemma);
 
 	/**
 	 * Count all elements of the specified <i>type</i>.
@@ -61,7 +70,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 *             DOCUMENT, SENTENCE or PARAGRAPH.
 	 * @return An integer.
 	 */
-	int count_type(Const.TYPE type);
+	int countElementsOfType(Const.TYPE type);
 
 	/**
 	 * Counts all elements of <i>type</i> in the specified document.
@@ -72,7 +81,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 *                   DOCUMENT, SENTENCE or PARAGRAPH.
 	 * @return An integer.
 	 */
-	int count_type_in_document(String documentId, Const.TYPE type);
+	int countElementsInDocumentOfType(String documentId, Const.TYPE type);
 
 	/**
 	 * Counts all elements of <i>type</i> across all documents with given
@@ -85,7 +94,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 *                                  given does not match TOKEN, LEMMA or
 	 *                                  POS.
 	 */
-	int count_type_with_value(Const.TYPE type, String value)
+	int countElementsOfTypeWithValue(Const.TYPE type, String value)
 			throws IllegalArgumentException;
 
 	/**
@@ -101,7 +110,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 *                                  given does not match TOKEN, LEMMA or
 	 *                                  POS.
 	 */
-	int count_type_with_value_in_document(
+	int countElementsInDocumentOfTypeWithValue(
 			String documentId, Const.TYPE type, String value
 	) throws IllegalArgumentException;
 
@@ -119,7 +128,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 *
 	 * @return Map(String DocumentId, Double TTR - value)
 	 */
-	Map<String, Double> TTR_all();
+	Map<String, Double> calculateTTRForAllDocuments();
 
 	/**
 	 * Get TTR for the specified document.
@@ -127,7 +136,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @param documentId The id of the document to get the TTR from.
 	 * @return Map(String DocumentId, Double TTR - value)
 	 */
-	Map<String, Double> TTR_one(String documentId);
+	Map<String, Double> calculateTTRForDocument(String documentId);
 
 	/**
 	 * Get TTR for all specified documents.
@@ -135,7 +144,9 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @param documentIds The id's of the document to get the TTR from.
 	 * @return Map(String DocumentId, Double TTR - value)
 	 */
-	Map<String, Double> TTR_collection(Collection<String> documentIds);
+	Map<String, Double> calculateTTRForCollectionOfDocuments(
+			Collection<String> documentIds
+	);
 
 
 	//--------------------------------------------------------------------------
@@ -152,20 +163,24 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	/**
 	 * The term-frequency normed with 0.5 (a double).
 	 *
-	 * @param documentId the specified document's id.
 	 * @param lemma      the specified lemma.
+	 * @param documentId the specified document's id.
 	 * @return a double.
 	 */
-	double get_termFrequency_doubleNorm(String documentId, String lemma);
+	double calculateTermFrequencyWithDoubleNormForLemmaInDocument(
+			String lemma, String documentId
+	);
 
 	/**
 	 * The term-frequency normed with the natural logarithm.
 	 *
-	 * @param documentId the specified document's id.
 	 * @param lemma      the specified lemma.
+	 * @param documentId the specified document's id.
 	 * @return a double.
 	 */
-	double get_termFrequency_logNorm(String documentId, String lemma);
+	double calculateTermFrequencyWithLogNermForLemmaInDocument(
+			String lemma, String documentId
+	);
 
 	/**
 	 * Compute and return term-frequencies for all lemmata in the specified
@@ -174,16 +189,9 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @param documentId the specified document's id.
 	 * @return a HashMap(String lemma, Double term-frequency).
 	 */
-	HashMap<String, Double> get_termFrequencies(String documentId);
-
-	/**
-	 * The amount of documents that contain at least one instance of
-	 * <i>lemma</i>.
-	 *
-	 * @param lemma the specified lemma.
-	 * @return a double (cast from int).
-	 */
-	double get_documentsContaining(String lemma);
+	HashMap<String, Double> calculateTermFrequenciesForLemmataInDocument(
+			String documentId
+	);
 
 	/**
 	 * The natural logarithm from the division of the count of documents and the
@@ -192,7 +200,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @param lemma the specified lemma.
 	 * @return a double.
 	 */
-	double get_inverseDocumentFrequency(String lemma);
+	double calculateInverseDocumentFrequency(String lemma);
 
 	/**
 	 * Inverse-document-frequencies for all lemmata in the specified document.
@@ -200,16 +208,19 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @param documentId the specified document's id.
 	 * @return a HashMap(String lemma, Double inverse-document-frequency).
 	 */
-	HashMap<String, Double> get_inverseDocumentFrequencies(String documentId);
+	HashMap<String, Double>
+	calculateInverseDocumentFrequenciesForLemmataInDocument(
+			String documentId
+	);
 
 	/**
 	 * The TF-IDF for <i>lemma</i> in the specified document.
 	 *
-	 * @param documentId the specified document's id.
 	 * @param lemma      the specified lemma.
+	 * @param documentId the specified document's id.
 	 * @return a double.
 	 */
-	double get_tfidf(String documentId, String lemma);
+	double calculateTFIDFForLemmaInDocument(String lemma, String documentId);
 
 	/**
 	 * The TF-IDF for <b>all lemmata</b> in the specified document.
@@ -217,7 +228,9 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @param documentId the specified document's id.
 	 * @return a HashMap(String lemma, Double tfidf).
 	 */
-	HashMap<String, Double> get_tfidf_all(String documentId);
+	HashMap<String, Double> calculateTFIDFForLemmataInDocument(
+			String documentId
+	);
 
 	/**
 	 * The TF-IDF for <b>all lemmata</b> in <i>all</i> documents.
@@ -225,7 +238,8 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 *
 	 * @return a map from document id to a map from lemma to tfidf.
 	 */
-	HashMap<String, HashMap<String, Double>> get_tfidf_all_all();
+	HashMap<String, HashMap<String, Double>>
+	calculateTFIDFForLemmataInAllDocuments();
 
 
 	//--------------------------------------------------------------------------
@@ -245,32 +259,34 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
-	ArrayList<String> get_bi_grams(String documentId)
+	ArrayList<String> getBiGramsFromDocument(String documentId)
 			throws UnsupportedOperationException;
 
 	/**
 	 * A list of all token-bi-grams from all documents.
 	 * <b>Warning:</b> May produce heavy server load.
-	 * See {@link #get_bi_grams get_bi_grams} for details.
+	 * See {@link #getBiGramsFromDocument getBiGramsFromDocument} for details.
 	 *
 	 * @return an ArrayList(String bi-gram).
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
-	ArrayList<String> get_bi_grams_all() throws UnsupportedOperationException;
+	ArrayList<String> getBiGramsFromAllDocuments()
+			throws UnsupportedOperationException;
 
 	/**
 	 * A list of all token-bi-grams from all documents specified in the collec-
 	 * tion.
-	 * See {@link #get_bi_grams get_bi_grams} for details.
+	 * See {@link #getBiGramsFromDocument getBiGramsFromDocument} for details.
 	 *
 	 * @param documentIds the specified document's id.
 	 * @return an ArrayList(String bi-gram).
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
-	ArrayList<String> get_bi_grams_collection(Collection<String> documentIds)
-			throws UnsupportedOperationException;
+	ArrayList<String> getBiGramsFromDocumentsInCollection(
+			Collection<String> documentIds
+	) throws UnsupportedOperationException;
 
 	/**
 	 * <p>A List of all token-tri-grams in the specified document.</p>
@@ -282,30 +298,32 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
-	ArrayList<String> get_tri_grams(String documentId)
+	ArrayList<String> getTriGramsFromDocument(String documentId)
 			throws UnsupportedOperationException;
 
 	/**
 	 * A list of all token-tri-grams from all documents. <b>Warning:</b> May
 	 * produce heavy server load.
-	 * See {@link #get_tri_grams get_tri_grams} for details.
+	 * See {@link #getTriGramsFromDocument getTriGramsFromDocument} for details.
 	 *
 	 * @return an ArrayList(String tri-gram).
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
-	ArrayList<String> get_tri_grams_all() throws UnsupportedOperationException;
+	ArrayList<String> getTriGramsFromAllDocuments()
+			throws UnsupportedOperationException;
 
 	/**
 	 * A list of all token-tri-grams from all documents specified in the
 	 * collection.
-	 * See {@link #get_tri_grams get_tri_grams} for details.
+	 * See {@link #getTriGramsFromDocument getTriGramsFromDocument} for details.
 	 *
 	 * @param documentIds the specified documents id's.
 	 * @return an ArrayList(String tri-gram).
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
-	ArrayList<String> get_tri_grams_collection(Collection<String> documentIds)
-			throws UnsupportedOperationException;
+	ArrayList<String> getTriGramsFromDocumentsInCollection(
+			Collection<String> documentIds
+	) throws UnsupportedOperationException;
 }

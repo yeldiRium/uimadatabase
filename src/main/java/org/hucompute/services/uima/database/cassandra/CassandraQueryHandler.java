@@ -63,7 +63,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler {
 	}
 
 	@Override
-	public Map<String, Double> TTR_all() {
+	public Map<String, Double> calculateTTRForAllDocuments() {
 		long start;
 		long end;
 		Map<String, Double> ttr = new HashMap<>();
@@ -85,7 +85,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler {
 	}
 
 	@Override
-	public Map<String, Double> TTR_one(String documentId) {
+	public Map<String, Double> calculateTTRForDocument(String documentId) {
 		long start;
 		long end;
 		Map<String, Double> ttr = new HashMap<>();
@@ -107,7 +107,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler {
 	}
 
 	@Override
-	public Map<String, Double> TTR_collection(Collection<String> documentIds) {
+	public Map<String, Double> calculateTTRForCollectionOfDocuments(Collection<String> documentIds) {
 		long start;
 		long end;
 		Map<String, Double> ttrCollection = new HashMap<>();
@@ -140,44 +140,44 @@ public class CassandraQueryHandler extends AbstractQueryHandler {
 	}
 
 	@Override
-	public int count_type(TYPE type) throws UnsupportedOperationException{
+	public int countElementsOfType(TYPE type) throws UnsupportedOperationException{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public int count_type_in_document(String documentId, TYPE type) {
+	public int countElementsInDocumentOfType(String documentId, TYPE type) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public int count_type_with_value(TYPE type, String value) throws IllegalArgumentException {
+	public int countElementsOfTypeWithValue(TYPE type, String value) throws IllegalArgumentException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public int count_type_with_value_in_document(String documentId, TYPE type, String value)
+	public int countElementsInDocumentOfTypeWithValue(String documentId, TYPE type, String value)
 			throws IllegalArgumentException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public double get_termFrequency_doubleNorm(String documentId, String lemma) {
+	public double calculateTermFrequencyWithDoubleNormForLemmaInDocument(String lemma, String documentId) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public double get_termFrequency_logNorm(String documentId, String lemma) {
+	public double calculateTermFrequencyWithLogNermForLemmaInDocument(String lemma, String documentId) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public HashMap<String, Double> get_termFrequencies(String documentId) {
+	public HashMap<String, Double> calculateTermFrequenciesForLemmataInDocument(String documentId) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public double get_documentsContaining(String lemma) {
-		double count = new Double(0);
+	public int countDocumentsContainingLemma(String lemma) {
+		int count = 0;
 		long start;
 		long end;
 		try {
@@ -198,7 +198,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler {
 	}
 
 	@Override
-	public double get_inverseDocumentFrequency(String lemma) {
+	public double calculateInverseDocumentFrequency(String lemma) {
 		double idf = new Double(0.000000);
 		long start;
 		long end;
@@ -220,12 +220,12 @@ public class CassandraQueryHandler extends AbstractQueryHandler {
 	}
 
 	@Override
-	public HashMap<String, Double> get_inverseDocumentFrequencies(String documentId) {
+	public HashMap<String, Double> calculateInverseDocumentFrequenciesForLemmataInDocument(String documentId) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public double get_tfidf(String documentId, String lemma) {
+	public double calculateTFIDFForLemmaInDocument(String lemma, String documentId) {
 		double tdidf = new Double(0.000000);
 		long start;
 		long end;
@@ -248,7 +248,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler {
 	}
 
 	@Override
-	public HashMap<String, Double> get_tfidf_all(String documentId) {
+	public HashMap<String, Double> calculateTFIDFForLemmataInDocument(String documentId) {
 		HashMap<String, Double> tdidf = new HashMap<>();
 		long start;
 		long end;
@@ -270,7 +270,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler {
 	}
 
 	@Override
-	public HashMap<String, HashMap<String, Double>> get_tfidf_all_all() {
+	public HashMap<String, HashMap<String, Double>> calculateTFIDFForLemmataInAllDocuments() {
 		HashMap<String, HashMap<String, Double>> tdidfs = new HashMap<>();
 		long start;
 		long end;
@@ -296,7 +296,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler {
 	}
 
 	@Override
-	public HashSet<String> get_Lemmata(String documentId) {
+	public HashSet<String> getLemmataForDocument(String documentId) {
 		HashSet<String> vocabulary = new HashSet<>();
 		long start;
 		long end;
@@ -318,17 +318,17 @@ public class CassandraQueryHandler extends AbstractQueryHandler {
 	}
 
 	@Override
-	public ArrayList<String> get_bi_grams(String documentId) throws UnsupportedOperationException {
+	public ArrayList<String> getBiGramsFromDocument(String documentId) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ArrayList<String> get_bi_grams_all() throws UnsupportedOperationException {
+	public ArrayList<String> getBiGramsFromAllDocuments() throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ArrayList<String> get_bi_grams_collection(Collection<String> documentIds)
+	public ArrayList<String> getBiGramsFromDocumentsInCollection(Collection<String> documentIds)
 			throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}

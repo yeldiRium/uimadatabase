@@ -74,7 +74,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	/*
 	 * TODO:println->log, check for getTTR_opt
 	 */
-	public Map<String, Double> TTR_all () {
+	public Map<String, Double> calculateTTRForAllDocuments() {
 		long startTimeJ = System.currentTimeMillis();
 		Map<String, Double> ttr = new HashMap<>();
 		try {
@@ -98,24 +98,24 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 		return ttr;
 	}
 	
-	public Map<String, Double> TTR_one(String documentId) {
-		return TTR_collection (Arrays.asList(documentId));
+	public Map<String, Double> calculateTTRForDocument(String documentId) {
+		return calculateTTRForCollectionOfDocuments(Arrays.asList(documentId));
 	}
 	
 	/**
 	 * Legacy function. Wraps array of Strings argument to {@link Collection}.
 	 * @param documentIds the specified document's id.
-	 * @return recursive call to {@link #TTR_collection}.
+	 * @return recursive call to {@link #calculateTTRForCollectionOfDocuments}.
 	 */
 	public Map<String, Double> getTTR (String documentIds[]) {
-		return TTR_collection (Arrays.asList(documentIds));
+		return calculateTTRForCollectionOfDocuments(Arrays.asList(documentIds));
 	}
 	
-	public Map<String, Double> TTR_collection (Collection<String> docIds) {
+	public Map<String, Double> calculateTTRForCollectionOfDocuments(Collection<String> docIds) {
 		long startTime = System.currentTimeMillis();
 		ArrayList<String> documentIds = new ArrayList<>(docIds);
 		if(documentIds == null || documentIds.isEmpty())
-			return TTR_all();
+			return calculateTTRForAllDocuments();
 
 		Map<String, Double> ttr = getTTR_opt(documentIds);
 		if(ttr.keySet().containsAll(documentIds))
@@ -144,7 +144,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	}
 	
 	/**
-	 * Optimized helper for {@link #TTR_collection TTR_collection}, and should be for {@link #TTR_all TTR_all}.
+	 * Optimized helper for {@link #calculateTTRForCollectionOfDocuments calculateTTRForCollectionOfDocuments}, and should be for {@link #calculateTTRForAllDocuments calculateTTRForAllDocuments}.
 	 * Checks and returns saved TTR values from nodes, which is much faster.
 	 * @param documentIds the specified documents id's.
 	 * @return a Map(String lemma, Double saved TTR-value)
@@ -179,7 +179,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	 * DOCUMENT, SENTENCE or PARAGRAPH.
 	 * @return the count of <i>type</i> or 0 if there are none or the query fails.
 	 */
-	public int count_type (Const.TYPE type) {
+	public int countElementsOfType(Const.TYPE type) {
 		long startTime = System.currentTimeMillis();
 		StatementResult result = null;
 		try {
@@ -205,7 +205,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	 * SENTENCE or PARAGRAPH.
 	 * @return the count of <i>type</i> in the specified document as an {@link Integer} or 0 if there are none or the query fails.
 	 */
-	public int count_type_in_document (String documentId, Const.TYPE type) {
+	public int countElementsInDocumentOfType(String documentId, Const.TYPE type) {
 		long startTime = System.currentTimeMillis();
 		StatementResult result = null;
 		try {
@@ -251,7 +251,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	 * @throws IllegalArgumentException when the <i>type</i>
 	 * given does not match TOKEN, LEMMA or POS.
 	 */
-	public int count_type_with_value (Const.TYPE type, String value) {
+	public int countElementsOfTypeWithValue(Const.TYPE type, String value) {
 		long startTime = System.currentTimeMillis();
 		StatementResult result = null;
 		try {
@@ -290,7 +290,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	 * @return int the number of nodes matching the parameters.
 	 * @throws InvalidParameterException when the <i>type</i> given does not match TOKEN, LEMMA or POS.
 	 */
-	public int count_type_with_value_in_document (String docId, Const.TYPE type, String value) throws InvalidParameterException {
+	public int countElementsInDocumentOfTypeWithValue(String docId, Const.TYPE type, String value) throws InvalidParameterException {
 		long startTime = System.currentTimeMillis();
 		StatementResult result = null;
 		try {
@@ -356,12 +356,12 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 		return rtf;
 	}
 	
-	public double get_termFrequency_doubleNorm (String docId, String lemma) {
+	public double calculateTermFrequencyWithDoubleNormForLemmaInDocument(String lemma, String docId) {
 		TreeMap<String, Double> rtf = rawTermFrequencies(docId);
 		return (0.5 + 0.5*((double)rtf.getOrDefault(lemma, 0.0)/(double)Collections.max(rtf.values())));
 	}
 	
-	public double get_termFrequency_logNorm (String docId, String lemma) {
+	public double calculateTermFrequencyWithLogNermForLemmaInDocument(String lemma, String docId) {
 		long startTime = System.currentTimeMillis();
 		StatementResult result = null;
 		double tf = 0;
@@ -388,7 +388,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 		return 1+Math.log(tf);
 	}
 	
-	public HashMap<String, Double> get_termFrequencies (String docId) {
+	public HashMap<String, Double> calculateTermFrequenciesForLemmataInDocument(String docId) {
 		TreeMap<String, Double> rtf = rawTermFrequencies(docId);
 		HashMap<String, Double> tf = new HashMap<>();
 		
@@ -432,9 +432,9 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 		return dc;
 	}
 
-	public double get_documentsContaining (String lemma) {
+	public int countDocumentsContainingLemma(String lemma) {
 		long startTime = System.currentTimeMillis();
-		double dc = 0.0;
+		int dc = 0;
 		StatementResult result = null;
 		try {
 			long startTimeQ = System.currentTimeMillis();
@@ -443,7 +443,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 			System.out.println("documentsContaining_opt(" + lemma + ") query took: " + (endTimeQ-startTimeQ) + " ms.");
 			
 			Record row = result.next();
-			dc = Double.parseDouble(row.get("count").toString());
+			dc = Integer.parseInt(row.get("count").toString());
 		} catch(Exception e) {
 			System.out.println("documentsContaining_opt(" + lemma + ") query failed!");
 			e.printStackTrace();
@@ -456,16 +456,16 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	
 	@Deprecated
 	public double inverseDocumentFrequency (String lemma) {
-		return Math.log((count_type(Const.TYPE.DOCUMENT)/documentsContaining(lemma)));
+		return Math.log((countElementsOfType(Const.TYPE.DOCUMENT)/documentsContaining(lemma)));
 	}
 	
-	public double get_inverseDocumentFrequency (String lemma) {
-		return Math.log((count_type(Const.TYPE.DOCUMENT)/get_documentsContaining(lemma)));
+	public double calculateInverseDocumentFrequency(String lemma) {
+		return Math.log((countElementsOfType(Const.TYPE.DOCUMENT)/ (double) countDocumentsContainingLemma(lemma)));
 	}
 	
 	@Deprecated
 	public HashMap<String, Double> inverseDocumentFrequencies (String docId) {
-		double docCount = (double)count_type(Const.TYPE.DOCUMENT);
+		double docCount = (double) countElementsOfType(Const.TYPE.DOCUMENT);
 		HashMap<String, Double> idf = new HashMap<>();
 		HashSet<String> lemmata = getLemmata(docId);
 		lemmata.stream().forEach(e -> {
@@ -478,10 +478,10 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 		return idf;
 	}
 	
-	public HashMap<String, Double> get_inverseDocumentFrequencies (String docId) {
-		double docCount = (double)count_type(Const.TYPE.DOCUMENT);
+	public HashMap<String, Double> calculateInverseDocumentFrequenciesForLemmataInDocument(String docId) {
+		double docCount = (double) countElementsOfType(Const.TYPE.DOCUMENT);
 		HashMap<String, Double> idf = new HashMap<>();
-		HashSet<String> lemmata = get_Lemmata(docId);
+		HashSet<String> lemmata = getLemmataForDocument(docId);
 		HashMap<String, Double> dC = documentsContaining_all();
 		lemmata.stream().forEach(e -> {
 			idf.put(e.replaceAll("\"", ""), Math.log(docCount/dC.getOrDefault(e, 1.0)));
@@ -542,7 +542,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 		return lemmata;
 	}
 	
-	public HashSet<String> get_Lemmata (String docId) {
+	public HashSet<String> getLemmataForDocument(String docId) {
 		long startTime = System.currentTimeMillis();
 		HashSet<String> lemmata = new HashSet<>();
 		StatementResult result = null;
@@ -566,18 +566,18 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 		return lemmata;
 	}
 
-	public double get_tfidf (String docId, String lemma) {
+	public double calculateTFIDFForLemmaInDocument(String lemma, String docId) {
 		long startTime = System.currentTimeMillis();
-		double tfidf = get_termFrequency_logNorm(docId, lemma) * get_inverseDocumentFrequency(lemma); 
+		double tfidf = calculateTermFrequencyWithLogNermForLemmaInDocument(lemma, docId) * calculateInverseDocumentFrequency(lemma);
 		long endTime = System.currentTimeMillis();
 		System.out.println("tfidf(" + docId + ", " + lemma + ") took: " + (endTime-startTime) + " ms.");
 		return tfidf; 
 	}
 	
-	public HashMap<String, Double> get_tfidf_all (String docId) {
+	public HashMap<String, Double> calculateTFIDFForLemmataInDocument(String docId) {
 		long startTime = System.currentTimeMillis();
-		HashMap<String, Double> tf = get_termFrequencies(docId);
-		HashMap<String, Double> idf = get_inverseDocumentFrequencies(docId);
+		HashMap<String, Double> tf = calculateTermFrequenciesForLemmataInDocument(docId);
+		HashMap<String, Double> idf = calculateInverseDocumentFrequenciesForLemmataInDocument(docId);
 		HashMap<String, Double> tfidf = new HashMap<>();
 		tf.entrySet().stream().forEach(e -> tfidf.put(e.getKey(), e.getValue() * idf.get(e.getKey())));
 		long endTime = System.currentTimeMillis();
@@ -585,18 +585,18 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 		return tfidf; 
 	}
 	
-	public HashMap<String, HashMap<String, Double>> get_tfidf_all_all () {
+	public HashMap<String, HashMap<String, Double>> calculateTFIDFForLemmataInAllDocuments() {
 		long startTime = System.currentTimeMillis();
 		HashMap<String, HashMap<String, Double>> tfidfs = new HashMap<>();
 		getDocIds().forEach(f -> {
 			try {
-				tfidfs.put(f, get_tfidf_all(f));
+				tfidfs.put(f, calculateTFIDFForLemmataInDocument(f));
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		});
 		long endTime = System.currentTimeMillis();
-		System.out.println("get_tfidf_all_all() took: " + (endTime-startTime) + " ms.");
+		System.out.println("calculateTFIDFForLemmataInAllDocuments() took: " + (endTime-startTime) + " ms.");
 		return tfidfs; 
 	}
 	
@@ -629,7 +629,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	}
 
 	@Override
-	public ArrayList<String> get_bi_grams(String documentId){
+	public ArrayList<String> getBiGramsFromDocument(String documentId){
 		long startTime = System.currentTimeMillis();
 		StatementResult result = null;
 		ArrayList<String> biGrams = new ArrayList<>(); 
@@ -654,7 +654,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	}
 	
 	@Override
-	public ArrayList<String> get_bi_grams_all(){
+	public ArrayList<String> getBiGramsFromAllDocuments(){
 		long startTime = System.currentTimeMillis();
 		StatementResult result = null;
 		ArrayList<String> biGrams = new ArrayList<>(); 
@@ -679,7 +679,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	}
 	
 	@Override
-	public ArrayList<String> get_bi_grams_collection(Collection<String> documentIds) {
+	public ArrayList<String> getBiGramsFromDocumentsInCollection(Collection<String> documentIds) {
 		long startTime = System.currentTimeMillis();
 		StatementResult result = null;
 		ArrayList<String> biGrams = new ArrayList<>(); 
@@ -704,7 +704,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	}
 
 	@Override
-	public ArrayList<String> get_tri_grams(String documentId){
+	public ArrayList<String> getTriGramsFromDocument(String documentId){
 		long startTime = System.currentTimeMillis();
 		StatementResult result = null;
 		ArrayList<String> triGrams = new ArrayList<>(); 
@@ -729,7 +729,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	}
 	
 	@Override
-	public ArrayList<String> get_tri_grams_all(){
+	public ArrayList<String> getTriGramsFromAllDocuments(){
 		long startTime = System.currentTimeMillis();
 		StatementResult result = null;
 		ArrayList<String> triGrams = new ArrayList<>(); 
@@ -754,7 +754,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 	}
 	
 	@Override
-	public ArrayList<String> get_tri_grams_collection(Collection<String> documentIds) {
+	public ArrayList<String> getTriGramsFromDocumentsInCollection(Collection<String> documentIds) {
 		long startTime = System.currentTimeMillis();
 		StatementResult result = null;
 		ArrayList<String> triGrams = new ArrayList<>(); 
