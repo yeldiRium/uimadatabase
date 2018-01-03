@@ -25,6 +25,7 @@ public class EvaluationRunner implements Runnable
 	/**
 	 * Loads the yaml config.
 	 * This instantiates all EvaluationCases and the OutputProvider automatically.
+	 *
 	 * @param configFile
 	 */
 	protected void loadConfig(InputStream configFile) throws IOException

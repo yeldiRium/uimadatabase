@@ -6,17 +6,21 @@ import org.neo4j.graphdb.Relationship;
 /**
  * Created by abrami on 17.02.17.
  */
-public interface Token {
+public interface Token
+{
 
-    Pos getPos();
-    Lemma getLemma();
+	Pos getPos();
 
-    void setPos(Pos pPos);
-    void setLemma(Lemma pLemma);
+	Lemma getLemma();
 
-    void setProperty(String pProperty, Object pObject);
-    Object getProperty(String pProperty);
+	void setPos(Pos pPos);
 
-    Relationship createRelationshipTo(Node pNode, Const.RelationType pType);
+	void setLemma(Lemma pLemma);
+
+	void setProperty(String pProperty, Object pObject);
+
+	Object getProperty(String pProperty);
+
+	Relationship createRelationshipTo(Node pNode, Const.RelationType pType);
 
 }

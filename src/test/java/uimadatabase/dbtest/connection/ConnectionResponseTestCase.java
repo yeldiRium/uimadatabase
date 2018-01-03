@@ -5,12 +5,9 @@ import dbtest.connection.ConnectionResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ConnectionResponseTestCase
 {
@@ -59,7 +56,7 @@ public class ConnectionResponseTestCase
 		Connection a = new TestConnectionA();
 		Connection b = new TestConnectionB();
 
-		Map<Class<?extends Connection>, Connection> map = new HashMap<>();
+		Map<Class<? extends Connection>, Connection> map = new HashMap<>();
 		map.put(TestConnectionA.class, a);
 		map.put(TestConnectionB.class, b);
 

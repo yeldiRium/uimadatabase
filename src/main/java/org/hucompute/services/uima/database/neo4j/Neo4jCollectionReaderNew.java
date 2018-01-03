@@ -29,7 +29,7 @@ public class Neo4jCollectionReaderNew extends AbstractCollectionReader
 		Neo4jConnection connection = (Neo4jConnection) context.getConfigParameterValue(Neo4jCollectionReaderNew.PARAM_CONNECTION);
 		Driver driver = connection.getDriver();
 
-		try ( Session session = driver.session() )
+		try (Session session = driver.session())
 		{
 			this.result = session.readTransaction((tx) -> tx.run("MATCH (n:DOCUMENT) RETURN n"));
 		}
@@ -40,7 +40,7 @@ public class Neo4jCollectionReaderNew extends AbstractCollectionReader
 	{
 		return this.result.hasNext();
 	}
-	
+
 	@Override
 	public void getNext(CAS cas) throws IOException, CollectionException
 	{

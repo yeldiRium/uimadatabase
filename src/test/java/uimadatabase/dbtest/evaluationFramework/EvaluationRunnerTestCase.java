@@ -11,7 +11,6 @@ import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationB;
 import uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationFailingRerun;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ExecutorService;

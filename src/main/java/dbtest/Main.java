@@ -4,7 +4,6 @@ import dbtest.connection.ConnectionManager;
 import dbtest.evaluationFramework.EvaluationRunner;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**

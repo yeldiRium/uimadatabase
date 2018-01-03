@@ -5,7 +5,6 @@ import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.exceptions.ServiceUnavailableException;
-import org.neo4j.graphdb.GraphDatabaseService;
 
 /**
  * Establishes and exposes a connection to the Neo4j Server.

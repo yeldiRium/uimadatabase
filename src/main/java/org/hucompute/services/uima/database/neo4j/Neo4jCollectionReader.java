@@ -1,8 +1,9 @@
 package org.hucompute.services.uima.database.neo4j;
 
-import java.io.IOException;
-import java.util.Iterator;
-
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -18,18 +19,19 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 
-import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
-import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import java.io.IOException;
+import java.util.Iterator;
 
 
-public class Neo4jCollectionReader extends AbstractCollectionReader {
+public class Neo4jCollectionReader extends AbstractCollectionReader
+{
 	MDB_Neo4J_Impl pMDB;
 	Iterator<Node> documents;
+
 	@Override
 	public void initialize(UimaContext context)
-			throws ResourceInitializationException {
+			throws ResourceInitializationException
+	{
 		super.initialize(context);
 		//initialize jdbc connection
 		//get curser of data.
@@ -38,37 +40,44 @@ public class Neo4jCollectionReader extends AbstractCollectionReader {
 	}
 
 	//bearbeiten
-	public boolean hasNext() throws IOException, CollectionException {
+	public boolean hasNext() throws IOException, CollectionException
+	{
 		return documents.hasNext();
 	}
 
 	@Override
-	public void getNext(CAS aCAS) throws IOException, CollectionException {
+	public void getNext(CAS aCAS) throws IOException, CollectionException
+	{
 		resumeWatch();
 		Document_Neo4J_Impl doc = new Document_Neo4J_Impl(pMDB, documents.next());
-		try {
+		try
+		{
 			DocumentMetaData meta = DocumentMetaData.create(aCAS);
 			meta.setDocumentId(doc.getProperty("id").toString());
 			aCAS.setDocumentLanguage(doc.getProperty("language").toString());
 			aCAS.setDocumentText(doc.getProperty("text").toString());
 
-			try (Transaction tx = MDB_Neo4J_Impl.gdbs.beginTx()) {
-				Iterator<Relationship>tokens = doc.getRelationship(RelationType.token).iterator();
-				while (tokens.hasNext()) {
+			try (Transaction tx = MDB_Neo4J_Impl.gdbs.beginTx())
+			{
+				Iterator<Relationship> tokens = doc.getRelationship(RelationType.token).iterator();
+				while (tokens.hasNext())
+				{
 					Relationship type = (Relationship) tokens.next();
 					Token_Neo4J_Impl token = new Token_Neo4J_Impl(pMDB, type.getEndNode());
 
-					Token xmiToken = new Token(aCAS.getJCas(),(Integer)token.getProperty("begin"),(Integer)token.getProperty("end"));
-					
-					Iterator<Relationship>posLemma =  token.getRelationship(RelationType.lemma,RelationType.pos).iterator();
-					while (posLemma.hasNext()) {
+					Token xmiToken = new Token(aCAS.getJCas(), (Integer) token.getProperty("begin"), (Integer) token.getProperty("end"));
+
+					Iterator<Relationship> posLemma = token.getRelationship(RelationType.lemma, RelationType.pos).iterator();
+					while (posLemma.hasNext())
+					{
 						Relationship type2 = posLemma.next();
-						if(type2.isType(RelationType.pos)){
+						if (type2.isType(RelationType.pos))
+						{
 							POS pos = new POS(aCAS.getJCas(), xmiToken.getBegin(), xmiToken.getEnd());
 							pos.setPosValue(type2.getEndNode().getProperty("value").toString());
 							pos.addToIndexes();
 							xmiToken.setPos(pos);
-						}else
+						} else
 						{
 							Lemma lemma = new Lemma(aCAS.getJCas(), xmiToken.getBegin(), xmiToken.getEnd());
 							lemma.setValue(type2.getEndNode().getProperty("value").toString());
@@ -81,7 +90,8 @@ public class Neo4jCollectionReader extends AbstractCollectionReader {
 				tx.success();
 			}
 
-		} catch (CASException | IllegalStateException e) {
+		} catch (CASException | IllegalStateException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -91,7 +101,8 @@ public class Neo4jCollectionReader extends AbstractCollectionReader {
 	}
 
 	@Override
-	public Progress[] getProgress() {
+	public Progress[] getProgress()
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}

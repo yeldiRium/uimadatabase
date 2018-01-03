@@ -2,8 +2,6 @@ package dbtest.connection;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Used to encapsulate Connection objects returned from the ConnectionManager.
@@ -12,7 +10,7 @@ import java.util.Set;
  */
 public class ConnectionResponse
 {
-	protected HashMap<Class<?extends Connection>,Connection> connections;
+	protected HashMap<Class<? extends Connection>, Connection> connections;
 
 	public ConnectionResponse()
 	{
@@ -41,7 +39,7 @@ public class ConnectionResponse
 	 * @param className The name of a connection class.
 	 * @return the stored connection.
 	 */
-	public Connection getConnection(Class<?extends Connection> className)
+	public Connection getConnection(Class<? extends Connection> className)
 	{
 		return this.connections.get(className);
 	}

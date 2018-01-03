@@ -15,11 +15,9 @@ import org.hucompute.services.uima.database.basex.BasexCollectionReader;
 import org.hucompute.services.uima.database.cassandra.CassandraCollectionReader;
 import org.hucompute.services.uima.database.mongo.MongoCollectionReader;
 import org.hucompute.services.uima.database.mysql.MysqlCollectionReader;
-import org.hucompute.services.uima.database.neo4j.Neo4jCollectionReader;
 import org.hucompute.services.uima.database.neo4j.Neo4jCollectionReaderNew;
 import org.hucompute.services.uima.database.xmi.XmiReaderModified;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;

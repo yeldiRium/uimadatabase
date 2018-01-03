@@ -7,11 +7,13 @@ import org.neo4j.graphdb.Relationship;
  * @author Manuel Stoeckel
  * Created on 13.07.2017
  */
-public interface Paragraph {
+public interface Paragraph
+{
 	Node getNode();
-	
-	Object getProperty(String pProperty);
-    void setProperty(String pProperty, Object pObject);
 
-    Relationship createRelationshipTo(Node pNode, Const.RelationType pType);
+	Object getProperty(String pProperty);
+
+	void setProperty(String pProperty, Object pObject);
+
+	Relationship createRelationshipTo(Node pNode, Const.RelationType pType);
 }

@@ -10,10 +10,10 @@ import java.util.concurrent.Callable;
 /**
  * The interface for all relevant server queries. See
  * {@link AbstractQueryHandler} for an implementation.
- *
+ * <p>
  * Mixes database abstraction and a little bit of uima logic, since the JCas
  * format is required as an input and output format.
- *
+ * <p>
  * Maybe an abstraction can simplify the process of extracting information from
  * JCas objects and creating them. TODO: elaborate and update.
  *

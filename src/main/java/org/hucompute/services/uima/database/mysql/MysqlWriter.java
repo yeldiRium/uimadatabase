@@ -6,21 +6,24 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.hucompute.services.uima.database.AbstractWriter;
 
-public class MysqlWriter extends AbstractWriter {
+public class MysqlWriter extends AbstractWriter
+{
 
 	@Override
 	public void initialize(UimaContext context)
-			throws ResourceInitializationException {
+			throws ResourceInitializationException
+	{
 		super.initialize(context);
 		//Initialize db connection
 	}
 
 	@Override
-	public void process(JCas jCas) throws AnalysisEngineProcessException {
+	public void process(JCas jCas) throws AnalysisEngineProcessException
+	{
 		resumeWatch();
-		
+
 		//saveCAS(jCas)
-		
+
 		suspendWatch();
 		log();
 	}

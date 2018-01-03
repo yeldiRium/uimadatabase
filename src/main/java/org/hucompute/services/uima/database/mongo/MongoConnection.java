@@ -1,33 +1,34 @@
 package org.hucompute.services.uima.database.mongo;
 
 
-import java.net.UnknownHostException;
-
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 
+import java.net.UnknownHostException;
+
 /**
  * A wrapper for a connection to Mongo.
- * 
+ *
  * @author renaud.richardet@epfl.ch
  */
-public class MongoConnection {
+public class MongoConnection
+{
 
 	final public String host, dbName, collectionName;
-//	final public Mongo m;
+	//	final public Mongo m;
 	final public DB db;
 	final public DBCollection coll;
 
 	/**
-	 * @param db_connection
-	 *            an array {host, dbName, collectionName, user, pw}. Leave user
-	 *            and pw empty ("") to skip authentication
+	 * @param db_connection an array {host, dbName, collectionName, user, pw}. Leave user
+	 *                      and pw empty ("") to skip authentication
 	 */
 	public MongoConnection(String[] db_connection) throws UnknownHostException,
-			MongoException {
-		this(db_connection[0],db_connection[1],db_connection[2], true);
+			MongoException
+	{
+		this(db_connection[0], db_connection[1], db_connection[2], true);
 	}
 
 	/**
@@ -37,11 +38,12 @@ public class MongoConnection {
 	 * @param safe
 	 */
 	@SuppressWarnings("deprecation") // TODO replace with MongoClient
-    public MongoConnection(String host,String dbName,String collectionName, boolean safe)
-			throws UnknownHostException, MongoException {
+	public MongoConnection(String host, String dbName, String collectionName, boolean safe)
+			throws UnknownHostException, MongoException
+	{
 
 
-		this.host = host ;
+		this.host = host;
 		this.dbName = dbName;
 		this.collectionName = collectionName;
 //		user = db_connection[3];
@@ -58,8 +60,8 @@ public class MongoConnection {
 //			m.setWriteConcern(WriteConcern.SAFE);
 //		m.getDatabaseNames();// to test connection
 //		db = m.getDB(dbName);
-		
-		MongoClient mongoClient = new MongoClient( host );
+
+		MongoClient mongoClient = new MongoClient(host);
 		db = mongoClient.getDB(dbName);
 //		if (user.length() > 0) {
 //			if (!db.authenticate(user, pw.toCharArray())) {
@@ -71,7 +73,8 @@ public class MongoConnection {
 	}
 
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "MongoConnection: " + host + ":" + dbName + "::"
 				+ collectionName;
 	}

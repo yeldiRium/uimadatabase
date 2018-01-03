@@ -1,15 +1,14 @@
 package org.hucompute.services.uima.database.cassandra;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.*;
-import java.util.regex.Pattern;
-
-import com.datastax.driver.core.*;
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
+import com.datastax.driver.core.Session;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
-import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.TagsetDescription;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.*;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
@@ -22,8 +21,14 @@ import org.hucompute.services.type.WikiDataHyponym;
 import org.hucompute.services.type.Wikify;
 import org.hucompute.services.uima.database.AbstractCollectionReader;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-public class CassandraCollectionReader extends AbstractCollectionReader {
+
+public class CassandraCollectionReader extends AbstractCollectionReader
+{
 
 	private Cluster cluster;
 	private Session session;
@@ -44,14 +49,16 @@ public class CassandraCollectionReader extends AbstractCollectionReader {
 
 	@Override
 	public void initialize(UimaContext context)
-			throws ResourceInitializationException {
+			throws ResourceInitializationException
+	{
 		super.initialize(context);
 		//initialize jdbc connection
 
 
 		cluster = null;
 
-		try {
+		try
+		{
 			//			String id = "0_";
 			cluster = Cluster.builder().addContactPoint("127.0.0.1").build();
 			session = cluster.connect("textimager");
@@ -59,19 +66,20 @@ public class CassandraCollectionReader extends AbstractCollectionReader {
 			System.out.println("Grabing xmis...");
 			rs = session.execute("SELECT * FROM xmi;");
 			System.out.println("query complete.");
-		}catch (Exception e){
+		} catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}
 
 	//bearbeiten
-	public boolean hasNext() throws IOException, CollectionException {
-		if(!rs.isExhausted())
+	public boolean hasNext() throws IOException, CollectionException
+	{
+		if (!rs.isExhausted())
 		{
 			return true;
-		}
-		else
-		{	
+		} else
+		{
 			session.close();
 			cluster.close();
 			return false;
@@ -79,7 +87,8 @@ public class CassandraCollectionReader extends AbstractCollectionReader {
 	}
 
 	@Override
-	public void getNext(CAS aCAS) throws IOException, CollectionException {
+	public void getNext(CAS aCAS) throws IOException, CollectionException
+	{
 		resumeWatch();
 
 		Row row = rs.one();
@@ -88,7 +97,8 @@ public class CassandraCollectionReader extends AbstractCollectionReader {
 
 		String xmi = row.getString("xmi");
 		StringBuilder sb = new StringBuilder();
-		for(String s : tables){
+		for (String s : tables)
+		{
 			sb.setLength(0);
 			sb.append("SELECT * FROM ");
 			sb.append(s);
@@ -107,90 +117,110 @@ public class CassandraCollectionReader extends AbstractCollectionReader {
 	}
 
 	@Override
-	public Progress[] getProgress() {
+	public Progress[] getProgress()
+	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	private void recreateFromRows(ResultSet resultSet, String table, CAS aCAS){
-		while (!resultSet.isExhausted()) {
+	private void recreateFromRows(ResultSet resultSet, String table, CAS aCAS)
+	{
+		while (!resultSet.isExhausted())
+		{
 			Row row = resultSet.one();
 
 			String begin = row.getString("start");
 			String end = row.getString("end");
 			//prelim work
 
-			switch (table){
-			case "WikiDataHyponym":
-				try {
-					WikiDataHyponym wdh = new WikiDataHyponym(aCAS.getJCas(),Integer.valueOf(begin), Integer.valueOf(end));
-					wdh.setDepth(Integer.valueOf(row.getString("depth")));
-					wdh.addToIndexes(aCAS.getJCas());
-				} catch (CASException e) {
-					e.printStackTrace();
-				}
+			switch (table)
+			{
+				case "WikiDataHyponym":
+					try
+					{
+						WikiDataHyponym wdh = new WikiDataHyponym(aCAS.getJCas(), Integer.valueOf(begin), Integer.valueOf(end));
+						wdh.setDepth(Integer.valueOf(row.getString("depth")));
+						wdh.addToIndexes(aCAS.getJCas());
+					} catch (CASException e)
+					{
+						e.printStackTrace();
+					}
 
-				break;
-			case "pos":
-				try {
-					POS pos = new POS(aCAS.getJCas(),Integer.valueOf(begin), Integer.valueOf(end));
-					pos.setPosValue(row.getString("value"));
-					pos.addToIndexes(aCAS.getJCas());
-				} catch (CASException e) {
-					e.printStackTrace();
-				}
-				break;
-			case "Lemma":
-				try {
-					Lemma lemma = new Lemma(aCAS.getJCas(),Integer.valueOf(begin), Integer.valueOf(end));
-					lemma.setValue(row.getString("value"));
-					lemma.addToIndexes(aCAS.getJCas());
-				} catch (CASException e) {
-					e.printStackTrace();
-				}
-				break;
-			case "tokens":
-				try {
-					Token token = new de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token(aCAS.getJCas(),Integer.valueOf(begin), Integer.valueOf(end));
-					token.addToIndexes(aCAS.getJCas());
-				} catch (CASException e) {
-					e.printStackTrace();
-				}
-				break;
-			case "Wikify":
-				try {
-					Wikify wikify = new Wikify(aCAS.getJCas(),Integer.valueOf(begin), Integer.valueOf(end));
-					wikify.setLink(row.getString("link"));
-					wikify.setTitle(row.getString("title"));
-					wikify.addToIndexes(aCAS.getJCas());
-				} catch (CASException e) {
-					e.printStackTrace();
-				}
-			case "Sentence":
-				try {
-					Sentence sentence = new Sentence(aCAS.getJCas(),Integer.valueOf(begin), Integer.valueOf(end));
-					sentence.addToIndexes(aCAS.getJCas());
-				} catch (CASException e) {
-					e.printStackTrace();
-				}
-				break;
-			case "Paragraph":
-				try {
-					Paragraph paragraph = new Paragraph(aCAS.getJCas(),Integer.valueOf(begin), Integer.valueOf(end));
-					paragraph.addToIndexes(aCAS.getJCas());
-				} catch (CASException e) {
-					e.printStackTrace();
-				}
-				break;
-			default:
-				break;
+					break;
+				case "pos":
+					try
+					{
+						POS pos = new POS(aCAS.getJCas(), Integer.valueOf(begin), Integer.valueOf(end));
+						pos.setPosValue(row.getString("value"));
+						pos.addToIndexes(aCAS.getJCas());
+					} catch (CASException e)
+					{
+						e.printStackTrace();
+					}
+					break;
+				case "Lemma":
+					try
+					{
+						Lemma lemma = new Lemma(aCAS.getJCas(), Integer.valueOf(begin), Integer.valueOf(end));
+						lemma.setValue(row.getString("value"));
+						lemma.addToIndexes(aCAS.getJCas());
+					} catch (CASException e)
+					{
+						e.printStackTrace();
+					}
+					break;
+				case "tokens":
+					try
+					{
+						Token token = new de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token(aCAS.getJCas(), Integer.valueOf(begin), Integer.valueOf(end));
+						token.addToIndexes(aCAS.getJCas());
+					} catch (CASException e)
+					{
+						e.printStackTrace();
+					}
+					break;
+				case "Wikify":
+					try
+					{
+						Wikify wikify = new Wikify(aCAS.getJCas(), Integer.valueOf(begin), Integer.valueOf(end));
+						wikify.setLink(row.getString("link"));
+						wikify.setTitle(row.getString("title"));
+						wikify.addToIndexes(aCAS.getJCas());
+					} catch (CASException e)
+					{
+						e.printStackTrace();
+					}
+				case "Sentence":
+					try
+					{
+						Sentence sentence = new Sentence(aCAS.getJCas(), Integer.valueOf(begin), Integer.valueOf(end));
+						sentence.addToIndexes(aCAS.getJCas());
+					} catch (CASException e)
+					{
+						e.printStackTrace();
+					}
+					break;
+				case "Paragraph":
+					try
+					{
+						Paragraph paragraph = new Paragraph(aCAS.getJCas(), Integer.valueOf(begin), Integer.valueOf(end));
+						paragraph.addToIndexes(aCAS.getJCas());
+					} catch (CASException e)
+					{
+						e.printStackTrace();
+					}
+					break;
+				default:
+					break;
 			}
 
 		}
 	}
 
-	private void reecreateMetaData(CAS aCAS, Row row) {
-		try {
+	private void reecreateMetaData(CAS aCAS, Row row)
+	{
+		try
+		{
 			DocumentMetaData meta = new DocumentMetaData(aCAS.getJCas(), Integer.valueOf(row.getString("start")), Integer.valueOf(row.getString("end")));
 			meta.setCollectionId(row.getString("collectionId"));
 			meta.setDocumentBaseUri(row.getString("baseUri"));
@@ -198,10 +228,11 @@ public class CassandraCollectionReader extends AbstractCollectionReader {
 			meta.setDocumentTitle(row.getString("title"));
 			meta.setDocumentUri(row.getString("fileUri"));
 			meta.addToIndexes(aCAS.getJCas());
-		} catch (CASException e) {
+		} catch (CASException e)
+		{
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 }

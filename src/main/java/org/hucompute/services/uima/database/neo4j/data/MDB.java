@@ -4,7 +4,6 @@ package org.hucompute.services.uima.database.neo4j.data;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.index.Index;
 
 import java.util.Set;
 
@@ -44,32 +43,33 @@ import java.util.Set;
  * security of data to the API and try to avoid security holes when implementing CommandProcessors. Since we have
  * sensible data in our System we need to take care that the data is only available to those you have proper permissions.
  */
-public interface MDB {
+public interface MDB
+{
 
-    void setSession(String session);
+	void setSession(String session);
 
-    String getSession();
+	String getSession();
 
-    /**
-     * Trigger a live backup of the MDB. Normal API users will not need this- and should not use it ;-).
-     *
-     * @return true iff the backup was successful
-     */
-    boolean backup();
+	/**
+	 * Trigger a live backup of the MDB. Normal API users will not need this- and should not use it ;-).
+	 *
+	 * @return true iff the backup was successful
+	 */
+	boolean backup();
 
-    //CalamariFactory getFactory();
+	//CalamariFactory getFactory();
 
-    Node getNodeById(long lID);
+	Node getNodeById(long lID);
 
-    Relationship getRelationShipById(long lID);
+	Relationship getRelationShipById(long lID);
 
 
-    Node findNode(Label label, String sProperty, Object object);
+	Node findNode(Label label, String sProperty, Object object);
 
-    Set<Node> getNodes(Label label, String sProperty, Object object);
+	Set<Node> getNodes(Label label, String sProperty, Object object);
 
-    Set<Node> getNodes(Label label);
+	Set<Node> getNodes(Label label);
 
-    void createIndex(Label pLabel, String ptype);
+	void createIndex(Label pLabel, String ptype);
 
 }

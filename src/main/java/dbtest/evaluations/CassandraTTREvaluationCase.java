@@ -14,9 +14,11 @@ import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.hucompute.services.uima.database.xmi.XmiReaderModified;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class CassandraTTREvaluationCase implements EvaluationCase
 {

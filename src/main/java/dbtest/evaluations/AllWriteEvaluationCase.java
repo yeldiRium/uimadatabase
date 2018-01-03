@@ -18,7 +18,6 @@ import org.hucompute.services.uima.database.neo4j.Neo4jWriter;
 import org.hucompute.services.uima.database.xmi.XmiReaderModified;
 import org.hucompute.services.uima.database.xmi.XmiWriterModified;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;

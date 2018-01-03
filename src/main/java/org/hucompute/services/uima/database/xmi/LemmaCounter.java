@@ -1,5 +1,8 @@
 package org.hucompute.services.uima.database.xmi;
 
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
+import gnu.trove.map.hash.TObjectIntHashMap;
+import gnu.trove.procedure.TObjectIntProcedure;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -8,10 +11,6 @@ import org.apache.uima.fit.descriptor.TypeCapability;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-
-import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
-import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.procedure.TObjectIntProcedure;
 
 /**
  * DKPro Annotator for the MateToolsMorphTagger.
@@ -25,18 +24,19 @@ import gnu.trove.procedure.TObjectIntProcedure;
 		outputs = {
 				"de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.morph.Morpheme"
 		}
-		)
+)
 public class LemmaCounter
-extends JCasConsumer_ImplBase
+		extends JCasConsumer_ImplBase
 {
 
 	private StopWatch stopWatch;
-	
+
 	TObjectIntHashMap<String> counts = new TObjectIntHashMap<>();
 
 	@Override
 	public void initialize(UimaContext context)
-			throws ResourceInitializationException {
+			throws ResourceInitializationException
+	{
 		super.initialize(context);
 		stopWatch = new StopWatch();
 		stopWatch.start();
@@ -44,21 +44,27 @@ extends JCasConsumer_ImplBase
 	}
 
 	int processed;
+
 	@Override
-	public void process(JCas aJCas) throws AnalysisEngineProcessException {
-		for (POS pos: JCasUtil.select(aJCas, POS.class)) {
+	public void process(JCas aJCas) throws AnalysisEngineProcessException
+	{
+		for (POS pos : JCasUtil.select(aJCas, POS.class))
+		{
 			counts.adjustOrPutValue(pos.getPosValue(), 1, 1);
 		}
-		if(processed++ % 100 == 0)
+		if (processed++ % 100 == 0)
 			System.out.println(processed);
 	}
-	
+
 	@Override
-	public void collectionProcessComplete() throws AnalysisEngineProcessException {
+	public void collectionProcessComplete() throws AnalysisEngineProcessException
+	{
 		super.collectionProcessComplete();
-		counts.forEachEntry(new TObjectIntProcedure<String>() {
+		counts.forEachEntry(new TObjectIntProcedure<String>()
+		{
 			@Override
-			public boolean execute(String a, int b) {
+			public boolean execute(String a, int b)
+			{
 				return true;
 			}
 		});

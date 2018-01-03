@@ -10,9 +10,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BaseOutputProviderTest
 {
@@ -126,7 +124,8 @@ public class BaseOutputProviderTest
 	@Test
 	void Given_BaseOutputProvider_When_InitializingWithAbsolutePath_Will_WorkAsIntended()
 	{
-		try {
+		try
+		{
 			String path = FileSystems.getDefault().getPath("src/test/resources/outputDirectory").toAbsolutePath().toString();
 			OutputProvider provider = new BaseOutputProvider();
 			provider.configurePath(path);

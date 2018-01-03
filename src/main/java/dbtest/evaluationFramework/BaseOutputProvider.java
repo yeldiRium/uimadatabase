@@ -15,6 +15,7 @@ public class BaseOutputProvider implements OutputProvider
 
 	/**
 	 * Creates the outputDirectory if necessary.
+	 *
 	 * @param path The directory where output files will be created in.
 	 * @throws IOException if the directory doesn't exist and can't be created.
 	 */
@@ -29,6 +30,7 @@ public class BaseOutputProvider implements OutputProvider
 
 	/**
 	 * Overload for #createFile with keepOld=false as default.
+	 *
 	 * @param caller
 	 * @param name
 	 * @return
@@ -47,8 +49,9 @@ public class BaseOutputProvider implements OutputProvider
 	 * If the old file should be kept, it is backed up (respecting already existing backups).
 	 * If it should not be kept, it is deleted.
 	 * Then a new file is created and returned.
-	 * @param caller Should be the class calling this method.
-	 * @param name The name for the output file.
+	 *
+	 * @param caller  Should be the class calling this method.
+	 * @param name    The name for the output file.
 	 * @param keepOld If a possibly existing output file with the same name should be kept or removed.
 	 * @return The output file for further use.
 	 * @throws IOException If a file with the same name exists and can't be deleted.

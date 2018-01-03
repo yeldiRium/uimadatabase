@@ -10,10 +10,8 @@ import dbtest.evaluationFramework.OutputProvider;
 import org.apache.commons.io.FileUtils;
 import org.hucompute.services.uima.database.cassandra.CassandraIndexWriter;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * Benchmarks operations on existing data.
