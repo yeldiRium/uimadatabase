@@ -1,8 +1,10 @@
 package dbtest.evaluations;
 
 import dbtest.StatusPrinter;
+import dbtest.connection.Connection;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
+import dbtest.connection.implementation.*;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import org.apache.uima.UIMAException;
@@ -14,6 +16,7 @@ import org.hucompute.services.uima.database.cassandra.CassandraCollectionReader;
 import org.hucompute.services.uima.database.mongo.MongoCollectionReader;
 import org.hucompute.services.uima.database.mysql.MysqlCollectionReader;
 import org.hucompute.services.uima.database.neo4j.Neo4jCollectionReader;
+import org.hucompute.services.uima.database.neo4j.Neo4jCollectionReaderNew;
 import org.hucompute.services.uima.database.xmi.XmiReaderModified;
 
 import java.io.File;
@@ -30,7 +33,13 @@ public class AllReadEvaluationCase implements EvaluationCase
 	public ConnectionRequest requestConnection()
 	{
 		// TODO: decide what to request here
-		return null;
+		ConnectionRequest connectionRequest = new ConnectionRequest();
+		connectionRequest.addRequestedConnection(MongoDBConnection.class);
+		connectionRequest.addRequestedConnection(MySQLConnection.class);
+		connectionRequest.addRequestedConnection(Neo4jConnection.class);
+		connectionRequest.addRequestedConnection(BaseXConnection.class);
+		connectionRequest.addRequestedConnection(CassandraConnection.class);
+		return connectionRequest;
 	}
 
 	/**
@@ -49,7 +58,8 @@ public class AllReadEvaluationCase implements EvaluationCase
 		{
 			List<CollectionReader> readers = Arrays.asList(
 					getXMIReader(),
-					getNeo4jReader(),
+					// TODO: update this once the ConnectionResponse has been rewritten
+					getNeo4jReader((Connection) connectionResponse.getConnections().stream().filter((connection) -> connection instanceof Neo4jConnection).toArray()[0]),
 					getCassandraReader(),
 					getMongoReader(),
 					getXMIReader(),
@@ -110,13 +120,15 @@ public class AllReadEvaluationCase implements EvaluationCase
 		);
 	}
 
-	public static CollectionReader getNeo4jReader()
+	public static CollectionReader getNeo4jReader(Connection neo4jConnection)
 			throws ResourceInitializationException
 	{
 		return CollectionReaderFactory.createReader(
-				Neo4jCollectionReader.class,
-				Neo4jCollectionReader.PARAM_LOG_FILE_LOCATION,
-				new File("output/AllReadEvaluationCase_neo4j.log")
+				Neo4jCollectionReaderNew.class,
+				Neo4jCollectionReaderNew.PARAM_LOG_FILE_LOCATION,
+				new File("output/AllReadEvaluationCase_neo4j.log"),
+				Neo4jCollectionReaderNew.PARAM_CONNECTION,
+				neo4jConnection
 		);
 	}
 
