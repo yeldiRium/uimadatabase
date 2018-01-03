@@ -21,6 +21,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.database.AbstractQueryHandler;
 import org.hucompute.services.uima.database.neo4j.data.Const;
 import org.hucompute.services.uima.database.neo4j.impl.MDB_Neo4J_Impl;
@@ -564,6 +565,24 @@ public class Neo4jQueryHandler extends AbstractQueryHandler {
 			System.out.println("getLemmata_opt(" + docId + ") took: " + (endTime-startTime) + " ms.");
 		}
 		return lemmata;
+	}
+
+	@Override
+	public void storeJCasDocument(JCas document)
+	{
+		// TODO: implement
+	}
+
+	@Override
+	public void storeJCasDocuments(Iterable<JCas> documents)
+	{
+		// TODO: implement
+	}
+
+	@Override
+	public void getDocumentsAsJCas()
+	{
+		// TODO: implement
 	}
 
 	public double calculateTFIDFForLemmaInDocument(String lemma, String docId) {

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.database.AbstractQueryHandler;
 import org.hucompute.services.uima.database.RequestHandler;
 import org.hucompute.services.uima.database.Const.TYPE;
@@ -315,6 +316,24 @@ public class CassandraQueryHandler extends AbstractQueryHandler {
 			e.printStackTrace();
 		}
 		return vocabulary;
+	}
+
+	@Override
+	public void storeJCasDocument(JCas document)
+	{
+		// TODO: implement
+	}
+
+	@Override
+	public void storeJCasDocuments(Iterable<JCas> documents)
+	{
+		// TODO: implement
+	}
+
+	@Override
+	public void getDocumentsAsJCas()
+	{
+		// TODO: implement
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package org.hucompute.services.uima.database;
 
+import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.database.neo4j.data.Const;
 import org.json.JSONObject;
 
@@ -7,8 +8,14 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
- * The interface for all relevant, server queries. See
+ * The interface for all relevant server queries. See
  * {@link AbstractQueryHandler} for an implementation.
+ *
+ * Mixes database abstraction and a little bit of uima logic, since the JCas
+ * format is required as an input and output format.
+ *
+ * Maybe an abstraction can simplify the process of extracting information from
+ * JCas objects and creating them. TODO: elaborate and update.
  *
  * @author Manuel Stoeckel
  * @author Hannes Leutloff <hannes.leutloff@aol.de>
@@ -53,6 +60,29 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @return a HashSet(String lemma).
 	 */
 	HashSet<String> getLemmataForDocument(String documentId);
+
+	/**
+	 * Stores a JCas document in an appropriate way.
+	 *
+	 * @param document The JCas document.
+	 */
+	void storeJCasDocument(JCas document);
+
+	/**
+	 * Stores more than one JCas document at once.
+	 * Difference to multiple #storeJCasDocument calls could optionally be im-
+	 * proved performance on some systems.
+	 *
+	 * @param documents An iterable object of documents.
+	 */
+	void storeJCasDocuments(Iterable<JCas> documents);
+
+	/**
+	 * Retrieves all stored objects in JCas format.
+	 */
+	void getDocumentsAsJCas();
+
+	// TODO: add some query options to document retrieval
 
 	/**
 	 * The amount of documents that contain at least one instance of
