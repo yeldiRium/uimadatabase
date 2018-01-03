@@ -12,7 +12,9 @@ import java.util.logging.Logger;
  */
 public abstract class Connection
 {
-	protected static final Logger LOGGER = Logger.getLogger(Connection.class.getName());
+	protected static final Logger LOGGER = Logger.getLogger(
+			Connection.class.getName()
+	);
 
 	protected final int sleepTime = 500;
 	protected boolean isEstablished = false;
@@ -20,7 +22,8 @@ public abstract class Connection
 	/**
 	 * Tries regularly to establish the connection via calling #tryToConnect.
 	 * <p>
-	 * Check for interruption since this probably will be executed in a concurrent context.
+	 * Check for interruption since this probably will be executed in a concur-
+	 * rent context.
 	 */
 	public void establish()
 	{
@@ -29,15 +32,18 @@ public abstract class Connection
 		{
 			try
 			{
-				LOGGER.fine("Trying to connect... - " + this.getClass().getName());
+				LOGGER.fine("Trying to connect... - "
+						+ this.getClass().getName());
 				if (tryToConnect())
 				{
-					LOGGER.fine("Connection for " + this.getClass().getName() + " successful!");
+					LOGGER.fine("Connection for " + this.getClass().getName()
+							+ " successful!");
 					isEstablished = true;
 					return;
 				} else
 				{
-					LOGGER.fine("Connection for " + this.getClass().getName() + " failed.");
+					LOGGER.fine("Connection for " + this.getClass().getName()
+							+ " failed.");
 				}
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException ex)

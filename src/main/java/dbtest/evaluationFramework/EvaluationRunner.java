@@ -16,7 +16,10 @@ public class EvaluationRunner implements Runnable
 	protected Configuration configuration;
 	protected ConnectionManager connectionManager;
 
-	public EvaluationRunner(InputStream configFile, ConnectionManager connectionManager) throws IOException
+	public EvaluationRunner(
+			InputStream configFile,
+			ConnectionManager connectionManager
+	) throws IOException
 	{
 		this.loadConfig(configFile);
 		this.connectionManager = connectionManager;
@@ -24,7 +27,8 @@ public class EvaluationRunner implements Runnable
 
 	/**
 	 * Loads the yaml config.
-	 * This instantiates all EvaluationCases and the OutputProvider automatically.
+	 * This instantiates all EvaluationCases and the OutputProvider automatical-
+	 * ly.
 	 *
 	 * @param configFile
 	 */
@@ -46,18 +50,22 @@ public class EvaluationRunner implements Runnable
 	@Override
 	public void run()
 	{
-		for (EvaluationCase evaluationCase : this.configuration.getEvaluations())
+		for (EvaluationCase evaluationCase
+				: this.configuration.getEvaluations())
 		{
-			ConnectionRequest connectionRequest = evaluationCase.requestConnection();
+			ConnectionRequest connectionRequest =
+					evaluationCase.requestConnection();
 			ConnectionResponse connectionResponse = null;
 			try
 			{
-				connectionResponse = this.connectionManager.submitRequest(connectionRequest).get();
+				connectionResponse = this.connectionManager
+						.submitRequest(connectionRequest).get();
 			} catch (InterruptedException | ExecutionException e)
 			{
 				Thread.currentThread().interrupt();
 			}
-			System.out.println("Running EvaluationCase " + evaluationCase.getClass().getName());
+			System.out.println("Running EvaluationCase "
+					+ evaluationCase.getClass().getName());
 			boolean success = false;
 			while (!success)
 			{

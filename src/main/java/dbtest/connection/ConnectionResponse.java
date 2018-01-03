@@ -20,7 +20,7 @@ public class ConnectionResponse
 	/**
 	 * Add a connection object. If it is already there, nothing happens.
 	 *
-	 * @param connection
+	 * @param connection Established connection object.
 	 */
 	public void addConnection(Connection connection)
 	{

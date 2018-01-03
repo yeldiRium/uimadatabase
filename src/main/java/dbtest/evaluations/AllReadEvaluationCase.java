@@ -56,7 +56,8 @@ public class AllReadEvaluationCase implements EvaluationCase
 		{
 			List<CollectionReader> readers = Arrays.asList(
 					getXMIReader(outputProvider),
-					getNeo4jReader(outputProvider, connectionResponse.getConnection(Neo4jConnection.class)),
+					getNeo4jReader(outputProvider, connectionResponse
+							.getConnection(Neo4jConnection.class)),
 					getCassandraReader(outputProvider),
 					getMongoReader(outputProvider),
 					getBasexReader(outputProvider),
@@ -67,9 +68,12 @@ public class AllReadEvaluationCase implements EvaluationCase
 				runPipeline(
 						reader,
 						createEngine(StatusPrinter.class)
-						//				createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,"/home/ahemati/testDocuments/output",XmiWriter.PARAM_USE_DOCUMENT_ID,true,XmiWriter.PARAM_OVERWRITE,true)
-						//				createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,"/home/ahemati/testDocuments/output",XmiWriter.PARAM_USE_DOCUMENT_ID,true,XmiWriter.PARAM_OVERWRITE,true)
-						//				createEngine(XmiWriter.class, XmiWriter.PARAM_TARGET_LOCATION,"/home/voinea/testxmi",XmiWriter.PARAM_USE_DOCUMENT_ID,true,XmiWriter.PARAM_OVERWRITE,true)
+						//				createEngine(XmiWriter.class,
+						// XmiWriter.PARAM_TARGET_LOCATION,"/home/ahemati/testDocuments/output",XmiWriter.PARAM_USE_DOCUMENT_ID,true,XmiWriter.PARAM_OVERWRITE,true)
+						//				createEngine(XmiWriter.class,
+						// XmiWriter.PARAM_TARGET_LOCATION,"/home/ahemati/testDocuments/output",XmiWriter.PARAM_USE_DOCUMENT_ID,true,XmiWriter.PARAM_OVERWRITE,true)
+						//				createEngine(XmiWriter.class,
+						// XmiWriter.PARAM_TARGET_LOCATION,"/home/voinea/testxmi",XmiWriter.PARAM_USE_DOCUMENT_ID,true,XmiWriter.PARAM_OVERWRITE,true)
 				);
 			}
 		} catch (UIMAException | IOException e)
@@ -88,7 +92,8 @@ public class AllReadEvaluationCase implements EvaluationCase
 				XmiReaderModified.PARAM_PATTERNS,
 				"[+]**/*.xmi.gz",
 				XmiReaderModified.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(AllReadEvaluationCase.class.getName(), "xmi"),
+				outputProvider.createFile(AllReadEvaluationCase.class.getName
+						(), "xmi"),
 				XmiReaderModified.PARAM_LANGUAGE,
 				"de"
 		);
@@ -100,9 +105,11 @@ public class AllReadEvaluationCase implements EvaluationCase
 		return CollectionReaderFactory.createReader(
 				MongoCollectionReader.class,
 				MongoCollectionReader.PARAM_DB_CONNECTION,
-				new String[]{"localhost", "test_with_index", "wikipedia", "", ""},
+				new String[]{"localhost", "test_with_index", "wikipedia", "",
+						""},
 				MongoCollectionReader.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(AllReadEvaluationCase.class.getName(), "mongo")
+				outputProvider.createFile(AllReadEvaluationCase.class.getName
+						(), "mongo")
 //			MongoCollectionReader.PARAM_QUERY,"{}",
 		);
 	}
@@ -113,17 +120,20 @@ public class AllReadEvaluationCase implements EvaluationCase
 		return CollectionReaderFactory.createReader(
 				MysqlCollectionReader.class,
 				MysqlCollectionReader.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(AllReadEvaluationCase.class.getName(), "mysql")
+				outputProvider.createFile(AllReadEvaluationCase.class.getName
+						(), "mysql")
 		);
 	}
 
-	public static CollectionReader getNeo4jReader(OutputProvider outputProvider, Connection neo4jConnection)
+	public static CollectionReader getNeo4jReader(OutputProvider
+			                                              outputProvider, Connection neo4jConnection)
 			throws ResourceInitializationException, IOException
 	{
 		return CollectionReaderFactory.createReader(
 				Neo4jCollectionReaderNew.class,
 				Neo4jCollectionReaderNew.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(AllReadEvaluationCase.class.getName(), "neo4j"),
+				outputProvider.createFile(AllReadEvaluationCase.class.getName
+						(), "neo4j"),
 				Neo4jCollectionReaderNew.PARAM_CONNECTION,
 				neo4jConnection
 		);
@@ -135,17 +145,20 @@ public class AllReadEvaluationCase implements EvaluationCase
 		return CollectionReaderFactory.createReader(
 				BasexCollectionReader.class,
 				BasexCollectionReader.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(AllReadEvaluationCase.class.getName(), "basex")
+				outputProvider.createFile(AllReadEvaluationCase.class.getName
+						(), "basex")
 		);
 	}
 
-	public static CollectionReader getCassandraReader(OutputProvider outputProvider)
+	public static CollectionReader getCassandraReader(OutputProvider
+			                                                  outputProvider)
 			throws ResourceInitializationException, IOException
 	{
 		return CollectionReaderFactory.createReader(
 				CassandraCollectionReader.class,
 				CassandraCollectionReader.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(AllReadEvaluationCase.class.getName(), "cassandra")
+				outputProvider.createFile(AllReadEvaluationCase.class.getName
+						(), "cassandra")
 		);
 	}
 }

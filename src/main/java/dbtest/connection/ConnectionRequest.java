@@ -1,5 +1,6 @@
 package dbtest.connection;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,22 +25,19 @@ public class ConnectionRequest
 	/**
 	 * Constructs the ConnectionRequest from an endpoint and a number of connection classes.
 	 *
-	 * @param connectionClasses
+	 * @param connectionClasses A number of classes for which a connection should be established.
 	 */
 	@SafeVarargs
 	public ConnectionRequest(Class<? extends Connection>... connectionClasses)
 	{
 		this.connections = new HashSet<>();
-		for (Class<? extends Connection> connectionClass : connectionClasses)
-		{
-			this.connections.add(connectionClass);
-		}
+		this.connections.addAll(Arrays.asList(connectionClasses));
 	}
 
 	/**
 	 * Adds a connectionClass to the set.
 	 *
-	 * @param connectionClass
+	 * @param connectionClass A class for which a connection should be established.
 	 */
 	public void addRequestedConnection(Class<? extends Connection> connectionClass)
 	{

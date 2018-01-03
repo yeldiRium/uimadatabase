@@ -51,7 +51,8 @@ public class AllQueryEvaluationCase implements EvaluationCase
 
 			AllQueryEvaluationCase.getPosDistributionNeo4j(outputProvider);
 			AllQueryEvaluationCase.getLemmaDistributionNeo4j(outputProvider);
-			AllQueryEvaluationCase.getTypeTokenDistributionNeo4j(outputProvider);
+			AllQueryEvaluationCase
+					.getTypeTokenDistributionNeo4j(outputProvider);
 		} catch (UIMAException | IOException e)
 		{
 			e.printStackTrace();
@@ -106,7 +107,8 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		System.out.println(System.currentTimeMillis() - start);
 	}
 
-	public static void getPosDistributionNeo4j(OutputProvider outputProvider) throws UIMAException, IOException
+	public static void getPosDistributionNeo4j(OutputProvider outputProvider)
+			throws UIMAException, IOException
 	{
 		long start = System.currentTimeMillis();
 
@@ -128,7 +130,10 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			});
 		}
 		FileUtils.writeStringToFile(
-				outputProvider.createFile(AllQueryEvaluationCase.class.getName(), "neo4jSumPos"),
+				outputProvider.createFile(
+						AllQueryEvaluationCase.class.getName(),
+						"neo4jSumPos"
+				),
 				"" + (System.currentTimeMillis() - start)
 		);
 		System.out.println(System.currentTimeMillis() - start);
@@ -161,7 +166,10 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			System.out.println(i);
 		}
 		FileUtils.writeStringToFile(
-				outputProvider.createFile(AllQueryEvaluationCase.class.getName(), "neo4jSumLemma"),
+				outputProvider.createFile(
+						AllQueryEvaluationCase.class.getName(),
+						"neo4jSumLemma"
+				),
 				"" + (System.currentTimeMillis() - start)
 		);
 		System.out.println(System.currentTimeMillis() - start);
@@ -192,14 +200,18 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			System.out.println(i);
 		}
 		FileUtils.writeStringToFile(
-				outputProvider.createFile(AllQueryEvaluationCase.class.getName(), "neo4jSumLemma"),
+				outputProvider.createFile(
+						AllQueryEvaluationCase.class.getName(),
+						"neo4jSumLemma"
+				),
 				"" + (System.currentTimeMillis() - start)
 		);
 		System.out.println(System.currentTimeMillis() - start);
 	}
 
-	public static void getTypeTokenDistributionNeo4j(OutputProvider outputProvider)
-			throws UIMAException, IOException
+	public static void getTypeTokenDistributionNeo4j(
+			OutputProvider outputProvider
+	) throws UIMAException, IOException
 	{
 		long start = System.currentTimeMillis();
 		MDB_Neo4J_Impl pMDB = new MDB_Neo4J_Impl(
@@ -225,7 +237,8 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			System.out.println(i);
 		}
 		FileUtils.writeStringToFile(
-				outputProvider.createFile(AllQueryEvaluationCase.class.getName(), "neo4jTypeToken"),
+				outputProvider.createFile(AllQueryEvaluationCase.class
+						.getName(), "neo4jTypeToken"),
 				"" + (System.currentTimeMillis() - start)
 		);
 		System.out.println(System.currentTimeMillis() - start);

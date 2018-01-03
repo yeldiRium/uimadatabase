@@ -32,55 +32,46 @@ public class ConnectionManager
 	public Future<ConnectionResponse> submitRequest(ConnectionRequest connectionRequest)
 	{
 		LOGGER.finer("Request received. Processing in new Thread...");
-		return this.executor.submit(new Callable<ConnectionResponse>()
-		{
-			@Override
-			public ConnectionResponse call() throws InterruptedException, ExecutionException
-			{
-				LOGGER.finer("Processing Thread started.");
-				ConnectionResponse connectionResponse = new ConnectionResponse();
+		return this.executor.submit(() -> {
+			LOGGER.finer("Processing Thread started.");
+			ConnectionResponse connectionResponse = new ConnectionResponse();
 
-				for (Class<? extends Connection> cls : connectionRequest.getRequestedConnections())
+			for (Class<? extends Connection> cls : connectionRequest.getRequestedConnections())
+			{
+				Future<Connection> connectionFuture = connections.get(cls);
+				if (connectionFuture == null)
 				{
-					Future<Connection> connectionFuture = connections.get(cls);
-					if (connectionFuture == null)
-					{
-						LOGGER.finer("Connection to " + cls.getName() + " not found. Starting one in new Thread...");
-						connectionFuture = executor.submit(new Callable<Connection>()
+					LOGGER.finer("Connection to " + cls.getName() + " not found. Starting one in new Thread...");
+					connectionFuture = executor.submit(() -> {
+						LOGGER.finer("Connection Thread started.");
+						try
 						{
-							public Connection call()
-							{
-								LOGGER.finer("Connection Thread started.");
-								try
-								{
-									Connection connection = cls.getConstructor().newInstance();
-									connection.establish();
-									return connection;
-								} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-										| InvocationTargetException | NoSuchMethodException | SecurityException e)
-								{
-									// will never happen, since Connection has a fitting Constructor and all classes used
-									// here extend Connection.
-									LOGGER.severe("Exception occurred during establishment of Connection to " + cls.getName());
-									e.printStackTrace();
-									return null;
-								}
-							}
-						});
-						connections.put(cls, connectionFuture);
-					}
+							Connection connection = cls.getConstructor().newInstance();
+							connection.establish();
+							return connection;
+						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+								| InvocationTargetException | NoSuchMethodException | SecurityException e)
+						{
+							// will never happen, since Connection has a fitting Constructor and all classes used
+							// here extend Connection.
+							LOGGER.severe("Exception occurred during establishment of Connection to " + cls.getName());
+							e.printStackTrace();
+							return null;
+						}
+					});
+					connections.put(cls, connectionFuture);
 				}
-				// get the Futures' responses in a second loop, so all of them are started before
-				// the first blocking execution.
-				for (Class<? extends Connection> cls : connectionRequest.getRequestedConnections())
-				{
-					Future<Connection> connectionFuture = connections.get(cls);
-					connectionResponse.addConnection(connectionFuture.get());
-				}
-				// Call endpoint with Response object.
-				LOGGER.info("Response built. Returning...");
-				return connectionResponse;
 			}
+			// get the Futures' responses in a second loop, so all of them are started before
+			// the first blocking execution.
+			for (Class<? extends Connection> cls : connectionRequest.getRequestedConnections())
+			{
+				Future<Connection> connectionFuture = connections.get(cls);
+				connectionResponse.addConnection(connectionFuture.get());
+			}
+			// Call endpoint with Response object.
+			LOGGER.info("Response built. Returning...");
+			return connectionResponse;
 		});
 	}
 

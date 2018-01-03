@@ -18,7 +18,8 @@ public class Neo4jConnection extends Connection
 	@Override
 	protected boolean tryToConnect()
 	{
-		// If the connection is already established, nothing further has to be done
+		// If the connection is already established, nothing further has to be
+		// done
 		if (this.driver != null)
 		{
 			return true;

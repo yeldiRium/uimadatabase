@@ -44,20 +44,24 @@ public class BaseOutputProvider implements OutputProvider
 
 	/**
 	 * Creates an output file to write to.
-	 * If an output file for the given caller and name already exists, the operation
-	 * depends on keepOld:
-	 * If the old file should be kept, it is backed up (respecting already existing backups).
+	 * If an output file for the given caller and name already exists, the ope-
+	 * ration depends on keepOld:
+	 * If the old file should be kept, it is backed up (respecting already exis-
+	 * ting backups).
 	 * If it should not be kept, it is deleted.
 	 * Then a new file is created and returned.
 	 *
 	 * @param caller  Should be the class calling this method.
 	 * @param name    The name for the output file.
-	 * @param keepOld If a possibly existing output file with the same name should be kept or removed.
+	 * @param keepOld If a possibly existing output file with the same name
+	 *                should be kept or removed.
 	 * @return The output file for further use.
-	 * @throws IOException If a file with the same name exists and can't be deleted.
+	 * @throws IOException If a file with the same name exists and can't be de-
+	 *                     leted.
 	 */
 	@Override
-	public File createFile(String caller, String name, boolean keepOld) throws IOException
+	public File createFile(String caller, String name, boolean keepOld)
+			throws IOException
 	{
 		String fileName = caller + "_" + name;
 		String extension = ".txt";
@@ -72,7 +76,9 @@ public class BaseOutputProvider implements OutputProvider
 				{
 					try
 					{
-						Files.move(filePath, filePath.resolveSibling(fileName + "_bak" + String.valueOf(backup_counter) + extension));
+						Files.move(filePath, filePath.resolveSibling(fileName
+								+ "_bak" + String.valueOf(backup_counter)
+								+ extension));
 						moved = true;
 					} catch (IOException e)
 					{
@@ -85,7 +91,9 @@ public class BaseOutputProvider implements OutputProvider
 			}
 		}
 		File newFile = filePath.toFile();
-		newFile.createNewFile(); // Should always be true, since we delete/backup the file before. Concurrent access could be a problem.
+		// Should always be true, since we delete/backup the file before. Con-
+		// current access could be a problem.
+		newFile.createNewFile();
 		return newFile;
 	}
 }

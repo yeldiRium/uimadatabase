@@ -16,7 +16,8 @@ public class MongoDBConnection extends Connection
 	@Override
 	protected boolean tryToConnect()
 	{
-		// If the connection is already established, nothing further has to be done
+		// If the connection is already established, nothing further has to be
+		// done
 		if (this.client != null)
 		{
 			return true;

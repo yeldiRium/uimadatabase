@@ -27,9 +27,9 @@ public class ArangoDBConnection extends Connection
 	@Override
 	protected boolean tryToConnect()
 	{
-		// If the connection is already established, nothing further has to be done
-		// has to check connection, since the ArangoDB object can be created while
-		// the actual connection when calling getVersion fails
+		// If the connection is already established, nothing further has to be
+		// done has to check connection, since the ArangoDB object can be crea-
+		// ted while the actual connection when calling getVersion fails.
 		if (this.connected)
 		{
 			return true;
@@ -46,11 +46,11 @@ public class ArangoDBConnection extends Connection
 					.user(System.getenv("ARANGODB_USER"))
 					.password(System.getenv("ARANGODB_PASS"))
 					.build();
-			// Request version to check, if the connection was successful
-			// Without executing anything, the connection is not actually established
-			// If the server is not reachable, this will log a ConnectException, which is
-			// handled by arango and can't be prevented
-			// So that will always pollute the logs.
+			// Request version to check, if the connection was successful.
+			// Without executing anything, the connection is not actually estab-
+			// lished. If the server is not reachable, this will log a
+			// ConnectException, which is handled by arango and can't be pre-
+			// vented. So that will always pollute the logs.
 			arangoDB.getVersion();
 			this.connected = true;
 			return true;

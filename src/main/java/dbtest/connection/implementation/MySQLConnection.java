@@ -17,7 +17,8 @@ public class MySQLConnection extends Connection
 	@Override
 	protected boolean tryToConnect()
 	{
-		// If the connection is already established, nothing further has to be done
+		// If the connection is already established, nothing further has to be
+		// done
 		if (this.connection != null)
 		{
 			return true;
@@ -31,8 +32,10 @@ public class MySQLConnection extends Connection
 			String username = System.getenv("MYSQL_USER");
 			String password = System.getenv("MYSQL_PASS");
 
-			// MySQL Driver needs some strange url for connection, so we build it:
-			String url = "jdbc:mysql://" + host + ":" + port + "/" + dbname + "?useSSL=false";
+			// MySQL Driver needs some strange url for connection, so we build
+			// it:
+			String url = "jdbc:mysql://" + host + ":" + port + "/" + dbname
+					+ "?useSSL=false";
 
 			this.connection = DriverManager.getConnection(
 					url,
