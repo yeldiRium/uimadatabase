@@ -352,4 +352,22 @@ public class CassandraQueryHandler extends AbstractQueryHandler {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public ArrayList<String> getTriGramsFromDocument(String documentId) throws UnsupportedOperationException
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ArrayList<String> getTriGramsFromAllDocuments() throws UnsupportedOperationException
+	{
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ArrayList<String> getTriGramsFromDocumentsInCollection(Collection<String> documentIds) throws UnsupportedOperationException
+	{
+		throw new UnsupportedOperationException();
+	}
+
 }

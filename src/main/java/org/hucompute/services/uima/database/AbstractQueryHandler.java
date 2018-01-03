@@ -151,34 +151,5 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface {
 			}
 		}
 		return output;
-	}	
-	
-	/*
-	 * All methods that are know to be incompatible with at least one database.
-	 * Override in implementation!
-	 */
-	public ArrayList<String> getBiGramsFromDocument(String documentId) throws UnsupportedOperationException {
-		throw new UnsupportedOperationException();
-	}
-	
-	public ArrayList<String> getBiGramsFromAllDocuments() throws UnsupportedOperationException {
-		throw new UnsupportedOperationException();
-	}
-	
-	public ArrayList<String> getBiGramsFromDocumentsInCollection(Collection<String> documentIds)
-			throws UnsupportedOperationException {
-		throw new UnsupportedOperationException();
-	}
-	public ArrayList<String> getTriGramsFromDocument(String documentId) throws UnsupportedOperationException {
-		throw new UnsupportedOperationException();
-	}
-	
-	public ArrayList<String> getTriGramsFromAllDocuments() throws UnsupportedOperationException {
-		throw new UnsupportedOperationException();
-	}
-	
-	public ArrayList<String> getTriGramsFromDocumentsInCollection(Collection<String> documentIds)
-			throws UnsupportedOperationException {
-		throw new UnsupportedOperationException();
 	}
 }
