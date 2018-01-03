@@ -120,7 +120,7 @@ public class CassandraCounterCreateEvaluationCase implements EvaluationCase
 		try
 		{
 			FileUtils.writeStringToFile(
-					new File("output/CassandraCounterCreateEvaluationCase.txt"),
+					outputProvider.createFile(CassandraCounterCreateEvaluationCase.class.getName(), "index"),
 					builder.toString()
 			);
 		} catch (IOException e)

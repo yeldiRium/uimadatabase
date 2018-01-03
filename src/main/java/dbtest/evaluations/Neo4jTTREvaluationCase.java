@@ -67,7 +67,7 @@ public class Neo4jTTREvaluationCase implements EvaluationCase
 		try
 		{
 			FileUtils.writeStringToFile(
-					new File("output/Neo4jTTREvaluationCase.txt"),
+					outputProvider.createFile(Neo4jTTREvaluationCase.class.getName(), "index"),
 					builder.toString()
 			);
 		} catch (IOException e)

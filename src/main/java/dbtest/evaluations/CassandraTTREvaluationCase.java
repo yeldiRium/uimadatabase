@@ -96,7 +96,10 @@ public class CassandraTTREvaluationCase implements EvaluationCase
 						.append("ms.\n");
 			}
 			session.close();
-			FileUtils.writeStringToFile(new File("output/CassandraTTREvaluationCase.txt"), builder.toString());
+			FileUtils.writeStringToFile(
+					outputProvider.createFile(CassandraTTREvaluationCase.class.getName(), "index"),
+					builder.toString()
+			);
 		} catch (ResourceInitializationException | IOException e)
 		{
 			e.printStackTrace();

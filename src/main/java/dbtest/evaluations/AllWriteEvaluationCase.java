@@ -53,12 +53,12 @@ public class AllWriteEvaluationCase implements EvaluationCase
 			);
 
 			List<AnalysisEngine> writers = Arrays.asList(
-					getNeo4JWriter(),
-					getMongoWriter(),
-					getCassandraWriter(),
-					getBasexWriter(),
-					getMysqlWriter(),
-					getXMIWriter()
+					getNeo4JWriter(outputProvider),
+					getMongoWriter(outputProvider),
+					getCassandraWriter(outputProvider),
+					getBasexWriter(outputProvider),
+					getMysqlWriter(outputProvider),
+					getXMIWriter(outputProvider)
 			);
 
 			for (AnalysisEngine writer : writers)
@@ -80,59 +80,67 @@ public class AllWriteEvaluationCase implements EvaluationCase
 		{
 			// TODO: handle better
 			e.printStackTrace();
+		} catch (IOException e)
+		{
+			// TODO: handle better. This occurs, if an output file could not be created or sth.
+			e.printStackTrace();
 		}
 	}
 
-	public static AnalysisEngine getMongoWriter() throws
-			ResourceInitializationException
+	public static AnalysisEngine getMongoWriter(OutputProvider outputProvider) throws
+			ResourceInitializationException, IOException
 	{
 		return createEngine(
 				MongoWriter.class,
 				MongoCollectionReader.PARAM_DB_CONNECTION,
 				new String[]{"localhost", "test_with_index", "wikipedia", "", ""},
 				MongoWriter.PARAM_LOG_FILE_LOCATION,
-				new File("output/AllWriteEvaluationCase_mongoWithIndex.log")
+				outputProvider.createFile(AllWriteEvaluationCase.class.getName(), "mongoWithIndex")
 		);
 	}
 
-	public static AnalysisEngine getMysqlWriter()
-			throws ResourceInitializationException
+	public static AnalysisEngine getMysqlWriter(OutputProvider outputProvider)
+			throws ResourceInitializationException, IOException
 	{
-		return createEngine(MysqlWriter.class);
+		return createEngine(
+				MysqlWriter.class,
+				MongoWriter.PARAM_LOG_FILE_LOCATION,
+				outputProvider.createFile(AllWriteEvaluationCase.class.getName(), "mysqlWithIndex")
+		);
 	}
 
 
-	public static AnalysisEngine getNeo4JWriter()
-			throws ResourceInitializationException
+	public static AnalysisEngine getNeo4JWriter(OutputProvider outputProvider)
+			throws ResourceInitializationException, IOException
 	{
 		return createEngine(Neo4jWriter.class,
 				Neo4jWriter.PARAM_LOG_FILE_LOCATION,
-				new File("output/AllWriteEvaluationCase_neo4j.log")
+				outputProvider.createFile(AllWriteEvaluationCase.class.getName(), "neo4j")
 		);
 	}
 
-	public static AnalysisEngine getBasexWriter()
-			throws ResourceInitializationException
+	public static AnalysisEngine getBasexWriter(OutputProvider outputProvider)
+			throws ResourceInitializationException, IOException
 	{
 		return createEngine(
 				BasexWriter.class,
 				BasexWriter.PARAM_LOG_FILE_LOCATION,
-				new File("output/AllWriteEvaluationCase_basex.log")
+				outputProvider.createFile(AllWriteEvaluationCase.class.getName(), "basex")
 		);
 	}
 
-	public static AnalysisEngine getCassandraWriter()
-			throws ResourceInitializationException
+	public static AnalysisEngine getCassandraWriter(OutputProvider outputProvider)
+			throws ResourceInitializationException, IOException
 	{
 		return createEngine(
 				CassandraWriter.class,
 				CassandraWriter.PARAM_LOG_FILE_LOCATION,
-				new File("output/AllWriteEvaluationCase_cassandra.log")
+				outputProvider.createFile(AllWriteEvaluationCase.class.getName(), "cassandra")
 		);
 	}
 
-	public static AnalysisEngine getXMIWriter()
-			throws ResourceInitializationException
+	public static AnalysisEngine getXMIWriter(OutputProvider outputProvider)
+			throws ResourceInitializationException, IOException
 	{
 		return createEngine(
 				XmiWriterModified.class,
@@ -143,7 +151,7 @@ public class AllWriteEvaluationCase implements EvaluationCase
 				XmiWriterModified.PARAM_OVERWRITE,
 				true,
 				XmiWriterModified.PARAM_LOG_FILE_LOCATION,
-				new File("output/AllWriteEvaluationCase_xmi.log")
+				outputProvider.createFile(AllWriteEvaluationCase.class.getName(), "xmi")
 		);
 	}
 }

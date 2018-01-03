@@ -4,6 +4,8 @@ import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.evaluationFramework.exceptions.EvaluationFailedRerunnableException;
 
+import java.io.IOException;
+
 public interface EvaluationCase
 {
 	ConnectionRequest requestConnection();
@@ -18,5 +20,5 @@ public interface EvaluationCase
 	void run(
 			ConnectionResponse connectionResponse,
 			OutputProvider outputProvider
-	) throws EvaluationFailedRerunnableException;
+	) throws EvaluationFailedRerunnableException, IOException;
 }
