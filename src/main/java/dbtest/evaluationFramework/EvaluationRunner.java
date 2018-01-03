@@ -70,6 +70,10 @@ public class EvaluationRunner implements Runnable
 				} catch (EvaluationFailedRerunnableException e)
 				{
 					System.out.println("Evaluation failed. Rerunning...");
+				} catch (IOException e)
+				{
+					// TODO: handle better
+					e.printStackTrace();
 				}
 			}
 		}
