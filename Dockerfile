@@ -6,12 +6,9 @@ RUN apt-get install -y maven
 
 WORKDIR /code
 
-# Prepare by adding and downloading dependencies
+# Adding source, compile and package into jar with dependencies in lib folder
 ADD lib /code/lib
 ADD pom.xml /code/pom.xml
-RUN ["mvn", "dependency:resolve"]
-
-# Adding source, compile and package into jar with dependencies in lib folder
 ADD src /code/src
 RUN ["mvn", "clean", "package"]
 
