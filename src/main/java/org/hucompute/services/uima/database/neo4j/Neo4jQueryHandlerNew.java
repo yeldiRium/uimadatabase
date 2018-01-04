@@ -150,7 +150,7 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 					Token previousToken = null;
 					for (Token token : JCasUtil.selectCovered(document, Token.class, sentence))
 					{
-						this.storeToken(token, documentId, paragraph, sentence, previousToken);
+						this.storeToken(token, document, paragraph, sentence, previousToken);
 						previousToken = token;
 					}
 				}
@@ -160,28 +160,29 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 	}
 
 	@Override
-	public void storeSentence(Sentence sentence, String documentId, Paragraph paragraph, Sentence previousSentence)
+	public void storeSentence(Sentence sentence, JCas document, Paragraph paragraph, Sentence previousSentence)
 	{
 
 	}
 
 	@Override
-	public void storeSentence(Sentence sentence, String documentId, Paragraph paragraph)
+	public void storeSentence(Sentence sentence, JCas document, Paragraph paragraph)
 	{
 		
 	}
 
 	/**
-	 *
-	 * @param token The Token.
-	 * @param documentId The id of the document in which the Token occurs.
+	 *  @param token The Token.
+	 * @param document The id of the document in which the Token occurs.
 	 * @param paragraph The paragraph, in which the Token occurs.
 	 * @param sentence The sentence, in which the Token occurs.
 	 * @param previousToken The predecessing Token.
 	 */
 	@Override
-	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence, Token previousToken)
+	public void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence, Token previousToken)
 	{
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
 		try (Session session = this.driver.session())
 		{
 			session.writeTransaction(tx -> {
@@ -220,16 +221,15 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 	}
 
 	/**
-	 *
-	 * @param token The Token.
-	 * @param documentId The id of the document in which the Token occurs.
+	 *  @param token The Token.
+	 * @param document The id of the document in which the Token occurs.
 	 * @param paragraph The paragraph, in which the Token occurs.
 	 * @param sentence The sentence, in which the Token occurs.
 	 */
 	@Override
-	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence)
+	public void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence)
 	{
-		storeToken(token, documentId, paragraph, sentence, null);
+		storeToken(token, document, paragraph, sentence, null);
 	}
 
 	@Override

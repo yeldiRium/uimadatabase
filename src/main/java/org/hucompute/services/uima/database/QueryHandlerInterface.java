@@ -74,38 +74,38 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	/**
 	 * Stores a Sentence in the database.
 	 * @param sentence The Sentence.
-	 * @param documentId The id of the Document in which the entence occurs.
+	 * @param document The Document in which the entence occurs.
 	 * @param paragraph The Paragraph, in which the Sentence occurs.
 	 * @param previousSentence The predecessing Sentence.
 	 */
-	void storeSentence(Sentence sentence, String documentId, Paragraph paragraph, Sentence previousSentence);
+	void storeSentence(Sentence sentence, JCas document, Paragraph paragraph, Sentence previousSentence);
 
 	/**
 	 * Stores a Sentence in the database.
 	 * @param sentence The Sentence.
-	 * @param documentId The id of the Document in which the entence occurs.
+	 * @param document The Document in which the entence occurs.
 	 * @param paragraph The Paragraph, in which the Sentence occurs.
 	 */
-	void storeSentence(Sentence sentence, String documentId, Paragraph paragraph);
+	void storeSentence(Sentence sentence, JCas document, Paragraph paragraph);
 
 	/**
 	 * Stores a Token in the database.
 	 * @param token The Token.
-	 * @param documentId The id of the Document in which the Token occurs.
+	 * @param document The Document in which the Token occurs.
 	 * @param paragraph The Paragraph, in which the Token occurs.
 	 * @param sentence The Sentence, in which the Token occurs.
 	 * @param previousToken The predecessing Token.
 	 */
-	void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence, Token previousToken);
+	void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence, Token previousToken);
 
 	/**
 	 * Stores a Token in the database.
 	 * @param token The Token.
-	 * @param documentId The id of the Document in which the Token occurs.
+	 * @param document The Document in which the Token occurs.
 	 * @param paragraph The Paragraph, in which the Token occurs.
 	 * @param sentence The Sentence, in which the Token occurs.
 	 */
-	void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence);
+	void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence);
 
 	/**
 	 * Stores more than one JCas document at once.
