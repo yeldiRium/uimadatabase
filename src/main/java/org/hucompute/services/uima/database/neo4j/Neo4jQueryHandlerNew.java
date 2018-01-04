@@ -126,8 +126,20 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 		});
 	}
 
+	@Override
+	public void storeParagraph(Paragraph paragraph, JCas document, Paragraph previousParagraph)
+	{
+
+	}
+
+	@Override
+	public void storeParagraph(Paragraph paragraph, JCas document)
+	{
+		
+	}
+
 	/**
-	 * 
+	 *
 	 * @param sentence The Sentence.
 	 * @param document The Document in which the entence occurs.
 	 * @param paragraph The Paragraph, in which the Sentence occurs.

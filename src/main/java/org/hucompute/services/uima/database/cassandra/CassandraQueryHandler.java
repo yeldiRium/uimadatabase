@@ -356,6 +356,18 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
+	public void storeParagraph(Paragraph paragraph, JCas document, Paragraph previousParagraph)
+	{
+
+	}
+
+	@Override
+	public void storeParagraph(Paragraph paragraph, JCas document)
+	{
+
+	}
+
+	@Override
 	public void storeSentence(Sentence sentence, JCas document, Paragraph paragraph, Sentence previousSentence)
 	{
 

@@ -72,6 +72,21 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	void storeJCasDocument(JCas document);
 
 	/**
+	 * Stores a Paragraph in the database.
+	 * @param paragraph The Paragraph.
+	 * @param document The document in which the paragraph occurs.
+	 * @param previousParagraph The predecessing Paragraph.
+	 */
+	void storeParagraph(Paragraph paragraph, JCas document, Paragraph previousParagraph);
+
+	/**
+	 * Stores a Paragraph in the database.
+	 * @param paragraph The Paragraph.
+	 * @param document The document in which the paragraph occurs.
+	 */
+	void storeParagraph(Paragraph paragraph, JCas document);
+
+	/**
 	 * Stores a Sentence in the database.
 	 * @param sentence The Sentence.
 	 * @param document The Document in which the entence occurs.
