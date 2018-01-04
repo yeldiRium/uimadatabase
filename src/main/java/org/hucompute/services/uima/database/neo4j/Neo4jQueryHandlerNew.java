@@ -15,6 +15,20 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 {
 	protected Driver driver;
 
+	public enum Label {
+		Document, Paragraph, Sentence, Token, Lemma, Pos
+	}
+
+	public enum Relationship
+	{
+		DocumentHasParagraph, DocumentHasSentence, DocumentHasToken,
+		DocumentHasLemma,
+		SentenceInParagraph, TokenInParagraph,
+		TokenInSentence,
+		TokenHasLemma, TokenAtPos,
+		NextParagraph, NextSentence, NextToken
+	}
+
 	public Neo4jQueryHandlerNew(Driver driver)
 	{
 		this.driver = driver;
@@ -25,9 +39,8 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 	{
 		Set<String> lemmata = new HashSet<>();
 		Session session = this.driver.session();
-		StatementResult result = session.readTransaction(tx ->
-				tx.run("MATCH (d:DOCUMENT {id:'" + documentId + "'})-[:inDocument]-(l:LEMMA) RETURN l.value AS lemma;")
-		);
+		String query = "MATCH (d:" + Label.Document + " {id:'" + documentId + "'})-[:" + Relationship.DocumentHasLemma + "]-(l:" + Label.Lemma + ") RETURN l.value AS lemma";
+		StatementResult result = session.readTransaction(tx -> tx.run(query));
 
 		while (result.hasNext())
 		{
