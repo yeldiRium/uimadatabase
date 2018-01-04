@@ -89,6 +89,19 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 
 	/**
 	 *
+	 * @param documents An iterable object of documents.
+	 */
+	@Override
+	public void storeJCasDocuments(Iterable<JCas> documents)
+	{
+		for (JCas document : documents)
+		{
+			this.storeJCasDocument(document);
+		}
+	}
+
+	/**
+	 *
 	 * @param paragraph The Paragraph.
 	 * @param document The document in which the paragraph occurs.
 	 * @param previousParagraph The predecessing Paragraph.
@@ -283,12 +296,6 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	public void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence)
 	{
 		storeToken(token, document, paragraph, sentence, null);
-	}
-
-	@Override
-	public void storeJCasDocuments(Iterable<JCas> documents)
-	{
-
 	}
 
 	@Override
