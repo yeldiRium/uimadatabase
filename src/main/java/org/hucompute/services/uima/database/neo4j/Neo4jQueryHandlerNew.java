@@ -46,17 +46,19 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
 	{
-		Set<String> lemmata = new HashSet<>();
-		Session session = this.driver.session();
-		String query = "MATCH (d:" + Label.Document + " {id:'" + documentId + "'})-[:" + Relationship.DocumentHasLemma + "]-(l:" + Label.Lemma + ") RETURN l.value AS lemma";
-		StatementResult result = session.readTransaction(tx -> tx.run(query));
-
-		while (result.hasNext())
+		try (Session session = this.driver.session())
 		{
-			Record row = result.next();
-			lemmata.add(row.get("lemma").toString());
+			Set<String> lemmata = new HashSet<>();
+			String query = "MATCH (d:" + Label.Document + " {id:'" + documentId + "'})-[:" + Relationship.DocumentHasLemma + "]-(l:" + Label.Lemma + ") RETURN l.value AS lemma";
+			StatementResult result = session.readTransaction(tx -> tx.run(query));
+
+			while (result.hasNext())
+			{
+				Record row = result.next();
+				lemmata.add(row.get("lemma").toString());
+			}
+			return lemmata;
 		}
-		return lemmata;
 	}
 
 	/**
@@ -66,34 +68,33 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 	@Override
 	public void storeJCasDocument(JCas document)
 	{
-		/* Document creation. */
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
-		Session session = this.driver.session();
-		session.writeTransaction(tx -> {
-			String documentQuery = "MERGE (d:" + Label.Document + " {id:'" + documentId + "'}) SET d.text = '" + document.getDocumentText() + "', d.language = '" + document.getDocumentLanguage() + "'";
-			tx.run(documentQuery);
+		try (Session session = this.driver.session())
+		{
+			session.writeTransaction(tx -> {
+				String documentQuery = "MERGE (d:" + Label.Document + " {id:'" + documentId + "'}) SET d.text = '" + document.getDocumentText() + "', d.language = '" + document.getDocumentLanguage() + "'";
+				tx.run(documentQuery);
+				tx.success();
+				return 1;
+			});
+		}
 
-			/*
-			 * Iterate over each element of the jCas that was annotated as a Pa-
-			 * ragraph. Each paragraph has properties for its beginning and en-
-			 * ding character position and the id of the document it is con-
-			 * tained in. This is done so identical paragraphs don't have rela-
-			 * tionships with more than one document.
-			 */
-			Paragraph previousParagraph = null;
-			for (Paragraph paragraph
-					: JCasUtil.select(document, Paragraph.class))
-			{
-				this.storeParagraph(paragraph, document, previousParagraph);
-				previousParagraph = paragraph;
-			}
-			return 1;
-		});
+		/*
+		 * Store each element of the jCas that was annotated as a Para-
+		 * graph.
+		 */
+		Paragraph previousParagraph = null;
+		for (Paragraph paragraph
+				: JCasUtil.select(document, Paragraph.class))
+		{
+			this.storeParagraph(paragraph, document, previousParagraph);
+			previousParagraph = paragraph;
+		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @param paragraph The Paragraph.
 	 * @param document The document in which the paragraph occurs.
 	 * @param previousParagraph The predecessing Paragraph.
@@ -130,18 +131,22 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 
 				tx.run(paragraphQuery);
 				tx.success();
-
-				Sentence previousSentence = null;
-				for (Sentence sentence : JCasUtil.selectCovered(
-						document,
-						Sentence.class, paragraph
-				))
-				{
-					this.storeSentence(sentence, document, paragraph, previousSentence);
-					previousSentence = sentence;
-				}
 				return 1;
 			});
+		}
+
+		/*
+		 * Store each element of the jCas that was annotated as a Sen-
+		 * tence.
+		 */
+		Sentence previousSentence = null;
+		for (Sentence sentence : JCasUtil.selectCovered(
+				document,
+				Sentence.class, paragraph
+		))
+		{
+			this.storeSentence(sentence, document, paragraph, previousSentence);
+			previousSentence = sentence;
 		}
 	}
 
@@ -197,15 +202,18 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 
 				tx.run(sentenceQuery);
 				tx.success();
-
-				Token previousToken = null;
-				for (Token token : JCasUtil.selectCovered(document, Token.class, sentence))
-				{
-					this.storeToken(token, document, paragraph, sentence, previousToken);
-					previousToken = token;
-				}
 				return 1;
 			});
+		}
+
+		/*
+		 * Store each element of the jCas that was annotated as a Token.
+		 */
+		Token previousToken = null;
+		for (Token token : JCasUtil.selectCovered(document, Token.class, sentence))
+		{
+			this.storeToken(token, document, paragraph, sentence, previousToken);
+			previousToken = token;
 		}
 	}
 
@@ -265,6 +273,7 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 				}
 
 				tx.run(tokenQuery);
+				tx.success();
 				return 1;
 			});
 		}
