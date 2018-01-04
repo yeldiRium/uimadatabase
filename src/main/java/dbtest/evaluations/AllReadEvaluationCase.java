@@ -7,6 +7,8 @@ import dbtest.connection.ConnectionResponse;
 import dbtest.connection.implementation.*;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
+import dbtest.evaluations.collectionReaders.EvaluatingCollectionReader;
+import dbtest.evaluations.collectionReaders.Neo4jCollectionReader;
 import org.apache.uima.UIMAException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
@@ -15,7 +17,6 @@ import org.hucompute.services.uima.database.basex.BasexCollectionReader;
 import org.hucompute.services.uima.database.cassandra.CassandraCollectionReader;
 import org.hucompute.services.uima.database.mongo.MongoCollectionReader;
 import org.hucompute.services.uima.database.mysql.MysqlCollectionReader;
-import org.hucompute.services.uima.database.neo4j.Neo4jCollectionReaderNew;
 import org.hucompute.services.uima.database.xmi.XmiReaderModified;
 
 import java.io.IOException;
@@ -130,11 +131,11 @@ public class AllReadEvaluationCase implements EvaluationCase
 			throws ResourceInitializationException, IOException
 	{
 		return CollectionReaderFactory.createReader(
-				Neo4jCollectionReaderNew.class,
-				Neo4jCollectionReaderNew.PARAM_LOG_FILE_LOCATION,
+				Neo4jCollectionReader.class,
+				EvaluatingCollectionReader.PARAM_LOG_FILE_LOCATION,
 				outputProvider.createFile(AllReadEvaluationCase.class.getName
 						(), "neo4j"),
-				Neo4jCollectionReaderNew.PARAM_CONNECTION,
+				Neo4jCollectionReader.PARAM_CONNECTION,
 				neo4jConnection
 		);
 	}
