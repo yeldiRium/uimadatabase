@@ -74,19 +74,19 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	/**
 	 * Stores a token in the database.
 	 * @param token The Token.
-	 * @param documentId The id of the document in which the Token occurs.
-	 * @param paragraph The paragraph, in which the Token occurs.
-	 * @param sentence The sentence, in which the Token occurs.
+	 * @param documentId The id of the Document in which the Token occurs.
+	 * @param paragraph The Paragraph, in which the Token occurs.
+	 * @param sentence The Sentence, in which the Token occurs.
 	 * @param previousToken The predecessing Token.
 	 */
 	void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence, Token previousToken);
 
 	/**
-	 * Stores a token in the database.
+	 * Stores a Token in the database.
 	 * @param token The Token.
-	 * @param documentId The id of the document in which the Token occurs.
-	 * @param paragraph The paragraph, in which the Token occurs.
-	 * @param sentence The sentence, in which the Token occurs.
+	 * @param documentId The id of the Document in which the Token occurs.
+	 * @param paragraph The Paragraph, in which the Token occurs.
+	 * @param sentence The Sentence, in which the Token occurs.
 	 */
 	void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence);
 
