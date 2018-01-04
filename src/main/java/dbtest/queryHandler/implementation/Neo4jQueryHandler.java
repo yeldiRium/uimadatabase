@@ -1,14 +1,13 @@
-package org.hucompute.services.uima.database.neo4j;
+package dbtest.queryHandler.implementation;
 
+import dbtest.queryHandler.QueryHandlerInterface;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
-import org.hucompute.services.uima.database.AbstractQueryHandler;
 import org.hucompute.services.uima.database.Const;
-import org.json.JSONObject;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
@@ -19,7 +18,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Neo4jQueryHandlerNew extends AbstractQueryHandler
+public class Neo4jQueryHandler implements QueryHandlerInterface
 {
 	protected Driver driver;
 
@@ -38,7 +37,7 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 		NextParagraph, NextSentence, NextToken
 	}
 
-	public Neo4jQueryHandlerNew(Driver driver)
+	public Neo4jQueryHandler(Driver driver)
 	{
 		this.driver = driver;
 	}
@@ -431,12 +430,6 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 
 	@Override
 	public Iterable<String> getTriGramsFromDocumentsInCollection(Collection<String> documentIds) throws UnsupportedOperationException
-	{
-		return null;
-	}
-
-	@Override
-	public JSONObject call() throws Exception
 	{
 		return null;
 	}
