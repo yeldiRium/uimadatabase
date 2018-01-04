@@ -30,7 +30,6 @@ public class AllReadEvaluationCase implements EvaluationCase
 	@Override
 	public ConnectionRequest requestConnection()
 	{
-		// TODO: decide what to request here
 		ConnectionRequest connectionRequest = new ConnectionRequest();
 		connectionRequest.addRequestedConnection(MongoDBConnection.class);
 		connectionRequest.addRequestedConnection(MySQLConnection.class);
@@ -138,7 +137,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 	{
 		Neo4jCollectionReader neo4jReader = (Neo4jCollectionReader) CollectionReaderFactory.createReader(
 				Neo4jCollectionReader.class,
-				EvaluatingCollectionReader.PARAM_LOG_FILE_LOCATION,
+				EvaluatingCollectionReader.PARAM_OUTPUT_FILE,
 				outputProvider.createFile(
 						AllReadEvaluationCase.class.getName(),
 						"neo4j"

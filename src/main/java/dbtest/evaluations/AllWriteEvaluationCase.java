@@ -2,8 +2,11 @@ package dbtest.evaluations;
 
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
+import dbtest.connection.implementation.*;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
+import dbtest.evaluations.collectionWriter.EvaluatingCollectionWriter;
+import dbtest.evaluations.collectionWriter.Neo4jCollectionWriter;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
@@ -14,7 +17,6 @@ import org.hucompute.services.uima.database.cassandra.CassandraWriter;
 import org.hucompute.services.uima.database.mongo.MongoCollectionReader;
 import org.hucompute.services.uima.database.mongo.MongoWriter;
 import org.hucompute.services.uima.database.mysql.MysqlWriter;
-import org.hucompute.services.uima.database.neo4j.Neo4jWriter;
 import org.hucompute.services.uima.database.xmi.XmiReaderModified;
 import org.hucompute.services.uima.database.xmi.XmiWriterModified;
 
@@ -30,7 +32,13 @@ public class AllWriteEvaluationCase implements EvaluationCase
 	@Override
 	public ConnectionRequest requestConnection()
 	{
-		return null;
+		ConnectionRequest connectionRequest = new ConnectionRequest();
+		connectionRequest.addRequestedConnection(MongoDBConnection.class);
+		connectionRequest.addRequestedConnection(MySQLConnection.class);
+		connectionRequest.addRequestedConnection(Neo4jConnection.class);
+		connectionRequest.addRequestedConnection(BaseXConnection.class);
+		connectionRequest.addRequestedConnection(CassandraConnection.class);
+		return connectionRequest;
 	}
 
 	@Override
@@ -52,12 +60,16 @@ public class AllWriteEvaluationCase implements EvaluationCase
 			);
 
 			List<AnalysisEngine> writers = Arrays.asList(
-					getNeo4JWriter(outputProvider),
-					getMongoWriter(outputProvider),
-					getCassandraWriter(outputProvider),
-					getBasexWriter(outputProvider),
-					getMysqlWriter(outputProvider),
-					getXMIWriter(outputProvider)
+					getNeo4JWriter(
+							outputProvider,
+							(Neo4jConnection) connectionResponse
+									.getConnection(Neo4jConnection.class)
+					)
+					//getMongoWriter(outputProvider),
+					//getCassandraWriter(outputProvider),
+					//getBasexWriter(outputProvider),
+					//getMysqlWriter(outputProvider),
+					//getXMIWriter(outputProvider)
 			);
 
 			for (AnalysisEngine writer : writers)
@@ -109,13 +121,22 @@ public class AllWriteEvaluationCase implements EvaluationCase
 	}
 
 
-	public static AnalysisEngine getNeo4JWriter(OutputProvider outputProvider)
+	public static AnalysisEngine getNeo4JWriter(
+			OutputProvider outputProvider,
+			Neo4jConnection neo4jConnection
+	)
 			throws ResourceInitializationException, IOException
 	{
-		return createEngine(Neo4jWriter.class,
-				Neo4jWriter.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(AllWriteEvaluationCase.class.getName(), "neo4j")
+		Neo4jCollectionWriter writer = (Neo4jCollectionWriter) createEngine(
+				Neo4jCollectionWriter.class,
+				EvaluatingCollectionWriter.PARAM_OUTPUT_FILE,
+				outputProvider.createFile(
+						AllWriteEvaluationCase.class.getName(),
+						"neo4j"
+				)
 		);
+		writer.injectConnection(neo4jConnection);
+		return (AnalysisEngine) writer;
 	}
 
 	public static AnalysisEngine getBasexWriter(OutputProvider outputProvider)
