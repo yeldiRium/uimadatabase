@@ -28,7 +28,15 @@ public class Neo4jCollectionReader extends EvaluatingCollectionReader
 	{
 		super.initialize(context);
 
-		Neo4jConnection connection = (Neo4jConnection) context.getConfigParameterValue(Neo4jCollectionReader.PARAM_CONNECTION);
+		System.out.println("Neo4jCollectionReaderInitialized.");
+	}
+
+	/**
+	 * Must be called after initialization, but before use in a pipeline.
+	 * @param connection A Neo4jConnection that has been established.
+	 */
+	public void injectConnection(Neo4jConnection connection)
+	{
 		Driver driver = connection.getDriver();
 		this.queryHandler = new Neo4jQueryHandler(driver);
 		Iterable<String> ids = this.queryHandler.getDocumentIds();
