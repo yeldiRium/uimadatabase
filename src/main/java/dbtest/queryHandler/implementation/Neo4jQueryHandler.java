@@ -3,22 +3,20 @@ package dbtest.queryHandler.implementation;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.QueryHandlerInterface;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
+import dbtest.queryHandler.exceptions.QHException;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.Record;
-import org.neo4j.driver.v1.Session;
-import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.v1.*;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Neo4jQueryHandler implements QueryHandlerInterface
 {
@@ -329,11 +327,77 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 		storeToken(token, document, paragraph, sentence, null);
 	}
 
+	/**
+	 *
+	 * @param aCAS The CAS to populate with the found data.
+	 * @param documentId The document whose data shall be used.
+	 * @throws DocumentNotFoundException If the documentId can't be found in db.
+	 * @throws QHException If any underlying Exception is thrown.
+	 */
 	@Override
 	public void populateCasWithDocument(CAS aCAS, String documentId)
-			throws DocumentNotFoundException
+			throws DocumentNotFoundException, QHException
 	{
+		try (Session session = this.driver.session())
+		{
+			Exception anException = session.readTransaction(tx -> {
+				try
+				{
+					StatementResult documentResult = tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'}) RETURN d as document");
+					if (!documentResult.hasNext())
+					{
+						tx.failure();
+						throw new DocumentNotFoundException();
+					}
+					Value document = documentResult.next().get("document");
 
+					DocumentMetaData meta = DocumentMetaData.create(aCAS);
+					meta.setDocumentId(document.get("id").toString());
+					aCAS.setDocumentLanguage(document.get("language").toString());
+					aCAS.setDocumentText(document.get("text").toString());
+
+					StatementResult tokensResult = tx.run("MATCH (t:" + ElementType.Token + " {id:'" + documentId + "'}) RETURN t as token");
+					while (tokensResult.hasNext())
+					{
+						Value foundToken = tokensResult.next().get("token");
+
+						Token xmiToken = new Token(aCAS.getJCas(), foundToken.get("begin").asInt(), foundToken.get("end").asInt());
+
+						StatementResult lemmasResult = tx.run("MATCH (t:" + ElementType.Token + " {id:'" + documentId + "', begin:'" + foundToken.get("begin").toString() + "', end:'" + foundToken.get("end").toString() + "', value:'" + foundToken.get("value").toString() + "'}))-[:" + Relationship.TokenHasLemma + "]->(l:" + ElementType.Lemma + ") RETURN l as lemma");
+						while (lemmasResult.hasNext())
+						{
+							Value foundLemma = lemmasResult.next().get("lemma");
+							Lemma lemma = new Lemma(aCAS.getJCas(), xmiToken.getBegin(), xmiToken.getEnd());
+							lemma.setValue(foundLemma.get("value").toString());
+							lemma.addToIndexes();
+							xmiToken.setLemma(lemma);
+						}
+
+						StatementResult posResult = tx.run("MATCH (t:" + ElementType.Token + " {id:'" + documentId + "', begin:'" + foundToken.get("begin").toString() + "', end:'" + foundToken.get("end").toString() + "', value:'" + foundToken.get("value").toString() + "'}))-[:" + Relationship.TokenAtPos + "]->(pos:" + ElementType.Pos + ") RETURN pos");
+						while (posResult.hasNext())
+						{
+							Value foundPos = posResult.next().get("pos");
+							POS pos = new POS(aCAS.getJCas(), xmiToken.getBegin(), xmiToken.getEnd());
+							pos.setPosValue(foundPos.get("value").toString());
+							pos.addToIndexes();
+							xmiToken.setPos(pos);
+						}
+					}
+					tx.success();
+				} catch(CASException e) {
+					tx.failure();
+					// If something happens, return the exception...
+					return e;
+				}
+				return null;
+			});
+
+			// ... and throw the Exception out here.
+			if(anException != null)
+			{
+				throw new QHException(anException);
+			}
+		}
 	}
 
 	@Override

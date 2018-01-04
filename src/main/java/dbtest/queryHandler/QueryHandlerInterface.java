@@ -1,6 +1,7 @@
 package dbtest.queryHandler;
 
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
+import dbtest.queryHandler.exceptions.QHException;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -117,9 +118,11 @@ public interface QueryHandlerInterface
 	 * Retrieves all stored objects in JCas format.
 	 * @param aCAS The CAS to populate with the found data.
 	 * @param documentId The document whose data shall be used.
+	 * @throws DocumentNotFoundException If the documentId can't be found in db.
+	 * @throws QHException If any underlying Exception is thrown.
 	 */
 	void populateCasWithDocument(CAS aCAS, String documentId)
-			throws DocumentNotFoundException;
+			throws DocumentNotFoundException, QHException;
 
 	// TODO: add some query options to document retrieval
 
