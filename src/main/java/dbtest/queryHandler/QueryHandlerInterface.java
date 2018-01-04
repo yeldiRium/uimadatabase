@@ -1,8 +1,10 @@
 package dbtest.queryHandler;
 
+import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 
 import java.util.*;
@@ -113,8 +115,11 @@ public interface QueryHandlerInterface
 
 	/**
 	 * Retrieves all stored objects in JCas format.
+	 * @param aCAS The CAS to populate with the found data.
+	 * @param documentId The document whose data shall be used.
 	 */
-	void getDocumentsAsJCas();
+	void populateCasWithDocument(CAS aCAS, String documentId)
+			throws DocumentNotFoundException;
 
 	// TODO: add some query options to document retrieval
 
@@ -145,7 +150,8 @@ public interface QueryHandlerInterface
 	 *                   DOCUMENT, SENTENCE or PARAGRAPH.
 	 * @return An integer.
 	 */
-	int countElementsInDocumentOfType(String documentId, ElementType type);
+	int countElementsInDocumentOfType(String documentId, ElementType type)
+			throws DocumentNotFoundException;
 
 	/**
 	 * Counts all elements of <i>type</i> across all documents with given
@@ -176,7 +182,7 @@ public interface QueryHandlerInterface
 	 */
 	int countElementsInDocumentOfTypeWithValue(
 			String documentId, ElementType type, String value
-	) throws IllegalArgumentException;
+	) throws DocumentNotFoundException;
 
 
 	//--------------------------------------------------------------------------
@@ -200,10 +206,12 @@ public interface QueryHandlerInterface
 	 * @param documentId The id of the document to get the TTR from.
 	 * @return Map(String DocumentId, Double TTR - value)
 	 */
-	Map<String, Double> calculateTTRForDocument(String documentId);
+	Map<String, Double> calculateTTRForDocument(String documentId)
+			throws DocumentNotFoundException;
 
 	/**
 	 * Get TTR for all specified documents.
+	 * Documents that can't be found are skipped.
 	 *
 	 * @param documentIds The id's of the document to get the TTR from.
 	 * @return Map(String DocumentId, Double TTR - value)
@@ -233,7 +241,7 @@ public interface QueryHandlerInterface
 	 */
 	double calculateTermFrequencyWithDoubleNormForLemmaInDocument(
 			String lemma, String documentId
-	);
+	) throws DocumentNotFoundException;
 
 	/**
 	 * The term-frequency normed with the natural logarithm.
@@ -244,7 +252,7 @@ public interface QueryHandlerInterface
 	 */
 	double calculateTermFrequencyWithLogNermForLemmaInDocument(
 			String lemma, String documentId
-	);
+	) throws DocumentNotFoundException;
 
 	/**
 	 * Compute and return term-frequencies for all lemmata in the specified
@@ -255,7 +263,7 @@ public interface QueryHandlerInterface
 	 */
 	Map<String, Double> calculateTermFrequenciesForLemmataInDocument(
 			String documentId
-	);
+	) throws DocumentNotFoundException;
 
 	/**
 	 * The natural logarithm from the division of the count of documents and the
@@ -275,7 +283,7 @@ public interface QueryHandlerInterface
 	Map<String, Double>
 	calculateInverseDocumentFrequenciesForLemmataInDocument(
 			String documentId
-	);
+	) throws DocumentNotFoundException;
 
 	/**
 	 * The TF-IDF for <i>lemma</i> in the specified document.
@@ -284,7 +292,8 @@ public interface QueryHandlerInterface
 	 * @param documentId the specified document's id.
 	 * @return a double.
 	 */
-	double calculateTFIDFForLemmaInDocument(String lemma, String documentId);
+	double calculateTFIDFForLemmaInDocument(String lemma, String documentId)
+			throws DocumentNotFoundException;
 
 	/**
 	 * The TF-IDF for <b>all lemmata</b> in the specified document.
@@ -294,7 +303,7 @@ public interface QueryHandlerInterface
 	 */
 	Map<String, Double> calculateTFIDFForLemmataInDocument(
 			String documentId
-	);
+	) throws DocumentNotFoundException;
 
 	/**
 	 * The TF-IDF for <b>all lemmata</b> in <i>all</i> documents.
@@ -324,7 +333,7 @@ public interface QueryHandlerInterface
 	 *                                       this operation.
 	 */
 	Iterable<String> getBiGramsFromDocument(String documentId)
-			throws UnsupportedOperationException;
+			throws UnsupportedOperationException, DocumentNotFoundException;
 
 	/**
 	 * A list of all token-bi-grams from all documents.
@@ -336,7 +345,7 @@ public interface QueryHandlerInterface
 	 *                                       this operation.
 	 */
 	Iterable<String> getBiGramsFromAllDocuments()
-			throws UnsupportedOperationException;
+			throws UnsupportedOperationException, DocumentNotFoundException;
 
 	/**
 	 * A list of all token-bi-grams from all documents specified in the collec-
@@ -350,7 +359,7 @@ public interface QueryHandlerInterface
 	 */
 	Iterable<String> getBiGramsFromDocumentsInCollection(
 			Collection<String> documentIds
-	) throws UnsupportedOperationException;
+	) throws UnsupportedOperationException, DocumentNotFoundException;
 
 	/**
 	 * <p>A List of all token-tri-grams in the specified document.</p>
@@ -363,7 +372,7 @@ public interface QueryHandlerInterface
 	 *                                       this operation.
 	 */
 	Iterable<String> getTriGramsFromDocument(String documentId)
-			throws UnsupportedOperationException;
+			throws UnsupportedOperationException, DocumentNotFoundException;
 
 	/**
 	 * A list of all token-tri-grams from all documents. <b>Warning:</b> May
@@ -375,7 +384,7 @@ public interface QueryHandlerInterface
 	 *                                       this operation.
 	 */
 	Iterable<String> getTriGramsFromAllDocuments()
-			throws UnsupportedOperationException;
+			throws UnsupportedOperationException, DocumentNotFoundException;
 
 	/**
 	 * A list of all token-tri-grams from all documents specified in the
@@ -389,5 +398,5 @@ public interface QueryHandlerInterface
 	 */
 	Iterable<String> getTriGramsFromDocumentsInCollection(
 			Collection<String> documentIds
-	) throws UnsupportedOperationException;
+	) throws UnsupportedOperationException, DocumentNotFoundException;
 }

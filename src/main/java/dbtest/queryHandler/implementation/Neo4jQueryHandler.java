@@ -2,10 +2,12 @@ package dbtest.queryHandler.implementation;
 
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.QueryHandlerInterface;
+import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.neo4j.driver.v1.Driver;
@@ -107,7 +109,9 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	 * @param previousParagraph The predecessing Paragraph.
 	 */
 	@Override
-	public void storeParagraph(Paragraph paragraph, JCas document, Paragraph previousParagraph)
+	public void storeParagraph(
+			Paragraph paragraph, JCas document, Paragraph previousParagraph
+	)
 	{
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
@@ -176,7 +180,12 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	 * @param previousSentence The predecessing Sentence.
 	 */
 	@Override
-	public void storeSentence(Sentence sentence, JCas document, Paragraph paragraph, Sentence previousSentence)
+	public void storeSentence(
+			Sentence sentence,
+			JCas document,
+			Paragraph paragraph,
+			Sentence previousSentence
+	)
 	{
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
@@ -217,9 +226,16 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 		 * Store each element of the jCas that was annotated as a Token.
 		 */
 		Token previousToken = null;
-		for (Token token : JCasUtil.selectCovered(document, Token.class, sentence))
+		for (Token token
+				: JCasUtil.selectCovered(document, Token.class, sentence))
 		{
-			this.storeToken(token, document, paragraph, sentence, previousToken);
+			this.storeToken(
+					token,
+					document,
+					paragraph,
+					sentence,
+					previousToken
+			);
 			previousToken = token;
 		}
 	}
@@ -231,7 +247,11 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	 * @param paragraph The Paragraph, in which the Sentence occurs.
 	 */
 	@Override
-	public void storeSentence(Sentence sentence, JCas document, Paragraph paragraph)
+	public void storeSentence(
+			Sentence sentence,
+			JCas document,
+			Paragraph paragraph
+	)
 	{
 		this.storeSentence(sentence, document, paragraph, null);
 	}
@@ -244,7 +264,13 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	 * @param previousToken The predecessing Token.
 	 */
 	@Override
-	public void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence, Token previousToken)
+	public void storeToken(
+			Token token,
+			JCas document,
+			Paragraph paragraph,
+			Sentence sentence,
+			Token previousToken
+	)
 	{
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
@@ -293,13 +319,19 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	 * @param sentence The sentence, in which the Token occurs.
 	 */
 	@Override
-	public void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence)
+	public void storeToken(
+			Token token,
+			JCas document,
+			Paragraph paragraph,
+			Sentence sentence
+	)
 	{
 		storeToken(token, document, paragraph, sentence, null);
 	}
 
 	@Override
-	public void getDocumentsAsJCas()
+	public void populateCasWithDocument(CAS aCAS, String documentId)
+			throws DocumentNotFoundException
 	{
 
 	}
@@ -317,19 +349,27 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
-	public int countElementsInDocumentOfType(String documentId, ElementType type)
+	public int countElementsInDocumentOfType(
+			String documentId,
+			ElementType type
+	) throws DocumentNotFoundException
 	{
 		return 0;
 	}
 
 	@Override
-	public int countElementsOfTypeWithValue(ElementType type, String value) throws IllegalArgumentException
+	public int countElementsOfTypeWithValue(ElementType type, String value)
+			throws IllegalArgumentException
 	{
 		return 0;
 	}
 
 	@Override
-	public int countElementsInDocumentOfTypeWithValue(String documentId, ElementType type, String value) throws IllegalArgumentException
+	public int countElementsInDocumentOfTypeWithValue(
+			String documentId,
+			ElementType type,
+			String value
+	) throws DocumentNotFoundException
 	{
 		return 0;
 	}
@@ -342,30 +382,41 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 
 	@Override
 	public Map<String, Double> calculateTTRForDocument(String documentId)
+			throws DocumentNotFoundException
 	{
 		return null;
 	}
 
 	@Override
-	public Map<String, Double> calculateTTRForCollectionOfDocuments(Collection<String> documentIds)
+	public Map<String, Double> calculateTTRForCollectionOfDocuments(
+			Collection<String> documentIds
+	)
 	{
 		return null;
 	}
 
 	@Override
-	public double calculateTermFrequencyWithDoubleNormForLemmaInDocument(String lemma, String documentId)
+	public double calculateTermFrequencyWithDoubleNormForLemmaInDocument(
+			String lemma,
+			String documentId
+	) throws DocumentNotFoundException
 	{
 		return 0;
 	}
 
 	@Override
-	public double calculateTermFrequencyWithLogNermForLemmaInDocument(String lemma, String documentId)
+	public double calculateTermFrequencyWithLogNermForLemmaInDocument(
+			String lemma,
+			String documentId
+	) throws DocumentNotFoundException
 	{
 		return 0;
 	}
 
 	@Override
-	public Map<String, Double> calculateTermFrequenciesForLemmataInDocument(String documentId)
+	public Map<String, Double> calculateTermFrequenciesForLemmataInDocument(
+			String documentId
+	) throws DocumentNotFoundException
 	{
 		return null;
 	}
@@ -377,19 +428,26 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
-	public Map<String, Double> calculateInverseDocumentFrequenciesForLemmataInDocument(String documentId)
+	public Map<String, Double>
+	calculateInverseDocumentFrequenciesForLemmataInDocument(String documentId)
+			throws DocumentNotFoundException
 	{
 		return null;
 	}
 
 	@Override
-	public double calculateTFIDFForLemmaInDocument(String lemma, String documentId)
+	public double calculateTFIDFForLemmaInDocument(
+			String lemma,
+			String documentId
+	) throws DocumentNotFoundException
 	{
 		return 0;
 	}
 
 	@Override
-	public Map<String, Double> calculateTFIDFForLemmataInDocument(String documentId)
+	public Map<String, Double> calculateTFIDFForLemmataInDocument(
+			String documentId
+	) throws DocumentNotFoundException
 	{
 		return null;
 	}
@@ -401,37 +459,46 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
-	public Iterable<String> getBiGramsFromDocument(String documentId) throws UnsupportedOperationException
+	public Iterable<String> getBiGramsFromDocument(
+			String documentId
+	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		return null;
 	}
 
 	@Override
-	public Iterable<String> getBiGramsFromAllDocuments() throws UnsupportedOperationException
+	public Iterable<String> getBiGramsFromAllDocuments()
+			throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		return null;
 	}
 
 	@Override
-	public Iterable<String> getBiGramsFromDocumentsInCollection(Collection<String> documentIds) throws UnsupportedOperationException
+	public Iterable<String> getBiGramsFromDocumentsInCollection(
+			Collection<String> documentIds
+	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		return null;
 	}
 
 	@Override
-	public Iterable<String> getTriGramsFromDocument(String documentId) throws UnsupportedOperationException
+	public Iterable<String> getTriGramsFromDocument(String documentId)
+			throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		return null;
 	}
 
 	@Override
-	public Iterable<String> getTriGramsFromAllDocuments() throws UnsupportedOperationException
+	public Iterable<String> getTriGramsFromAllDocuments()
+			throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		return null;
 	}
 
 	@Override
-	public Iterable<String> getTriGramsFromDocumentsInCollection(Collection<String> documentIds) throws UnsupportedOperationException
+	public Iterable<String> getTriGramsFromDocumentsInCollection(
+			Collection<String> documentIds
+	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		return null;
 	}
