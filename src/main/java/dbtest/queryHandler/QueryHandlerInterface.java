@@ -115,6 +115,12 @@ public interface QueryHandlerInterface
 	void storeJCasDocuments(Iterable<JCas> documents);
 
 	/**
+	 * Return the ids of all documents currently stored.
+	 * @return The ids of all Documents stored in the database.
+	 */
+	Iterable<String> getDocumentIds();
+
+	/**
 	 * Retrieves all stored objects in JCas format.
 	 * @param aCAS The CAS to populate with the found data.
 	 * @param documentId The document whose data shall be used.

@@ -102,6 +102,27 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 
 	/**
 	 *
+	 * @return The ids of all Documents stored in the database.
+	 */
+	@Override
+	public Iterable<String> getDocumentIds()
+	{
+		ArrayList<String> ids = new ArrayList<>();
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(tx -> {
+				return tx.run("MATCH (d:" + ElementType.Document + ") RETURN d.id as id");
+			});
+			for (Record record : result.list())
+			{
+				ids.add(record.get("id").toString());
+			}
+		}
+		return ids;
+	}
+
+	/**
+	 *
 	 * @param paragraph The Paragraph.
 	 * @param document The document in which the paragraph occurs.
 	 * @param previousParagraph The predecessing Paragraph.
