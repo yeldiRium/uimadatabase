@@ -85,6 +85,27 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 			for (Paragraph paragraph
 					: JCasUtil.select(document, Paragraph.class))
 			{
+				this.storeParagraph(paragraph, document, previousParagraph);
+				previousParagraph = paragraph;
+			}
+			return 1;
+		});
+	}
+
+	/**
+	 * 
+	 * @param paragraph The Paragraph.
+	 * @param document The document in which the paragraph occurs.
+	 * @param previousParagraph The predecessing Paragraph.
+	 */
+	@Override
+	public void storeParagraph(Paragraph paragraph, JCas document, Paragraph previousParagraph)
+	{
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
+		try (Session session = this.driver.session())
+		{
+			session.writeTransaction(tx -> {
 				// Create paragraph (if not exists) and add relationship from
 				// document.
 				String paragraphQuery = "MATCH (d:" + Label.Document + " {id:'" + documentId + "'}) ";
@@ -108,9 +129,7 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 				}
 
 				tx.run(paragraphQuery);
-
-				previousParagraph = paragraph;
-
+				tx.success();
 
 				Sentence previousSentence = null;
 				for (Sentence sentence : JCasUtil.selectCovered(
@@ -121,21 +140,20 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 					this.storeSentence(sentence, document, paragraph, previousSentence);
 					previousSentence = sentence;
 				}
-			}
-			return 1;
-		});
+				return 1;
+			});
+		}
 	}
 
-	@Override
-	public void storeParagraph(Paragraph paragraph, JCas document, Paragraph previousParagraph)
-	{
-
-	}
-
+	/**
+	 *
+	 * @param paragraph The Paragraph.
+	 * @param document The document in which the paragraph occurs.
+	 */
 	@Override
 	public void storeParagraph(Paragraph paragraph, JCas document)
 	{
-		
+		this.storeParagraph(paragraph, document, null);
 	}
 
 	/**
