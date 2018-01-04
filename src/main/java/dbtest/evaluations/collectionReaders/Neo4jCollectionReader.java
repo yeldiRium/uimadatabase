@@ -10,7 +10,6 @@ import org.apache.uima.cas.CASException;
 import org.apache.uima.collection.CollectionException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
-import org.hucompute.services.uima.database.neo4j.Neo4jCollectionReaderNew;
 import org.neo4j.driver.v1.Driver;
 
 import java.io.IOException;
@@ -18,6 +17,8 @@ import java.util.Iterator;
 
 public class Neo4jCollectionReader extends EvaluatingCollectionReader
 {
+	public static final String PARAM_CONNECTION = "connectionObject";
+
 	protected QueryHandlerInterface queryHandler;
 	protected Iterator<String> iterator;
 
@@ -27,7 +28,7 @@ public class Neo4jCollectionReader extends EvaluatingCollectionReader
 	{
 		super.initialize(context);
 
-		Neo4jConnection connection = (Neo4jConnection) context.getConfigParameterValue(Neo4jCollectionReaderNew.PARAM_CONNECTION);
+		Neo4jConnection connection = (Neo4jConnection) context.getConfigParameterValue(Neo4jCollectionReader.PARAM_CONNECTION);
 		Driver driver = connection.getDriver();
 		this.queryHandler = new Neo4jQueryHandler(driver);
 		Iterable<String> ids = this.queryHandler.getDocumentIds();
