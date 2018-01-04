@@ -23,6 +23,8 @@ public class Neo4jCollectionWriter extends EvaluatingCollectionWriter
 	@Override
 	public void process(JCas jCas) throws AnalysisEngineProcessException
 	{
+		logger.info("Processing jCas...");
 		this.queryHandler.storeJCasDocument(jCas);
+		logger.info("JCas processed.");
 	}
 }

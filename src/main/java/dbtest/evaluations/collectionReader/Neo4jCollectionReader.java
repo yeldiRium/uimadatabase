@@ -49,7 +49,9 @@ public class Neo4jCollectionReader extends EvaluatingCollectionReader
 		String id = this.iterator.next();
 		try
 		{
+			logger.info("Populating CAS with document " + id + "...");
 			this.queryHandler.populateCasWithDocument(cas, id);
+			logger.info("CAS populated.");
 		} catch (QHException e)
 		{
 			if (e.getException() instanceof CASException)
