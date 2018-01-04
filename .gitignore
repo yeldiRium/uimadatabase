@@ -25,4 +25,5 @@ input/*
 dbs/*/data
 
 # outputs
+output/*
 src/test/resources/outputDirectory/*
