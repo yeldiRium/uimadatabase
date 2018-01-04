@@ -1,5 +1,8 @@
 package org.hucompute.services.uima.database;
 
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.database.neo4j.data.Const;
 import org.json.JSONObject;
@@ -67,6 +70,25 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @param document The JCas document.
 	 */
 	void storeJCasDocument(JCas document);
+
+	/**
+	 * Stores a token in the database.
+	 * @param token The Token.
+	 * @param documentId The id of the document in which the Token occurs.
+	 * @param paragraph The paragraph, in which the Token occurs.
+	 * @param sentence The sentence, in which the Token occurs.
+	 * @param previousToken The predecessing Token.
+	 */
+	void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence, Token previousToken);
+
+	/**
+	 * Stores a token in the database.
+	 * @param token The Token.
+	 * @param documentId The id of the document in which the Token occurs.
+	 * @param paragraph The paragraph, in which the Token occurs.
+	 * @param sentence The sentence, in which the Token occurs.
+	 */
+	void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence);
 
 	/**
 	 * Stores more than one JCas document at once.

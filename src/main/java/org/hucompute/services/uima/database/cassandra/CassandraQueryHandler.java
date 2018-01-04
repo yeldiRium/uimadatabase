@@ -1,6 +1,9 @@
 package org.hucompute.services.uima.database.cassandra;
 
 import com.datastax.driver.core.*;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.database.AbstractQueryHandler;
 import org.hucompute.services.uima.database.Const.TYPE;
@@ -350,6 +353,18 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	public void storeJCasDocument(JCas document)
 	{
 		// TODO: implement
+	}
+
+	@Override
+	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence, Token previousToken)
+	{
+
+	}
+
+	@Override
+	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence)
+	{
+
 	}
 
 	@Override

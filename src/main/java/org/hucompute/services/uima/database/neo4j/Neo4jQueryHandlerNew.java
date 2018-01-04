@@ -71,6 +71,18 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 		session.close();
 	}
 
+	@Override
+	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence, Token previousToken)
+	{
+
+	}
+
+	@Override
+	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence)
+	{
+
+	}
+
 	/**
 	 * @param document The document to be processed and stored.
 	 * @param session The session to execute the commands in.
