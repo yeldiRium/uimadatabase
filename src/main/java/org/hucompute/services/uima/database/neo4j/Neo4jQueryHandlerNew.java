@@ -59,13 +59,27 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 		return lemmata;
 	}
 
+	/**
+	 *
+	 * @param document The JCas document.
+	 */
 	@Override
-	public void storeJCasDocument(final JCas document)
+	public void storeJCasDocument(JCas document)
+	{
+		Session session = this.driver.session();
+		this.storeJCasDocument(document, session);
+		session.close();
+	}
+
+	/**
+	 * @param document The document to be processed and stored.
+	 * @param session The session to execute the commands in.
+	 */
+	public void storeJCasDocument(JCas document, Session session)
 	{
 		/* Document creation. */
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
-		Session session = this.driver.session();
 		session.writeTransaction(tx -> {
 			String documentQuery = "MERGE (d:" + Label.Document + " {id:'" + documentId + "'}) SET d.text = '" + document.getDocumentText() + "', d.language = '" + document.getDocumentLanguage() + "'";
 			tx.run(documentQuery);
