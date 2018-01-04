@@ -118,57 +118,77 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 						Sentence.class, paragraph
 				))
 				{
-					// Create sentence (if not exists) and add relationship from
-					// document and to paragraph.
-					String sentenceQuery = "MATCH (d:" + Label.Document + " {id:'" + documentId + "'}) "
-							+ "MATCH (p:" + Label.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) ";
-
-					// Add successor relationship from previous sentence (if
-					// exists) to current sentence.
-					// Match has to be done before the first Merge, so this is split
-					// into two parts.
-					if (previousSentence != null)
-					{
-						sentenceQuery += "MATCH (s_prev:" + Label.Sentence + " {id:'" + documentId + "', begin:'" + previousSentence.getBegin() + "', end:'" + previousSentence.getEnd() + "'}) ";
-					}
-
-					sentenceQuery += "MERGE (s:" + Label.Sentence + " {id:'" + documentId + "', begin:'" + sentence.getBegin() + "', end:'" + sentence.getEnd() + "'}) "
-							+ "MERGE (d)-[:" + Relationship.DocumentHasSentence + "]->(s) "
-							+ "MERGE (s)-[:" + Relationship.SentenceInParagraph + "]->(p)";
-
-					// Continue adding successor relationship.
-					if (previousSentence != null)
-					{
-						sentenceQuery += "MERGE (s_prev)-[:" + Relationship.NextSentence + "]->(s)";
-					}
-
-					tx.run(sentenceQuery);
-
+					this.storeSentence(sentence, document, paragraph, previousSentence);
 					previousSentence = sentence;
-
-
-					Token previousToken = null;
-					for (Token token : JCasUtil.selectCovered(document, Token.class, sentence))
-					{
-						this.storeToken(token, document, paragraph, sentence, previousToken);
-						previousToken = token;
-					}
 				}
 			}
 			return 1;
 		});
 	}
 
+	/**
+	 * 
+	 * @param sentence The Sentence.
+	 * @param document The Document in which the entence occurs.
+	 * @param paragraph The Paragraph, in which the Sentence occurs.
+	 * @param previousSentence The predecessing Sentence.
+	 */
 	@Override
 	public void storeSentence(Sentence sentence, JCas document, Paragraph paragraph, Sentence previousSentence)
 	{
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
+		try (Session session = this.driver.session())
+		{
+			session.writeTransaction(tx -> {
+				// Create sentence (if not exists) and add relationship from
+				// document and to paragraph.
+				String sentenceQuery = "MATCH (d:" + Label.Document + " {id:'" + documentId + "'}) "
+						+ "MATCH (p:" + Label.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) ";
 
+				// Add successor relationship from previous sentence (if
+				// exists) to current sentence.
+				// Match has to be done before the first Merge, so this is split
+				// into two parts.
+				if (previousSentence != null)
+				{
+					sentenceQuery += "MATCH (s_prev:" + Label.Sentence + " {id:'" + documentId + "', begin:'" + previousSentence.getBegin() + "', end:'" + previousSentence.getEnd() + "'}) ";
+				}
+
+				sentenceQuery += "MERGE (s:" + Label.Sentence + " {id:'" + documentId + "', begin:'" + sentence.getBegin() + "', end:'" + sentence.getEnd() + "'}) "
+						+ "MERGE (d)-[:" + Relationship.DocumentHasSentence + "]->(s) "
+						+ "MERGE (s)-[:" + Relationship.SentenceInParagraph + "]->(p)";
+
+				// Continue adding successor relationship.
+				if (previousSentence != null)
+				{
+					sentenceQuery += "MERGE (s_prev)-[:" + Relationship.NextSentence + "]->(s)";
+				}
+
+				tx.run(sentenceQuery);
+				tx.success();
+
+				Token previousToken = null;
+				for (Token token : JCasUtil.selectCovered(document, Token.class, sentence))
+				{
+					this.storeToken(token, document, paragraph, sentence, previousToken);
+					previousToken = token;
+				}
+				return 1;
+			});
+		}
 	}
 
+	/**
+	 *
+	 * @param sentence The Sentence.
+	 * @param document The Document in which the entence occurs.
+	 * @param paragraph The Paragraph, in which the Sentence occurs.
+	 */
 	@Override
 	public void storeSentence(Sentence sentence, JCas document, Paragraph paragraph)
 	{
-		
+		this.storeSentence(sentence, document, paragraph, null);
 	}
 
 	/**
