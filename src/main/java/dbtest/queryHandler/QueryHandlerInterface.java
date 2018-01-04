@@ -193,6 +193,11 @@ public interface QueryHandlerInterface
 			String documentId, ElementType type, String value
 	) throws DocumentNotFoundException;
 
+	//--------------------------------------------------------------------------
+	// Structure
+	//
+	// TODO: add index related methods
+	//--------------------------------------------------------------------------
 
 	//--------------------------------------------------------------------------
 	// TTR
