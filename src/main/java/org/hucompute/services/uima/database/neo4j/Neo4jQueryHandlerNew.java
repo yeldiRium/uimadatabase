@@ -60,6 +60,7 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 	}
 
 	/**
+	 *
 	 * @param document The JCas document.
 	 */
 	@Override
@@ -149,35 +150,7 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 					Token previousToken = null;
 					for (Token token : JCasUtil.selectCovered(document, Token.class, sentence))
 					{
-						// Create token (if not exists) and add relationship
-						// from Document and to Paragraph and to Sentence.
-						// Also create Lemma and Pos and add relationships from
-						// Token to them as well as from Document to Lemma.
-						String tokenQuery ="MATCH (d:" + Label.Document + " {id:'" + documentId + "'}) "
-								+ "MATCH (p:" + Label.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) "
-								+ "MATCH (s:" + Label.Sentence + " {id:'" + documentId + "', begin:'" + sentence.getBegin() + "', end:'" + sentence.getEnd() + "'}) ";
-
-						if (previousToken != null)
-						{
-							tokenQuery += "MATCH (t_prev:" + Label.Token + " {id:'" + documentId + "', begin:'" + previousToken.getBegin() + "', end:'" + previousToken.getEnd() + "', value='" + previousToken.getCoveredText() + "'}) ";
-						}
-
-						tokenQuery += "MERGE (t:" + Label.Token + " {id:'" + documentId + "', begin:'" + token.getBegin() + "', end:'" + token.getEnd() + "', value:'" + token.getCoveredText() + "'}) "
-								+ "MERGE (pos:" + Label.Pos + " {value:'" + token.getPos().getPosValue() + "'}) "
-								+ "MERGE (l:" + Label.Lemma + " {value:'" + token.getLemma().getValue() + "'}) "
-								+ "MERGE (d)-[:" + Relationship.DocumentHasToken + "]->(t) "
-								+ "MERGE (t)-[:" + Relationship.TokenInParagraph + "]->(p) "
-								+ "MERGE (t)-[:" + Relationship.TokenInSentence + "]->(s) "
-								+ "MERGE (t)-[:" + Relationship.TokenHasLemma + "]->(l) "
-								+ "MERGE (t)-[:" + Relationship.TokenAtPos + "]->(pos) "
-								+ "MERGE (d)-[:" + Relationship.DocumentHasLemma + "]->(l)";
-
-						if (previousToken != null) {
-							tokenQuery += "MERGE (t_prev)-[:" + Relationship.NextToken + "]->(t)";
-						}
-
-						tx.run(tokenQuery);
-
+						this.storeToken(token, documentId, paragraph, sentence, previousToken);
 						previousToken = token;
 					}
 				}
@@ -186,16 +159,65 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 		});
 	}
 
+	/**
+	 *
+	 * @param token The Token.
+	 * @param documentId The id of the document in which the Token occurs.
+	 * @param paragraph The paragraph, in which the Token occurs.
+	 * @param sentence The sentence, in which the Token occurs.
+	 * @param previousToken The predecessing Token.
+	 */
 	@Override
 	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence, Token previousToken)
 	{
+		try (Session session = this.driver.session())
+		{
+			session.writeTransaction(tx -> {
+				// Create token (if not exists) and add relationship
+				// from Document and to Paragraph and to Sentence.
+				// Also create Lemma and Pos and add relationships from
+				// Token to them as well as from Document to Lemma.
+				String tokenQuery = "MATCH (d:" + Label.Document + " {id:'" + documentId + "'}) "
+						+ "MATCH (p:" + Label.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) "
+						+ "MATCH (s:" + Label.Sentence + " {id:'" + documentId + "', begin:'" + sentence.getBegin() + "', end:'" + sentence.getEnd() + "'}) ";
 
+				if (previousToken != null)
+				{
+					tokenQuery += "MATCH (t_prev:" + Label.Token + " {id:'" + documentId + "', begin:'" + previousToken.getBegin() + "', end:'" + previousToken.getEnd() + "', value='" + previousToken.getCoveredText() + "'}) ";
+				}
+
+				tokenQuery += "MERGE (t:" + Label.Token + " {id:'" + documentId + "', begin:'" + token.getBegin() + "', end:'" + token.getEnd() + "', value:'" + token.getCoveredText() + "'}) "
+						+ "MERGE (pos:" + Label.Pos + " {value:'" + token.getPos().getPosValue() + "'}) "
+						+ "MERGE (l:" + Label.Lemma + " {value:'" + token.getLemma().getValue() + "'}) "
+						+ "MERGE (d)-[:" + Relationship.DocumentHasToken + "]->(t) "
+						+ "MERGE (t)-[:" + Relationship.TokenInParagraph + "]->(p) "
+						+ "MERGE (t)-[:" + Relationship.TokenInSentence + "]->(s) "
+						+ "MERGE (t)-[:" + Relationship.TokenHasLemma + "]->(l) "
+						+ "MERGE (t)-[:" + Relationship.TokenAtPos + "]->(pos) "
+						+ "MERGE (d)-[:" + Relationship.DocumentHasLemma + "]->(l)";
+
+				if (previousToken != null)
+				{
+					tokenQuery += "MERGE (t_prev)-[:" + Relationship.NextToken + "]->(t)";
+				}
+
+				tx.run(tokenQuery);
+				return 1;
+			});
+		}
 	}
 
+	/**
+	 *
+	 * @param token The Token.
+	 * @param documentId The id of the document in which the Token occurs.
+	 * @param paragraph The paragraph, in which the Token occurs.
+	 * @param sentence The sentence, in which the Token occurs.
+	 */
 	@Override
 	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence)
 	{
-		
+		storeToken(token, documentId, paragraph, sentence, null);
 	}
 
 	@Override
