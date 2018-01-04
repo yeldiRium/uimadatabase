@@ -1,5 +1,6 @@
 package dbtest.queryHandler.implementation;
 
+import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.QueryHandlerInterface;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
@@ -7,7 +8,6 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
-import org.hucompute.services.uima.database.Const;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
@@ -21,11 +21,6 @@ import java.util.Set;
 public class Neo4jQueryHandler implements QueryHandlerInterface
 {
 	protected Driver driver;
-
-	public enum Label
-	{
-		Document, Paragraph, Sentence, Token, Lemma, Pos
-	}
 
 	public enum Relationship
 	{
@@ -48,7 +43,7 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 		try (Session session = this.driver.session())
 		{
 			Set<String> lemmata = new HashSet<>();
-			String query = "MATCH (d:" + Label.Document + " {id:'" + documentId + "'})-[:" + Relationship.DocumentHasLemma + "]-(l:" + Label.Lemma + ") RETURN l.value AS lemma";
+			String query = "MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})-[:" + Relationship.DocumentHasLemma + "]-(l:" + ElementType.Lemma + ") RETURN l.value AS lemma";
 			StatementResult result = session.readTransaction(tx -> tx.run(query));
 
 			while (result.hasNext())
@@ -72,7 +67,7 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 		try (Session session = this.driver.session())
 		{
 			session.writeTransaction(tx -> {
-				String documentQuery = "MERGE (d:" + Label.Document + " {id:'" + documentId + "'}) SET d.text = '" + document.getDocumentText() + "', d.language = '" + document.getDocumentLanguage() + "'";
+				String documentQuery = "MERGE (d:" + ElementType.Document + " {id:'" + documentId + "'}) SET d.text = '" + document.getDocumentText() + "', d.language = '" + document.getDocumentLanguage() + "'";
 				tx.run(documentQuery);
 				tx.success();
 				return 1;
@@ -108,7 +103,7 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 			session.writeTransaction(tx -> {
 				// Create paragraph (if not exists) and add relationship from
 				// document.
-				String paragraphQuery = "MATCH (d:" + Label.Document + " {id:'" + documentId + "'}) ";
+				String paragraphQuery = "MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'}) ";
 
 				// Add successor relationship from previous paragraph (if
 				// exists) to current paragraph.
@@ -116,10 +111,10 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 				// into two parts.
 				if (previousParagraph != null)
 				{
-					paragraphQuery += "MATCH (p_prev:" + Label.Paragraph + " {id:'" + documentId + "', begin:'" + previousParagraph.getBegin() + "', end:'" + previousParagraph.getEnd() + "'}) ";
+					paragraphQuery += "MATCH (p_prev:" + ElementType.Paragraph + " {id:'" + documentId + "', begin:'" + previousParagraph.getBegin() + "', end:'" + previousParagraph.getEnd() + "'}) ";
 				}
 
-				paragraphQuery += "MERGE (p:" + Label.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) "
+				paragraphQuery += "MERGE (p:" + ElementType.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) "
 						+ "MERGE (d)-[:" + Relationship.DocumentHasParagraph + "]->(p)";
 
 				// Continue adding successor relationship.
@@ -177,8 +172,8 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 			session.writeTransaction(tx -> {
 				// Create sentence (if not exists) and add relationship from
 				// document and to paragraph.
-				String sentenceQuery = "MATCH (d:" + Label.Document + " {id:'" + documentId + "'}) "
-						+ "MATCH (p:" + Label.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) ";
+				String sentenceQuery = "MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'}) "
+						+ "MATCH (p:" + ElementType.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) ";
 
 				// Add successor relationship from previous sentence (if
 				// exists) to current sentence.
@@ -186,10 +181,10 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 				// into two parts.
 				if (previousSentence != null)
 				{
-					sentenceQuery += "MATCH (s_prev:" + Label.Sentence + " {id:'" + documentId + "', begin:'" + previousSentence.getBegin() + "', end:'" + previousSentence.getEnd() + "'}) ";
+					sentenceQuery += "MATCH (s_prev:" + ElementType.Sentence + " {id:'" + documentId + "', begin:'" + previousSentence.getBegin() + "', end:'" + previousSentence.getEnd() + "'}) ";
 				}
 
-				sentenceQuery += "MERGE (s:" + Label.Sentence + " {id:'" + documentId + "', begin:'" + sentence.getBegin() + "', end:'" + sentence.getEnd() + "'}) "
+				sentenceQuery += "MERGE (s:" + ElementType.Sentence + " {id:'" + documentId + "', begin:'" + sentence.getBegin() + "', end:'" + sentence.getEnd() + "'}) "
 						+ "MERGE (d)-[:" + Relationship.DocumentHasSentence + "]->(s) "
 						+ "MERGE (s)-[:" + Relationship.SentenceInParagraph + "]->(p)";
 
@@ -247,18 +242,18 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 				// from Document and to Paragraph and to Sentence.
 				// Also create Lemma and Pos and add relationships from
 				// Token to them as well as from Document to Lemma.
-				String tokenQuery = "MATCH (d:" + Label.Document + " {id:'" + documentId + "'}) "
-						+ "MATCH (p:" + Label.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) "
-						+ "MATCH (s:" + Label.Sentence + " {id:'" + documentId + "', begin:'" + sentence.getBegin() + "', end:'" + sentence.getEnd() + "'}) ";
+				String tokenQuery = "MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'}) "
+						+ "MATCH (p:" + ElementType.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) "
+						+ "MATCH (s:" + ElementType.Sentence + " {id:'" + documentId + "', begin:'" + sentence.getBegin() + "', end:'" + sentence.getEnd() + "'}) ";
 
 				if (previousToken != null)
 				{
-					tokenQuery += "MATCH (t_prev:" + Label.Token + " {id:'" + documentId + "', begin:'" + previousToken.getBegin() + "', end:'" + previousToken.getEnd() + "', value='" + previousToken.getCoveredText() + "'}) ";
+					tokenQuery += "MATCH (t_prev:" + ElementType.Token + " {id:'" + documentId + "', begin:'" + previousToken.getBegin() + "', end:'" + previousToken.getEnd() + "', value='" + previousToken.getCoveredText() + "'}) ";
 				}
 
-				tokenQuery += "MERGE (t:" + Label.Token + " {id:'" + documentId + "', begin:'" + token.getBegin() + "', end:'" + token.getEnd() + "', value:'" + token.getCoveredText() + "'}) "
-						+ "MERGE (pos:" + Label.Pos + " {value:'" + token.getPos().getPosValue() + "'}) "
-						+ "MERGE (l:" + Label.Lemma + " {value:'" + token.getLemma().getValue() + "'}) "
+				tokenQuery += "MERGE (t:" + ElementType.Token + " {id:'" + documentId + "', begin:'" + token.getBegin() + "', end:'" + token.getEnd() + "', value:'" + token.getCoveredText() + "'}) "
+						+ "MERGE (pos:" + ElementType.Pos + " {value:'" + token.getPos().getPosValue() + "'}) "
+						+ "MERGE (l:" + ElementType.Lemma + " {value:'" + token.getLemma().getValue() + "'}) "
 						+ "MERGE (d)-[:" + Relationship.DocumentHasToken + "]->(t) "
 						+ "MERGE (t)-[:" + Relationship.TokenInParagraph + "]->(p) "
 						+ "MERGE (t)-[:" + Relationship.TokenInSentence + "]->(s) "
@@ -309,25 +304,25 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
-	public int countElementsOfType(Const.TYPE type)
+	public int countElementsOfType(ElementType type)
 	{
 		return 0;
 	}
 
 	@Override
-	public int countElementsInDocumentOfType(String documentId, Const.TYPE type)
+	public int countElementsInDocumentOfType(String documentId, ElementType type)
 	{
 		return 0;
 	}
 
 	@Override
-	public int countElementsOfTypeWithValue(Const.TYPE type, String value) throws IllegalArgumentException
+	public int countElementsOfTypeWithValue(ElementType type, String value) throws IllegalArgumentException
 	{
 		return 0;
 	}
 
 	@Override
-	public int countElementsInDocumentOfTypeWithValue(String documentId, Const.TYPE type, String value) throws IllegalArgumentException
+	public int countElementsInDocumentOfTypeWithValue(String documentId, ElementType type, String value) throws IllegalArgumentException
 	{
 		return 0;
 	}

@@ -4,7 +4,6 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.jcas.JCas;
-import org.hucompute.services.uima.database.neo4j.data.Const;
 
 import java.util.*;
 
@@ -135,7 +134,7 @@ public interface QueryHandlerInterface
 	 *             DOCUMENT, SENTENCE or PARAGRAPH.
 	 * @return An integer.
 	 */
-	int countElementsOfType(Const.TYPE type);
+	int countElementsOfType(ElementType type);
 
 	/**
 	 * Counts all elements of <i>type</i> in the specified document.
@@ -146,7 +145,7 @@ public interface QueryHandlerInterface
 	 *                   DOCUMENT, SENTENCE or PARAGRAPH.
 	 * @return An integer.
 	 */
-	int countElementsInDocumentOfType(String documentId, Const.TYPE type);
+	int countElementsInDocumentOfType(String documentId, ElementType type);
 
 	/**
 	 * Counts all elements of <i>type</i> across all documents with given
@@ -159,7 +158,7 @@ public interface QueryHandlerInterface
 	 *                                  given does not match TOKEN, LEMMA or
 	 *                                  POS.
 	 */
-	int countElementsOfTypeWithValue(Const.TYPE type, String value)
+	int countElementsOfTypeWithValue(ElementType type, String value)
 			throws IllegalArgumentException;
 
 	/**
@@ -176,7 +175,7 @@ public interface QueryHandlerInterface
 	 *                                  POS.
 	 */
 	int countElementsInDocumentOfTypeWithValue(
-			String documentId, Const.TYPE type, String value
+			String documentId, ElementType type, String value
 	) throws IllegalArgumentException;
 
 
