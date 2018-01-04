@@ -60,38 +60,15 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 	}
 
 	/**
-	 *
 	 * @param document The JCas document.
 	 */
 	@Override
 	public void storeJCasDocument(JCas document)
 	{
-		Session session = this.driver.session();
-		this.storeJCasDocument(document, session);
-		session.close();
-	}
-
-	@Override
-	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence, Token previousToken)
-	{
-
-	}
-
-	@Override
-	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence)
-	{
-
-	}
-
-	/**
-	 * @param document The document to be processed and stored.
-	 * @param session The session to execute the commands in.
-	 */
-	public void storeJCasDocument(JCas document, Session session)
-	{
 		/* Document creation. */
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
+		Session session = this.driver.session();
 		session.writeTransaction(tx -> {
 			String documentQuery = "MERGE (d:" + Label.Document + " {id:'" + documentId + "'}) SET d.text = '" + document.getDocumentText() + "', d.language = '" + document.getDocumentLanguage() + "'";
 			tx.run(documentQuery);
@@ -207,6 +184,18 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 			}
 			return 1;
 		});
+	}
+
+	@Override
+	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence, Token previousToken)
+	{
+
+	}
+
+	@Override
+	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence)
+	{
+		
 	}
 
 	@Override
