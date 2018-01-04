@@ -1,4 +1,4 @@
-package dbtest.evaluations.collectionReaders;
+package dbtest.evaluations.collectionReader;
 
 import dbtest.connection.implementation.Neo4jConnection;
 import dbtest.queryHandler.QueryHandlerInterface;

@@ -1,14 +1,13 @@
 package dbtest.evaluations;
 
 import dbtest.StatusPrinter;
-import dbtest.connection.Connection;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.connection.implementation.*;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
-import dbtest.evaluations.collectionReaders.EvaluatingCollectionReader;
-import dbtest.evaluations.collectionReaders.Neo4jCollectionReader;
+import dbtest.evaluations.collectionReader.EvaluatingCollectionReader;
+import dbtest.evaluations.collectionReader.Neo4jCollectionReader;
 import org.apache.uima.UIMAException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.factory.CollectionReaderFactory;

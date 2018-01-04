@@ -1,4 +1,4 @@
-package dbtest.evaluations.collectionReaders;
+package dbtest.evaluations.collectionReader;
 
 import org.apache.uima.fit.component.CasCollectionReader_ImplBase;
 
