@@ -180,7 +180,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public HashMap<String, Double> calculateTermFrequenciesForLemmataInDocument(String documentId)
+	public Map<String, Double> calculateTermFrequenciesForLemmataInDocument(String documentId)
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -236,7 +236,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public HashMap<String, Double> calculateInverseDocumentFrequenciesForLemmataInDocument(String documentId)
+	public Map<String, Double> calculateInverseDocumentFrequenciesForLemmataInDocument(String documentId)
 	{
 		throw new UnsupportedOperationException();
 	}
@@ -268,7 +268,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public HashMap<String, Double> calculateTFIDFForLemmataInDocument(String documentId)
+	public Map<String, Double> calculateTFIDFForLemmataInDocument(String documentId)
 	{
 		HashMap<String, Double> tdidf = new HashMap<>();
 		long start;
@@ -293,9 +293,9 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public HashMap<String, HashMap<String, Double>> calculateTFIDFForLemmataInAllDocuments()
+	public Map<String, Map<String, Double>> calculateTFIDFForLemmataInAllDocuments()
 	{
-		HashMap<String, HashMap<String, Double>> tdidfs = new HashMap<>();
+		HashMap<String, Map<String, Double>> tdidfs = new HashMap<>();
 		long start;
 		long end;
 		try
@@ -306,7 +306,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			for (Row result : rs)
 			{
 				String docID = result.getString("xmi");
-				HashMap<String, Double> tfidf = tdidfs.getOrDefault(docID, new HashMap<>());
+				Map<String, Double> tfidf = tdidfs.getOrDefault(docID, new HashMap<>());
 				tfidf.put(result.getString("lemma"), (double) result.getFloat("value"));
 				tdidfs.put(docID, tfidf);
 			}
@@ -322,7 +322,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public HashSet<String> getLemmataForDocument(String documentId)
+	public Set<String> getLemmataForDocument(String documentId)
 	{
 		HashSet<String> vocabulary = new HashSet<>();
 		long start;
@@ -365,38 +365,38 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public ArrayList<String> getBiGramsFromDocument(String documentId) throws UnsupportedOperationException
+	public Iterable<String> getBiGramsFromDocument(String documentId) throws UnsupportedOperationException
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ArrayList<String> getBiGramsFromAllDocuments() throws UnsupportedOperationException
+	public Iterable<String> getBiGramsFromAllDocuments() throws UnsupportedOperationException
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ArrayList<String> getBiGramsFromDocumentsInCollection(Collection<String> documentIds)
+	public Iterable<String> getBiGramsFromDocumentsInCollection(Collection<String> documentIds)
 			throws UnsupportedOperationException
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ArrayList<String> getTriGramsFromDocument(String documentId) throws UnsupportedOperationException
+	public Iterable<String> getTriGramsFromDocument(String documentId) throws UnsupportedOperationException
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ArrayList<String> getTriGramsFromAllDocuments() throws UnsupportedOperationException
+	public Iterable<String> getTriGramsFromAllDocuments() throws UnsupportedOperationException
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ArrayList<String> getTriGramsFromDocumentsInCollection(Collection<String> documentIds) throws UnsupportedOperationException
+	public Iterable<String> getTriGramsFromDocumentsInCollection(Collection<String> documentIds) throws UnsupportedOperationException
 	{
 		throw new UnsupportedOperationException();
 	}

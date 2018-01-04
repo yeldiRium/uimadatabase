@@ -59,7 +59,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @param documentId the specified document's id.
 	 * @return a HashSet(String lemma).
 	 */
-	HashSet<String> getLemmataForDocument(String documentId);
+	Set<String> getLemmataForDocument(String documentId);
 
 	/**
 	 * Stores a JCas document in an appropriate way.
@@ -219,7 +219,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @param documentId the specified document's id.
 	 * @return a HashMap(String lemma, Double term-frequency).
 	 */
-	HashMap<String, Double> calculateTermFrequenciesForLemmataInDocument(
+	Map<String, Double> calculateTermFrequenciesForLemmataInDocument(
 			String documentId
 	);
 
@@ -238,7 +238,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @param documentId the specified document's id.
 	 * @return a HashMap(String lemma, Double inverse-document-frequency).
 	 */
-	HashMap<String, Double>
+	Map<String, Double>
 	calculateInverseDocumentFrequenciesForLemmataInDocument(
 			String documentId
 	);
@@ -258,7 +258,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @param documentId the specified document's id.
 	 * @return a HashMap(String lemma, Double tfidf).
 	 */
-	HashMap<String, Double> calculateTFIDFForLemmataInDocument(
+	Map<String, Double> calculateTFIDFForLemmataInDocument(
 			String documentId
 	);
 
@@ -268,7 +268,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 *
 	 * @return a map from document id to a map from lemma to tfidf.
 	 */
-	HashMap<String, HashMap<String, Double>>
+	Map<String, Map<String, Double>>
 	calculateTFIDFForLemmataInAllDocuments();
 
 
@@ -289,7 +289,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
-	ArrayList<String> getBiGramsFromDocument(String documentId)
+	Iterable<String> getBiGramsFromDocument(String documentId)
 			throws UnsupportedOperationException;
 
 	/**
@@ -301,7 +301,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
-	ArrayList<String> getBiGramsFromAllDocuments()
+	Iterable<String> getBiGramsFromAllDocuments()
 			throws UnsupportedOperationException;
 
 	/**
@@ -314,7 +314,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
-	ArrayList<String> getBiGramsFromDocumentsInCollection(
+	Iterable<String> getBiGramsFromDocumentsInCollection(
 			Collection<String> documentIds
 	) throws UnsupportedOperationException;
 
@@ -328,7 +328,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
-	ArrayList<String> getTriGramsFromDocument(String documentId)
+	Iterable<String> getTriGramsFromDocument(String documentId)
 			throws UnsupportedOperationException;
 
 	/**
@@ -340,7 +340,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
-	ArrayList<String> getTriGramsFromAllDocuments()
+	Iterable<String> getTriGramsFromAllDocuments()
 			throws UnsupportedOperationException;
 
 	/**
@@ -353,7 +353,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
-	ArrayList<String> getTriGramsFromDocumentsInCollection(
+	Iterable<String> getTriGramsFromDocumentsInCollection(
 			Collection<String> documentIds
 	) throws UnsupportedOperationException;
 }
