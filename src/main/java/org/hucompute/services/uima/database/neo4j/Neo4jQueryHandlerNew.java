@@ -159,6 +159,18 @@ public class Neo4jQueryHandlerNew extends AbstractQueryHandler
 		});
 	}
 
+	@Override
+	public void storeSentence(Sentence sentence, String documentId, Paragraph paragraph, Sentence previousSentence)
+	{
+
+	}
+
+	@Override
+	public void storeSentence(Sentence sentence, String documentId, Paragraph paragraph)
+	{
+		
+	}
+
 	/**
 	 *
 	 * @param token The Token.

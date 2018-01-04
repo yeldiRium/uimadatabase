@@ -356,6 +356,18 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
+	public void storeSentence(Sentence sentence, String documentId, Paragraph paragraph, Sentence previousSentence)
+	{
+
+	}
+
+	@Override
+	public void storeSentence(Sentence sentence, String documentId, Paragraph paragraph)
+	{
+
+	}
+
+	@Override
 	public void storeToken(Token token, String documentId, Paragraph paragraph, Sentence sentence, Token previousToken)
 	{
 

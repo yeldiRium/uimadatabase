@@ -72,7 +72,24 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	void storeJCasDocument(JCas document);
 
 	/**
-	 * Stores a token in the database.
+	 * Stores a Sentence in the database.
+	 * @param sentence The Sentence.
+	 * @param documentId The id of the Document in which the entence occurs.
+	 * @param paragraph The Paragraph, in which the Sentence occurs.
+	 * @param previousSentence The predecessing Sentence.
+	 */
+	void storeSentence(Sentence sentence, String documentId, Paragraph paragraph, Sentence previousSentence);
+
+	/**
+	 * Stores a Sentence in the database.
+	 * @param sentence The Sentence.
+	 * @param documentId The id of the Document in which the entence occurs.
+	 * @param paragraph The Paragraph, in which the Sentence occurs.
+	 */
+	void storeSentence(Sentence sentence, String documentId, Paragraph paragraph);
+
+	/**
+	 * Stores a Token in the database.
 	 * @param token The Token.
 	 * @param documentId The id of the Document in which the Token occurs.
 	 * @param paragraph The Paragraph, in which the Token occurs.
