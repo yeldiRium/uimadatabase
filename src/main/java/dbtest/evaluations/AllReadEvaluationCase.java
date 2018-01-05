@@ -3,11 +3,12 @@ package dbtest.evaluations;
 import dbtest.StatusPrinter;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
-import dbtest.connection.implementation.*;
+import dbtest.connection.implementation.Neo4jConnection;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import dbtest.evaluations.collectionReader.EvaluatingCollectionReader;
 import dbtest.evaluations.collectionReader.Neo4jCollectionReader;
+import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiReader;
 import org.apache.uima.UIMAException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
@@ -16,7 +17,6 @@ import org.hucompute.services.uima.database.basex.BasexCollectionReader;
 import org.hucompute.services.uima.database.cassandra.CassandraCollectionReader;
 import org.hucompute.services.uima.database.mongo.MongoCollectionReader;
 import org.hucompute.services.uima.database.mysql.MysqlCollectionReader;
-import org.hucompute.services.uima.database.xmi.XmiReaderModified;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -85,17 +85,12 @@ public class AllReadEvaluationCase implements EvaluationCase
 			throws ResourceInitializationException, IOException
 	{
 		return CollectionReaderFactory.createReader(
-				XmiReaderModified.class,
-				XmiReaderModified.PARAM_SOURCE_LOCATION,
+				XmiReader.class,
+				XmiReader.PARAM_SOURCE_LOCATION,
 				System.getenv("INPUT_DIR"),
-				XmiReaderModified.PARAM_PATTERNS,
+				XmiReader.PARAM_PATTERNS,
 				"[+]*.xmi.gz",
-				XmiReaderModified.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(
-						AllReadEvaluationCase.class.getName(),
-						"xmi"
-				),
-				XmiReaderModified.PARAM_LANGUAGE,
+				XmiReader.PARAM_LANGUAGE,
 				"de"
 		);
 	}

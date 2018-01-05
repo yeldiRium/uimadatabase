@@ -6,6 +6,7 @@ import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import dbtest.evaluations.collectionWriter.EvaluatingCollectionWriter;
 import dbtest.evaluations.collectionWriter.Neo4jCollectionWriter;
+import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiReader;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
@@ -16,7 +17,6 @@ import org.hucompute.services.uima.database.cassandra.CassandraWriter;
 import org.hucompute.services.uima.database.mongo.MongoCollectionReader;
 import org.hucompute.services.uima.database.mongo.MongoWriter;
 import org.hucompute.services.uima.database.mysql.MysqlWriter;
-import org.hucompute.services.uima.database.xmi.XmiReaderModified;
 import org.hucompute.services.uima.database.xmi.XmiWriterModified;
 
 import java.io.IOException;
@@ -47,17 +47,12 @@ public class AllWriteEvaluationCase implements EvaluationCase
 		try
 		{
 			CollectionReader reader = CollectionReaderFactory.createReader(
-					XmiReaderModified.class,
-					XmiReaderModified.PARAM_PATTERNS,
+					XmiReader.class,
+					XmiReader.PARAM_PATTERNS,
 					"[+]*.xmi.gz", //
-					XmiReaderModified.PARAM_SOURCE_LOCATION,
+					XmiReader.PARAM_SOURCE_LOCATION,
 					System.getenv("INPUT_DIR"),
-					XmiReaderModified.PARAM_LOG_FILE_LOCATION,
-					outputProvider.createFile(
-							AllWriteEvaluationCase.class.getName(),
-							"xmi"
-					),
-					XmiReaderModified.PARAM_LANGUAGE,
+					XmiReader.PARAM_LANGUAGE,
 					"de"
 			);
 
