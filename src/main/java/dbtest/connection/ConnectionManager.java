@@ -6,19 +6,39 @@ import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
+/**
+ * The ConnectionManager creates Connection objects based on ConnectionRequests
+ * and returns them in ConnectionResponse objects.
+ * This abstracts the actual Connection process away and allows the recipients
+ * of the Future<ConnectionResponse> objects to wait until all required Connec-
+ * tions are established.
+ *
+ * In case the ConnectionManager or its Connections can not be injected some-
+ * where, it is used as a Singleton.
+ */
 public class ConnectionManager
 {
+	private static final class InstanceHolder
+	{
+		static final ConnectionManager INSTANCE = new ConnectionManager();
+	}
+
 	protected static final Logger LOGGER = Logger.getLogger(ConnectionManager.class.getName());
 	protected static final int threadCount = 10;
 
 	protected Map<Class<? extends Connection>, Future<Connection>> connections;
 	protected ExecutorService executor;
 
-	public ConnectionManager()
+	private ConnectionManager()
 	{
 		this.connections = new HashMap<>();
 		this.executor = Executors.newFixedThreadPool(ConnectionManager.threadCount);
 		LOGGER.info("ConnectionManager initialized.");
+	}
+
+	public static ConnectionManager getInstance()
+	{
+		return InstanceHolder.INSTANCE;
 	}
 
 	/**

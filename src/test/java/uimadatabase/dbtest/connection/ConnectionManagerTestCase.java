@@ -84,7 +84,7 @@ public class ConnectionManagerTestCase
 	@Test
 	void Given_ConnectionManagerAndMockedConnection_When_SubmittingRequestForMockedConnection_Then_EstablishAndIsEstablishedWillBeCalledOnMock() throws InterruptedException, ExecutionException
 	{
-		ConnectionManager connectionManager = new ConnectionManager();
+		ConnectionManager connectionManager = ConnectionManager.getInstance();
 		ConnectionRequest connectionRequest = new ConnectionRequest();
 		connectionRequest.addRequestedConnection(MockConnection.class);
 
@@ -102,7 +102,7 @@ public class ConnectionManagerTestCase
 	@Test
 	void Given_ConnectionManagerAndMockedConnection_When_ClosingConnectionManager_Then_AllConnectionsWillBeClosed() throws ExecutionException, InterruptedException
 	{
-		ConnectionManager connectionManager = new ConnectionManager();
+		ConnectionManager connectionManager = ConnectionManager.getInstance();
 		ConnectionRequest connectionRequest = new ConnectionRequest();
 		connectionRequest.addRequestedConnection(MockConnection.class);
 

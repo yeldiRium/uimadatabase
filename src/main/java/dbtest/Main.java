@@ -17,7 +17,7 @@ public class Main
 	{
 		try
 		{
-			ConnectionManager connectionManager = new ConnectionManager();
+			ConnectionManager connectionManager = ConnectionManager.getInstance();
 			EvaluationRunner evaluationRunner = new EvaluationRunner(
 					new FileInputStream("src/main/resources/config.yml"),
 					connectionManager

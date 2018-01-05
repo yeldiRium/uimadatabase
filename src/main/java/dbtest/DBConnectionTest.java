@@ -20,7 +20,7 @@ public class DBConnectionTest
 {
 	public static void main(String[] args)
 	{
-		ConnectionManager connectionManager = new ConnectionManager();
+		ConnectionManager connectionManager = ConnectionManager.getInstance();
 
 		ConnectionRequest connectionRequest = new ConnectionRequest();
 		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
