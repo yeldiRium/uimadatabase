@@ -3,6 +3,7 @@ package dbtest.connection;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
@@ -51,6 +52,8 @@ public class ConnectionManager
 	 */
 	public Future<ConnectionResponse> submitRequest(ConnectionRequest connectionRequest)
 	{
+		Objects.requireNonNull(connectionRequest);
+
 		LOGGER.finer("Request received. Processing in new Thread...");
 		return this.executor.submit(() -> {
 			LOGGER.finer("Processing Thread started.");

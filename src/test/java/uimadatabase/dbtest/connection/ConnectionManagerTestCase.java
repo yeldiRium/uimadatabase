@@ -12,8 +12,7 @@ import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConnectionManagerTestCase
 {
@@ -79,6 +78,16 @@ public class ConnectionManagerTestCase
 	}
 
 	protected ArgumentCaptor<ConnectionResponse> captor;
+
+	@Test
+	void Given_ConnectionManager_When_SubmittingNullAsRequest_Then_ThrowsNullException()
+	{
+		ConnectionManager connectionManager = ConnectionManager.getInstance();
+		assertThrows(
+				NullPointerException.class,
+				() -> connectionManager.submitRequest(null)
+		);
+	}
 
 	@Tag("slow")
 	@Test
