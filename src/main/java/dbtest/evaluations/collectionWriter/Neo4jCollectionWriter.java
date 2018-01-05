@@ -1,23 +1,43 @@
 package dbtest.evaluations.collectionWriter;
 
+import dbtest.connection.ConnectionManager;
+import dbtest.connection.ConnectionRequest;
+import dbtest.connection.ConnectionResponse;
 import dbtest.connection.implementation.Neo4jConnection;
 import dbtest.queryHandler.implementation.Neo4jQueryHandler;
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
-import org.neo4j.driver.v1.Driver;
+import org.apache.uima.resource.ResourceInitializationException;
+
+import java.util.concurrent.ExecutionException;
 
 public class Neo4jCollectionWriter extends EvaluatingCollectionWriter
 {
 	private Neo4jQueryHandler queryHandler;
 
-	/**
-	 * Must be called after initialization, but before use in a pipeline.
-	 * @param connection A Neo4jConnection that has been established.
-	 */
-	public void injectConnection(Neo4jConnection connection)
+	// UIMA Parameters
+	public static final String BLUB = "blub";
+
+	@Override
+	public void initialize(UimaContext context) throws ResourceInitializationException
 	{
-		Driver driver = connection.getDriver();
-		this.queryHandler = new Neo4jQueryHandler(driver);
+		super.initialize(context);
+		ConnectionRequest request = new ConnectionRequest();
+		request.addRequestedConnection(Neo4jConnection.class);
+		try
+		{
+			ConnectionResponse response = ConnectionManager.getInstance()
+					.submitRequest(request).get();
+			Neo4jConnection neo4jConnection = (Neo4jConnection) response
+					.getConnection(Neo4jConnection.class);
+			this.queryHandler = new Neo4jQueryHandler(
+					neo4jConnection.getDriver()
+			);
+		} catch (InterruptedException | ExecutionException e)
+		{
+			Thread.currentThread().interrupt();
+		}
 	}
 
 	@Override

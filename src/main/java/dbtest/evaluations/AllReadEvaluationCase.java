@@ -31,11 +31,11 @@ public class AllReadEvaluationCase implements EvaluationCase
 	public ConnectionRequest requestConnection()
 	{
 		ConnectionRequest connectionRequest = new ConnectionRequest();
-		connectionRequest.addRequestedConnection(MongoDBConnection.class);
-		connectionRequest.addRequestedConnection(MySQLConnection.class);
+//		connectionRequest.addRequestedConnection(MongoDBConnection.class);
+//		connectionRequest.addRequestedConnection(MySQLConnection.class);
 		connectionRequest.addRequestedConnection(Neo4jConnection.class);
-		connectionRequest.addRequestedConnection(BaseXConnection.class);
-		connectionRequest.addRequestedConnection(CassandraConnection.class);
+//		connectionRequest.addRequestedConnection(BaseXConnection.class);
+//		connectionRequest.addRequestedConnection(CassandraConnection.class);
 		return connectionRequest;
 	}
 

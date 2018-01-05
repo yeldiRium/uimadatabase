@@ -2,7 +2,6 @@ package dbtest.evaluations;
 
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
-import dbtest.connection.implementation.*;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import dbtest.evaluations.collectionWriter.EvaluatingCollectionWriter;
@@ -32,13 +31,11 @@ public class AllWriteEvaluationCase implements EvaluationCase
 	@Override
 	public ConnectionRequest requestConnection()
 	{
-		ConnectionRequest connectionRequest = new ConnectionRequest();
-		connectionRequest.addRequestedConnection(MongoDBConnection.class);
-		connectionRequest.addRequestedConnection(MySQLConnection.class);
-		connectionRequest.addRequestedConnection(Neo4jConnection.class);
-		connectionRequest.addRequestedConnection(BaseXConnection.class);
-		connectionRequest.addRequestedConnection(CassandraConnection.class);
-		return connectionRequest;
+		// Since it is impossible to inject non-primitive objects into Analysis-
+		// Engines, we don't need any connections here.
+		// Instead we'll use the Singleton ConnectionManager in each Writer
+		// and retrieve the Connections there.
+		return new ConnectionRequest();
 	}
 
 	@Override
@@ -60,11 +57,7 @@ public class AllWriteEvaluationCase implements EvaluationCase
 			);
 
 			List<AnalysisEngine> writers = Arrays.asList(
-					getNeo4JWriter(
-							outputProvider,
-							(Neo4jConnection) connectionResponse
-									.getConnection(Neo4jConnection.class)
-					)
+					getNeo4JWriter(outputProvider)
 					//getMongoWriter(outputProvider),
 					//getCassandraWriter(outputProvider),
 					//getBasexWriter(outputProvider),
@@ -122,12 +115,11 @@ public class AllWriteEvaluationCase implements EvaluationCase
 
 
 	public static AnalysisEngine getNeo4JWriter(
-			OutputProvider outputProvider,
-			Neo4jConnection neo4jConnection
+			OutputProvider outputProvider
 	)
 			throws ResourceInitializationException, IOException
 	{
-		Neo4jCollectionWriter writer = (Neo4jCollectionWriter) createEngine(
+		return createEngine(
 				Neo4jCollectionWriter.class,
 				EvaluatingCollectionWriter.PARAM_OUTPUT_FILE,
 				outputProvider.createFile(
@@ -135,8 +127,6 @@ public class AllWriteEvaluationCase implements EvaluationCase
 						"neo4j"
 				)
 		);
-		writer.injectConnection(neo4jConnection);
-		return (AnalysisEngine) writer;
 	}
 
 	public static AnalysisEngine getBasexWriter(OutputProvider outputProvider)
