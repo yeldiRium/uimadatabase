@@ -5,6 +5,7 @@ import dbtest.evaluationFramework.EvaluationRunner;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Main entrance point for the evaluation system.
@@ -13,6 +14,8 @@ import java.io.IOException;
  */
 public class Main
 {
+	protected static Logger logger = Logger.getLogger(Main.class.getName());
+
 	public static void main(String[] args)
 	{
 		try
@@ -22,11 +25,11 @@ public class Main
 					new FileInputStream("src/main/resources/config.yml"),
 					connectionManager
 			);
-			System.out.println("Running Evaluations...");
+			logger.info("Running Evaluations...");
 			evaluationRunner.run();
-			System.out.println("Evaluations done. Closing connections...");
+			logger.info("Evaluations done. Closing connections...");
 			connectionManager.close();
-			System.out.println("Connections closed. Exiting...");
+			logger.info("Connections closed. Exiting...");
 
 		} catch (IOException e)
 		{

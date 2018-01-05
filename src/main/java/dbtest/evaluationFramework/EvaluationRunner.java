@@ -10,9 +10,12 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 public class EvaluationRunner implements Runnable
 {
+	protected static Logger logger = Logger.getLogger(EvaluationRunner.class.getName());
+
 	protected Configuration configuration;
 	protected ConnectionManager connectionManager;
 
@@ -64,7 +67,7 @@ public class EvaluationRunner implements Runnable
 			{
 				Thread.currentThread().interrupt();
 			}
-			System.out.println("Running EvaluationCase "
+			logger.info("Running EvaluationCase "
 					+ evaluationCase.getClass().getName());
 			boolean success = false;
 			while (!success)
@@ -78,7 +81,7 @@ public class EvaluationRunner implements Runnable
 					success = true;
 				} catch (EvaluationFailedRerunnableException e)
 				{
-					System.out.println("Evaluation failed. Rerunning...");
+					logger.info("Evaluation failed. Rerunning...");
 				} catch (IOException e)
 				{
 					// TODO: handle better
