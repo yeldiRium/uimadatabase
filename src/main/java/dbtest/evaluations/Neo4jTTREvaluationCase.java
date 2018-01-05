@@ -1,16 +1,18 @@
 package dbtest.evaluations;
 
+import dbtest.connection.Connection;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.connection.implementation.Neo4jConnection;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
+import dbtest.queryHandler.ElementType;
+import dbtest.queryHandler.implementation.Neo4jQueryHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
-import org.hucompute.services.uima.database.neo4j.Neo4jQueryHandler;
-import org.hucompute.services.uima.database.neo4j.data.Const;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Neo4jTTREvaluationCase implements EvaluationCase
 {
@@ -28,38 +30,47 @@ public class Neo4jTTREvaluationCase implements EvaluationCase
 			OutputProvider outputProvider
 	)
 	{
-		// TODO: create QueryHandler correctly after rewriting it
-		Neo4jQueryHandler queryHandler = new Neo4jQueryHandler(new String[]{});
+		Neo4jConnection connection = (Neo4jConnection) connectionResponse
+				.getConnection(Neo4jConnection.class);
+		Neo4jQueryHandler queryHandler = new Neo4jQueryHandler(
+				connection.getDriver()
+		);
 		StringBuilder builder = new StringBuilder();
 
-		builder.append("Testing getTTR(List of 2):");
-		long timeBegin = System.currentTimeMillis();
-		queryHandler.getTTR(new String[]{"105", "159"});
-		builder.append("getTTR(List of 2) took: ")
-				.append(System.currentTimeMillis() - timeBegin)
-				.append("  ms\n")
-				.append("Testing calculateTTRForAllDocuments():");
+		long timeBegin;
+
+		builder.append("Testing calculateTTRForAllDocuments():\n");
 		timeBegin = System.currentTimeMillis();
 		queryHandler.calculateTTRForAllDocuments();
 		builder.append("calculateTTRForAllDocuments() took: ")
 				.append(System.currentTimeMillis() - timeBegin)
 				.append("  ms\n")
-				.append("Testing count(LEMMA):");
+
+				.append("Testing getTTRForCollectionOfDocuments with two Documents:\n");
 		timeBegin = System.currentTimeMillis();
-		queryHandler.countElementsOfType(Const.TYPE.LEMMA);
-		builder.append("count(LEMMA) took: ")
+		queryHandler.calculateTTRForCollectionOfDocuments(Arrays.asList("105", "159"));
+		builder.append("getTTRForCollectionOfDocuments with two Documnts took: ")
 				.append(System.currentTimeMillis() - timeBegin)
 				.append("  ms\n")
-				.append("Testing count(DocId, TOKEN):");
+
+				.append("Testing countElementsOfType(LEMMA):\n");
 		timeBegin = System.currentTimeMillis();
-		queryHandler.countElementsInDocumentOfType("105", Const.TYPE.TOKEN);
-		builder.append("count(DocId, TOKEN) took: ")
+		queryHandler.countElementsOfType(ElementType.Lemma);
+		builder.append("countElementsOfType(LEMMA) took: ")
 				.append(System.currentTimeMillis() - timeBegin)
 				.append("  ms\n")
-				.append("Testing count(LEMMA, Mensch):");
+
+				.append("Testing countElementsInDocumentOfType(DocId, TOKEN):\n");
 		timeBegin = System.currentTimeMillis();
-		queryHandler.countElementsOfTypeWithValue(Const.TYPE.LEMMA, "Mensch");
-		builder.append("count(LEMMA, Mensch) took: ")
+		queryHandler.countElementsInDocumentOfType("105", ElementType.Token);
+		builder.append("countElementsInDocumentOfType(DocId, TOKEN) took: ")
+				.append(System.currentTimeMillis() - timeBegin)
+				.append("  ms\n")
+
+				.append("Testing countElementsOfTypeWithValue(LEMMA, Mensch):\n");
+		timeBegin = System.currentTimeMillis();
+		queryHandler.countElementsOfTypeWithValue(ElementType.Lemma, "Mensch");
+		builder.append("countElementsOfTypeWithValue(LEMMA, Mensch) took: ")
 				.append(System.currentTimeMillis() - timeBegin)
 				.append(" ms\n");
 
@@ -92,7 +103,7 @@ public class Neo4jTTREvaluationCase implements EvaluationCase
 			a.suspend();
 
 			b.resume();
-			queryHandler.getLemmata("1420");
+			queryHandler.getLemmataForDocument("1420");
 			b.suspend();
 		}
 		return a.getTime() + "|" + b.getTime();
