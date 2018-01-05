@@ -4,5 +4,5 @@ evaluations:
   #- !!dbtest.evaluations.AllQueryEvaluationCase {}
   #- !!dbtest.evaluations.CassandraCounterCreateEvaluationCase {}
   #- !!dbtest.evaluations.CassandraTTREvaluationCase {}
-  #- !!dbtest.evaluations.Neo4jTTREvaluationCase {}
+  #- !!dbtest.evaluations.TTREvaluationCase {}
 outputProvider: !!dbtest.evaluationFramework.BaseOutputProvider {}
