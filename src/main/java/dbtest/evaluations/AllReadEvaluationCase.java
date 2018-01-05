@@ -89,7 +89,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 				XmiReaderModified.PARAM_SOURCE_LOCATION,
 				System.getenv("INPUT_DIR"),
 				XmiReaderModified.PARAM_PATTERNS,
-				"[+]**/*.xmi.gz",
+				"[+]*.xmi.gz",
 				XmiReaderModified.PARAM_LOG_FILE_LOCATION,
 				outputProvider.createFile(
 						AllReadEvaluationCase.class.getName(),
