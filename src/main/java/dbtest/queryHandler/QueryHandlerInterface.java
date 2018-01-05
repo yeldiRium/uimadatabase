@@ -1,14 +1,19 @@
 package dbtest.queryHandler;
 
+import dbtest.connection.Connection;
+import dbtest.connection.implementation.Neo4jConnection;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
+import dbtest.queryHandler.implementation.Neo4jQueryHandler;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The interface for all relevant server queries.
@@ -25,6 +30,21 @@ import java.util.*;
  */
 public interface QueryHandlerInterface
 {
+	//--------------------------------------------------------------------------
+	// Factories
+	//--------------------------------------------------------------------------
+
+	static QueryHandlerInterface createQueryHandlerForConnection(Connection aConnection)
+	{
+		if (aConnection instanceof Neo4jConnection)
+		{
+			return new Neo4jQueryHandler(((Neo4jConnection) aConnection).getDriver());
+		} else
+		{
+			return null;
+		}
+	}
+
 	//--------------------------------------------------------------------------
 	// Raw Querying
 	//
@@ -116,16 +136,18 @@ public interface QueryHandlerInterface
 
 	/**
 	 * Return the ids of all documents currently stored.
+	 *
 	 * @return The ids of all Documents stored in the database.
 	 */
 	Iterable<String> getDocumentIds();
 
 	/**
 	 * Retrieves all stored objects in JCas format.
-	 * @param aCAS The CAS to populate with the found data.
+	 *
+	 * @param aCAS       The CAS to populate with the found data.
 	 * @param documentId The document whose data shall be used.
 	 * @throws DocumentNotFoundException If the documentId can't be found in db.
-	 * @throws QHException If any underlying Exception is thrown.
+	 * @throws QHException               If any underlying Exception is thrown.
 	 */
 	void populateCasWithDocument(CAS aCAS, String documentId)
 			throws DocumentNotFoundException, QHException;
