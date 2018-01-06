@@ -417,13 +417,25 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countDocumentsContainingLemma(String lemma)
 	{
-		return 0;
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(
+					tx -> tx.run("MATCH (d:" + ElementType.Document + ")-[:" + Relationship.DocumentHasLemma + "]->(l:" + ElementType.Lemma + "{value:'" + lemma + "'}) RETURN count(d) as amount")
+			);
+			return result.next().get("amount").asInt();
+		}
 	}
 
 	@Override
 	public int countElementsOfType(ElementType type)
 	{
-		return 0;
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(
+					tx -> tx.run("MATCH (e:" + type + ") RETURN count(e) as amount")
+			);
+			return result.next().get("amount").asInt();
+		}
 	}
 
 	@Override
@@ -432,14 +444,26 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			ElementType type
 	) throws DocumentNotFoundException
 	{
-		return 0;
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(
+					tx -> tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})--(e:" + type + ") RETURN count(e) as amount")
+			);
+			return result.next().get("amount").asInt();
+		}
 	}
 
 	@Override
 	public int countElementsOfTypeWithValue(ElementType type, String value)
 			throws IllegalArgumentException
 	{
-		return 0;
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(
+					tx -> tx.run("MATCH (e:" + type + " {value:'" + value + "'}) RETURN count(e) as amount")
+			);
+			return result.next().get("amount").asInt();
+		}
 	}
 
 	@Override
@@ -449,7 +473,13 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String value
 	) throws DocumentNotFoundException
 	{
-		return 0;
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(
+					tx -> tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})--(e:" + type + " {value:'" + value + "'}) RETURN count(e) as amount")
+			);
+			return result.next().get("amount").asInt();
+		}
 	}
 
 	@Override
