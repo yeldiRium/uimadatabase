@@ -1,7 +1,7 @@
 package dbtest.queryHandler.implementation;
 
+import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
-import dbtest.queryHandler.QueryHandlerInterface;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
@@ -18,7 +18,7 @@ import org.neo4j.driver.v1.*;
 
 import java.util.*;
 
-public class Neo4jQueryHandler implements QueryHandlerInterface
+public class Neo4jQueryHandler extends AbstractQueryHandler
 {
 	protected Driver driver;
 
@@ -56,7 +56,6 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	/**
-	 *
 	 * @param document The JCas document.
 	 */
 	@Override
@@ -88,7 +87,6 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	/**
-	 *
 	 * @param documents An iterable object of documents.
 	 */
 	@Override
@@ -101,7 +99,6 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	/**
-	 *
 	 * @return The ids of all Documents stored in the database.
 	 */
 	@Override
@@ -122,9 +119,8 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	/**
-	 *
-	 * @param paragraph The Paragraph.
-	 * @param document The document in which the paragraph occurs.
+	 * @param paragraph         The Paragraph.
+	 * @param document          The document in which the paragraph occurs.
 	 * @param previousParagraph The predecessing Paragraph.
 	 */
 	@Override
@@ -181,9 +177,8 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	/**
-	 *
 	 * @param paragraph The Paragraph.
-	 * @param document The document in which the paragraph occurs.
+	 * @param document  The document in which the paragraph occurs.
 	 */
 	@Override
 	public void storeParagraph(Paragraph paragraph, JCas document)
@@ -192,10 +187,9 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	/**
-	 *
-	 * @param sentence The Sentence.
-	 * @param document The Document in which the entence occurs.
-	 * @param paragraph The Paragraph, in which the Sentence occurs.
+	 * @param sentence         The Sentence.
+	 * @param document         The Document in which the entence occurs.
+	 * @param paragraph        The Paragraph, in which the Sentence occurs.
 	 * @param previousSentence The predecessing Sentence.
 	 */
 	@Override
@@ -260,9 +254,8 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	/**
-	 *
-	 * @param sentence The Sentence.
-	 * @param document The Document in which the entence occurs.
+	 * @param sentence  The Sentence.
+	 * @param document  The Document in which the entence occurs.
 	 * @param paragraph The Paragraph, in which the Sentence occurs.
 	 */
 	@Override
@@ -276,10 +269,10 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	/**
-	 *  @param token The Token.
-	 * @param document The id of the document in which the Token occurs.
-	 * @param paragraph The paragraph, in which the Token occurs.
-	 * @param sentence The sentence, in which the Token occurs.
+	 * @param token         The Token.
+	 * @param document      The id of the document in which the Token occurs.
+	 * @param paragraph     The paragraph, in which the Token occurs.
+	 * @param sentence      The sentence, in which the Token occurs.
 	 * @param previousToken The predecessing Token.
 	 */
 	@Override
@@ -332,10 +325,10 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	/**
-	 *  @param token The Token.
-	 * @param document The id of the document in which the Token occurs.
+	 * @param token     The Token.
+	 * @param document  The id of the document in which the Token occurs.
 	 * @param paragraph The paragraph, in which the Token occurs.
-	 * @param sentence The sentence, in which the Token occurs.
+	 * @param sentence  The sentence, in which the Token occurs.
 	 */
 	@Override
 	public void storeToken(
@@ -349,11 +342,10 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 	}
 
 	/**
-	 *
-	 * @param aCAS The CAS to populate with the found data.
+	 * @param aCAS       The CAS to populate with the found data.
 	 * @param documentId The document whose data shall be used.
 	 * @throws DocumentNotFoundException If the documentId can't be found in db.
-	 * @throws QHException If any underlying Exception is thrown.
+	 * @throws QHException               If any underlying Exception is thrown.
 	 */
 	@Override
 	public void populateCasWithDocument(CAS aCAS, String documentId)
@@ -405,7 +397,8 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 						}
 					}
 					tx.success();
-				} catch(CASException e) {
+				} catch (CASException e)
+				{
 					tx.failure();
 					// If something happens, return the exception...
 					return e;
@@ -414,7 +407,7 @@ public class Neo4jQueryHandler implements QueryHandlerInterface
 			});
 
 			// ... and throw the Exception out here.
-			if(anException != null)
+			if (anException != null)
 			{
 				throw new QHException(anException);
 			}
