@@ -286,7 +286,7 @@ public interface QueryHandlerInterface
 	 * @param documentId the specified document's id.
 	 * @return a double.
 	 */
-	double calculateTermFrequencyWithLogNermForLemmaInDocument(
+	double calculateTermFrequencyWithLogNormForLemmaInDocument(
 			String lemma, String documentId
 	) throws DocumentNotFoundException;
 

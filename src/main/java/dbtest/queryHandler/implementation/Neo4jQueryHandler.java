@@ -543,7 +543,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public double calculateTermFrequencyWithLogNermForLemmaInDocument(
+	public double calculateTermFrequencyWithLogNormForLemmaInDocument(
 			String lemma,
 			String documentId
 	) throws DocumentNotFoundException
