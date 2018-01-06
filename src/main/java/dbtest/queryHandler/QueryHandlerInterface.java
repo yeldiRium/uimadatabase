@@ -242,7 +242,7 @@ public interface QueryHandlerInterface
 	 * @param documentId The id of the document to get the TTR from.
 	 * @return Map(String DocumentId, Double TTR - value)
 	 */
-	Map<String, Double> calculateTTRForDocument(String documentId)
+	Double calculateTTRForDocument(String documentId)
 			throws DocumentNotFoundException;
 
 	/**

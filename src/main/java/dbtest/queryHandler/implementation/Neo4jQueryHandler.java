@@ -17,6 +17,7 @@ import org.apache.uima.jcas.JCas;
 import org.neo4j.driver.v1.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Neo4jQueryHandler extends AbstractQueryHandler
 {
@@ -485,14 +486,28 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	@Override
 	public Map<String, Double> calculateTTRForAllDocuments()
 	{
-		return null;
+		HashMap<String, Double> documentTTRMap = new HashMap<>();
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(
+					tx -> tx.run("MATCH (d:" + ElementType.Document + ")--(t:" + ElementType.Token + ")--(l:" + ElementType.Lemma + ") WITH d, count(DISTINCT l)/count(t) AS ttr RETURN d.id AS id, ttr")
+			);
+			while (result.hasNext())
+			{
+				Record aRecord = result.next();
+				documentTTRMap.put(aRecord.get("id").toString(), aRecord.get("ttr").asDouble());
+			}
+			return documentTTRMap;
+		}
 	}
 
 	@Override
-	public Map<String, Double> calculateTTRForDocument(String documentId)
+	public Double calculateTTRForDocument(String documentId)
 			throws DocumentNotFoundException
 	{
-		return null;
+		return this.calculateTTRForCollectionOfDocuments(
+				Arrays.asList(documentId)
+		).get(documentId);
 	}
 
 	@Override
@@ -500,7 +515,22 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	)
 	{
-		return null;
+		HashMap<String, Double> documentTTRMap = new HashMap<>();
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(
+					tx -> tx.run("MATCH (d:" + ElementType.Document + ")--(t:" + ElementType.Token + ")--(l:" + ElementType.Lemma + ") WHERE d.id in [" + documentIds.parallelStream().collect(Collectors.joining(",")) + "] WITH d, count(DISTINCT l)/count(t) AS ttr RETURN d.id AS id, ttr")
+			);
+			while (result.hasNext())
+			{
+				Record aRecord = result.next();
+				documentTTRMap.put(
+						aRecord.get("id").toString(),
+						aRecord.get("ttr").asDouble()
+				);
+			}
+			return documentTTRMap;
+		}
 	}
 
 	@Override
