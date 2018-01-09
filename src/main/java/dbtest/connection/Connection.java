@@ -25,6 +25,9 @@ public abstract class Connection
 
 	/**
 	 * Tries regularly to establish the connection via calling #tryToConnect.
+	 * After the Connection is established, a QueryHandlerInterface instance
+	 * will be created and setUpDatabase on it will be called, to prepare the
+	 * database for use.
 	 * <p>
 	 * Check for interruption since this probably will be executed in a concur-
 	 * rent context.
@@ -43,6 +46,7 @@ public abstract class Connection
 					LOGGER.fine("Connection for " + this.getClass().getName()
 							+ " successful!");
 					this.createQueryHandler();
+					this.getQueryHandler().setUpDatabase();
 					isEstablished = true;
 					return;
 				} else
