@@ -731,14 +731,55 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String documentId
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		ArrayList<String> biGrams = new ArrayList<>();
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(tx ->
+					tx.run("MATCH (d:" + ElementType.Document + " {id: '" + documentId + "'})--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ") RETURN t1.value, t2.value")
+			);
+
+			if (result == null || !result.hasNext())
+			{
+				throw new DocumentNotFoundException();
+			}
+
+			while (result.hasNext())
+			{
+				Record row = result.next();
+				biGrams.add(
+						row.get("t1.value").toString()
+								.replaceAll("\"", "")
+								+ "-"
+								+ row.get("t2.value").toString()
+								.replaceAll("\"", ""));
+			}
+		}
+		return biGrams;
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return null;
+		ArrayList<String> biGrams = new ArrayList<>();
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(tx ->
+					tx.run("MATCH (d:" + ElementType.Document + ")--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ") RETURN t1.value, t2.value")
+			);
+
+			while (result.hasNext())
+			{
+				Record row = result.next();
+				biGrams.add(
+						row.get("t1.value").toString()
+								.replaceAll("\"", "")
+								+ "-"
+								+ row.get("t2.value").toString()
+								.replaceAll("\"", ""));
+			}
+		}
+		return biGrams;
 	}
 
 	@Override
@@ -746,21 +787,93 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		ArrayList<String> biGrams = new ArrayList<>();
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(tx ->
+					tx.run("MATCH (d:" + ElementType.Document + ")--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ") WHERE d.id in [" + documentIds.parallelStream().collect(Collectors.joining(",")) + "] RETURN t1.value, t2.value")
+			);
+
+			if (result == null || !result.hasNext())
+			{
+				throw new DocumentNotFoundException();
+			}
+
+			while (result.hasNext())
+			{
+				Record row = result.next();
+				biGrams.add(
+						row.get("t1.value").toString()
+								.replaceAll("\"", "")
+								+ "-"
+								+ row.get("t2.value").toString()
+								.replaceAll("\"", ""));
+			}
+		}
+		return biGrams;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		ArrayList<String> triGrams = new ArrayList<>();
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(tx ->
+				tx.run("MATCH (d:" + ElementType.Document + " {id: '" + documentId + "'})--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t3:" + ElementType.Token + ") RETURN t1.value, t2.value, t3.value")
+			);
+
+			if (result == null || !result.hasNext())
+			{
+				throw new DocumentNotFoundException();
+			}
+
+			while (result.hasNext())
+			{
+				Record row = result.next();
+				triGrams.add(
+						row.get("t1.value").toString()
+								.replaceAll("\"", "")
+								+ "-"
+								+ row.get("t2.value").toString()
+								.replaceAll("\"", "")
+								+ "-"
+								+ row.get("t3.value").toString()
+								.replaceAll("\"", "")
+				);
+			}
+		}
+		return triGrams;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return null;
+		ArrayList<String> triGrams = new ArrayList<>();
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(tx ->
+				tx.run("MATCH (d:" + ElementType.Document + ")--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t3:" + ElementType.Token + ") RETURN t1.value, t2.value, t3.value")
+			);
+
+			while (result.hasNext())
+			{
+				Record row = result.next();
+				triGrams.add(
+						row.get("t1.value").toString()
+								.replaceAll("\"", "")
+								+ "-"
+								+ row.get("t2.value").toString()
+								.replaceAll("\"", "")
+								+ "-"
+								+ row.get("t3.value").toString()
+								.replaceAll("\"", "")
+				);
+			}
+		}
+		return triGrams;
 	}
 
 	@Override
@@ -768,6 +881,33 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		ArrayList<String> triGrams = new ArrayList<>();
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(tx ->
+				tx.run("MATCH (d:" + ElementType.Document + ")--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t3:" + ElementType.Token + ") WHERE d.id in [" + documentIds.parallelStream().collect(Collectors.joining(",")) + "] RETURN t1.value, t2.value, t3.value")
+			);
+
+			if (result == null || !result.hasNext())
+			{
+				throw new DocumentNotFoundException();
+			}
+
+			while (result.hasNext())
+			{
+				Record row = result.next();
+				triGrams.add(
+						row.get("t1.value").toString()
+								.replaceAll("\"", "")
+								+ "-"
+								+ row.get("t2.value").toString()
+								.replaceAll("\"", "")
+								+ "-"
+								+ row.get("t3.value").toString()
+								.replaceAll("\"", "")
+				);
+			}
+		}
+		return triGrams;
 	}
 }
