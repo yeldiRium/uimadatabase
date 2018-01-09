@@ -233,6 +233,11 @@ public interface QueryHandlerInterface
 			String documentId, ElementType type, String value
 	) throws DocumentNotFoundException;
 
+	/**
+	 * @return Map from lemma value to occurence count.
+	 */
+	Map<String, Integer> countOccurencesForEachLemmaInAllDocuments();
+
 	//--------------------------------------------------------------------------
 	// Structure
 	//

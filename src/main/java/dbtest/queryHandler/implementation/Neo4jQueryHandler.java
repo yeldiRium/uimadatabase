@@ -519,6 +519,28 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
+	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
+	{
+		HashMap<String, Integer> lemmaOccurenceCount = new HashMap<>();
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(tx ->
+					tx.run("MATCH (:DOCUMENT)-[:inDocument]-(l:LEMMA) RETURN l.value AS LEMMA, count(l) AS count;")
+			);
+
+			while (result.hasNext())
+			{
+				Record row = result.next();
+				lemmaOccurenceCount.put(
+						row.get("lemma").toString(),
+						row.get("count").asInt()
+				);
+			}
+		}
+		return lemmaOccurenceCount;
+	}
+
+	@Override
 	public Map<String, Double> calculateTTRForAllDocuments()
 	{
 		HashMap<String, Double> documentTTRMap = new HashMap<>();
