@@ -1,7 +1,7 @@
 package dbtest.queryHandler;
 
 import dbtest.connection.Connection;
-import dbtest.connection.implementation.Neo4jConnection;
+import dbtest.connection.implementation.*;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
 import dbtest.queryHandler.implementation.Neo4jQueryHandler;
@@ -36,13 +36,28 @@ public interface QueryHandlerInterface
 
 	static QueryHandlerInterface createQueryHandlerForConnection(Connection aConnection)
 	{
-		if (aConnection instanceof Neo4jConnection)
+		QueryHandlerInterface queryhandler = null;
+		if (aConnection instanceof ArangoDBConnection)
 		{
-			return new Neo4jQueryHandler(((Neo4jConnection) aConnection).getDriver());
-		} else
+			// TODO: create QueryHandler instance
+		} else if (aConnection instanceof BaseXConnection)
 		{
-			return null;
+			// TODO: create QueryHandler instance
+		} else if (aConnection instanceof CassandraConnection)
+		{
+			// TODO: create QueryHandler instance
+		} else if (aConnection instanceof MongoDBConnection)
+		{
+			// TODO: create QueryHandler instance
+		} else if (aConnection instanceof MySQLConnection)
+		{
+			// TODO: create QueryHandler instance
+		} else if (aConnection instanceof Neo4jConnection)
+		{
+			queryhandler = new Neo4jQueryHandler(((Neo4jConnection) aConnection).getDriver());
 		}
+
+		return queryhandler;
 	}
 
 	//--------------------------------------------------------------------------
