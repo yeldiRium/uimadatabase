@@ -574,22 +574,74 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	 * @param documentId The document to calculate frequencies for.
 	 * @return a map from lemma to frequency
 	 */
-	protected Map<String, Double> calculateRawTermFrequencies(String documentId)
+	protected Map<String, Integer> calculateRawTermFrequenciesInDocument(
+			String documentId
+	) throws DocumentNotFoundException
 	{
-		HashMap<String, Double> rtf = new HashMap<>();
+		HashMap<String, Integer> rtf = new HashMap<>();
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(tx ->
+					tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "') RETURN d")
+			);
+			if (result == null || !result.hasNext())
+			{
+				throw new DocumentNotFoundException();
+			}
+
+			result = session.readTransaction(tx ->
 					tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})--(:" + ElementType.Token + ")--(l:" + ElementType.Lemma + ") WITH l, count(l.value) AS count RETURN l.value AS lemma, count;")
 			);
+
+			if (result == null || !result.hasNext())
+			{
+				throw new DocumentNotFoundException();
+			}
 
 			while (result.hasNext())
 			{
 				Record row = result.next();
-				rtf.put(row.get("lemma").toString().replaceAll("\"", ""), row.get("count").asDouble());
+				rtf.put(row.get("lemma").toString().replaceAll("\"", ""), row.get("count").asInt());
 			}
 		}
 		return rtf;
+	}
+
+	/**
+	 * Computes the term frequency without norming for the given lemma in the
+	 * specified document.
+	 *
+	 * @param lemma      The lemma to search for.
+	 * @param documentId The document to calculate frequencies for.
+	 * @return the lemma's term frequency
+	 */
+	protected Integer calculateRawTermFrequencyForLemmaInDocument(
+			String lemma,
+			String documentId
+	) throws DocumentNotFoundException
+	{
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(tx ->
+					tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "') RETURN d")
+			);
+			if (result == null || !result.hasNext())
+			{
+				throw new DocumentNotFoundException();
+			}
+
+			result = session.readTransaction(tx ->
+					tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})-[:" + Relationship.DocumentHasToken + "]-(:" + ElementType.Token + ")-[:" + Relationship.TokenHasLemma + "]-(l:" + ElementType.Lemma + " {value:'" + lemma + "'}) WITH count(l.value) AS count RETURN count;")
+			);
+
+			if (!result.hasNext())
+			{
+				return 0;
+			} else
+			{
+				return result.next().get("count").asInt();
+			}
+		}
 	}
 
 	@Override
