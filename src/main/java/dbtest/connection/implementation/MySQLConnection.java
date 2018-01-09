@@ -14,6 +14,11 @@ public class MySQLConnection extends Connection
 {
 	protected java.sql.Connection connection;
 
+	public java.sql.Connection getConnection()
+	{
+		return this.connection;
+	}
+
 	@Override
 	protected boolean tryToConnect()
 	{

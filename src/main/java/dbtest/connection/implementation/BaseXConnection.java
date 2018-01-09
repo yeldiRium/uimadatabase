@@ -14,6 +14,11 @@ public class BaseXConnection extends Connection
 {
 	protected ClientSession session;
 
+	public ClientSession getSession()
+	{
+		return this.session;
+	}
+
 	@Override
 	protected boolean tryToConnect()
 	{

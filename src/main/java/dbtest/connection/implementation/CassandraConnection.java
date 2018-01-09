@@ -16,6 +16,16 @@ public class CassandraConnection extends Connection
 	protected Cluster cluster;
 	protected Session session;
 
+	public Cluster getCluster()
+	{
+		return cluster;
+	}
+
+	public Session getSession()
+	{
+		return this.session;
+	}
+
 	@Override
 	protected boolean tryToConnect()
 	{
@@ -60,15 +70,5 @@ public class CassandraConnection extends Connection
 	{
 		this.session.close();
 		this.cluster.close();
-	}
-
-	public Cluster getCluster()
-	{
-		return cluster;
-	}
-
-	public Session getSession()
-	{
-		return session;
 	}
 }

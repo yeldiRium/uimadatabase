@@ -16,6 +16,11 @@ public class Neo4jConnection extends Connection
 {
 	protected Driver driver;
 
+	public Driver getDriver()
+	{
+		return this.driver;
+	}
+
 	@Override
 	protected boolean tryToConnect()
 	{
@@ -54,10 +59,5 @@ public class Neo4jConnection extends Connection
 	public void close()
 	{
 		this.driver.close();
-	}
-
-	public Driver getDriver()
-	{
-		return this.driver;
 	}
 }

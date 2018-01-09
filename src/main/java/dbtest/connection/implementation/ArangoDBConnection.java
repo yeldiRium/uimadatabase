@@ -14,11 +14,6 @@ public class ArangoDBConnection extends Connection
 	protected ArangoDB arangoDB;
 	protected boolean connected = false;
 
-	public ArangoDBConnection()
-	{
-
-	}
-
 	public ArangoDB getArangoDB()
 	{
 		return this.arangoDB;

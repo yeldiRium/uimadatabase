@@ -13,6 +13,11 @@ public class MongoDBConnection extends Connection
 {
 	protected MongoClient client;
 
+	public MongoClient getClient()
+	{
+		return this.client;
+	}
+
 	@Override
 	protected boolean tryToConnect()
 	{
