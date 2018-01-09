@@ -56,7 +56,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		{
 			session.writeTransaction(tx -> {
 				StatementResult result;
-				
+
 				do
 				{
 					result = tx.run("MATCH (n)\n" +
@@ -565,6 +565,31 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			}
 			return documentTTRMap;
 		}
+	}
+
+	/**
+	 * Computes the term frequency without norming for each lemma in the speci-
+	 * fied document.
+	 *
+	 * @param documentId The document to calculate frequencies for.
+	 * @return a map from lemma to frequency
+	 */
+	protected Map<String, Double> calculateRawTermFrequencies(String documentId)
+	{
+		HashMap<String, Double> rtf = new HashMap<>();
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(tx ->
+					tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})--(:" + ElementType.Token + ")--(l:" + ElementType.Lemma + ") WITH l, count(l.value) AS count RETURN l.value AS lemma, count;")
+			);
+
+			while (result.hasNext())
+			{
+				Record row = result.next();
+				rtf.put(row.get("lemma").toString().replaceAll("\"", ""), row.get("count").asDouble());
+			}
+		}
+		return rtf;
 	}
 
 	@Override
