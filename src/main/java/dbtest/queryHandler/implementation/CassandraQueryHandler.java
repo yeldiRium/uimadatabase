@@ -1,5 +1,6 @@
 package dbtest.queryHandler.implementation;
 
+import com.datastax.driver.core.Session;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
@@ -16,6 +17,13 @@ import java.util.Set;
 
 public class CassandraQueryHandler extends AbstractQueryHandler
 {
+	protected Session session;
+
+	public CassandraQueryHandler(Session session)
+	{
+		this.session = session;
+	}
+
 	@Override
 	public void setUpDatabase()
 	{

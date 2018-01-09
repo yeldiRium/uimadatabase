@@ -10,12 +10,20 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 
+import java.sql.Connection;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
 public class MySQLQueryHandler extends AbstractQueryHandler
 {
+	protected Connection connection;
+
+	public MySQLQueryHandler(Connection connection)
+	{
+		this.connection = connection;
+	}
+
 	@Override
 	public void setUpDatabase()
 	{

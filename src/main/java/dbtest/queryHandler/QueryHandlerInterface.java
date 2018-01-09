@@ -4,7 +4,7 @@ import dbtest.connection.Connection;
 import dbtest.connection.implementation.*;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
-import dbtest.queryHandler.implementation.Neo4jQueryHandler;
+import dbtest.queryHandler.implementation.*;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -34,27 +34,48 @@ public interface QueryHandlerInterface
 	// Factories
 	//--------------------------------------------------------------------------
 
-	static QueryHandlerInterface createQueryHandlerForConnection(Connection aConnection)
+	/**
+	 * Creates an instance of a QueryHandlerInterface implementation based on
+	 * the connection supplied.
+	 *
+	 * @param aConnection The connection for which a handler should be created.
+	 * @return A fully initialized QueryHandlerInterface instance.
+	 */
+	static QueryHandlerInterface createQueryHandlerForConnection(
+			Connection aConnection
+	)
 	{
 		QueryHandlerInterface queryhandler = null;
 		if (aConnection instanceof ArangoDBConnection)
 		{
-			// TODO: create QueryHandler instance
+			queryhandler = new ArangoDBQueryHandler(
+					((ArangoDBConnection) aConnection).getArangoDB()
+			);
 		} else if (aConnection instanceof BaseXConnection)
 		{
-			// TODO: create QueryHandler instance
+			queryhandler = new BaseXQueryHandler(
+					((BaseXConnection) aConnection).getSession()
+			);
 		} else if (aConnection instanceof CassandraConnection)
 		{
-			// TODO: create QueryHandler instance
+			queryhandler = new CassandraQueryHandler(
+					((CassandraConnection) aConnection).getSession()
+			);
 		} else if (aConnection instanceof MongoDBConnection)
 		{
-			// TODO: create QueryHandler instance
+			queryhandler = new MongoDBQueryHandler(
+					((MongoDBConnection) aConnection).getClient()
+			);
 		} else if (aConnection instanceof MySQLConnection)
 		{
-			// TODO: create QueryHandler instance
+			queryhandler = new MySQLQueryHandler(
+					((MySQLConnection) aConnection).getConnection()
+			);
 		} else if (aConnection instanceof Neo4jConnection)
 		{
-			queryhandler = new Neo4jQueryHandler(((Neo4jConnection) aConnection).getDriver());
+			queryhandler = new Neo4jQueryHandler(
+					((Neo4jConnection) aConnection).getDriver()
+			);
 		}
 
 		return queryhandler;
@@ -67,7 +88,7 @@ public interface QueryHandlerInterface
 	/**
 	 * Prepares any necessary structures in the database and makes sure, that
 	 * all queries can be executed without structural error.
-	 *
+	 * <p>
 	 * This may rebuild the database and should result in an empty database.
 	 */
 	void setUpDatabase();

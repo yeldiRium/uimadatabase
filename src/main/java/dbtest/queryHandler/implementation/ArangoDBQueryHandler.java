@@ -1,5 +1,6 @@
 package dbtest.queryHandler.implementation;
 
+import com.arangodb.ArangoDB;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
@@ -16,6 +17,13 @@ import java.util.Set;
 
 public class ArangoDBQueryHandler extends AbstractQueryHandler
 {
+	protected ArangoDB arangodb;
+
+	public ArangoDBQueryHandler(ArangoDB arangodb)
+	{
+		this.arangodb = arangodb;
+	}
+
 	@Override
 	public void setUpDatabase()
 	{

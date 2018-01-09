@@ -9,6 +9,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
+import org.basex.api.client.ClientSession;
 
 import java.util.Collection;
 import java.util.Map;
@@ -16,6 +17,13 @@ import java.util.Set;
 
 public class BaseXQueryHandler extends AbstractQueryHandler
 {
+	protected ClientSession clientSession;
+
+	public BaseXQueryHandler(ClientSession clientSession)
+	{
+		this.clientSession = clientSession;
+	}
+
 	@Override
 	public void setUpDatabase()
 	{

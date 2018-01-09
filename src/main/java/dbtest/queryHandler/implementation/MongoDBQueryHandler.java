@@ -1,5 +1,6 @@
 package dbtest.queryHandler.implementation;
 
+import com.mongodb.MongoClient;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
@@ -16,6 +17,13 @@ import java.util.Set;
 
 public class MongoDBQueryHandler extends AbstractQueryHandler
 {
+	protected MongoClient mongoClient;
+
+	public MongoDBQueryHandler(MongoClient mongoClient)
+	{
+		this.mongoClient = mongoClient;
+	}
+
 	@Override
 	public void setUpDatabase()
 	{
