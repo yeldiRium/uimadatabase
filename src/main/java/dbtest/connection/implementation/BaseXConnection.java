@@ -45,12 +45,6 @@ public class BaseXConnection extends Connection
 	}
 
 	@Override
-	protected void createQueryHandler()
-	{
-		// TODO: create QueryHandler, once it is implemented
-	}
-
-	@Override
 	public void close()
 	{
 		try

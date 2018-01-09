@@ -50,12 +50,6 @@ public class Neo4jConnection extends Connection
 	}
 
 	@Override
-	protected void createQueryHandler()
-	{
-		this.queryHandler = new Neo4jQueryHandler(this.driver);
-	}
-
-	@Override
 	public void close()
 	{
 		this.driver.close();

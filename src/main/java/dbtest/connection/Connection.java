@@ -84,9 +84,14 @@ public abstract class Connection
 	}
 
 	/**
-	 * Instantiates a QueryHandler subclass.
+	 * Instantiates a QueryHandler subclass via the factory method on the Query-
+	 * HandlerInterface.
 	 */
-	protected abstract void createQueryHandler();
+	protected void createQueryHandler()
+	{
+		this.queryHandler =
+				QueryHandlerInterface.createQueryHandlerForConnection(this);
+	};
 
 	/**
 	 * @return A QueryHandlerInterface instance for this Connection's database.

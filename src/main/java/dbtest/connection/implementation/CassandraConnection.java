@@ -60,12 +60,6 @@ public class CassandraConnection extends Connection
 	}
 
 	@Override
-	protected void createQueryHandler()
-	{
-		// TODO: create QueryHandler, once it is implemented
-	}
-
-	@Override
 	public void close()
 	{
 		this.session.close();
