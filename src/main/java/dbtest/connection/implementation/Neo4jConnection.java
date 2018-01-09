@@ -1,6 +1,7 @@
 package dbtest.connection.implementation;
 
 import dbtest.connection.Connection;
+import dbtest.queryHandler.implementation.Neo4jQueryHandler;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
@@ -46,7 +47,7 @@ public class Neo4jConnection extends Connection
 	@Override
 	protected void createQueryHandler()
 	{
-		// TODO: create QueryHandler, once it is implemented
+		this.queryHandler = new Neo4jQueryHandler(this.driver);
 	}
 
 	@Override
