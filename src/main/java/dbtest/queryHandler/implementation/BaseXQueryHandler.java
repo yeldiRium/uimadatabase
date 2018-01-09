@@ -49,7 +49,9 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public void storeParagraph(Paragraph paragraph, JCas document, Paragraph previousParagraph)
+	public void storeParagraph(
+			Paragraph paragraph, JCas document, Paragraph previousParagraph
+	)
 	{
 
 	}
@@ -61,25 +63,42 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public void storeSentence(Sentence sentence, JCas document, Paragraph paragraph, Sentence previousSentence)
+	public void storeSentence(
+			Sentence sentence,
+			JCas document,
+			Paragraph paragraph,
+			Sentence previousSentence
+	)
 	{
 
 	}
 
 	@Override
-	public void storeSentence(Sentence sentence, JCas document, Paragraph paragraph)
+	public void storeSentence(
+			Sentence sentence,
+			JCas document,
+			Paragraph paragraph
+	)
 	{
 
 	}
 
 	@Override
-	public void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence, Token previousToken)
+	public void storeToken(
+			Token token,
+			JCas document,
+			Paragraph paragraph,
+			Sentence sentence,
+			Token previousToken
+	)
 	{
 
 	}
 
 	@Override
-	public void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence)
+	public void storeToken(
+			Token token, JCas document, Paragraph paragraph, Sentence sentence
+	)
 	{
 
 	}
@@ -97,7 +116,8 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public void populateCasWithDocument(CAS aCAS, String documentId) throws DocumentNotFoundException, QHException
+	public void populateCasWithDocument(CAS aCAS, String documentId)
+			throws DocumentNotFoundException, QHException
 	{
 
 	}
@@ -115,19 +135,24 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public int countElementsInDocumentOfType(String documentId, ElementType type) throws DocumentNotFoundException
+	public int countElementsInDocumentOfType(
+			String documentId, ElementType type
+	) throws DocumentNotFoundException
 	{
 		return 0;
 	}
 
 	@Override
-	public int countElementsOfTypeWithValue(ElementType type, String value) throws IllegalArgumentException
+	public int countElementsOfTypeWithValue(ElementType type, String value)
+			throws IllegalArgumentException
 	{
 		return 0;
 	}
 
 	@Override
-	public int countElementsInDocumentOfTypeWithValue(String documentId, ElementType type, String value) throws DocumentNotFoundException
+	public int countElementsInDocumentOfTypeWithValue(
+			String documentId, ElementType type, String value
+	) throws DocumentNotFoundException
 	{
 		return 0;
 	}
@@ -145,67 +170,84 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public Double calculateTTRForDocument(String documentId) throws DocumentNotFoundException
+	public Double calculateTTRForDocument(String documentId)
+			throws DocumentNotFoundException
 	{
 		return null;
 	}
 
 	@Override
-	public Map<String, Double> calculateTTRForCollectionOfDocuments(Collection<String> documentIds)
+	public Map<String, Double> calculateTTRForCollectionOfDocuments(
+			Collection<String> documentIds
+	)
 	{
 		return null;
 	}
 
 	@Override
-	public double calculateTermFrequencyWithDoubleNormForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
+	public double calculateTermFrequencyWithDoubleNormForLemmaInDocument(
+			String lemma, String documentId
+	) throws DocumentNotFoundException
 	{
 		return 0;
 	}
 
 	@Override
-	public double calculateTermFrequencyWithLogNormForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
+	public double calculateTermFrequencyWithLogNormForLemmaInDocument(
+			String lemma, String documentId
+	) throws DocumentNotFoundException
 	{
 		return 0;
 	}
 
 	@Override
-	public Map<String, Double> calculateTermFrequenciesForLemmataInDocument(String documentId) throws DocumentNotFoundException
+	public Map<String, Double> calculateTermFrequenciesForLemmataInDocument(
+			String documentId
+	) throws DocumentNotFoundException
 	{
 		return null;
 	}
 
 	@Override
-	public Iterable<String> getBiGramsFromDocument(String documentId) throws UnsupportedOperationException, DocumentNotFoundException
+	public Iterable<String> getBiGramsFromDocument(String documentId)
+			throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		return null;
 	}
 
 	@Override
-	public Iterable<String> getBiGramsFromAllDocuments() throws UnsupportedOperationException
+	public Iterable<String> getBiGramsFromAllDocuments()
+			throws UnsupportedOperationException
 	{
 		return null;
 	}
 
 	@Override
-	public Iterable<String> getBiGramsFromDocumentsInCollection(Collection<String> documentIds) throws UnsupportedOperationException, DocumentNotFoundException
+	public Iterable<String> getBiGramsFromDocumentsInCollection(
+			Collection<String> documentIds
+	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		return null;
 	}
 
 	@Override
-	public Iterable<String> getTriGramsFromDocument(String documentId) throws UnsupportedOperationException, DocumentNotFoundException
+	public Iterable<String> getTriGramsFromDocument(String documentId)
+			throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		return null;
 	}
 
 	@Override
-	public Iterable<String> getTriGramsFromAllDocuments() throws UnsupportedOperationException
+	public Iterable<String> getTriGramsFromAllDocuments()
+			throws UnsupportedOperationException
 	{
 		return null;
 	}
 
 	@Override
-	public Iterable<String> getTriGramsFromDocumentsInCollection(Collection<String> documentIds) throws UnsupportedOperationException, DocumentNotFoundException
+	public Iterable<String> getTriGramsFromDocumentsInCollection(
+			Collection<String> documentIds
+	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		return null;
 	}
