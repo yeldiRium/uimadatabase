@@ -1,10 +1,11 @@
 package dbtest.evaluations.collectionWriter;
 
+import dbtest.connection.Connection;
 import dbtest.connection.ConnectionManager;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.connection.implementation.Neo4jConnection;
-import dbtest.queryHandler.implementation.Neo4jQueryHandler;
+import dbtest.queryHandler.QueryHandlerInterface;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
@@ -14,7 +15,7 @@ import java.util.concurrent.ExecutionException;
 
 public class Neo4jCollectionWriter extends EvaluatingCollectionWriter
 {
-	private Neo4jQueryHandler queryHandler;
+	private QueryHandlerInterface queryHandler;
 
 	// UIMA Parameters
 	public static final String BLUB = "blub";
@@ -29,11 +30,9 @@ public class Neo4jCollectionWriter extends EvaluatingCollectionWriter
 		{
 			ConnectionResponse response = ConnectionManager.getInstance()
 					.submitRequest(request).get();
-			Neo4jConnection neo4jConnection = (Neo4jConnection) response
+			Connection connection = response
 					.getConnection(Neo4jConnection.class);
-			this.queryHandler = new Neo4jQueryHandler(
-					neo4jConnection.getDriver()
-			);
+			this.queryHandler = connection.getQueryHandler();
 		} catch (InterruptedException | ExecutionException e)
 		{
 			Thread.currentThread().interrupt();
