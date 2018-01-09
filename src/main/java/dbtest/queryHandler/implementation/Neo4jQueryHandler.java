@@ -17,6 +17,7 @@ import org.apache.uima.jcas.JCas;
 import org.neo4j.driver.v1.*;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Neo4jQueryHandler extends AbstractQueryHandler
@@ -650,7 +651,13 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String documentId
 	) throws DocumentNotFoundException
 	{
-		return 0;
+		Map<String, Integer> rtf = this.calculateRawTermFrequenciesInDocument(
+				documentId
+		);
+		return 0.5 + 0.5 * (
+				((double) rtf.getOrDefault(lemma, 0)) /
+						((double) Collections.max(rtf.values()))
+		);
 	}
 
 	@Override
@@ -659,7 +666,23 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String documentId
 	) throws DocumentNotFoundException
 	{
-		return 0;
+		double tf = 0;
+		try (Session session = this.driver.session())
+		{
+			Integer lemmaCount =
+					this.calculateRawTermFrequencyForLemmaInDocument(
+							lemma,
+							documentId
+					);
+
+			if (lemmaCount == 0)
+			{
+				return 1;
+			} else
+			{
+				return 1 + Math.log(tf);
+			}
+		}
 	}
 
 	@Override
@@ -667,13 +690,24 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String documentId
 	) throws DocumentNotFoundException
 	{
-		return null;
+		Map<String, Integer> rawTermFrequencies =
+				this.calculateRawTermFrequenciesInDocument(documentId);
+		Map<String, Double> termFrequencies = new ConcurrentHashMap<>();
+
+		double max = Collections.max(rawTermFrequencies.values());
+		rawTermFrequencies.entrySet().parallelStream().forEach(e -> {
+			termFrequencies.put(
+					e.getKey(),
+					0.5 + 0.5 * (e.getValue() / max)
+			);
+		});
+		return termFrequencies;
 	}
 
 	@Override
 	public double calculateInverseDocumentFrequency(String lemma)
 	{
-		return 0;
+		return Math.log((countElementsOfType(ElementType.Document) / (double) countDocumentsContainingLemma(lemma)));
 	}
 
 	@Override
