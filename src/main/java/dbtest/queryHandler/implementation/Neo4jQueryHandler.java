@@ -737,7 +737,22 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	calculateInverseDocumentFrequenciesForLemmataInDocument(String documentId)
 			throws DocumentNotFoundException
 	{
-		return null;
+		double docCount = (double) countElementsOfType(ElementType.Document);
+		Map<String, Double> inverseDocumentFrequencies =
+				new ConcurrentHashMap<>();
+		Set<String> lemmata = getLemmataForDocument(documentId);
+		Map<String, Integer> lemmaOccurenceCount =
+				this.countOccurencesForEachLemmaInAllDocuments();
+
+		lemmata.parallelStream().forEach(e -> {
+			inverseDocumentFrequencies.put(
+					e.replaceAll("\"", ""),
+					Math.log(docCount /
+							((double) lemmaOccurenceCount.getOrDefault(e, 0))
+					)
+			);
+		});
+		return inverseDocumentFrequencies;
 	}
 
 	@Override
@@ -746,7 +761,9 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String documentId
 	) throws DocumentNotFoundException
 	{
-		return 0;
+		return this.calculateTermFrequencyWithLogNormForLemmaInDocument(
+				lemma, documentId
+		) * this.calculateInverseDocumentFrequency(lemma);
 	}
 
 	@Override
@@ -754,13 +771,34 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String documentId
 	) throws DocumentNotFoundException
 	{
-		return null;
+		Map<String, Double> tf =
+				calculateTermFrequenciesForLemmataInDocument(documentId);
+		Map<String, Double> idf =
+				calculateInverseDocumentFrequenciesForLemmataInDocument(
+						documentId
+				);
+		Map<String, Double> tfidf = new ConcurrentHashMap<>();
+		tf.entrySet().parallelStream().forEach(
+				e -> tfidf.put(
+						e.getKey(),
+						e.getValue() * idf.get(e.getKey())
+				)
+		);
+		return tfidf;
 	}
 
 	@Override
-	public Map<String, Map<String, Double>> calculateTFIDFForLemmataInAllDocuments()
+	public Map<String, Map<String, Double>>
+	calculateTFIDFForLemmataInAllDocuments()
 	{
-		return null;
+		HashMap<String, Map<String, Double>> tfidfs = new HashMap<>();
+		this.getDocumentIds().forEach(documentId -> {
+			tfidfs.put(
+					documentId,
+					this.calculateTFIDFForLemmataInDocument(documentId)
+			);
+		});
+		return tfidfs;
 	}
 
 	@Override
