@@ -44,6 +44,12 @@ public class Neo4jConnection extends Connection
 	}
 
 	@Override
+	protected void createQueryHandler()
+	{
+		// TODO: create QueryHandler, once it is implemented
+	}
+
+	@Override
 	public void close()
 	{
 		this.driver.close();

@@ -1,5 +1,7 @@
 package dbtest.connection;
 
+import dbtest.queryHandler.QueryHandlerInterface;
+
 import java.util.logging.Logger;
 
 /**
@@ -19,6 +21,8 @@ public abstract class Connection
 	protected final int sleepTime = 500;
 	protected boolean isEstablished = false;
 
+	protected QueryHandlerInterface queryHandler;
+
 	/**
 	 * Tries regularly to establish the connection via calling #tryToConnect.
 	 * <p>
@@ -34,10 +38,11 @@ public abstract class Connection
 			{
 				LOGGER.fine("Trying to connect... - "
 						+ this.getClass().getName());
-				if (tryToConnect())
+				if (this.tryToConnect())
 				{
 					LOGGER.fine("Connection for " + this.getClass().getName()
 							+ " successful!");
+					this.createQueryHandler();
 					isEstablished = true;
 					return;
 				} else
@@ -72,5 +77,18 @@ public abstract class Connection
 	public boolean isEstablished()
 	{
 		return this.isEstablished;
+	}
+
+	/**
+	 * Instantiates a QueryHandler subclass.
+	 */
+	protected abstract void createQueryHandler();
+
+	/**
+	 * @return A QueryHandlerInterface instance for this Connection's database.
+	 */
+	public QueryHandlerInterface getQueryHandler()
+	{
+		return this.queryHandler;
 	}
 }
