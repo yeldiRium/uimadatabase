@@ -38,6 +38,40 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		this.driver = driver;
 	}
 
+	/**
+	 * No need for setup, since any structure in neo4j is created by inserting.
+	 */
+	@Override
+	public void setUpDatabase()
+	{
+	}
+
+	/**
+	 * Clear content in chunks of 50k Nodes/Relationships.
+	 */
+	@Override
+	public void clearDatabase()
+	{
+		try (Session session = this.driver.session())
+		{
+			session.writeTransaction(tx -> {
+				StatementResult result;
+				
+				do
+				{
+					result = tx.run("MATCH (n)\n" +
+							"OPTIONAL MATCH (n)-[r]-()\n" +
+							"WITH n,r LIMIT 50000\n" +
+							"DELETE n,r\n" +
+							"RETURN count(n) as deletedNodesCount");
+
+				} while (result.next().get("deletedNodesCount").asInt() > 0);
+
+				return 1;
+			});
+		}
+	}
+
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
 	{

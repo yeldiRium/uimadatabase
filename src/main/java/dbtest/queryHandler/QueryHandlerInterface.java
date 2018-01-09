@@ -46,6 +46,24 @@ public interface QueryHandlerInterface
 	}
 
 	//--------------------------------------------------------------------------
+	// Setup
+	//--------------------------------------------------------------------------
+
+	/**
+	 * Prepares any necessary structures in the database and makes sure, that
+	 * all queries can be executed without structural error.
+	 *
+	 * This may rebuild the database and should result in an empty database.
+	 */
+	void setUpDatabase();
+
+	/**
+	 * Clears the database from any content. However, it leaves any necessary
+	 * structures intact.
+	 */
+	void clearDatabase();
+
+	//--------------------------------------------------------------------------
 	// Raw Querying
 	//
 	// Meaning everything that has no analysis directly attached. Counting ele-
