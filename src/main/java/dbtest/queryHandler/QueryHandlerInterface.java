@@ -413,17 +413,18 @@ public interface QueryHandlerInterface
 	//--------------------------------------------------------------------------
 	// Utility
 	//
-	// Bi-Grams are all pairs of neighbouring tokens in a string.
-	// Tri-Grams are thus all triplets of neighbouring tokens in a string.
+	// Bi-Grams are pairs of neighbouring tokens in a text.
+	// Tri-Grams are thus triplets of neighbouring tokens in a text.
 	//--------------------------------------------------------------------------
 
 	/**
-	 * <p>A List of all token-bi-grams in the specified document.</p>
+	 * A List of all token-bi-grams in the specified document.
 	 * The bi-gram is represented by a string, which is the product
 	 * of the concatenation of both parts of the bi-gramm, spepareted by a '-'.
 	 *
 	 * @param documentId the specified document's id.
-	 * @return an ArrayList(String bi-gram)
+	 * @return an Iterable of bi-grams.
+	 * @throws DocumentNotFoundException if the documentId can't be found in db.
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
@@ -432,23 +433,23 @@ public interface QueryHandlerInterface
 
 	/**
 	 * A list of all token-bi-grams from all documents.
-	 * <b>Warning:</b> May produce heavy server load.
-	 * See {@link #getBiGramsFromDocument getBiGramsFromDocument} for details.
 	 *
-	 * @return an ArrayList(String bi-gram).
+	 * @return an Iterable of bi-grams.
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
 	Iterable<String> getBiGramsFromAllDocuments()
-			throws UnsupportedOperationException, DocumentNotFoundException;
+			throws UnsupportedOperationException;
 
 	/**
 	 * A list of all token-bi-grams from all documents specified in the collec-
 	 * tion.
-	 * See {@link #getBiGramsFromDocument getBiGramsFromDocument} for details.
+	 *
+	 * If at least one of the documentIds is found, no Exception is thrown for
+	 * other ids, which can't be found.
 	 *
 	 * @param documentIds the specified document's id.
-	 * @return an ArrayList(String bi-gram).
+	 * @return an Iterable of bi-grams.
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
@@ -457,12 +458,13 @@ public interface QueryHandlerInterface
 	) throws UnsupportedOperationException, DocumentNotFoundException;
 
 	/**
-	 * <p>A List of all token-tri-grams in the specified document.</p>
+	 * A List of all token-tri-grams in the specified document.
 	 * The tri-gram is represented by a string, which is the product
-	 * of the concatenation of all parts of the tri-gramm, spepareted by a '-'.
+	 * of the concatenation of all parts of the tri-gram, spepareted by '-'.
 	 *
 	 * @param documentId the specified document's id.
-	 * @return an ArrayList(String tri-gram)
+	 * @return an Iterable of tri-grams.
+	 * @throws DocumentNotFoundException if the documentId can't be found in db.
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
@@ -470,24 +472,25 @@ public interface QueryHandlerInterface
 			throws UnsupportedOperationException, DocumentNotFoundException;
 
 	/**
-	 * A list of all token-tri-grams from all documents. <b>Warning:</b> May
-	 * produce heavy server load.
-	 * See {@link #getTriGramsFromDocument getTriGramsFromDocument} for details.
+	 * A list of all token-tri-grams from all documents.
 	 *
-	 * @return an ArrayList(String tri-gram).
+	 * @return an Iterable of tri-grams.
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
 	Iterable<String> getTriGramsFromAllDocuments()
-			throws UnsupportedOperationException, DocumentNotFoundException;
+			throws UnsupportedOperationException;
 
 	/**
 	 * A list of all token-tri-grams from all documents specified in the
 	 * collection.
-	 * See {@link #getTriGramsFromDocument getTriGramsFromDocument} for details.
+	 * <p>
+	 * If at least one of the documentIds is found, no Exception is thrown for
+	 * other ids, which can't be found.
 	 *
-	 * @param documentIds the specified documents id's.
-	 * @return an ArrayList(String tri-gram).
+	 * @param documentIds the specified document's ids.
+	 * @return an Iterable of tri-grams.
+	 * @throws DocumentNotFoundException     if none of the documentIds is found.
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */

@@ -181,7 +181,7 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public Iterable<String> getBiGramsFromAllDocuments() throws UnsupportedOperationException, DocumentNotFoundException
+	public Iterable<String> getBiGramsFromAllDocuments() throws UnsupportedOperationException
 	{
 		return null;
 	}
@@ -199,7 +199,7 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public Iterable<String> getTriGramsFromAllDocuments() throws UnsupportedOperationException, DocumentNotFoundException
+	public Iterable<String> getTriGramsFromAllDocuments() throws UnsupportedOperationException
 	{
 		return null;
 	}

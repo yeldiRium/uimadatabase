@@ -736,7 +736,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 
 	@Override
 	public Iterable<String> getBiGramsFromAllDocuments()
-			throws UnsupportedOperationException, DocumentNotFoundException
+			throws UnsupportedOperationException
 	{
 		return null;
 	}
@@ -758,7 +758,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 
 	@Override
 	public Iterable<String> getTriGramsFromAllDocuments()
-			throws UnsupportedOperationException, DocumentNotFoundException
+			throws UnsupportedOperationException
 	{
 		return null;
 	}
