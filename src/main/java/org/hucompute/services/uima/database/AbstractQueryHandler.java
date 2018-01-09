@@ -1,6 +1,5 @@
 package org.hucompute.services.uima.database;
 
-import org.hucompute.services.uima.database.neo4j.data.Const;
 import org.json.JSONObject;
 
 import java.util.ArrayDeque;

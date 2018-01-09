@@ -4,7 +4,6 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.jcas.JCas;
-import org.hucompute.services.uima.database.neo4j.data.Const;
 import org.json.JSONObject;
 
 import java.util.*;

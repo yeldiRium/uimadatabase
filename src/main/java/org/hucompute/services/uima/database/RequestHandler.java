@@ -3,10 +3,8 @@ package org.hucompute.services.uima.database;
 import com.datastax.driver.core.exceptions.NoHostAvailableException;
 import org.hucompute.services.uima.database.cassandra.CassandraIndexWriter;
 import org.hucompute.services.uima.database.cassandra.CassandraQueryHandler;
-import org.hucompute.services.uima.database.neo4j.Neo4jQueryHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.neo4j.driver.v1.exceptions.ServiceUnavailableException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,16 +88,6 @@ public abstract class RequestHandler
 			{
 				callables.add(new CassandraQueryHandler(query));
 			} catch (NoHostAvailableException e)
-			{
-				System.out.println(e.toString());
-			}
-
-			/* Neo4j callable */
-			// TODO:check if online
-			try
-			{
-				callables.add(new Neo4jQueryHandler(query));
-			} catch (ServiceUnavailableException e)
 			{
 				System.out.println(e.toString());
 			}
