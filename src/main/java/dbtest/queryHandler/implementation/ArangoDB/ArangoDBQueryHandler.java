@@ -11,7 +11,6 @@ import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
-import dbtest.queryHandler.implementation.Neo4jQueryHandler;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
@@ -19,9 +18,11 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
-import org.neo4j.driver.v1.Session;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class ArangoDBQueryHandler extends AbstractQueryHandler
 {
@@ -505,13 +506,37 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public Iterable<String> getDocumentIds()
 	{
-		return null;
+		String query = "FOR d IN " + ElementType.Document + " RETURN d";
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, null, null, BaseDocument.class
+		);
+
+		Stream<String> keyStream = StreamSupport
+				.stream(result.spliterator(), false)
+				.map(BaseDocument::getKey);
+
+		return keyStream::iterator;
 	}
 
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
 	{
-		return null;
+		String query = "FOR e IN GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @documentHasLemma}) RETURN DISTINCT e";
+		Map<String, Object> bindParams = new HashMap<>();
+		bindParams.put("graphName", graphName);
+		bindParams.put(
+				"documentHandle", ElementType.Document + "/" + documentId
+		);
+		bindParams.put(
+				"documentHasLemma", Relationship.DocumentHasLemma.toString()
+		);
+		ArangoCursor<BaseDocument> result = this.db.query(
+					query, bindParams, null, BaseDocument.class
+		);
+		return StreamSupport.stream(result.spliterator(), false)
+				.map(lemmaObject ->
+						lemmaObject.getAttribute("value").toString())
+				.collect(Collectors.toCollection(HashSet::new));
 	}
 
 	@Override
