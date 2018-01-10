@@ -520,6 +520,15 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		}
 	}
 
+	/**
+	 * Since every Token is connected to exactly one Document (the one it is
+	 * contained in), we do not need to query the Documents and can instead
+	 * count, in how many Tokens a Lemma occurs.
+	 *
+	 * This can only be a problem, if there are dangling Tokens (which do not
+	 * have a connection to a Document). However, this should never happen.
+	 * @return The amount of occurences of each Lemma an all Documents.
+	 */
 	@Override
 	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
 	{
@@ -527,7 +536,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(tx ->
-					tx.run("MATCH (:DOCUMENT)-[:inDocument]-(l:LEMMA) RETURN l.value AS LEMMA, count(l) AS count;")
+					tx.run("MATCH (:" + ElementType.Token + ")-[:" + Relationship.TokenHasLemma + "]-(l:LEMMA) RETURN l.value AS lemma, count(l) AS count;")
 			);
 
 			while (result.hasNext())
