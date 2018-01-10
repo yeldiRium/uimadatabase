@@ -4,6 +4,7 @@ import dbtest.connection.Connection;
 import dbtest.connection.implementation.*;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
+import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import dbtest.queryHandler.implementation.*;
 import dbtest.queryHandler.implementation.ArangoDB.ArangoDBQueryHandler;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
@@ -237,9 +238,11 @@ public interface QueryHandlerInterface
 	 * @param type       Instance of Const.TYPE, namely TOKEN, LEMMA, POS,
 	 *                   DOCUMENT, SENTENCE or PARAGRAPH.
 	 * @return An integer.
+	 * @throws DocumentNotFoundException if the documentId can't be found in db
+	 * @throws TypeNotCountableException if the given type can't be counted.
 	 */
 	int countElementsInDocumentOfType(String documentId, ElementType type)
-			throws DocumentNotFoundException;
+			throws DocumentNotFoundException, TypeNotCountableException;
 
 	/**
 	 * Counts all elements of <i>type</i> across all documents with given
@@ -270,7 +273,7 @@ public interface QueryHandlerInterface
 	 */
 	int countElementsInDocumentOfTypeWithValue(
 			String documentId, ElementType type, String value
-	) throws DocumentNotFoundException;
+	) throws DocumentNotFoundException, TypeNotCountableException;
 
 	/**
 	 * @return Map from lemma value to occurence count.

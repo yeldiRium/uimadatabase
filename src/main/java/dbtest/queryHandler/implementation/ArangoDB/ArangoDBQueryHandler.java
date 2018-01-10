@@ -11,18 +11,18 @@ import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
+import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-import net.xqj.basex.bin.E;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
-import org.neo4j.driver.v1.Value;
+import scala.Int;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -545,7 +545,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				"documentId", ElementType.Document + "/" + documentId
 		);
 		ArangoCursor<BaseDocument> result = this.db.query(
-					query, bindParams, null, BaseDocument.class
+				query, bindParams, null, BaseDocument.class
 		);
 		return StreamSupport.stream(result.spliterator(), false)
 				.map(lemmaObject ->
@@ -703,36 +703,175 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countElementsOfType(ElementType type)
 	{
-		return 0;
+		String query = "RETURN {'count': LENGTH(@typeCollection)}";
+		Map<String, Object> bindParam = new HashMap<>();
+		bindParam.put("typeCollection", type.toString());
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, bindParam, null, BaseDocument.class
+		);
+		return Integer.parseInt(
+				result.next().getAttribute("count").toString()
+		);
 	}
 
 	@Override
 	public int countElementsInDocumentOfType(
 			String documentId, ElementType type
-	) throws DocumentNotFoundException
+	) throws DocumentNotFoundException, TypeNotCountableException
 	{
-		return 0;
+		String query = "WITH @documentCollection, @typeCollection, @relationship " +
+				"FOR element " +
+				"   IN OUTBOUND @documentId " +
+				"   @relationship " +
+				"   COLLECT WITH COUNT INTO count" +
+				"   RETURN count";
+		Map<String, Object> bindParams = new HashMap<>();
+		bindParams.put(
+				"documentCollection", ElementType.Document.toString()
+		);
+		bindParams.put("typeCollection", type.toString());
+		bindParams.put(
+				"documentId",
+				ElementType.Document.toString() + "/" + documentId
+		);
+		bindParams.put(
+				"relationship",
+				this.getRelationshipFromDocumentToType(type)
+		);
+
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, bindParams, null, BaseDocument.class
+		);
+		return Integer.parseInt(
+				result.next().getAttribute("count").toString()
+		);
 	}
 
 	@Override
 	public int countElementsOfTypeWithValue(ElementType type, String value)
 			throws IllegalArgumentException
 	{
-		return 0;
+		String query = "FOR element IN @typeCollection" +
+				"   FILTER element.value == @value" +
+				"   COLLECT WITH COUNT INTO count" +
+				"RETURN count";
+		Map<String, Object> bindParam = new HashMap<>();
+		bindParam.put("typeCollection", type.toString());
+		bindParam.put("value", value);
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, bindParam, null, BaseDocument.class
+		);
+		return Integer.parseInt(
+				result.next().getAttribute("count").toString()
+		);
 	}
 
 	@Override
 	public int countElementsInDocumentOfTypeWithValue(
 			String documentId, ElementType type, String value
-	) throws DocumentNotFoundException
+	) throws DocumentNotFoundException, TypeNotCountableException
 	{
-		return 0;
+		String query = "WITH @documentCollection, @typeCollection, @relationship " +
+				"FOR element " +
+				"   IN OUTBOUND @documentId " +
+				"   @relationship " +
+				"   FILTER element.value == @value" +
+				"   COLLECT WITH COUNT INTO count" +
+				"   RETURN count";
+		Map<String, Object> bindParams = new HashMap<>();
+		bindParams.put(
+				"documentCollection", ElementType.Document.toString()
+		);
+		bindParams.put("typeCollection", type.toString());
+		bindParams.put(
+				"documentId",
+				ElementType.Document.toString() + "/" + documentId
+		);
+		bindParams.put("value", value);
+		bindParams.put(
+				"relationship",
+				this.getRelationshipFromDocumentToType(type)
+		);
+
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, bindParams, null, BaseDocument.class
+		);
+		return Integer.parseInt(
+				result.next().getAttribute("count").toString()
+		);
 	}
 
+	/**
+	 * @param type The connected Type.
+	 * @return The relationship connecting Document to the given Type.
+	 * @throws TypeNotCountableException If the given Type is not countable.
+	 */
+	private Relationship getRelationshipFromDocumentToType(ElementType type)
+			throws TypeNotCountableException
+	{
+		switch (type)
+		{
+			case Paragraph:
+				return Relationship.DocumentHasParagraph;
+			case Sentence:
+				return Relationship.DocumentHasSentence;
+			case Token:
+				return Relationship.DocumentHasToken;
+			case Lemma:
+				return Relationship.DocumentHasLemma;
+			default:
+				throw new TypeNotCountableException();
+		}
+	}
+
+	/**
+	 * Since every Token is connected to exactly one Document (the one it is
+	 * contained in), we do not need to query the Documents and can instead
+	 * count, in how many Tokens a Lemma occurs.
+	 *
+	 * This can only be a problem, if there are dangling Tokens (which do not
+	 * have a connection to a Document). However, this should never happen.
+	 * @return The amount of occurences of each Lemma an all Documents.
+	 */
 	@Override
 	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
 	{
-		return null;
+		Map<String, Integer> lemmaOccurenceCount = new HashMap<>();
+		String query = "WITH @lemmaCollection, @tokenHasLemma, @tokenCollection" +
+				"FOR lemma IN @lemmaCollection" +
+				"   LET occurenceCount = (" +
+				"       FOR token IN INBOUND lemma @tokenHasLemma" +
+				"           COLLECT WITH COUNT INTO count" +
+				"           RETURN count" +
+				"   ) " +
+				"   RETURN {'lemma': lemma.value, 'count': occurenceCount}";
+		Map<String, Object> bindParams = new HashMap<>();
+		bindParams.put(
+				"lemmaCollection",
+				ElementType.Lemma.toString()
+		);
+		bindParams.put(
+				"tokenHasLemma",
+				Relationship.TokenHasLemma.toString()
+		);
+		bindParams.put(
+				"tokenCollection",
+				ElementType.Token.toString()
+		);
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, bindParams, null, BaseDocument.class
+		);
+
+		while (result.hasNext())
+		{
+			BaseDocument obj = result.next();
+			lemmaOccurenceCount.put(
+					obj.getAttribute("lemma").toString(),
+					Integer.parseInt(obj.getAttribute("count").toString())
+			);
+		}
+
+		return lemmaOccurenceCount;
 	}
 
 	@Override
