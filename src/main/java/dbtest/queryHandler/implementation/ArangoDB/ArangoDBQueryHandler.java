@@ -521,7 +521,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
 	{
-		String query = "FOR e IN GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @documentHasLemma}) RETURN DISTINCT e";
+		String query = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @documentHasLemma})";
 		Map<String, Object> bindParams = new HashMap<>();
 		bindParams.put("graphName", graphName);
 		bindParams.put(
