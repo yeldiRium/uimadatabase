@@ -17,6 +17,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import net.xqj.basex.bin.E;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.fit.util.JCasUtil;
@@ -525,14 +526,23 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
 	{
-		String query = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @documentHasLemma, includeData: true})";
+		String query = "WITH @documentCollection, @documentHasLemma, @lemmaCollection " +
+				"FOR lemma IN OUTBOUND @documentId @documentHasLemma " +
+				"RETURN DISTINCT lemma";
 		Map<String, Object> bindParams = new HashMap<>();
-		bindParams.put("graphName", graphName);
 		bindParams.put(
-				"documentHandle", ElementType.Document + "/" + documentId
+				"documentCollection",
+				ElementType.Document.toString()
 		);
 		bindParams.put(
 				"documentHasLemma", Relationship.DocumentHasLemma.toString()
+		);
+		bindParams.put(
+				"lemmaCollection",
+				ElementType.Lemma.toString()
+		);
+		bindParams.put(
+				"documentId", ElementType.Document + "/" + documentId
 		);
 		ArangoCursor<BaseDocument> result = this.db.query(
 					query, bindParams, null, BaseDocument.class
@@ -562,16 +572,23 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 					.toString());
 
 			// query all Tokens in the Document
-			String tokenQuery = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @documentHasToken, includeData: true})";
+			String tokenQuery = "WITH @documentCollection, @documentHasToken, @tokenCollection " +
+					"FOR token IN OUTBOUND @documentId @documentHasToken " +
+					"RETURN DISTINCT token";
 			Map<String, Object> bindParams = new HashMap<>();
-			bindParams.put("graphName", graphName);
 			bindParams.put(
-					"documentHandle",
-					ElementType.Document.toString() + "/" + documentId
+					"documentCollection", ElementType.Document.toString()
 			);
 			bindParams.put(
 					"documentHasToken",
 					Relationship.DocumentHasToken.toString()
+			);
+			bindParams.put(
+					"tokenCollection", ElementType.Token.toString()
+			);
+			bindParams.put(
+					"documentId",
+					ElementType.Document.toString() + "/" + documentId
 			);
 			ArangoCursor<BaseDocument> result = this.db.query(
 					tokenQuery, bindParams, null, BaseDocument.class
@@ -589,14 +606,21 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				);
 
 				// query Lemmata connected to Token (probably only one)
-				String lemmaQuery = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @tokenHasLemma, includeData: true}";
+				String lemmaQuery = "WITH @tokenCollection, @tokenHasLemma, @lemmaCollection " +
+						"FOR lemma IN OUTBOUND @tokenId @tokenHasLemma " +
+						"RETURN DISTINCT lemma";
 				Map<String, Object> lemmaParams = new HashMap<>();
-				lemmaParams.put("graphName", graphName);
-				lemmaParams.put("documentHandle", tokenObject.getId());
+				lemmaParams.put(
+						"tokenCollection", ElementType.Token.toString()
+				);
 				lemmaParams.put(
 						"tokenHasLemma",
 						Relationship.TokenHasLemma.toString()
 				);
+				lemmaParams.put(
+						"lemmaCollection", ElementType.Lemma.toString()
+				);
+				lemmaParams.put("tokenId", tokenObject.getId());
 				ArangoCursor<BaseDocument> lemmaResult = this.db.query(
 						lemmaQuery, lemmaParams, null, BaseDocument.class
 				);
@@ -614,14 +638,19 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				}
 
 				// query POS connected to Token (probably only one)
-				String posQuery = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @tokenAtPos, includeData: true}";
+				String posQuery = "WITH @tokenCollection, @tokenAtPos, @posCollection " +
+						"FOR pos IN OUTBOUND @tokenId @tokenAtPos " +
+						"RETURN DISTINCT pos";
 				Map<String, Object> posParams = new HashMap<>();
-				posParams.put("graphName", graphName);
-				posParams.put("documentHandle", tokenObject.getId());
+				posParams.put(
+						"tokenCollection", ElementType.Token.toString()
+				);
 				posParams.put(
 						"tokenAtPos",
 						Relationship.TokenAtPos.toString()
 				);
+				posParams.put("posCollection", ElementType.Pos.toString());
+				posParams.put("tokenId", tokenObject.getId());
 				ArangoCursor<BaseDocument> posResult = this.db.query(
 						posQuery, posParams, null, BaseDocument.class
 				);
@@ -665,7 +694,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		ArangoCursor<BaseDocument> result = this.db.query(
 				query, bindParam, null, BaseDocument.class
 		);
-		
+
 		return Integer.parseInt(
 				result.next().getAttribute("count").toString()
 		);
