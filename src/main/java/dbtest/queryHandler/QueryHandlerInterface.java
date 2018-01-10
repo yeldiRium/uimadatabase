@@ -198,6 +198,8 @@ public interface QueryHandlerInterface
 
 	/**
 	 * Retrieves all stored objects in JCas format.
+	 * Produces a Document -> Token -> Lemma/Pos structure. No paragraphs and
+	 * sentences anymore.
 	 *
 	 * @param aCAS       The CAS to populate with the found data.
 	 * @param documentId The document whose data shall be used.
