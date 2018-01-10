@@ -11,13 +11,17 @@ import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.neo4j.driver.v1.Value;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -543,7 +547,103 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	public void populateCasWithDocument(CAS aCAS, String documentId)
 			throws DocumentNotFoundException, QHException
 	{
+		try
+		{
+			BaseDocument documentObject = this.db
+					.collection(ElementType.Document.toString())
+					.getDocument(documentId, BaseDocument.class);
 
+			DocumentMetaData meta = DocumentMetaData.create(aCAS);
+			meta.setDocumentId(documentObject.getAttribute("id")
+					.toString());
+			aCAS.setDocumentLanguage(documentObject.getAttribute("language")
+					.toString());
+			aCAS.setDocumentText(documentObject.getAttribute("text")
+					.toString());
+
+			// query all Tokens in the Document
+			String tokenQuery = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @documentHasToken})";
+			Map<String, Object> bindParams = new HashMap<>();
+			bindParams.put("graphName", graphName);
+			bindParams.put(
+					"documentHandle",
+					ElementType.Document.toString() + "/" + documentId
+			);
+			bindParams.put(
+					"documentHasToken",
+					Relationship.DocumentHasToken.toString()
+			);
+			ArangoCursor<BaseDocument> result = this.db.query(
+					tokenQuery, bindParams, null, BaseDocument.class
+			);
+
+			// iterate over Tokens
+			while (result.hasNext())
+			{
+				BaseDocument tokenObject = result.next();
+
+				Token xmiToken = new Token(
+						aCAS.getJCas(),
+						Integer.parseInt(tokenObject.getAttribute("begin").toString()),
+						Integer.parseInt(tokenObject.getAttribute("end").toString())
+				);
+
+				// query Lemmata connected to Token (probably only one)
+				String lemmaQuery = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @tokenHasLemma}";
+				Map<String, Object> lemmaParams = new HashMap<>();
+				lemmaParams.put("graphName", graphName);
+				lemmaParams.put("documentHandle", tokenObject.getId());
+				lemmaParams.put(
+						"tokenHasLemma",
+						Relationship.TokenHasLemma.toString()
+				);
+				ArangoCursor<BaseDocument> lemmaResult = this.db.query(
+						lemmaQuery, lemmaParams, null, BaseDocument.class
+				);
+				while (lemmaResult.hasNext())
+				{
+					BaseDocument lemmaObject = lemmaResult.next();
+					Lemma lemma = new Lemma(
+							aCAS.getJCas(),
+							xmiToken.getBegin(),
+							xmiToken.getEnd()
+					);
+					lemma.setValue(lemmaObject.getAttribute("value").toString());
+					lemma.addToIndexes();
+					xmiToken.setLemma(lemma);
+				}
+
+				// query POS connected to Token (probably only one)
+				String posQuery = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @tokenAtPos}";
+				Map<String, Object> posParams = new HashMap<>();
+				posParams.put("graphName", graphName);
+				posParams.put("documentHandle", tokenObject.getId());
+				posParams.put(
+						"tokenAtPos",
+						Relationship.TokenAtPos.toString()
+				);
+				ArangoCursor<BaseDocument> posResult = this.db.query(
+						posQuery, posParams, null, BaseDocument.class
+				);
+				while (posResult.hasNext())
+				{
+					BaseDocument posObject = posResult.next();
+					POS pos = new POS(
+							aCAS.getJCas(),
+							xmiToken.getBegin(),
+							xmiToken.getEnd()
+					);
+					pos.setPosValue(posObject.getAttribute("value").toString());
+					pos.addToIndexes();
+					xmiToken.setPos(pos);
+				}
+
+				xmiToken.addToIndexes();
+			}
+		} catch (CASException e)
+		{
+			throw new QHException(e);
+		}
 	}
 
 	@Override
