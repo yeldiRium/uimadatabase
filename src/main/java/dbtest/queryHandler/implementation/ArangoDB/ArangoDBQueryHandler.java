@@ -1,4 +1,4 @@
-package dbtest.queryHandler.implementation;
+package dbtest.queryHandler.implementation.ArangoDB;
 
 import com.arangodb.ArangoDB;
 import com.arangodb.entity.EdgeDefinition;
