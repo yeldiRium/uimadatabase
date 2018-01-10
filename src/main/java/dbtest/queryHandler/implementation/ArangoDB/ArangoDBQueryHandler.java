@@ -525,7 +525,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
 	{
-		String query = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @documentHasLemma})";
+		String query = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @documentHasLemma, includeData: true})";
 		Map<String, Object> bindParams = new HashMap<>();
 		bindParams.put("graphName", graphName);
 		bindParams.put(
@@ -562,7 +562,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 					.toString());
 
 			// query all Tokens in the Document
-			String tokenQuery = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @documentHasToken})";
+			String tokenQuery = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @documentHasToken, includeData: true})";
 			Map<String, Object> bindParams = new HashMap<>();
 			bindParams.put("graphName", graphName);
 			bindParams.put(
@@ -589,7 +589,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				);
 
 				// query Lemmata connected to Token (probably only one)
-				String lemmaQuery = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @tokenHasLemma}";
+				String lemmaQuery = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @tokenHasLemma, includeData: true}";
 				Map<String, Object> lemmaParams = new HashMap<>();
 				lemmaParams.put("graphName", graphName);
 				lemmaParams.put("documentHandle", tokenObject.getId());
@@ -614,7 +614,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				}
 
 				// query POS connected to Token (probably only one)
-				String posQuery = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @tokenAtPos}";
+				String posQuery = "RETURN DISTINCT GRAPH_NEIGHBORS(@graphName, @documentHandle, {edgeCollectionRestriction: @tokenAtPos, includeData: true}";
 				Map<String, Object> posParams = new HashMap<>();
 				posParams.put("graphName", graphName);
 				posParams.put("documentHandle", tokenObject.getId());
