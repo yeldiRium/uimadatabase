@@ -61,6 +61,7 @@ services:
       - ARANGODB_PORT=8529
       - ARANGODB_USER=root
       - ARANGODB_PASS=root
+      - ARANGODB_DB=uimadatabase
       # See README.txt in dbs/basex for details on:
       - BASEX_HOST=basex
       - BASEX_PORT=1984

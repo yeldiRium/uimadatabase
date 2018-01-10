@@ -1,6 +1,7 @@
 package dbtest.queryHandler.implementation;
 
 import com.arangodb.ArangoDB;
+import com.arangodb.entity.EdgeDefinition;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
@@ -11,29 +12,150 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ArangoDBQueryHandler extends AbstractQueryHandler
 {
+	public enum Relationship
+	{
+		DocumentHasParagraph, DocumentHasSentence, DocumentHasToken,
+		DocumentHasLemma,
+		SentenceInParagraph, TokenInParagraph,
+		TokenInSentence,
+		TokenHasLemma, TokenAtPos,
+		NextParagraph, NextSentence, NextToken
+	}
+
 	protected ArangoDB arangodb;
+	protected String dbName;
+	protected String graphName;
 
 	public ArangoDBQueryHandler(ArangoDB arangodb)
 	{
 		this.arangodb = arangodb;
+		this.dbName = System.getenv("ARANGODB_DB");
+		this.graphName = "uimadatabase";
 	}
 
+	/**
+	 * Creates a collection for each kind of vertex and for each kind of rela-
+	 * tionship (edge).
+	 * This makes queries somewhat verbose, but makes traversal efficient.
+	 * <p>
+	 * The less efficient alternative would be to use heterogeneous collections
+	 * for edges and maybe even for vertices. This would make some queries sim-
+	 * pler, but more cpu-intensive to execute.
+	 */
 	@Override
 	public void setUpDatabase()
 	{
+		this.arangodb.createDatabase(this.dbName);
 
+		Arrays.stream(ElementType.values()).parallel()
+				.map(Enum::toString)
+				.forEach(vertexName -> {
+					this.arangodb.db(this.dbName).createCollection(vertexName);
+				});
+
+		Arrays.stream(Relationship.values()).parallel()
+				.map(Enum::toString)
+				.forEach(vertexName -> {
+					this.arangodb.db(this.dbName).createCollection(vertexName);
+				});
+
+		Collection<EdgeDefinition> edgeDefinitions = new ArrayList<>();
+
+		// Since each relationship has different from/to definitions, we unfor-
+		// tunately can't create them automatically. Except maybe by changing
+		// the enum or adding a map for the from/to definitions, but that
+		// probably wouldn't make the code better/more readable/anything.
+		edgeDefinitions.add(
+				new EdgeDefinition()
+						.collection(Relationship.DocumentHasParagraph.toString())
+						.from(ElementType.Document.toString())
+						.to(ElementType.Paragraph.toString())
+		);
+		edgeDefinitions.add(
+				new EdgeDefinition()
+						.collection(Relationship.DocumentHasSentence.toString())
+						.from(ElementType.Document.toString())
+						.to(ElementType.Sentence.toString())
+		);
+		edgeDefinitions.add(
+				new EdgeDefinition()
+						.collection(Relationship.DocumentHasToken.toString())
+						.from(ElementType.Document.toString())
+						.to(ElementType.Token.toString())
+		);
+		edgeDefinitions.add(
+				new EdgeDefinition()
+						.collection(Relationship.DocumentHasLemma.toString())
+						.from(ElementType.Document.toString())
+						.to(ElementType.Lemma.toString())
+		);
+		edgeDefinitions.add(
+				new EdgeDefinition()
+						.collection(Relationship.SentenceInParagraph.toString())
+						.from(ElementType.Sentence.toString())
+						.to(ElementType.Paragraph.toString())
+		);
+		edgeDefinitions.add(
+				new EdgeDefinition()
+						.collection(Relationship.TokenInParagraph.toString())
+						.from(ElementType.Token.toString())
+						.to(ElementType.Paragraph.toString())
+		);
+		edgeDefinitions.add(
+				new EdgeDefinition()
+						.collection(Relationship.TokenInSentence.toString())
+						.from(ElementType.Token.toString())
+						.to(ElementType.Sentence.toString())
+		);
+		edgeDefinitions.add(
+				new EdgeDefinition()
+						.collection(Relationship.TokenHasLemma.toString())
+						.from(ElementType.Token.toString())
+						.to(ElementType.Lemma.toString())
+		);
+		edgeDefinitions.add(
+				new EdgeDefinition()
+						.collection(Relationship.TokenAtPos.toString())
+						.from(ElementType.Token.toString())
+						.to(ElementType.Pos.toString())
+		);
+		edgeDefinitions.add(
+				new EdgeDefinition()
+						.collection(Relationship.NextParagraph.toString())
+						.from(ElementType.Paragraph.toString())
+						.to(ElementType.Paragraph.toString())
+		);
+		edgeDefinitions.add(
+				new EdgeDefinition()
+						.collection(Relationship.NextSentence.toString())
+						.from(ElementType.Sentence.toString())
+						.to(ElementType.Sentence.toString())
+		);
+		edgeDefinitions.add(
+				new EdgeDefinition()
+						.collection(Relationship.NextToken.toString())
+						.from(ElementType.Token.toString())
+						.to(ElementType.Token.toString())
+		);
+
+		this.arangodb.db(this.dbName).createGraph(
+				this.graphName, edgeDefinitions
+		);
 	}
 
+	/**
+	 * It is easier to drop and rebuild the database than to delete everything
+	 * via query.
+	 */
 	@Override
 	public void clearDatabase()
 	{
-
+		this.arangodb.db(this.dbName).drop();
+		this.setUpDatabase();
 	}
 
 	@Override
