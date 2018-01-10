@@ -431,6 +431,8 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 							pos.addToIndexes();
 							xmiToken.setPos(pos);
 						}
+
+						xmiToken.addToIndexes();
 					}
 					tx.success();
 				} catch (CASException e)
