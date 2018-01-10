@@ -1,6 +1,8 @@
 package dbtest.queryHandler.implementation.ArangoDB;
 
 import com.arangodb.ArangoDB;
+import com.arangodb.ArangoDatabase;
+import com.arangodb.ArangoGraph;
 import com.arangodb.entity.EdgeDefinition;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
@@ -26,15 +28,15 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		NextParagraph, NextSentence, NextToken
 	}
 
+	protected final static String dbName = System.getenv("ARANGODB_DB");
+	protected final static String graphName = "uimadatabase";
+
 	protected ArangoDB arangodb;
-	protected String dbName;
-	protected String graphName;
+	protected ArangoGraph graph;
 
 	public ArangoDBQueryHandler(ArangoDB arangodb)
 	{
 		this.arangodb = arangodb;
-		this.dbName = System.getenv("ARANGODB_DB");
-		this.graphName = "uimadatabase";
 	}
 
 	/**
@@ -49,19 +51,16 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public void setUpDatabase()
 	{
-		this.arangodb.createDatabase(this.dbName);
+		this.arangodb.createDatabase(dbName);
+		ArangoDatabase db = this.arangodb.db(dbName);
 
 		Arrays.stream(ElementType.values()).parallel()
 				.map(Enum::toString)
-				.forEach(vertexName -> {
-					this.arangodb.db(this.dbName).createCollection(vertexName);
-				});
+				.forEach(db::createCollection);
 
 		Arrays.stream(Relationship.values()).parallel()
 				.map(Enum::toString)
-				.forEach(vertexName -> {
-					this.arangodb.db(this.dbName).createCollection(vertexName);
-				});
+				.forEach(db::createCollection);
 
 		Collection<EdgeDefinition> edgeDefinitions = new ArrayList<>();
 
@@ -142,9 +141,10 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 						.to(ElementType.Token.toString())
 		);
 
-		this.arangodb.db(this.dbName).createGraph(
-				this.graphName, edgeDefinitions
+		db.createGraph(
+				graphName, edgeDefinitions
 		);
+		this.graph = db.graph(graphName);
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public void clearDatabase()
 	{
-		this.arangodb.db(this.dbName).drop();
+		this.arangodb.db(dbName).drop();
 		this.setUpDatabase();
 	}
 
