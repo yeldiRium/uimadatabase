@@ -43,6 +43,12 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
+	public void storeJCasDocuments(Iterable<JCas> documents)
+	{
+
+	}
+
+	@Override
 	public void storeParagraph(
 			Paragraph paragraph, JCas document, Paragraph previousParagraph
 	)
@@ -93,12 +99,6 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	public void storeToken(
 			Token token, JCas document, Paragraph paragraph, Sentence sentence
 	)
-	{
-
-	}
-
-	@Override
-	public void storeJCasDocuments(Iterable<JCas> documents)
 	{
 
 	}

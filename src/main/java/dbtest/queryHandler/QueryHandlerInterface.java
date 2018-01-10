@@ -116,6 +116,15 @@ public interface QueryHandlerInterface
 	void storeJCasDocument(JCas document);
 
 	/**
+	 * Stores more than one JCas document at once.
+	 * Difference to multiple #storeJCasDocument calls could optionally be im-
+	 * proved performance on some systems.
+	 *
+	 * @param documents An iterable object of documents.
+	 */
+	void storeJCasDocuments(Iterable<JCas> documents);
+
+	/**
 	 * Stores a Paragraph in the database.
 	 *
 	 * @param paragraph         The Paragraph.
@@ -171,15 +180,6 @@ public interface QueryHandlerInterface
 	 * @param sentence  The Sentence, in which the Token occurs.
 	 */
 	void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence);
-
-	/**
-	 * Stores more than one JCas document at once.
-	 * Difference to multiple #storeJCasDocument calls could optionally be im-
-	 * proved performance on some systems.
-	 *
-	 * @param documents An iterable object of documents.
-	 */
-	void storeJCasDocuments(Iterable<JCas> documents);
 
 	/**
 	 * Return the ids of all documents currently stored.
