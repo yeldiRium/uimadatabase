@@ -649,7 +649,26 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countDocumentsContainingLemma(String lemma)
 	{
-		return 0;
+		String query = "WITH @lemmaCollection, @documentHasLemma, @documentCollection " +
+				"FOR lemma IN @lemmaCollection " +
+				"FILTER lemma.value == @lemmaValue " +
+				"   FOR document IN INBOUND lemma @documentHasLemma " +
+				"RETURN {'count': LENGTH(lemma)}";
+		Map<String, Object> bindParam = new HashMap<>();
+		bindParam.put("lemmaCollection", ElementType.Lemma.toString());
+		bindParam.put(
+				"documentHasLemma",
+				Relationship.DocumentHasLemma.toString()
+		);
+		bindParam.put("documentCollection", ElementType.Document.toString());
+		bindParam.put("lemmaValue", lemma);
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, bindParam, null, BaseDocument.class
+		);
+		
+		return Integer.parseInt(
+				result.next().getAttribute("count").toString()
+		);
 	}
 
 	@Override
