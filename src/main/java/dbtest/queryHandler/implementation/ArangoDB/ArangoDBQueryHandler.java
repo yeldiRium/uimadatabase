@@ -1,18 +1,25 @@
 package dbtest.queryHandler.implementation.ArangoDB;
 
+import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDatabase;
 import com.arangodb.ArangoGraph;
+import com.arangodb.entity.BaseDocument;
+import com.arangodb.entity.BaseEdgeDocument;
 import com.arangodb.entity.EdgeDefinition;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
+import dbtest.queryHandler.implementation.Neo4jQueryHandler;
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.neo4j.driver.v1.Session;
 
 import java.util.*;
 
@@ -32,6 +39,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	protected final static String graphName = "uimadatabase";
 
 	protected ArangoDB arangodb;
+	protected ArangoDatabase db;
 	protected ArangoGraph graph;
 
 	public ArangoDBQueryHandler(ArangoDB arangodb)
@@ -52,15 +60,15 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	public void setUpDatabase()
 	{
 		this.arangodb.createDatabase(dbName);
-		ArangoDatabase db = this.arangodb.db(dbName);
+		this.db = this.arangodb.db(dbName);
 
 		Arrays.stream(ElementType.values()).parallel()
 				.map(Enum::toString)
-				.forEach(db::createCollection);
+				.forEach(this.db::createCollection);
 
 		Arrays.stream(Relationship.values()).parallel()
 				.map(Enum::toString)
-				.forEach(db::createCollection);
+				.forEach(this.db::createCollection);
 
 		Collection<EdgeDefinition> edgeDefinitions = new ArrayList<>();
 
@@ -141,10 +149,10 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 						.to(ElementType.Token.toString())
 		);
 
-		db.createGraph(
+		this.db.createGraph(
 				graphName, edgeDefinitions
 		);
-		this.graph = db.graph(graphName);
+		this.graph = this.db.graph(graphName);
 	}
 
 	/**
@@ -161,13 +169,37 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public void storeJCasDocument(JCas document)
 	{
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
 
+		BaseDocument docObject = new BaseDocument(documentId);
+		docObject.addAttribute("id", documentId);
+		docObject.addAttribute("text", document.getDocumentText());
+		docObject.addAttribute("language", document.getDocumentLanguage());
+
+		this.graph.vertexCollection(ElementType.Document.toString())
+				.insertVertex(docObject);
+
+		/*
+		 * Store each element of the jCas that was annotated as a Para-
+		 * graph.
+		 */
+		Paragraph previousParagraph = null;
+		for (Paragraph paragraph
+				: JCasUtil.select(document, Paragraph.class))
+		{
+			this.storeParagraph(paragraph, document, previousParagraph);
+			previousParagraph = paragraph;
+		}
 	}
 
 	@Override
 	public void storeJCasDocuments(Iterable<JCas> documents)
 	{
-
+		for (JCas document : documents)
+		{
+			this.storeJCasDocument(document);
+		}
 	}
 
 	@Override
@@ -175,13 +207,73 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			Paragraph paragraph, JCas document, Paragraph previousParagraph
 	)
 	{
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
 
+		// Create Paragraph object for insertion
+		BaseDocument paragraphObject = new BaseDocument();
+		paragraphObject.addAttribute("documentId", documentId);
+		paragraphObject.addAttribute("begin", paragraph.getBegin());
+		paragraphObject.addAttribute("end", paragraph.getEnd());
+
+		// Insert Paragraph object
+		this.graph.vertexCollection(ElementType.Paragraph.toString())
+				.insertVertex(paragraphObject);
+
+		// Create Edge object from Document to Paragraph and insert
+		BaseEdgeDocument documentHasParagraphEdge = new BaseEdgeDocument(
+				documentId, paragraphObject.getKey()
+		);
+		this.graph.edgeCollection(Relationship.DocumentHasParagraph.toString())
+				.insertEdge(documentHasParagraphEdge);
+
+		if (previousParagraph != null)
+		{
+			// Query Paragraph object for previous Paragraph
+			String query = "FOR p IN " + ElementType.Paragraph + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end RETURN p";
+
+			Map<String, Object> bindParams = new HashMap<>();
+			bindParams.put("documentId", documentId);
+			bindParams.put("begin", previousParagraph.getBegin());
+			bindParams.put("end", previousParagraph.getEnd());
+
+			ArangoCursor<BaseDocument> result = this.db.query(
+					query, bindParams, null, BaseDocument.class
+			);
+			if (result.hasNext())
+			{
+				BaseDocument previousParagraphObject = result.next();
+
+				// Create Edge object from previous Paragraph to current one
+				// and insert into graph
+				BaseEdgeDocument nextParagraphEdge = new BaseEdgeDocument(
+						paragraphObject.getKey(),
+						previousParagraphObject.getKey()
+				);
+				this.graph.edgeCollection(Relationship.NextParagraph.toString())
+						.insertEdge(nextParagraphEdge);
+			}
+		}
+
+		/*
+		 * Store each element of the jCas that was annotated as a Sen-
+		 * tence.
+		 */
+		Sentence previousSentence = null;
+		for (Sentence sentence : JCasUtil.selectCovered(
+				document,
+				Sentence.class, paragraph
+		))
+		{
+			this.storeSentence(sentence, document, paragraph, previousSentence);
+			previousSentence = sentence;
+		}
 	}
 
 	@Override
 	public void storeParagraph(Paragraph paragraph, JCas document)
 	{
-
+		this.storeParagraph(paragraph, document, null);
 	}
 
 	@Override
@@ -192,7 +284,83 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			Sentence previousSentence
 	)
 	{
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
 
+		// Create Sentence object for insertion
+		BaseDocument sentenceObject = new BaseDocument();
+		sentenceObject.addAttribute("documentId", documentId);
+		sentenceObject.addAttribute("begin", sentence.getBegin());
+		sentenceObject.addAttribute("end", sentence.getEnd());
+
+		// Insert Sentence object
+		this.graph.vertexCollection(ElementType.Sentence.toString())
+				.insertVertex(sentenceObject);
+
+		// Create Edge object from Document to Sentence and insert
+		BaseEdgeDocument documentHasSentenceEdge = new BaseEdgeDocument(
+				documentId, sentenceObject.getKey()
+		);
+		this.graph.edgeCollection(Relationship.DocumentHasSentence.toString())
+				.insertEdge(documentHasSentenceEdge);
+
+		// Query Paragraph Object to add an edge from the Sentence
+		String paragraphQuery = "FOR p IN " + ElementType.Paragraph + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end RETURN p";
+		Map<String, Object> paragraphParams = new HashMap<>();
+		paragraphParams.put("documentId", documentId);
+		paragraphParams.put("begin", paragraph.getBegin());
+		paragraphParams.put("end", paragraph.getEnd());
+		ArangoCursor<BaseDocument> paragraphResult = this.db.query(
+				paragraphQuery, paragraphParams, null, BaseDocument.class
+		);
+		BaseDocument paragraphObject = paragraphResult.next();
+
+		// Create Edge object from Sentence to Paragraph and insert
+		BaseEdgeDocument sentenceInParagraphEdge = new BaseEdgeDocument(
+				sentenceObject.getKey(), paragraphObject.getKey()
+		);
+		this.graph.edgeCollection(Relationship.SentenceInParagraph.toString())
+				.insertEdge(sentenceInParagraphEdge);
+
+		if (previousSentence != null)
+		{
+			// Query Sentence object for previous Sentence
+			String sentenceQuery = "FOR p IN " + ElementType.Sentence + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end RETURN p";
+			Map<String, Object> bindParams = new HashMap<>();
+			bindParams.put("documentId", documentId);
+			bindParams.put("begin", previousSentence.getBegin());
+			bindParams.put("end", previousSentence.getEnd());
+			ArangoCursor<BaseDocument> sentenceResult = this.db.query(
+					sentenceQuery, bindParams, null, BaseDocument.class
+			);
+			BaseDocument previousSentenceObject = sentenceResult.next();
+
+			// Create Edge object from previous Sentence to current one
+			// and insert into graph
+			BaseEdgeDocument nextSentenceEdge = new BaseEdgeDocument(
+					sentenceObject.getKey(),
+					previousSentenceObject.getKey()
+			);
+			this.graph.edgeCollection(Relationship.NextSentence.toString())
+					.insertEdge(nextSentenceEdge);
+		}
+
+		/*
+		 * Store each element of the jCas that was annotated as a Token.
+		 */
+		Token previousToken = null;
+		for (Token token
+				: JCasUtil.selectCovered(document, Token.class, sentence))
+		{
+			this.storeToken(
+					token,
+					document,
+					paragraph,
+					sentence,
+					previousToken
+			);
+			previousToken = token;
+		}
 	}
 
 	@Override
@@ -202,7 +370,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			Paragraph paragraph
 	)
 	{
-
+		this.storeSentence(sentence, document, paragraph, null);
 	}
 
 	@Override
@@ -214,7 +382,116 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			Token previousToken
 	)
 	{
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
 
+		// Create Token object for insertion
+		BaseDocument tokenObject = new BaseDocument();
+		tokenObject.addAttribute("documentId", documentId);
+		tokenObject.addAttribute("begin", token.getBegin());
+		tokenObject.addAttribute("end", token.getEnd());
+		tokenObject.addAttribute("value", token.getCoveredText());
+
+		// Insert Token object
+		this.graph.vertexCollection(ElementType.Token.toString())
+				.insertVertex(tokenObject);
+
+		// Create Edge object from Document to Token and insert
+		BaseEdgeDocument documentHasSentenceEdge = new BaseEdgeDocument(
+				documentId, tokenObject.getKey()
+		);
+		this.graph.edgeCollection(Relationship.DocumentHasSentence.toString())
+				.insertEdge(documentHasSentenceEdge);
+
+		// Query Paragraph Object to add an edge from the Token
+		String paragraphQuery = "FOR p IN " + ElementType.Paragraph + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end RETURN p";
+		Map<String, Object> paragraphParams = new HashMap<>();
+		paragraphParams.put("documentId", documentId);
+		paragraphParams.put("begin", paragraph.getBegin());
+		paragraphParams.put("end", paragraph.getEnd());
+		ArangoCursor<BaseDocument> paragraphResult = this.db.query(
+				paragraphQuery, paragraphParams, null, BaseDocument.class
+		);
+		BaseDocument paragraphObject = paragraphResult.next();
+
+		// Create Edge object from Token to Paragraph and insert
+		BaseEdgeDocument tokenInParagraphEdge = new BaseEdgeDocument(
+				tokenObject.getKey(), paragraphObject.getKey()
+		);
+		this.graph.edgeCollection(Relationship.TokenInParagraph.toString())
+				.insertEdge(tokenInParagraphEdge);
+
+		// Query Sentence Object to add an edge from the Token
+		String sentenceQuery = "FOR p IN " + ElementType.Sentence + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end RETURN p";
+		Map<String, Object> sentenceParams = new HashMap<>();
+		sentenceParams.put("documentId", documentId);
+		sentenceParams.put("begin", sentence.getBegin());
+		sentenceParams.put("end", sentence.getEnd());
+		ArangoCursor<BaseDocument> sentenceResult = this.db.query(
+				sentenceQuery, sentenceParams, null, BaseDocument.class
+		);
+		BaseDocument sentenceObject = sentenceResult.next();
+
+		// Create Edge object from Token to Sentence and insert
+		BaseEdgeDocument tokenInSentenceEdge = new BaseEdgeDocument(
+				tokenObject.getKey(), sentenceObject.getKey()
+		);
+		this.graph.edgeCollection(Relationship.TokenInSentence.toString())
+				.insertEdge(tokenInSentenceEdge);
+
+		// Create Lemma object and insert into collection
+		BaseDocument lemmaObject = new BaseDocument();
+		lemmaObject.addAttribute("value", token.getLemma().getValue());
+		this.graph.vertexCollection(ElementType.Lemma.toString())
+				.insertVertex(lemmaObject);
+		// Create edge from Token to Lemma and insert into graph
+		BaseEdgeDocument tokenHasLemmaEdge = new BaseEdgeDocument(
+				tokenObject.getKey(), lemmaObject.getKey()
+		);
+		this.graph.edgeCollection(Relationship.TokenHasLemma.toString())
+				.insertEdge(tokenHasLemmaEdge);
+		// Create edge from Document to Lemma and insert into graph
+		BaseEdgeDocument documentHasLemmaEdge = new BaseEdgeDocument(
+				documentId, lemmaObject.getKey()
+		);
+		this.graph.edgeCollection(Relationship.DocumentHasLemma.toString())
+				.insertEdge(documentHasLemmaEdge);
+
+		// Create POS object and insert into collection
+		BaseDocument posObject = new BaseDocument();
+		posObject.addAttribute("value", token.getPos().getPosValue());
+		this.graph.vertexCollection(ElementType.Pos.toString())
+				.insertVertex(posObject);
+		// Create edge from Token to POS and insert into graph
+		BaseEdgeDocument tokenAtPosEdge = new BaseEdgeDocument(
+				tokenObject.getKey(), posObject.getKey()
+		);
+		this.graph.edgeCollection(Relationship.TokenAtPos.toString())
+				.insertEdge(tokenAtPosEdge);
+
+		if (previousToken != null)
+		{
+			// Query Token object for previous Token
+			String tokenQuery = "FOR p IN " + ElementType.Token + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end FILTER p.value == @value RETURN p";
+			Map<String, Object> bindParams = new HashMap<>();
+			bindParams.put("documentId", documentId);
+			bindParams.put("begin", previousToken.getBegin());
+			bindParams.put("end", previousToken.getEnd());
+			bindParams.put("value", previousToken.getCoveredText());
+			ArangoCursor<BaseDocument> tokenResult = this.db.query(
+					tokenQuery, bindParams, null, BaseDocument.class
+			);
+			BaseDocument previouseTokenObject = tokenResult.next();
+
+			// Create Edge object from previous Token to current one
+			// and insert into graph
+			BaseEdgeDocument nextTokenEdge = new BaseEdgeDocument(
+					tokenObject.getKey(),
+					previouseTokenObject.getKey()
+			);
+			this.graph.edgeCollection(Relationship.NextToken.toString())
+					.insertEdge(nextTokenEdge);
+		}
 	}
 
 	@Override
@@ -222,7 +499,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			Token token, JCas document, Paragraph paragraph, Sentence sentence
 	)
 	{
-
+		this.storeToken(token, document, paragraph, sentence, null);
 	}
 
 	@Override
