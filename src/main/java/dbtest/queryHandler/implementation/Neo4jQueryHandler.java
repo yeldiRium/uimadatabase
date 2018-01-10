@@ -73,24 +73,6 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		}
 	}
 
-	@Override
-	public Set<String> getLemmataForDocument(String documentId)
-	{
-		try (Session session = this.driver.session())
-		{
-			Set<String> lemmata = new HashSet<>();
-			String query = "MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})-[:" + Relationship.DocumentHasLemma + "]-(l:" + ElementType.Lemma + ") RETURN l.value AS lemma";
-			StatementResult result = session.readTransaction(tx -> tx.run(query));
-
-			while (result.hasNext())
-			{
-				Record row = result.next();
-				lemmata.add(row.get("lemma").toString());
-			}
-			return lemmata;
-		}
-	}
-
 	/**
 	 * @param document The JCas document.
 	 */
@@ -132,26 +114,6 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		{
 			this.storeJCasDocument(document);
 		}
-	}
-
-	/**
-	 * @return The ids of all Documents stored in the database.
-	 */
-	@Override
-	public Iterable<String> getDocumentIds()
-	{
-		ArrayList<String> ids = new ArrayList<>();
-		try (Session session = this.driver.session())
-		{
-			StatementResult result = session.readTransaction(tx -> {
-				return tx.run("MATCH (d:" + ElementType.Document + ") RETURN d.id as id");
-			});
-			for (Record record : result.list())
-			{
-				ids.add(record.get("id").toString());
-			}
-		}
-		return ids;
 	}
 
 	/**
@@ -375,6 +337,44 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	)
 	{
 		storeToken(token, document, paragraph, sentence, null);
+	}
+
+	/**
+	 * @return The ids of all Documents stored in the database.
+	 */
+	@Override
+	public Iterable<String> getDocumentIds()
+	{
+		ArrayList<String> ids = new ArrayList<>();
+		try (Session session = this.driver.session())
+		{
+			StatementResult result = session.readTransaction(tx -> {
+				return tx.run("MATCH (d:" + ElementType.Document + ") RETURN d.id as id");
+			});
+			for (Record record : result.list())
+			{
+				ids.add(record.get("id").toString());
+			}
+		}
+		return ids;
+	}
+
+	@Override
+	public Set<String> getLemmataForDocument(String documentId)
+	{
+		try (Session session = this.driver.session())
+		{
+			Set<String> lemmata = new HashSet<>();
+			String query = "MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})-[:" + Relationship.DocumentHasLemma + "]-(l:" + ElementType.Lemma + ") RETURN l.value AS lemma";
+			StatementResult result = session.readTransaction(tx -> tx.run(query));
+
+			while (result.hasNext())
+			{
+				Record row = result.next();
+				lemmata.add(row.get("lemma").toString());
+			}
+			return lemmata;
+		}
 	}
 
 	/**

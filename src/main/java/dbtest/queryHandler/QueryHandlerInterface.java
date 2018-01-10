@@ -108,14 +108,6 @@ public interface QueryHandlerInterface
 	//--------------------------------------------------------------------------
 
 	/**
-	 * A set of all lemmata in the specified document.
-	 *
-	 * @param documentId the specified document's id.
-	 * @return a HashSet(String lemma).
-	 */
-	Set<String> getLemmataForDocument(String documentId);
-
-	/**
 	 * Stores a JCas document in an appropriate way.
 	 *
 	 * @param document The JCas document.
@@ -194,6 +186,14 @@ public interface QueryHandlerInterface
 	 * @return The ids of all Documents stored in the database.
 	 */
 	Iterable<String> getDocumentIds();
+
+	/**
+	 * A set of all lemmata in the specified document.
+	 *
+	 * @param documentId the specified document's id.
+	 * @return a HashSet(String lemma).
+	 */
+	Set<String> getLemmataForDocument(String documentId);
 
 	/**
 	 * Retrieves all stored objects in JCas format.

@@ -159,12 +159,6 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public Set<String> getLemmataForDocument(String documentId)
-	{
-		return null;
-	}
-
-	@Override
 	public void storeJCasDocument(JCas document)
 	{
 
@@ -233,6 +227,12 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 
 	@Override
 	public Iterable<String> getDocumentIds()
+	{
+		return null;
+	}
+
+	@Override
+	public Set<String> getLemmataForDocument(String documentId)
 	{
 		return null;
 	}
