@@ -3,6 +3,7 @@ package dbtest.evaluations.collectionWriter;
 import dbtest.connection.*;
 import dbtest.connection.implementation.Neo4jConnection;
 import dbtest.queryHandler.QueryHandlerInterface;
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
@@ -64,7 +65,9 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 	@Override
 	public void process(JCas jCas) throws AnalysisEngineProcessException
 	{
-		logger.info("Storing jCas into " + this.dbName + "...");
+		final String documentId = DocumentMetaData.get(jCas)
+				.getDocumentId();
+		logger.info("Storing jCas '" + documentId + "' into " + this.dbName + "...");
 		this.queryHandler.storeJCasDocument(jCas);
 		logger.info("JCas processed and stored.");
 	}

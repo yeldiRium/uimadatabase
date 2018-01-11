@@ -326,7 +326,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 
 				if (previousToken != null)
 				{
-					tokenQuery += "MATCH (t_prev:" + ElementType.Token + " {id:{documentId}, begin:{prevTokenBegin}, end:{prevTokenEnd}, value={prevTokenValue}}) ";
+					tokenQuery += "MATCH (t_prev:" + ElementType.Token + " {id:{documentId}, begin:{prevTokenBegin}, end:{prevTokenEnd}, value:{prevTokenValue}}) ";
 					queryParams.put("prevTokenBegin", previousToken.getBegin());
 					queryParams.put("prevTokenEnd", previousToken.getEnd());
 					queryParams.put("prevTokenValue", previousToken.getCoveredText());
