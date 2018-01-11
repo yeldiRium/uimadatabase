@@ -279,12 +279,6 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public void storeParagraph(Paragraph paragraph, JCas document)
-	{
-		this.storeParagraph(paragraph, document, null);
-	}
-
-	@Override
 	public void storeSentence(
 			Sentence sentence,
 			JCas document,
@@ -369,16 +363,6 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			);
 			previousToken = token;
 		}
-	}
-
-	@Override
-	public void storeSentence(
-			Sentence sentence,
-			JCas document,
-			Paragraph paragraph
-	)
-	{
-		this.storeSentence(sentence, document, paragraph, null);
 	}
 
 	@Override
@@ -500,14 +484,6 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			this.graph.edgeCollection(Relationship.NextToken.toString())
 					.insertEdge(nextTokenEdge);
 		}
-	}
-
-	@Override
-	public void storeToken(
-			Token token, JCas document, Paragraph paragraph, Sentence sentence
-	)
-	{
-		this.storeToken(token, document, paragraph, sentence, null);
 	}
 
 	@Override

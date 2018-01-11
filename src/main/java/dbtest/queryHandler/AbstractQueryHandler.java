@@ -1,6 +1,10 @@
 package dbtest.queryHandler;
 
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import org.apache.uima.jcas.JCas;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +13,48 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractQueryHandler implements QueryHandlerInterface
 {
+	/**
+	 * @param paragraph The Paragraph.
+	 * @param document  The document in which the paragraph occurs.
+	 */
+	@Override
+	public void storeParagraph(Paragraph paragraph, JCas document)
+	{
+		this.storeParagraph(paragraph, document, null);
+	}
+
+	/**
+	 * @param sentence  The Sentence.
+	 * @param document  The Document in which the entence occurs.
+	 * @param paragraph The Paragraph, in which the Sentence occurs.
+	 */
+	@Override
+	public void storeSentence(
+			Sentence sentence,
+			JCas document,
+			Paragraph paragraph
+	)
+	{
+		this.storeSentence(sentence, document, paragraph, null);
+	}
+
+	/**
+	 * @param token     The Token.
+	 * @param document  The id of the document in which the Token occurs.
+	 * @param paragraph The paragraph, in which the Token occurs.
+	 * @param sentence  The sentence, in which the Token occurs.
+	 */
+	@Override
+	public void storeToken(
+			Token token,
+			JCas document,
+			Paragraph paragraph,
+			Sentence sentence
+	)
+	{
+		storeToken(token, document, paragraph, sentence, null);
+	}
+
 	@Override
 	public double calculateInverseDocumentFrequency(String lemma)
 	{
