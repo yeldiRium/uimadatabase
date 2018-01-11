@@ -1,9 +1,17 @@
 package dbtest.evaluations.collectionWriter;
 
+import dbtest.connection.*;
+import dbtest.connection.implementation.Neo4jConnection;
+import dbtest.queryHandler.QueryHandlerInterface;
+import org.apache.uima.UimaContext;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
+import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceInitializationException;
 
 import java.io.File;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 public abstract class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
@@ -13,7 +21,46 @@ public abstract class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 
 	// UIMA Parameters
 	public static final String PARAM_OUTPUT_FILE = "outputFile";
-
 	@ConfigurationParameter(name = PARAM_OUTPUT_FILE, mandatory = false)
-	public File outputFile;
+	protected File outputFile;
+
+	public static final String PARAM_DBNAME = "dbName";
+	@ConfigurationParameter(name = PARAM_DBNAME)
+	protected String dbName;
+
+	protected QueryHandlerInterface queryHandler;
+
+	@Override
+	public void initialize(UimaContext context) throws ResourceInitializationException
+	{
+		super.initialize(context);
+
+		this.dbName = context.getConfigParameterValue(PARAM_DBNAME).toString();
+
+		Class<? extends Connection> connectionClass =
+				Connections.getConnectionClassForName(this.dbName);
+		ConnectionRequest request = new ConnectionRequest();
+		request.addRequestedConnection(connectionClass);
+		try
+		{
+			ConnectionResponse response = ConnectionManager.getInstance()
+					.submitRequest(request).get();
+			Connection connection = response
+					.getConnection(Neo4jConnection.class);
+			this.queryHandler = connection.getQueryHandler();
+		} catch (InterruptedException | ExecutionException e)
+		{
+			Thread.currentThread().interrupt();
+		}
+
+		logger.info("Initialized CollectinoWriter for db " + this.dbName);
+	}
+
+	@Override
+	public void process(JCas jCas) throws AnalysisEngineProcessException
+	{
+		logger.info("Storing jCas into " + this.dbName + "...");
+		this.queryHandler.storeJCasDocument(jCas);
+		logger.info("JCas processed and stored.");
+	}
 }

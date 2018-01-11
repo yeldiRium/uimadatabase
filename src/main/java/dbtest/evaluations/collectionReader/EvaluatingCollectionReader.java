@@ -27,9 +27,9 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 	// UIMA Parameters
 	public static final String PARAM_OUTPUT_FILE = "outputFile";
 	@ConfigurationParameter(name = PARAM_OUTPUT_FILE, mandatory = false)
-	public File outputFile;
+	protected File outputFile;
 
-	public static final String PARAM_DBNAME = "dbname";
+	public static final String PARAM_DBNAME = "dbName";
 	@ConfigurationParameter(name = PARAM_DBNAME)
 	protected String dbName;
 
@@ -63,7 +63,7 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 		Iterable<String> ids = this.queryHandler.getDocumentIds();
 		this.iterator = ids.iterator();
 
-		logger.info("Initialized CollectinoReader for db " + this.dbName);
+		logger.info("Initialized CollectionReader for db " + this.dbName);
 	}
 
 	@Override

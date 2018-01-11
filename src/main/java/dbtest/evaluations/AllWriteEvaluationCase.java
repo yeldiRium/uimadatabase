@@ -2,21 +2,16 @@ package dbtest.evaluations;
 
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
+import dbtest.connection.Connections;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import dbtest.evaluations.collectionWriter.EvaluatingCollectionWriter;
-import dbtest.evaluations.collectionWriter.Neo4jCollectionWriter;
 import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiReader;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.hucompute.services.uima.database.basex.BasexWriter;
-import org.hucompute.services.uima.database.cassandra.CassandraWriter;
-import org.hucompute.services.uima.database.mongo.MongoCollectionReader;
-import org.hucompute.services.uima.database.mongo.MongoWriter;
-import org.hucompute.services.uima.database.mysql.MysqlWriter;
 import org.hucompute.services.uima.database.xmi.XmiWriterModified;
 
 import java.io.IOException;
@@ -57,11 +52,12 @@ public class AllWriteEvaluationCase implements EvaluationCase
 			);
 
 			List<AnalysisEngine> writers = Arrays.asList(
-					getNeo4JWriter(outputProvider)
+					createWriter(outputProvider, Connections.DBName.ArangoDB),
 					//getMongoWriter(outputProvider),
 					//getCassandraWriter(outputProvider),
 					//getBasexWriter(outputProvider),
 					//getMysqlWriter(outputProvider),
+					createWriter(outputProvider, Connections.DBName.Neo4j)
 					//getXMIWriter(outputProvider)
 			);
 
@@ -91,61 +87,19 @@ public class AllWriteEvaluationCase implements EvaluationCase
 		}
 	}
 
-	public static AnalysisEngine getMongoWriter(OutputProvider outputProvider) throws
-			ResourceInitializationException, IOException
+	public static AnalysisEngine createWriter(
+			OutputProvider outputProvider, Connections.DBName dbName
+	) throws IOException, ResourceInitializationException
 	{
 		return createEngine(
-				MongoWriter.class,
-				MongoCollectionReader.PARAM_DB_CONNECTION,
-				new String[]{"localhost", "test_with_index", "wikipedia", "", ""},
-				MongoWriter.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(AllWriteEvaluationCase.class.getName(), "mongoWithIndex")
-		);
-	}
-
-	public static AnalysisEngine getMysqlWriter(OutputProvider outputProvider)
-			throws ResourceInitializationException, IOException
-	{
-		return createEngine(
-				MysqlWriter.class,
-				MongoWriter.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(AllWriteEvaluationCase.class.getName(), "mysqlWithIndex")
-		);
-	}
-
-
-	public static AnalysisEngine getNeo4JWriter(
-			OutputProvider outputProvider
-	)
-			throws ResourceInitializationException, IOException
-	{
-		return createEngine(
-				Neo4jCollectionWriter.class,
+				EvaluatingCollectionWriter.class,
+				EvaluatingCollectionWriter.PARAM_DBNAME,
+				dbName.toString(),
 				EvaluatingCollectionWriter.PARAM_OUTPUT_FILE,
 				outputProvider.createFile(
 						AllWriteEvaluationCase.class.getName(),
-						"neo4j"
+						dbName.toString()
 				)
-		);
-	}
-
-	public static AnalysisEngine getBasexWriter(OutputProvider outputProvider)
-			throws ResourceInitializationException, IOException
-	{
-		return createEngine(
-				BasexWriter.class,
-				BasexWriter.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(AllWriteEvaluationCase.class.getName(), "basex")
-		);
-	}
-
-	public static AnalysisEngine getCassandraWriter(OutputProvider outputProvider)
-			throws ResourceInitializationException, IOException
-	{
-		return createEngine(
-				CassandraWriter.class,
-				CassandraWriter.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(AllWriteEvaluationCase.class.getName(), "cassandra")
 		);
 	}
 
