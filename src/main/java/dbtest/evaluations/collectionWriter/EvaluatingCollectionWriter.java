@@ -53,7 +53,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 			Thread.currentThread().interrupt();
 		}
 
-		logger.info("Initialized CollectinoWriter for db " + this.dbName);
+		logger.info("Initialized CollectionWriter for db " + this.dbName);
 	}
 
 	@Override
