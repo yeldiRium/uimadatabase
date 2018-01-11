@@ -18,9 +18,9 @@ public class Main
 
 	public static void main(String[] args)
 	{
+		ConnectionManager connectionManager = ConnectionManager.getInstance();
 		try
 		{
-			ConnectionManager connectionManager = ConnectionManager.getInstance();
 			EvaluationRunner evaluationRunner = new EvaluationRunner(
 					new FileInputStream("src/main/resources/config.yml"),
 					connectionManager
@@ -28,12 +28,16 @@ public class Main
 			logger.info("Running Evaluations...");
 			evaluationRunner.run();
 			logger.info("Evaluations done. Closing connections...");
-			connectionManager.close();
-			logger.info("Connections closed. Exiting...");
 
-		} catch (IOException e)
+		} catch (Exception e)
 		{
 			e.printStackTrace();
+			logger.severe("Exception occured. Closing connections and " +
+					"stopping threads...");
+		} finally
+		{
+			connectionManager.close();
+			logger.info("Connections closed. Exiting...");
 		}
 	}
 }

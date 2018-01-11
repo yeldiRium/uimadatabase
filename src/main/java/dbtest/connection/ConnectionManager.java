@@ -21,7 +21,7 @@ public class ConnectionManager
 {
 	private static final class InstanceHolder
 	{
-		static final ConnectionManager INSTANCE = new ConnectionManager();
+		static ConnectionManager INSTANCE = new ConnectionManager();
 	}
 
 	protected static final Logger LOGGER = Logger.getLogger(ConnectionManager.class.getName());
@@ -39,6 +39,10 @@ public class ConnectionManager
 
 	public static ConnectionManager getInstance()
 	{
+		if (InstanceHolder.INSTANCE == null)
+		{
+			InstanceHolder.INSTANCE = new ConnectionManager();
+		}
 		return InstanceHolder.INSTANCE;
 	}
 
@@ -120,5 +124,26 @@ public class ConnectionManager
 				futureConnection.cancel(true);
 			}
 		}
+
+		LOGGER.info("Shutting down connection thread pool...");
+		this.executor.shutdown();
+		try {
+			if (!this.executor.awaitTermination(1, TimeUnit.SECONDS))
+			{
+				this.executor.shutdownNow();
+				if (!this.executor.awaitTermination(1, TimeUnit.SECONDS))
+				{
+					LOGGER.severe("Connection thread pool refuses to shut down!");
+				}
+			}
+		} catch (InterruptedException e)
+		{
+			this.executor.shutdownNow();
+			Thread.currentThread().interrupt();
+		}
+
+		// Set INSTANCE to null so that another call to getInstance will create
+		// everything anew
+		InstanceHolder.INSTANCE = null;
 	}
 }
