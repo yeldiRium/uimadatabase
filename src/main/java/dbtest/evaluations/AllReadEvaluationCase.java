@@ -3,20 +3,15 @@ package dbtest.evaluations;
 import dbtest.StatusPrinter;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
-import dbtest.connection.implementation.Neo4jConnection;
+import dbtest.connection.Connections;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import dbtest.evaluations.collectionReader.EvaluatingCollectionReader;
-import dbtest.evaluations.collectionReader.Neo4jCollectionReader;
 import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiReader;
 import org.apache.uima.UIMAException;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.hucompute.services.uima.database.basex.BasexCollectionReader;
-import org.hucompute.services.uima.database.cassandra.CassandraCollectionReader;
-import org.hucompute.services.uima.database.mongo.MongoCollectionReader;
-import org.hucompute.services.uima.database.mysql.MysqlCollectionReader;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,13 +25,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 	@Override
 	public ConnectionRequest requestConnection()
 	{
-		ConnectionRequest connectionRequest = new ConnectionRequest();
-//		connectionRequest.addRequestedConnection(MongoDBConnection.class);
-//		connectionRequest.addRequestedConnection(MySQLConnection.class);
-		connectionRequest.addRequestedConnection(Neo4jConnection.class);
-//		connectionRequest.addRequestedConnection(BaseXConnection.class);
-//		connectionRequest.addRequestedConnection(CassandraConnection.class);
-		return connectionRequest;
+		return new ConnectionRequest();
 	}
 
 	/**
@@ -55,8 +44,8 @@ public class AllReadEvaluationCase implements EvaluationCase
 		{
 			List<CollectionReader> readers = Arrays.asList(
 					//getXMIReader(outputProvider),
-					getNeo4jReader(outputProvider, (Neo4jConnection) connectionResponse
-							.getConnection(Neo4jConnection.class))
+					createReader(outputProvider, Connections.DBName.ArangoDB),
+					createReader(outputProvider, Connections.DBName.Neo4j)
 					//getCassandraReader(outputProvider),
 					//getMongoReader(outputProvider),
 					//getBasexReader(outputProvider),
@@ -95,76 +84,19 @@ public class AllReadEvaluationCase implements EvaluationCase
 		);
 	}
 
-	public static CollectionReader getMongoReader(OutputProvider outputProvider)
-			throws ResourceInitializationException, IOException
-	{
-		return CollectionReaderFactory.createReader(
-				MongoCollectionReader.class,
-				MongoCollectionReader.PARAM_DB_CONNECTION,
-				new String[]{"localhost", "test_with_index", "wikipedia", "",
-						""},
-				MongoCollectionReader.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(
-						AllReadEvaluationCase.class.getName(),
-						"mongo"
-				)
-//			MongoCollectionReader.PARAM_QUERY,"{}",
-		);
-	}
-
-	public static CollectionReader getMysqlReader(OutputProvider outputProvider)
-			throws ResourceInitializationException, IOException
-	{
-		return CollectionReaderFactory.createReader(
-				MysqlCollectionReader.class,
-				MysqlCollectionReader.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(
-						AllReadEvaluationCase.class.getName(),
-						"mysql"
-				)
-		);
-	}
-
-	public static CollectionReader getNeo4jReader(
+	public static CollectionReader createReader(
 			OutputProvider outputProvider,
-			Neo4jConnection neo4jConnection
-	) throws ResourceInitializationException, IOException
+			Connections.DBName dbName
+	) throws IOException, ResourceInitializationException
 	{
-		Neo4jCollectionReader neo4jReader = (Neo4jCollectionReader) CollectionReaderFactory.createReader(
-				Neo4jCollectionReader.class,
+		return CollectionReaderFactory.createReader(
+				EvaluatingCollectionReader.class,
+				EvaluatingCollectionReader.PARAM_DBNAME,
+				dbName.toString(),
 				EvaluatingCollectionReader.PARAM_OUTPUT_FILE,
 				outputProvider.createFile(
 						AllReadEvaluationCase.class.getName(),
-						"neo4j"
-				)
-		);
-		neo4jReader.injectConnection(neo4jConnection);
-		return neo4jReader;
-	}
-
-	public static CollectionReader getBasexReader(OutputProvider outputProvider)
-			throws ResourceInitializationException, IOException
-	{
-		return CollectionReaderFactory.createReader(
-				BasexCollectionReader.class,
-				BasexCollectionReader.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(
-						AllReadEvaluationCase.class.getName(),
-						"basex"
-				)
-		);
-	}
-
-	public static CollectionReader getCassandraReader(OutputProvider
-			                                                  outputProvider)
-			throws ResourceInitializationException, IOException
-	{
-		return CollectionReaderFactory.createReader(
-				CassandraCollectionReader.class,
-				CassandraCollectionReader.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(
-						AllReadEvaluationCase.class.getName(),
-						"cassandra"
+						dbName.toString()
 				)
 		);
 	}
