@@ -11,9 +11,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Wraps any other QueryHandlerInterface.
@@ -22,35 +20,95 @@ import java.util.Set;
  */
 public class BenchmarkQueryHandler implements QueryHandlerInterface
 {
+	public class MethodBenchmark
+	{
+		protected int callCount = 0;
+		protected List<Long> callTimes;
+
+		public MethodBenchmark()
+		{
+			this.callTimes = new ArrayList<>();
+		}
+
+		public int getCallCount()
+		{
+			return callCount;
+		}
+
+		public void increaseCallCount()
+		{
+			this.callCount++;
+		}
+
+		public List<Long> getCallTimes()
+		{
+			return callTimes;
+		}
+
+		public void addCallTime(long callTime)
+		{
+			this.callTimes.add(callTime);
+		}
+	}
+
 	protected QueryHandlerInterface subjectQueryHandler;
+	protected Map<String, MethodBenchmark> methodBenchmarks;
 
 	public BenchmarkQueryHandler(QueryHandlerInterface subjectQueryHandler)
 	{
+		this.methodBenchmarks = new HashMap<>();
+		Arrays.stream(this.getClass().getDeclaredMethods())
+				.forEach(method -> {
+					this.methodBenchmarks.put(
+							method.getName(),
+							new MethodBenchmark()
+					);
+				});
 		this.subjectQueryHandler = subjectQueryHandler;
 	}
 
 	@Override
 	public void setUpDatabase()
 	{
+		long start = System.currentTimeMillis();
 		this.subjectQueryHandler.setUpDatabase();
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get("setUpDatabase");
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
 	}
 
 	@Override
 	public void clearDatabase()
 	{
+		long start = System.currentTimeMillis();
 		this.subjectQueryHandler.clearDatabase();
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get("clearDatabase");
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
 	}
 
 	@Override
 	public void storeJCasDocument(JCas document)
 	{
+		long start = System.currentTimeMillis();
 		this.subjectQueryHandler.storeJCasDocument(document);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get("storeJCasDocument");
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
 	}
 
 	@Override
 	public void storeJCasDocuments(Iterable<JCas> documents)
 	{
+		long start = System.currentTimeMillis();
 		this.subjectQueryHandler.storeJCasDocuments(documents);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get("storeJCasDocuments");
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
 	}
 
 	@Override
@@ -58,11 +116,21 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			Paragraph paragraph, JCas document, Paragraph previousParagraph
 	)
 	{
+		long start = System.currentTimeMillis();
 		this.subjectQueryHandler.storeParagraph(
 				paragraph, document, previousParagraph
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get("storeParagraph");
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
 	}
 
+	/**
+	 * Is not benchmarked, since it is only a virtual default method.
+	 * @param paragraph The Paragraph.
+	 * @param document  The document in which the paragraph occurs.
+	 */
 	@Override
 	public void storeParagraph(Paragraph paragraph, JCas document)
 	{
@@ -77,19 +145,28 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			Sentence previousSentence
 	)
 	{
+		long start = System.currentTimeMillis();
 		this.subjectQueryHandler.storeSentence(
 				sentence, document, paragraph, previousSentence
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get("storeSentence");
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
 	}
 
+	/**
+	 * Is not benchmarked, since it is only a virtual default method.
+	 * @param sentence  The Sentence.
+	 * @param document  The Document in which the entence occurs.
+	 * @param paragraph The Paragraph, in which the Sentence occurs.
+	 */
 	@Override
 	public void storeSentence(
 			Sentence sentence, JCas document, Paragraph paragraph
 	)
 	{
-		this.subjectQueryHandler.storeSentence(
-				sentence, document, paragraph
-		);
+		this.subjectQueryHandler.storeSentence(sentence, document, paragraph);
 	}
 
 	@Override
@@ -101,11 +178,23 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			Token previousToken
 	)
 	{
+		long start = System.currentTimeMillis();
 		this.subjectQueryHandler.storeToken(
 				token, document, paragraph, sentence, previousToken
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get("storeToken");
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
 	}
 
+	/**
+	 * Is not benchmarked, since it is only a virtual default method.
+	 * @param token     The Token.
+	 * @param document  The Document in which the Token occurs.
+	 * @param paragraph The Paragraph, in which the Token occurs.
+	 * @param sentence  The Sentence, in which the Token occurs.
+	 */
 	@Override
 	public void storeToken(
 			Token token, JCas document, Paragraph paragraph, Sentence sentence
@@ -119,34 +208,75 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	@Override
 	public Iterable<String> getDocumentIds()
 	{
-		return this.subjectQueryHandler.getDocumentIds();
+		long start = System.currentTimeMillis();
+		Iterable<String> result = this.subjectQueryHandler.getDocumentIds();
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get("getDocumentIds");
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
 	{
-		return this.subjectQueryHandler.getLemmataForDocument(documentId);
+		long start = System.currentTimeMillis();
+		Set<String> result = this.subjectQueryHandler.getLemmataForDocument(
+				documentId
+		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get("getLemmataForDocument");
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
 	public void populateCasWithDocument(CAS aCAS, String documentId)
 			throws DocumentNotFoundException, QHException
 	{
+		long start = System.currentTimeMillis();
 		this.subjectQueryHandler.populateCasWithDocument(
 				aCAS, documentId
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"populateCasWithDocument"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
 	}
 
 	@Override
 	public int countDocumentsContainingLemma(String lemma)
 	{
-		return this.subjectQueryHandler.countDocumentsContainingLemma(lemma);
+		long start = System.currentTimeMillis();
+		int result = this.subjectQueryHandler.countDocumentsContainingLemma(
+				lemma
+		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"countDocumentsContainingLemma"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
 	public int countElementsOfType(ElementType type)
 	{
-		return this.subjectQueryHandler.countElementsOfType(type);
+		long start = System.currentTimeMillis();
+		int result = this.subjectQueryHandler.countElementsOfType(type);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get("countElementsOfType");
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
@@ -154,18 +284,36 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			String documentId, ElementType type
 	) throws DocumentNotFoundException, TypeNotCountableException
 	{
-		return this.subjectQueryHandler.countElementsInDocumentOfType(
+		long start = System.currentTimeMillis();
+		int result = this.subjectQueryHandler.countElementsInDocumentOfType(
 				documentId, type
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"countElementsInDocumentOfType"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
 	public int countElementsOfTypeWithValue(ElementType type, String value)
 			throws IllegalArgumentException
 	{
-		return this.subjectQueryHandler.countElementsOfTypeWithValue(
+		long start = System.currentTimeMillis();
+		int result = this.subjectQueryHandler.countElementsOfTypeWithValue(
 				type, value
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"countElementsOfTypeWithValue"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
@@ -173,29 +321,66 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			String documentId, ElementType type, String value
 	) throws DocumentNotFoundException, TypeNotCountableException
 	{
-		return this.subjectQueryHandler.countElementsInDocumentOfTypeWithValue(
-				documentId, type, value
+		long start = System.currentTimeMillis();
+		int result = this.subjectQueryHandler
+				.countElementsInDocumentOfTypeWithValue(
+						documentId, type, value
+				);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"countElementsInDocumentOfTypeWithValue"
 		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
 	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
 	{
-		return this.subjectQueryHandler
+		long start = System.currentTimeMillis();
+		Map<String, Integer> result = this.subjectQueryHandler
 				.countOccurencesForEachLemmaInAllDocuments();
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"countOccurencesForEachLemmaInAllDocuments"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
 	public Map<String, Double> calculateTTRForAllDocuments()
 	{
-		return this.subjectQueryHandler.calculateTTRForAllDocuments();
+		long start = System.currentTimeMillis();
+		Map<String, Double> result = this.subjectQueryHandler.calculateTTRForAllDocuments();
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateTTRForAllDocuments"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
 	public Double calculateTTRForDocument(String documentId)
 			throws DocumentNotFoundException
 	{
-		return this.subjectQueryHandler.calculateTTRForDocument(documentId);
+		long start = System.currentTimeMillis();
+		Double result = this.subjectQueryHandler.calculateTTRForDocument(documentId);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateTTRForDocument"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
@@ -203,9 +388,18 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			Collection<String> documentIds
 	)
 	{
-		return this.subjectQueryHandler.calculateTTRForCollectionOfDocuments(
+		long start = System.currentTimeMillis();
+		Map<String, Double> result = this.subjectQueryHandler.calculateTTRForCollectionOfDocuments(
 				documentIds
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateTTRForCollectionFoDocuments"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
@@ -213,10 +407,19 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			String lemma, String documentId
 	) throws DocumentNotFoundException
 	{
-		return this.subjectQueryHandler
+		long start = System.currentTimeMillis();
+		double result = this.subjectQueryHandler
 				.calculateTermFrequencyWithDoubleNormForLemmaInDocument(
 						lemma, documentId
 				);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateTermFrequencyWithDoubleNormForLemmaInDocument"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
@@ -224,10 +427,19 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			String lemma, String documentId
 	) throws DocumentNotFoundException
 	{
-		return this.subjectQueryHandler
+		long start = System.currentTimeMillis();
+		double result = this.subjectQueryHandler
 				.calculateTermFrequencyWithLogNormForLemmaInDocument(
 						lemma, documentId
 				);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateTermFrequencyWithLogNormForLemmaInDocument"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
@@ -235,15 +447,33 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			String documentId
 	) throws DocumentNotFoundException
 	{
-		return this.subjectQueryHandler
+		long start = System.currentTimeMillis();
+		Map<String, Double> result = this.subjectQueryHandler
 				.calculateTermFrequenciesForLemmataInDocument(documentId);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateTermFrequenciesForLemmataInDocument"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
 	public double calculateInverseDocumentFrequency(String lemma)
 	{
-		return this.subjectQueryHandler
+		long start = System.currentTimeMillis();
+		double result = this.subjectQueryHandler
 				.calculateInverseDocumentFrequency(lemma);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateInverseDocumentFrequency"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
@@ -251,10 +481,19 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	calculateInverseDocumentFrequenciesForLemmataInDocument(String documentId)
 			throws DocumentNotFoundException
 	{
-		return this.subjectQueryHandler
+		long start = System.currentTimeMillis();
+		Map<String, Double> result = this.subjectQueryHandler
 				.calculateInverseDocumentFrequenciesForLemmataInDocument(
 						documentId
 				);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateInverseDocumentFrequenciesForLemmataInDocument"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
@@ -262,9 +501,18 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			String lemma, String documentId
 	) throws DocumentNotFoundException
 	{
-		return this.subjectQueryHandler.calculateTFIDFForLemmaInDocument(
+		long start = System.currentTimeMillis();
+		double result = this.subjectQueryHandler.calculateTFIDFForLemmaInDocument(
 				lemma, documentId
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateTFIDFForLemmaInDocument"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
@@ -272,17 +520,35 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			String documentId
 	) throws DocumentNotFoundException
 	{
-		return this.subjectQueryHandler.calculateTFIDFForLemmataInDocument(
+		long start = System.currentTimeMillis();
+		Map<String, Double> result = this.subjectQueryHandler.calculateTFIDFForLemmataInDocument(
 				documentId
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateTFIDFForLemmataInDocument"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
 	public Map<String, Map<String, Double>>
 	calculateTFIDFForLemmataInAllDocuments()
 	{
-		return this.subjectQueryHandler
+		long start = System.currentTimeMillis();
+		Map<String, Map<String, Double>> result = this.subjectQueryHandler
 				.calculateTFIDFForLemmataInAllDocuments();
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateTFIDFForLemmataInAllDocuments"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
@@ -290,16 +556,34 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			String documentId
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return this.subjectQueryHandler.getBiGramsFromDocument(
+		long start = System.currentTimeMillis();
+		Iterable<String> result = this.subjectQueryHandler.getBiGramsFromDocument(
 				documentId
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"getBiGramsFromDocument"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return this.subjectQueryHandler.getBiGramsFromAllDocuments();
+		long start = System.currentTimeMillis();
+		Iterable<String> result = this.subjectQueryHandler.getBiGramsFromAllDocuments();
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"getBiGramsFromAllDocuments"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
@@ -307,25 +591,52 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			Collection<String> documentIds
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return this.subjectQueryHandler.getBiGramsFromDocumentsInCollection(
+		long start = System.currentTimeMillis();
+		Iterable<String> result = this.subjectQueryHandler.getBiGramsFromDocumentsInCollection(
 				documentIds
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"getBiGramsFromDocumentsInCollection"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return this.subjectQueryHandler.getTriGramsFromDocument(
+		long start = System.currentTimeMillis();
+		Iterable<String> result = this.subjectQueryHandler.getTriGramsFromDocument(
 				documentId
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"getTriGramsFromDocument"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return this.subjectQueryHandler.getTriGramsFromAllDocuments();
+		long start = System.currentTimeMillis();
+		Iterable<String> result = this.subjectQueryHandler.getTriGramsFromAllDocuments();
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"getTriGramsFromAllDocuments"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 
 	@Override
@@ -333,8 +644,17 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			Collection<String> documentIds
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return this.subjectQueryHandler.getTriGramsFromDocumentsInCollection(
+		long start = System.currentTimeMillis();
+		Iterable<String> result = this.subjectQueryHandler.getTriGramsFromDocumentsInCollection(
 				documentIds
 		);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"getTriGramsFromDocumentsInCollection"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
 	}
 }
