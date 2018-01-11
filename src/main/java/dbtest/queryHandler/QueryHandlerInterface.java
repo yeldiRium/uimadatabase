@@ -48,32 +48,32 @@ public interface QueryHandlerInterface
 	)
 	{
 		QueryHandlerInterface queryhandler = null;
-		if (aConnection instanceof ArangoDBConnection)
+		if (aConnection.getClass() == ArangoDBConnection.class)
 		{
 			queryhandler = new ArangoDBQueryHandler(
 					((ArangoDBConnection) aConnection).getArangoDB()
 			);
-		} else if (aConnection instanceof BaseXConnection)
+		} else if (aConnection.getClass() == BaseXConnection.class)
 		{
 			queryhandler = new BaseXQueryHandler(
 					((BaseXConnection) aConnection).getSession()
 			);
-		} else if (aConnection instanceof CassandraConnection)
+		} else if (aConnection.getClass() == CassandraConnection.class)
 		{
 			queryhandler = new CassandraQueryHandler(
 					((CassandraConnection) aConnection).getSession()
 			);
-		} else if (aConnection instanceof MongoDBConnection)
+		} else if (aConnection.getClass() == MongoDBConnection.class)
 		{
 			queryhandler = new MongoDBQueryHandler(
 					((MongoDBConnection) aConnection).getClient()
 			);
-		} else if (aConnection instanceof MySQLConnection)
+		} else if (aConnection.getClass() == MySQLConnection.class)
 		{
 			queryhandler = new MySQLQueryHandler(
 					((MySQLConnection) aConnection).getConnection()
 			);
-		} else if (aConnection instanceof Neo4jConnection)
+		} else if (aConnection.getClass() == Neo4jConnection.class)
 		{
 			queryhandler = new Neo4jQueryHandler(
 					((Neo4jConnection) aConnection).getDriver()
