@@ -36,7 +36,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		super.initialize(context);
 
 		this.dbName = context.getConfigParameterValue(PARAM_DBNAME).toString();
-		logger.info("dbname given: '" + this.dbName + "'");
+		logger.info("Initializing CollectionWriter for db " + this.dbName);
 
 		Class<? extends Connection> connectionClass =
 				Connections.getConnectionClassForName(this.dbName);
@@ -51,8 +51,8 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 			this.queryHandler = connection.getQueryHandler();
 		} catch (InterruptedException | ExecutionException e)
 		{
-			logger.severe("Initialization for " + this.getClass().getName()
-					+ " failed. Interrupted when requesting connection for "
+			logger.severe("Initialization for CollectionWriter failed. " +
+					"Interrupted when requesting connection for "
 					+ this.dbName + ".");
 			e.printStackTrace();
 			Thread.currentThread().interrupt();

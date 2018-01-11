@@ -43,6 +43,7 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 		super.initialize(context);
 
 		this.dbName = context.getConfigParameterValue(PARAM_DBNAME).toString();
+		logger.info("Initializing CollectionReader for db " + this.dbName);
 
 		Class<? extends Connection> connectionClass =
 				Connections.getConnectionClassForName(this.dbName);
@@ -53,10 +54,14 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 			ConnectionResponse response = ConnectionManager.getInstance()
 					.submitRequest(request).get();
 			Connection connection = response
-					.getConnection(Neo4jConnection.class);
+					.getConnection(connectionClass);
 			this.queryHandler = connection.getQueryHandler();
 		} catch (InterruptedException | ExecutionException e)
 		{
+			logger.severe("Initialization for CollectionReader failed. " +
+					"Interrupted when requesting connection for "
+					+ this.dbName + ".");
+			e.printStackTrace();
 			Thread.currentThread().interrupt();
 		}
 
