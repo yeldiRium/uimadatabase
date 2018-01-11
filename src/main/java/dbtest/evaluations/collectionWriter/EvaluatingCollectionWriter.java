@@ -36,6 +36,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		super.initialize(context);
 
 		this.dbName = context.getConfigParameterValue(PARAM_DBNAME).toString();
+		logger.info("dbname given: '" + this.dbName + "'");
 
 		Class<? extends Connection> connectionClass =
 				Connections.getConnectionClassForName(this.dbName);
@@ -46,10 +47,14 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 			ConnectionResponse response = ConnectionManager.getInstance()
 					.submitRequest(request).get();
 			Connection connection = response
-					.getConnection(Neo4jConnection.class);
+					.getConnection(connectionClass);
 			this.queryHandler = connection.getQueryHandler();
 		} catch (InterruptedException | ExecutionException e)
 		{
+			logger.severe("Initialization for " + this.getClass().getName()
+					+ " failed. Interrupted when requesting connection for "
+					+ this.dbName + ".");
+			e.printStackTrace();
 			Thread.currentThread().interrupt();
 		}
 

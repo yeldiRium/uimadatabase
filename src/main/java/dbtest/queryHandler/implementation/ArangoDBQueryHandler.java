@@ -22,7 +22,6 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
-import scala.Int;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,14 +65,15 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public void setUpDatabase()
 	{
+		if (this.arangodb.getDatabases().contains(dbName))
+		{
+			this.arangodb.db(dbName).drop();
+		}
+
 		this.arangodb.createDatabase(dbName);
 		this.db = this.arangodb.db(dbName);
 
 		Arrays.stream(ElementType.values()).parallel()
-				.map(Enum::toString)
-				.forEach(this.db::createCollection);
-
-		Arrays.stream(Relationship.values()).parallel()
 				.map(Enum::toString)
 				.forEach(this.db::createCollection);
 
@@ -163,13 +163,14 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	}
 
 	/**
-	 * It is easier to drop and rebuild the database than to delete everything
-	 * via query.
+	 * Since setUpDatabase drops an existing database before creating a new one,
+	 * this can be an alias for setUpDatabase.
+	 * <p>
+	 * Dropping is also easier than deleting everything by query.
 	 */
 	@Override
 	public void clearDatabase()
 	{
-		this.arangodb.db(dbName).drop();
 		this.setUpDatabase();
 	}
 
@@ -829,9 +830,10 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	 * Since every Token is connected to exactly one Document (the one it is
 	 * contained in), we do not need to query the Documents and can instead
 	 * count, in how many Tokens a Lemma occurs.
-	 *
+	 * <p>
 	 * This can only be a problem, if there are dangling Tokens (which do not
 	 * have a connection to a Document). However, this should never happen.
+	 *
 	 * @return The amount of occurences of each Lemma an all Documents.
 	 */
 	@Override
