@@ -1,6 +1,6 @@
 evaluations:
   - !!dbtest.evaluations.AllWriteEvaluationCase {}
-  - !!dbtest.evaluations.AllReadEvaluationCase {}
+  #- !!dbtest.evaluations.AllReadEvaluationCase {}
   #- !!dbtest.evaluations.AllQueryEvaluationCase {}
   #- !!dbtest.evaluations.CassandraCounterCreateEvaluationCase {}
   #- !!dbtest.evaluations.CassandraTTREvaluationCase {}

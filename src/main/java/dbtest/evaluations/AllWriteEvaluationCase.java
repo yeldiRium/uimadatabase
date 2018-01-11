@@ -7,12 +7,12 @@ import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import dbtest.evaluations.collectionWriter.EvaluatingCollectionWriter;
 import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiReader;
+import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiWriter;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.hucompute.services.uima.database.xmi.XmiWriterModified;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -52,13 +52,13 @@ public class AllWriteEvaluationCase implements EvaluationCase
 			);
 
 			List<AnalysisEngine> writers = Arrays.asList(
-					createWriter(outputProvider, Connections.DBName.ArangoDB),
+					//createWriter(outputProvider, Connections.DBName.ArangoDB),
 					//getMongoWriter(outputProvider),
 					//getCassandraWriter(outputProvider),
 					//getBasexWriter(outputProvider),
 					//getMysqlWriter(outputProvider),
-					createWriter(outputProvider, Connections.DBName.Neo4j)
-					//getXMIWriter(outputProvider)
+					//createWriter(outputProvider, Connections.DBName.Neo4j)
+					getXMIWriter(outputProvider)
 			);
 
 			for (AnalysisEngine writer : writers)
@@ -107,15 +107,13 @@ public class AllWriteEvaluationCase implements EvaluationCase
 			throws ResourceInitializationException, IOException
 	{
 		return createEngine(
-				XmiWriterModified.class,
-				XmiWriterModified.PARAM_TARGET_LOCATION,
+				XmiWriter.class,
+				XmiWriter.PARAM_TARGET_LOCATION,
 				System.getenv("OUTPUT_DIR"),
-				XmiWriterModified.PARAM_USE_DOCUMENT_ID,
+				XmiWriter.PARAM_USE_DOCUMENT_ID,
 				true,
-				XmiWriterModified.PARAM_OVERWRITE,
-				true,
-				XmiWriterModified.PARAM_LOG_FILE_LOCATION,
-				outputProvider.createFile(AllWriteEvaluationCase.class.getName(), "xmi")
+				XmiWriter.PARAM_OVERWRITE,
+				true
 		);
 	}
 }
