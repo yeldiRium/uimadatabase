@@ -1,5 +1,6 @@
 package dbtest.queryHandler.implementation;
 
+import com.google.common.collect.Maps;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
@@ -84,8 +85,12 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			session.writeTransaction(tx -> {
-				String documentQuery = "MERGE (d:" + ElementType.Document + " {id:'" + documentId + "'}) SET d.text = '" + document.getDocumentText() + "', d.language = '" + document.getDocumentLanguage() + "'";
-				tx.run(documentQuery);
+				String documentQuery = "MERGE (d:" + ElementType.Document + " {id:{documentId}}) SET d.text = {text}, d.language = {language}";
+				Map<String, Object> params = new HashMap<>();
+				params.put("documentId", documentId);
+				params.put("text", document.getDocumentText());
+				params.put("language", document.getDocumentLanguage());
+				tx.run(documentQuery, params);
 				tx.success();
 				return 1;
 			});
@@ -131,9 +136,12 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			session.writeTransaction(tx -> {
+				Map<String, Object> queryParams = new HashMap<>();
+
 				// Create paragraph (if not exists) and add relationship from
 				// document.
-				String paragraphQuery = "MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'}) ";
+				String paragraphQuery = "MATCH (d:" + ElementType.Document + " {id:{documentId}}) ";
+				queryParams.put("documentId", documentId);
 
 				// Add successor relationship from previous paragraph (if
 				// exists) to current paragraph.
@@ -141,11 +149,15 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 				// into two parts.
 				if (previousParagraph != null)
 				{
-					paragraphQuery += "MATCH (p_prev:" + ElementType.Paragraph + " {id:'" + documentId + "', begin:'" + previousParagraph.getBegin() + "', end:'" + previousParagraph.getEnd() + "'}) ";
+					paragraphQuery += "MATCH (p_prev:" + ElementType.Paragraph + " {id:{documentId}, begin:{prevParagraphBegin}, end:{prevParagraphEnd}}) ";
+					queryParams.put("prevParagraphBegin", previousParagraph.getBegin());
+					queryParams.put("prevParagraphEnd", previousParagraph.getEnd());
 				}
 
-				paragraphQuery += "MERGE (p:" + ElementType.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) "
+				paragraphQuery += "MERGE (p:" + ElementType.Paragraph + " {id:{documentId}, begin:{paragraphBegin}, end:{paragraphEnd}}) "
 						+ "MERGE (d)-[:" + Relationship.DocumentHasParagraph + "]->(p)";
+				queryParams.put("paragraphBegin", paragraph.getBegin());
+				queryParams.put("paragraphEnd", paragraph.getEnd());
 
 				// Continue adding successor relationship.
 				if (previousParagraph != null)
@@ -153,7 +165,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 					paragraphQuery += "MERGE (p_prev)-[:" + Relationship.NextParagraph + "]->(p)";
 				}
 
-				tx.run(paragraphQuery);
+				tx.run(paragraphQuery, queryParams);
 				tx.success();
 				return 1;
 			});
@@ -203,10 +215,16 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			session.writeTransaction(tx -> {
+				Map<String, Object> queryParams = new HashMap<>();
+
 				// Create sentence (if not exists) and add relationship from
 				// document and to paragraph.
-				String sentenceQuery = "MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'}) "
-						+ "MATCH (p:" + ElementType.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) ";
+				String sentenceQuery = "MATCH (d:" + ElementType.Document + " {id:{documentId}}) "
+						+ "MATCH (p:" + ElementType.Paragraph + " {id:{documentId}, begin:{paragraphBegin}, end:{paragraphEnd}}) ";
+				queryParams.put("documentId", documentId);
+				queryParams.put("paragraphBegin", paragraph.getBegin());
+				queryParams.put("paragraphEnd", paragraph.getEnd());
+
 
 				// Add successor relationship from previous sentence (if
 				// exists) to current sentence.
@@ -214,12 +232,16 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 				// into two parts.
 				if (previousSentence != null)
 				{
-					sentenceQuery += "MATCH (s_prev:" + ElementType.Sentence + " {id:'" + documentId + "', begin:'" + previousSentence.getBegin() + "', end:'" + previousSentence.getEnd() + "'}) ";
+					sentenceQuery += "MATCH (s_prev:" + ElementType.Sentence + " {id:{documentId}, begin:{prevSentenceBegin}, end:{prevSentenceEnd}}) ";
+					queryParams.put("prevSentenceBegin", previousSentence.getBegin());
+					queryParams.put("prevSentenceEnd", previousSentence.getEnd());
 				}
 
-				sentenceQuery += "MERGE (s:" + ElementType.Sentence + " {id:'" + documentId + "', begin:'" + sentence.getBegin() + "', end:'" + sentence.getEnd() + "'}) "
+				sentenceQuery += "MERGE (s:" + ElementType.Sentence + " {id:{documentId}, begin:{sentenceBegin}, end:{sentenceEnd}}) "
 						+ "MERGE (d)-[:" + Relationship.DocumentHasSentence + "]->(s) "
-						+ "MERGE (s)-[:" + Relationship.SentenceInParagraph + "]->(p)";
+						+ "MERGE (s)-[:" + Relationship.SentenceInParagraph + "]->(p) ";
+				queryParams.put("sentenceBegin", sentence.getBegin());
+				queryParams.put("sentenceEnd", sentence.getEnd());
 
 				// Continue adding successor relationship.
 				if (previousSentence != null)
@@ -227,7 +249,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 					sentenceQuery += "MERGE (s_prev)-[:" + Relationship.NextSentence + "]->(s)";
 				}
 
-				tx.run(sentenceQuery);
+				tx.run(sentenceQuery, queryParams);
 				tx.success();
 				return 1;
 			});
@@ -287,35 +309,50 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			session.writeTransaction(tx -> {
+				Map<String, Object> queryParams = new HashMap<>();
+
 				// Create token (if not exists) and add relationship
 				// from Document and to Paragraph and to Sentence.
 				// Also create Lemma and Pos and add relationships from
 				// Token to them as well as from Document to Lemma.
-				String tokenQuery = "MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'}) "
-						+ "MATCH (p:" + ElementType.Paragraph + " {id:'" + documentId + "', begin:'" + paragraph.getBegin() + "', end:'" + paragraph.getEnd() + "'}) "
-						+ "MATCH (s:" + ElementType.Sentence + " {id:'" + documentId + "', begin:'" + sentence.getBegin() + "', end:'" + sentence.getEnd() + "'}) ";
+				String tokenQuery = "MATCH (d:" + ElementType.Document + " {id:{documentId}}) "
+						+ "MATCH (p:" + ElementType.Paragraph + " {id:{documentId}, begin:{paragraphBegin}, end:{paragraphEnd}}) "
+						+ "MATCH (s:" + ElementType.Sentence + " {id:{documentId}, begin:{sentenceBegin}, end:{sentenceEnd}}) ";
+				queryParams.put("documentId", documentId);
+				queryParams.put("paragraphBegin", paragraph.getBegin());
+				queryParams.put("paragraphEnd", paragraph.getEnd());
+				queryParams.put("sentenceBegin", sentence.getBegin());
+				queryParams.put("sentenceEnd", sentence.getEnd());
 
 				if (previousToken != null)
 				{
-					tokenQuery += "MATCH (t_prev:" + ElementType.Token + " {id:'" + documentId + "', begin:'" + previousToken.getBegin() + "', end:'" + previousToken.getEnd() + "', value='" + previousToken.getCoveredText() + "'}) ";
+					tokenQuery += "MATCH (t_prev:" + ElementType.Token + " {id:{documentId}, begin:{prevTokenBegin}, end:{prevTokenEnd}, value={prevTokenValue}}) ";
+					queryParams.put("prevTokenBegin", previousToken.getBegin());
+					queryParams.put("prevTokenEnd", previousToken.getEnd());
+					queryParams.put("prevTokenValue", previousToken.getCoveredText());
 				}
 
-				tokenQuery += "MERGE (t:" + ElementType.Token + " {id:'" + documentId + "', begin:'" + token.getBegin() + "', end:'" + token.getEnd() + "', value:'" + token.getCoveredText() + "'}) "
-						+ "MERGE (pos:" + ElementType.Pos + " {value:'" + token.getPos().getPosValue() + "'}) "
-						+ "MERGE (l:" + ElementType.Lemma + " {value:'" + token.getLemma().getValue() + "'}) "
+				tokenQuery += "MERGE (t:" + ElementType.Token + " {id:{documentId}, begin:{tokenBegin}, end:{tokenEnd}, value:{tokenValue}}) "
+						+ "MERGE (pos:" + ElementType.Pos + " {value:{tokenPosValue}}) "
+						+ "MERGE (l:" + ElementType.Lemma + " {value:{tokenLemmaValue}}) "
 						+ "MERGE (d)-[:" + Relationship.DocumentHasToken + "]->(t) "
 						+ "MERGE (t)-[:" + Relationship.TokenInParagraph + "]->(p) "
 						+ "MERGE (t)-[:" + Relationship.TokenInSentence + "]->(s) "
 						+ "MERGE (t)-[:" + Relationship.TokenHasLemma + "]->(l) "
 						+ "MERGE (t)-[:" + Relationship.TokenAtPos + "]->(pos) "
 						+ "MERGE (d)-[:" + Relationship.DocumentHasLemma + "]->(l)";
+				queryParams.put("tokenBegin", token.getBegin());
+				queryParams.put("tokenEnd", token.getEnd());
+				queryParams.put("tokenValue", token.getCoveredText());
+				queryParams.put("tokenPosValue", token.getPos().getPosValue());
+				queryParams.put("tokenLemmaValue", token.getLemma().getValue());
 
 				if (previousToken != null)
 				{
 					tokenQuery += "MERGE (t_prev)-[:" + Relationship.NextToken + "]->(t)";
 				}
 
-				tx.run(tokenQuery);
+				tx.run(tokenQuery, queryParams);
 				tx.success();
 				return 1;
 			});
@@ -364,9 +401,11 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	{
 		try (Session session = this.driver.session())
 		{
+			Map<String, Object> queryParams = new HashMap<>();
 			Set<String> lemmata = new HashSet<>();
-			String query = "MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})-[:" + Relationship.DocumentHasLemma + "]-(l:" + ElementType.Lemma + ") RETURN l.value AS lemma";
-			StatementResult result = session.readTransaction(tx -> tx.run(query));
+			String query = "MATCH (d:" + ElementType.Document + " {id:{documentId}})-[:" + Relationship.DocumentHasLemma + "]-(l:" + ElementType.Lemma + ") RETURN l.value AS lemma";
+			queryParams.put("documentId", documentId);
+			StatementResult result = session.readTransaction(tx -> tx.run(query, queryParams));
 
 			while (result.hasNext())
 			{
@@ -392,7 +431,9 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			Exception anException = session.readTransaction(tx -> {
 				try
 				{
-					StatementResult documentResult = tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'}) RETURN d as document");
+					Map<String, Object> documentParams = new HashMap<>();
+					documentParams.put("documentId", documentId);
+					StatementResult documentResult = tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}}) RETURN d as document", documentParams);
 					if (!documentResult.hasNext())
 					{
 						tx.failure();
@@ -404,15 +445,19 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 					meta.setDocumentId(document.get("id").toString());
 					aCAS.setDocumentLanguage(document.get("language").toString());
 					aCAS.setDocumentText(document.get("text").toString());
-
-					StatementResult tokensResult = tx.run("MATCH (t:" + ElementType.Token + " {id:'" + documentId + "'}) RETURN t as token");
+					StatementResult tokensResult = tx.run("MATCH (t:" + ElementType.Token + " {id:{documentId}}) RETURN t as token", documentParams);
 					while (tokensResult.hasNext())
 					{
 						Value foundToken = tokensResult.next().get("token");
 
 						Token xmiToken = new Token(aCAS.getJCas(), foundToken.get("begin").asInt(), foundToken.get("end").asInt());
 
-						StatementResult lemmasResult = tx.run("MATCH (t:" + ElementType.Token + " {id:'" + documentId + "', begin:'" + foundToken.get("begin").toString() + "', end:'" + foundToken.get("end").toString() + "', value:'" + foundToken.get("value").toString() + "'}))-[:" + Relationship.TokenHasLemma + "]->(l:" + ElementType.Lemma + ") RETURN l as lemma");
+						Map<String, Object> tokenParams = new HashMap<>();
+						tokenParams.put("documentId", documentId);
+						tokenParams.put("tokenBegin", foundToken.get("begin").asInt());
+						tokenParams.put("tokenEnd", foundToken.get("end").asInt());
+						tokenParams.put("tokenValue", foundToken.get("value").asString());
+						StatementResult lemmasResult = tx.run("MATCH (t:" + ElementType.Token + " {id:{documentId}, begin:{tokenBegin}, end:{tokenEnd}, value:{tokenValue}}))-[:" + Relationship.TokenHasLemma + "]->(l:" + ElementType.Lemma + ") RETURN l as lemma", tokenParams);
 						while (lemmasResult.hasNext())
 						{
 							Value foundLemma = lemmasResult.next().get("lemma");
@@ -422,7 +467,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 							xmiToken.setLemma(lemma);
 						}
 
-						StatementResult posResult = tx.run("MATCH (t:" + ElementType.Token + " {id:'" + documentId + "', begin:'" + foundToken.get("begin").toString() + "', end:'" + foundToken.get("end").toString() + "', value:'" + foundToken.get("value").toString() + "'}))-[:" + Relationship.TokenAtPos + "]->(pos:" + ElementType.Pos + ") RETURN pos");
+						StatementResult posResult = tx.run("MATCH (t:" + ElementType.Token + " {id:{documentId}, begin:{tokenBegin}, end:{tokenEnd}, value:{tokenValue}}))-[:" + Relationship.TokenAtPos + "]->(pos:" + ElementType.Pos + ") RETURN pos", tokenParams);
 						while (posResult.hasNext())
 						{
 							Value foundPos = posResult.next().get("pos");
@@ -458,7 +503,11 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(
-					tx -> tx.run("MATCH (d:" + ElementType.Document + ")-[:" + Relationship.DocumentHasLemma + "]->(l:" + ElementType.Lemma + "{value:'" + lemma + "'}) RETURN count(d) as amount")
+					tx -> {
+						Map<String, Object> queryParams = new HashMap<>();
+						queryParams.put("lemmaValue", lemma);
+						return tx.run("MATCH (d:" + ElementType.Document + ")-[:" + Relationship.DocumentHasLemma + "]->(l:" + ElementType.Lemma + "{value:{lemmaValue}}) RETURN count(d) as amount", queryParams);
+					}
 			);
 			return result.next().get("amount").asInt();
 		}
@@ -485,7 +534,11 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(
-					tx -> tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})--(e:" + type + ") RETURN count(e) as amount")
+					tx -> {
+						Map<String, Object> queryParams = new HashMap<>();
+						queryParams.put("documentId", documentId);
+						return tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}})--(e:" + type + ") RETURN count(e) as amount", queryParams);
+					}
 			);
 			return result.next().get("amount").asInt();
 		}
@@ -498,7 +551,11 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(
-					tx -> tx.run("MATCH (e:" + type + " {value:'" + value + "'}) RETURN count(e) as amount")
+					tx -> {
+						Map<String, Object> queryParams = new HashMap<>();
+						queryParams.put("value", value);
+						return tx.run("MATCH (e:" + type + " {value:{value}}) RETURN count(e) as amount", queryParams);
+					}
 			);
 			return result.next().get("amount").asInt();
 		}
@@ -514,7 +571,12 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(
-					tx -> tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})--(e:" + type + " {value:'" + value + "'}) RETURN count(e) as amount")
+					tx -> {
+						Map<String, Object> queryParams = new HashMap<>();
+						queryParams.put("documentId", documentId);
+						queryParams.put("value", value);
+						return tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}})--(e:" + type + " {value:{value}}) RETURN count(e) as amount", queryParams);
+					}
 			);
 			return result.next().get("amount").asInt();
 		}
@@ -587,7 +649,11 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(
-					tx -> tx.run("MATCH (d:" + ElementType.Document + ")--(t:" + ElementType.Token + ")--(l:" + ElementType.Lemma + ") WHERE d.id in [" + documentIds.parallelStream().collect(Collectors.joining(",")) + "] WITH d, count(DISTINCT l)/count(t) AS ttr RETURN d.id AS id, ttr")
+					tx -> {
+						Map<String, Object> queryParams = new HashMap<>();
+						queryParams.put("documentIds", documentIds);
+						return tx.run("MATCH (d:" + ElementType.Document + ")--(t:" + ElementType.Token + ")--(l:" + ElementType.Lemma + ") WHERE d.id in {documentIds} WITH d, count(DISTINCT l)/count(t) AS ttr RETURN d.id AS id, ttr", queryParams);
+					}
 			);
 			while (result.hasNext())
 			{
@@ -615,8 +681,10 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		HashMap<String, Integer> rtf = new HashMap<>();
 		try (Session session = this.driver.session())
 		{
+			Map<String, Object> queryParams = new HashMap<>();
+			queryParams.put("documentId", documentId);
 			StatementResult result = session.readTransaction(tx ->
-					tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "') RETURN d")
+					tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}) RETURN d", queryParams)
 			);
 			if (result == null || !result.hasNext())
 			{
@@ -624,7 +692,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			}
 
 			result = session.readTransaction(tx ->
-					tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})--(:" + ElementType.Token + ")--(l:" + ElementType.Lemma + ") WITH l, count(l.value) AS count RETURN l.value AS lemma, count;")
+					tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}})--(:" + ElementType.Token + ")--(l:" + ElementType.Lemma + ") WITH l, count(l.value) AS count RETURN l.value AS lemma, count;", queryParams)
 			);
 
 			if (result == null || !result.hasNext())
@@ -656,16 +724,21 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	{
 		try (Session session = this.driver.session())
 		{
+			Map<String, Object> documentParams = new HashMap<>();
+			documentParams.put("documentId", documentId);
 			StatementResult result = session.readTransaction(tx ->
-					tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "') RETURN d")
+					tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}) RETURN d", documentParams)
 			);
 			if (result == null || !result.hasNext())
 			{
 				throw new DocumentNotFoundException();
 			}
 
+			Map<String, Object> lemmaParams = new HashMap<>();
+			lemmaParams.put("documentId", documentId);
+			lemmaParams.put("lemmaValue", lemma);
 			result = session.readTransaction(tx ->
-					tx.run("MATCH (d:" + ElementType.Document + " {id:'" + documentId + "'})-[:" + Relationship.DocumentHasToken + "]-(:" + ElementType.Token + ")-[:" + Relationship.TokenHasLemma + "]-(l:" + ElementType.Lemma + " {value:'" + lemma + "'}) WITH count(l.value) AS count RETURN count;")
+					tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}})-[:" + Relationship.DocumentHasToken + "]-(:" + ElementType.Token + ")-[:" + Relationship.TokenHasLemma + "]-(l:" + ElementType.Lemma + " {value:{lemmaValue}}) WITH count(l.value) AS count RETURN count;", lemmaParams)
 			);
 
 			if (!result.hasNext())
@@ -745,8 +818,12 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		ArrayList<String> biGrams = new ArrayList<>();
 		try (Session session = this.driver.session())
 		{
-			StatementResult result = session.readTransaction(tx ->
-					tx.run("MATCH (d:" + ElementType.Document + " {id: '" + documentId + "'})--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ") RETURN t1.value, t2.value")
+			StatementResult result = session.readTransaction(
+					tx -> {
+						Map<String, Object> queryParams = new HashMap<>();
+						queryParams.put("documentId", documentId);
+						return tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}})--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ") RETURN t1.value, t2.value", queryParams);
+					}
 			);
 
 			if (result == null || !result.hasNext())
@@ -801,8 +878,12 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		ArrayList<String> biGrams = new ArrayList<>();
 		try (Session session = this.driver.session())
 		{
-			StatementResult result = session.readTransaction(tx ->
-					tx.run("MATCH (d:" + ElementType.Document + ")--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ") WHERE d.id in [" + documentIds.parallelStream().collect(Collectors.joining(",")) + "] RETURN t1.value, t2.value")
+			StatementResult result = session.readTransaction(
+					tx -> {
+						Map<String, Object> queryParams = new HashMap<>();
+						queryParams.put("documentIds", documentIds);
+						return tx.run("MATCH (d:" + ElementType.Document + ")--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ") WHERE d.id in {documentIds} RETURN t1.value, t2.value", queryParams);
+					}
 			);
 
 			if (result == null || !result.hasNext())
@@ -831,8 +912,12 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		ArrayList<String> triGrams = new ArrayList<>();
 		try (Session session = this.driver.session())
 		{
-			StatementResult result = session.readTransaction(tx ->
-				tx.run("MATCH (d:" + ElementType.Document + " {id: '" + documentId + "'})--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t3:" + ElementType.Token + ") RETURN t1.value, t2.value, t3.value")
+			StatementResult result = session.readTransaction(
+					tx -> {
+						Map<String, Object> queryParams = new HashMap<>();
+						queryParams.put("documentId", documentId);
+						return tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}})--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t3:" + ElementType.Token + ") RETURN t1.value, t2.value, t3.value", queryParams);
+					}
 			);
 
 			if (result == null || !result.hasNext())
@@ -895,8 +980,12 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		ArrayList<String> triGrams = new ArrayList<>();
 		try (Session session = this.driver.session())
 		{
-			StatementResult result = session.readTransaction(tx ->
-				tx.run("MATCH (d:" + ElementType.Document + ")--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t3:" + ElementType.Token + ") WHERE d.id in [" + documentIds.parallelStream().collect(Collectors.joining(",")) + "] RETURN t1.value, t2.value, t3.value")
+			StatementResult result = session.readTransaction(
+					tx -> {
+						Map<String, Object> queryParams = new HashMap<>();
+						queryParams.put("documentIds", documentIds);
+						return tx.run("MATCH (d:" + ElementType.Document + ")--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t3:" + ElementType.Token + ") WHERE d.id in {documentIds} RETURN t1.value, t2.value, t3.value", queryParams);
+					}
 			);
 
 			if (result == null || !result.hasNext())
