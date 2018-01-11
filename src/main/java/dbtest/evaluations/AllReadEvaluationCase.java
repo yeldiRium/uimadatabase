@@ -44,7 +44,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 		{
 			List<CollectionReader> readers = Arrays.asList(
 					//getXMIReader(outputProvider),
-					createReader(outputProvider, Connections.DBName.ArangoDB),
+					//createReader(outputProvider, Connections.DBName.ArangoDB),
 					createReader(outputProvider, Connections.DBName.Neo4j)
 					//getCassandraReader(outputProvider),
 					//getMongoReader(outputProvider),

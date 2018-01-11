@@ -52,7 +52,7 @@ public class AllWriteEvaluationCase implements EvaluationCase
 			);
 
 			List<AnalysisEngine> writers = Arrays.asList(
-					createWriter(outputProvider, Connections.DBName.ArangoDB),
+					//createWriter(outputProvider, Connections.DBName.ArangoDB),
 					//getMongoWriter(outputProvider),
 					//getCassandraWriter(outputProvider),
 					//getBasexWriter(outputProvider),
