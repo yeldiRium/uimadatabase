@@ -14,7 +14,7 @@ import java.io.File;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
-public abstract class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
+public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 {
 	protected static final Logger logger =
 			Logger.getLogger(EvaluatingCollectionWriter.class.getName());
