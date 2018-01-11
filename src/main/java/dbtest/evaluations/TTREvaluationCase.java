@@ -7,6 +7,7 @@ import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.QueryHandlerInterface;
+import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import dbtest.queryHandler.implementation.Neo4jQueryHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
@@ -67,16 +68,24 @@ public class TTREvaluationCase implements EvaluationCase
 					queryHandler.countElementsOfType(ElementType.Lemma);
 					builder.append("countElementsOfType(LEMMA) took: ")
 							.append(System.currentTimeMillis() - timeBegin)
-							.append("  ms\n")
+							.append("  ms\n");
 
-							.append("Testing countElementsInDocumentOfType(DocId, TOKEN):\n");
 					timeBegin = System.currentTimeMillis();
-					queryHandler.countElementsInDocumentOfType("105", ElementType.Token);
-					builder.append("countElementsInDocumentOfType(DocId, TOKEN) took: ")
-							.append(System.currentTimeMillis() - timeBegin)
-							.append("  ms\n")
+					try
+					{
+						builder.append("Testing countElementsInDocumentOfType(DocId, TOKEN):\n");
+						queryHandler.countElementsInDocumentOfType("105", ElementType.Token);
+						builder.append("countElementsInDocumentOfType(DocId, TOKEN) took: ")
+								.append(System.currentTimeMillis() - timeBegin)
+								.append("  ms\n");
+					} catch (TypeNotCountableException e)
+					{
+						// TODO: better Error handling
+						// However, Tokens should be countable in all databases.
+						e.printStackTrace();
+					}
 
-							.append("Testing countElementsOfTypeWithValue(LEMMA, Mensch):\n");
+					builder.append("Testing countElementsOfTypeWithValue(LEMMA, Mensch):\n");
 					timeBegin = System.currentTimeMillis();
 					queryHandler.countElementsOfTypeWithValue(ElementType.Lemma, "Mensch");
 					builder.append("countElementsOfTypeWithValue(LEMMA, Mensch) took: ")
