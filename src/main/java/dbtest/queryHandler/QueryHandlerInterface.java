@@ -36,11 +36,6 @@ public interface QueryHandlerInterface
 	// Factories
 	//--------------------------------------------------------------------------
 
-	public enum DBName
-	{
-		ArangoDB, BaseX, Cassandra, MongoDB, MySQL, Neo4j
-	}
-
 	/**
 	 * Creates an instance of a QueryHandlerInterface implementation based on
 	 * the connection supplied.
