@@ -91,7 +91,7 @@
 			<artifactId>services-types</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>lib/services-types-0.0.1-20180111.105500.jar</systemPath>
+			<systemPath>${project.basedir}/lib/services-types-0.0.1-20170922.145357-27.jar</systemPath>
 		</dependency>
 		
 		<dependency>

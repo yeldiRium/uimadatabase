@@ -15,7 +15,7 @@ target/
 *.class
 
 # libraries
-!lib/services-types-0.0.1-20180111.105500.jar
+!lib/services-types-0.0.1-20170922.145357-27.jar
 
 # OS
 .DS_Store
