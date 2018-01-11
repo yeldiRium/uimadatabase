@@ -1,4 +1,4 @@
-package dbtest.queryHandler.implementation.ArangoDB;
+package dbtest.queryHandler.implementation;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
