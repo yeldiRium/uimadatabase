@@ -21,7 +21,7 @@
     <orderEntry type="module-library">
       <library name="Maven: org.hucompute.services:services-types:0.0.1-SNAPSHOT">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/services-types-0.0.1-20170922.145357-27.jar!/" />
+          <root url="jar://lib/services-types-0.0.1-20180111.105500.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
