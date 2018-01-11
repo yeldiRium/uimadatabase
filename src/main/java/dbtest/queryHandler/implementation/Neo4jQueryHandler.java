@@ -1,6 +1,5 @@
 package dbtest.queryHandler.implementation;
 
-import com.google.common.collect.Maps;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
@@ -19,7 +18,6 @@ import org.neo4j.driver.v1.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class Neo4jQueryHandler extends AbstractQueryHandler
 {
@@ -586,9 +584,10 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	 * Since every Token is connected to exactly one Document (the one it is
 	 * contained in), we do not need to query the Documents and can instead
 	 * count, in how many Tokens a Lemma occurs.
-	 *
+	 * <p>
 	 * This can only be a problem, if there are dangling Tokens (which do not
 	 * have a connection to a Document). However, this should never happen.
+	 *
 	 * @return The amount of occurences of each Lemma an all Documents.
 	 */
 	@Override
@@ -951,7 +950,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(tx ->
-				tx.run("MATCH (d:" + ElementType.Document + ")--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t3:" + ElementType.Token + ") RETURN t1.value, t2.value, t3.value")
+					tx.run("MATCH (d:" + ElementType.Document + ")--(t1:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t2:" + ElementType.Token + ")-[:" + Relationship.NextToken + "]->(t3:" + ElementType.Token + ") RETURN t1.value, t2.value, t3.value")
 			);
 
 			while (result.hasNext())
