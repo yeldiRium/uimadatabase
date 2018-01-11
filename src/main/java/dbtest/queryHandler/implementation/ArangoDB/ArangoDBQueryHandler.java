@@ -25,6 +25,7 @@ import org.apache.uima.jcas.JCas;
 import scala.Int;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -877,7 +878,52 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public Map<String, Double> calculateTTRForAllDocuments()
 	{
-		return null;
+		Map<String, Double> documentTTRMap = new ConcurrentHashMap<>();
+
+		String query = "WITH @documentCollection, @documentHasToken, @tokenCollection, @documentHasLemma, @lemmaCollection " +
+				"FOR document IN @documentCollection " +
+				"   LET tokenCount = (" +
+				"       FOR token IN OUTBOUND document @documentHasToken " +
+				"           COLLECT WITH COUNT INTO count " +
+				"           RETURN count" +
+				"   ) " +
+				"   LET lemmaCount = (" +
+				"       FOR lemma IN OUTBOUND document @documentHasLemma " +
+				"           COLLECT lemma.value WITH COUNT INTO count " +
+				"           RETURN count " +
+				"   ) " +
+				"   RETURN {'document': document.key, 'ttr': (lemmaCount/tokenCount)}";
+		Map<String, Object> bindParams = new HashMap<>();
+		bindParams.put(
+				"documentCollection", ElementType.Document.toString()
+		);
+		bindParams.put(
+				"documentHasToken", Relationship.DocumentHasToken.toString()
+		);
+		bindParams.put(
+				"tokenCollection", ElementType.Token.toString()
+		);
+		bindParams.put(
+				"documentHasLemma", Relationship.DocumentHasLemma.toString()
+		);
+		bindParams.put(
+				"lemmaCollection", ElementType.Lemma.toString()
+		);
+
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, bindParams, null, BaseDocument.class
+		);
+
+		while (result.hasNext())
+		{
+			BaseDocument ttr = result.next();
+			documentTTRMap.put(
+					ttr.getAttribute("document").toString(),
+					Double.parseDouble(ttr.getAttribute("ttr").toString())
+			);
+		}
+
+		return documentTTRMap;
 	}
 
 	@Override
