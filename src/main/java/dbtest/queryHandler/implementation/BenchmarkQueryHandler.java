@@ -56,6 +56,12 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 
 	public BenchmarkQueryHandler(QueryHandlerInterface subjectQueryHandler)
 	{
+		this.resetMethodBenchmarks();
+		this.subjectQueryHandler = subjectQueryHandler;
+	}
+
+	public void resetMethodBenchmarks()
+	{
 		this.methodBenchmarks = new HashMap<>();
 		Arrays.stream(this.getClass().getDeclaredMethods())
 				.forEach(method -> {
@@ -64,7 +70,6 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 							new MethodBenchmark()
 					);
 				});
-		this.subjectQueryHandler = subjectQueryHandler;
 	}
 
 	public Map<String, MethodBenchmark> getMethodBenchmarks()
