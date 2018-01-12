@@ -89,10 +89,68 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 	}
 
 	@Override
-	public void destroy()
+	public void collectionProcessComplete()
 	{
 		try
 		{
+			logger.info("Collection process complete. Statistics:");
+
+			int storedDocuments = this.queryHandler.getMethodBenchmarks()
+					.get("storeJCasDocument").getCallCount();
+			LongSummaryStatistics documentInsertStatistic = this.queryHandler
+					.getMethodBenchmarks().get("storeJCasDocument").getCallTimes()
+					.stream().collect(
+							Collectors.summarizingLong(Long::longValue)
+					);
+
+			int storedParagraphs = this.queryHandler.getMethodBenchmarks()
+					.get("storeParagraph").getCallCount();
+			LongSummaryStatistics paragraphInsertStatistic = this.queryHandler
+					.getMethodBenchmarks().get("storeParagraph").getCallTimes()
+					.stream().collect(
+							Collectors.summarizingLong(Long::longValue)
+					);
+
+			int storedSentences = this.queryHandler.getMethodBenchmarks()
+					.get("storeSentence").getCallCount();
+			LongSummaryStatistics sentenceInsertStatistic = this.queryHandler
+					.getMethodBenchmarks().get("storeSentence").getCallTimes()
+					.stream().collect(
+							Collectors.summarizingLong(Long::longValue)
+					);
+
+			int storedTokens = this.queryHandler.getMethodBenchmarks()
+					.get("storeToken").getCallCount();
+			LongSummaryStatistics tokenInsertStatistic = this.queryHandler
+					.getMethodBenchmarks().get("storeToken").getCallTimes()
+					.stream().collect(
+							Collectors.summarizingLong(Long::longValue)
+					);
+
+			int averageDocumentStructureInsertTime = (int)(documentInsertStatistic.getSum()
+					+ paragraphInsertStatistic.getSum()
+					+ sentenceInsertStatistic.getSum()
+					+ tokenInsertStatistic.getSum()
+					/ (double) documentInsertStatistic.getCount());
+
+			String statistics = "Inserted " + documentInsertStatistic.getCount() + " documents.\n" +
+					"  Inserting a complete document structure took " + averageDocumentStructureInsertTime + "ms on average.\n" +
+					"Inserted " + paragraphInsertStatistic.getCount() + " paragraphs.\n" +
+					"  Inserting a paragraph took " + (int)paragraphInsertStatistic.getAverage() + "ms on average.\n" +
+					"  Inserting a paragraph took at most " + paragraphInsertStatistic.getMax() + "ms.\n" +
+					"  Spent " + paragraphInsertStatistic.getSum() + "ms overall on inserting paragraphs.\n" +
+					"Inserted " + sentenceInsertStatistic.getCount() + " sentences.\n" +
+					"  Inserting a sentence took " + (int)sentenceInsertStatistic.getAverage() + "ms on average.\n" +
+					"  Inserting a sentence took at most " + sentenceInsertStatistic.getMax() + "ms.\n" +
+					"  Spent " + sentenceInsertStatistic.getSum() + "ms overall on inserting sentences.\n" +
+					"Inserted " + tokenInsertStatistic.getCount() + " tokens.\n" +
+					"  Inserting a token took " + (int)tokenInsertStatistic.getAverage() + "ms on average.\n" +
+					"  Inserting a token took at most " + tokenInsertStatistic.getMax() + "ms.\n" +
+					"  Spent " + tokenInsertStatistic.getSum() + "ms overall on inserting tokens.\n";
+
+			logger.info(statistics);
+			this.output.write(statistics);
+
 			this.output.close();
 		} catch (IOException e)
 		{
@@ -177,12 +235,9 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 					.getMethodBenchmarks().get("storeParagraph").getCallTimes()
 					.stream().mapToLong(Long::longValue).sum()
 					/ (double) storedParagraphs);
-			logger.info(storedParagraphs + " paragraphs were inserted with" +
-					" an average insert-time of " + averageParagraphInsertTime
-					+ "ms.");
-			this.output.write("Paragraphs: " + storedParagraphs + "\"");
+			this.output.write("Paragraphs: " + storedParagraphs + "\"\n");
 			this.output.write("  Avg Time: " + averageParagraphInsertTime
-					+ "\"");
+					+ "\"\n");
 
 			int storedSentences = this.queryHandler.getMethodBenchmarks()
 					.get("storeSentence").getCallCount();
@@ -190,12 +245,9 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 					.getMethodBenchmarks().get("storeSentence").getCallTimes()
 					.stream().mapToLong(Long::longValue).sum()
 					/ (double) storedParagraphs);
-			logger.info(storedSentences + " sentences were inserted with " +
-					"an average insert-time of " + averageSentenceInsertTime
-					+ "ms.");
-			this.output.write("Sentences: " + storedSentences + "\"");
+			this.output.write("Sentences: " + storedSentences + "\"\n");
 			this.output.write("  Avg Time: " + averageSentenceInsertTime
-					+ "\"");
+					+ "\"\n");
 
 			int storedTokens = this.queryHandler.getMethodBenchmarks()
 					.get("storeToken").getCallCount();
@@ -204,18 +256,13 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 					.stream().collect(
 							Collectors.summarizingLong(Long::longValue)
 					);
-			logger.info(storedTokens + " tokens were inserted with an " +
-					"average insert-time of " + tokenInsertStatistic
-					.getAverage() + "ms.");
-			logger.info("The longest token insert process took "
-					+ tokenInsertStatistic.getMax() + "ms.");
-			this.output.write("Tokens: " + storedTokens + "\"");
+			this.output.write("Tokens: " + storedTokens + "\"\n");
 			this.output.write("  Min Time:" + tokenInsertStatistic.getMin()
-					+ "\"");
+					+ "\"\n");
 			this.output.write("  Max Time:" + tokenInsertStatistic.getMax()
-					+ "\"");
+					+ "\"\n");
 			this.output.write("  Avg Time: " + tokenInsertStatistic
-					.getAverage() + "\"");
+					.getAverage() + "\"\n");
 		} catch (IOException e)
 		{
 			e.printStackTrace();
