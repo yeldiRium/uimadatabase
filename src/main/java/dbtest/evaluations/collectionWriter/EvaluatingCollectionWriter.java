@@ -3,6 +3,7 @@ package dbtest.evaluations.collectionWriter;
 import dbtest.connection.*;
 import dbtest.connection.implementation.Neo4jConnection;
 import dbtest.queryHandler.QueryHandlerInterface;
+import dbtest.queryHandler.implementation.BenchmarkQueryHandler;
 import dbtest.queryHandler.implementation.Neo4jQueryHandler;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import org.apache.uima.UimaContext;
@@ -13,6 +14,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -30,7 +32,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 	@ConfigurationParameter(name = PARAM_DBNAME)
 	protected String dbName;
 
-	protected QueryHandlerInterface queryHandler;
+	protected BenchmarkQueryHandler queryHandler;
 
 	@Override
 	public void initialize(UimaContext context) throws ResourceInitializationException
@@ -50,7 +52,9 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 					.submitRequest(request).get();
 			Connection connection = response
 					.getConnection(connectionClass);
-			this.queryHandler = connection.getQueryHandler();
+			this.queryHandler = new BenchmarkQueryHandler(
+					connection.getQueryHandler()
+			);
 		} catch (InterruptedException | ExecutionException e)
 		{
 			logger.severe("Initialization for CollectionWriter failed. " +
@@ -70,10 +74,10 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 				.getDocumentId();
 
 		logger.info("Storing jCas '" + documentId + "' into " + this.dbName + "...");
-		long start = System.currentTimeMillis();
 		this.queryHandler.storeJCasDocument(jCas);
-		long end = System.currentTimeMillis();
 		logger.info("JCas processed and stored.");
-		logger.info("Took " + (end - start) + "ms.");
+		List<Long> callTimes = this.queryHandler.getMethodBenchmarks()
+				.get("storeJCasDocument").getCallTimes();
+		logger.info("Took " + callTimes.get(callTimes.size() - 1) + "ms.");
 	}
 }

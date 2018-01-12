@@ -67,6 +67,11 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 		this.subjectQueryHandler = subjectQueryHandler;
 	}
 
+	public Map<String, MethodBenchmark> getMethodBenchmarks()
+	{
+		return this.methodBenchmarks;
+	}
+
 	@Override
 	public void setUpDatabase()
 	{

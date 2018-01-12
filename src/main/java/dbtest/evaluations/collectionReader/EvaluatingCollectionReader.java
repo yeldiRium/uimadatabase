@@ -4,6 +4,7 @@ import dbtest.connection.*;
 import dbtest.connection.implementation.Neo4jConnection;
 import dbtest.queryHandler.QueryHandlerInterface;
 import dbtest.queryHandler.exceptions.QHException;
+import dbtest.queryHandler.implementation.BenchmarkQueryHandler;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -16,6 +17,7 @@ import org.apache.uima.util.Progress;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -33,7 +35,7 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 	@ConfigurationParameter(name = PARAM_DBNAME)
 	protected String dbName;
 
-	protected QueryHandlerInterface queryHandler;
+	protected BenchmarkQueryHandler queryHandler;
 	protected Iterator<String> iterator;
 
 	@Override
@@ -55,7 +57,9 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 					.submitRequest(request).get();
 			Connection connection = response
 					.getConnection(connectionClass);
-			this.queryHandler = connection.getQueryHandler();
+			this.queryHandler = new BenchmarkQueryHandler(
+					connection.getQueryHandler()
+			);
 		} catch (InterruptedException | ExecutionException e)
 		{
 			logger.severe("Initialization for CollectionReader failed. " +
@@ -81,6 +85,10 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 					+ this.dbName + "...");
 			this.queryHandler.populateCasWithDocument(cas, id);
 			logger.info("CAS populated.");
+			List<Long> callTimes = this.queryHandler.getMethodBenchmarks()
+					.get("populateCasWithDocument").getCallTimes();
+			logger.info("Took " + callTimes.get(callTimes.size() - 1)
+					+ "ms.");
 		} catch (QHException e)
 		{
 			if (e.getException() instanceof CASException)
