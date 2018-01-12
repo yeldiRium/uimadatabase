@@ -187,18 +187,6 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 
 		this.graph.vertexCollection(ElementType.Document.toString())
 				.insertVertex(docObject);
-
-		/*
-		 * Store each element of the jCas that was annotated as a Para-
-		 * graph.
-		 */
-		Paragraph previousParagraph = null;
-		for (Paragraph paragraph
-				: JCasUtil.select(document, Paragraph.class))
-		{
-			this.storeParagraph(paragraph, document, previousParagraph);
-			previousParagraph = paragraph;
-		}
 	}
 
 	@Override
@@ -261,20 +249,6 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				this.graph.edgeCollection(Relationship.NextParagraph.toString())
 						.insertEdge(nextParagraphEdge);
 			}
-		}
-
-		/*
-		 * Store each element of the jCas that was annotated as a Sen-
-		 * tence.
-		 */
-		Sentence previousSentence = null;
-		for (Sentence sentence : JCasUtil.selectCovered(
-				document,
-				Sentence.class, paragraph
-		))
-		{
-			this.storeSentence(sentence, document, paragraph, previousSentence);
-			previousSentence = sentence;
 		}
 	}
 
@@ -345,23 +319,6 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			);
 			this.graph.edgeCollection(Relationship.NextSentence.toString())
 					.insertEdge(nextSentenceEdge);
-		}
-
-		/*
-		 * Store each element of the jCas that was annotated as a Token.
-		 */
-		Token previousToken = null;
-		for (Token token
-				: JCasUtil.selectCovered(document, Token.class, sentence))
-		{
-			this.storeToken(
-					token,
-					document,
-					paragraph,
-					sentence,
-					previousToken
-			);
-			previousToken = token;
 		}
 	}
 

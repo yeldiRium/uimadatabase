@@ -93,18 +93,6 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 				return 1;
 			});
 		}
-
-		/*
-		 * Store each element of the jCas that was annotated as a Para-
-		 * graph.
-		 */
-		Paragraph previousParagraph = null;
-		for (Paragraph paragraph
-				: JCasUtil.select(document, Paragraph.class))
-		{
-			this.storeParagraph(paragraph, document, previousParagraph);
-			previousParagraph = paragraph;
-		}
 	}
 
 	/**
@@ -168,20 +156,6 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 				return 1;
 			});
 		}
-
-		/*
-		 * Store each element of the jCas that was annotated as a Sen-
-		 * tence.
-		 */
-		Sentence previousSentence = null;
-		for (Sentence sentence : JCasUtil.selectCovered(
-				document,
-				Sentence.class, paragraph
-		))
-		{
-			this.storeSentence(sentence, document, paragraph, previousSentence);
-			previousSentence = sentence;
-		}
 	}
 
 	/**
@@ -241,23 +215,6 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 				tx.success();
 				return 1;
 			});
-		}
-
-		/*
-		 * Store each element of the jCas that was annotated as a Token.
-		 */
-		Token previousToken = null;
-		for (Token token
-				: JCasUtil.selectCovered(document, Token.class, sentence))
-		{
-			this.storeToken(
-					token,
-					document,
-					paragraph,
-					sentence,
-					previousToken
-			);
-			previousToken = token;
 		}
 	}
 

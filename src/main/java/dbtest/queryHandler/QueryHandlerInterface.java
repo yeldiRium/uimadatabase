@@ -23,8 +23,10 @@ import java.util.Set;
  * Mixes database abstraction and a little bit of uima logic, since the JCas
  * format is required as an input and output format.
  * <p>
- * Maybe an abstraction can simplify the process of extracting information from
- * JCas objects and creating them. TODO: elaborate and update.
+ * The insertion methods are not recursive. I.e. the storeJCasDocument method
+ * should only store the document itself, and not any sub-elements (like para-
+ * graphs). For that an extenal control structure has to iterate over the docu-
+ * ment and call the appropriate methods.
  *
  * @author Manuel Stoeckel
  * @author Hannes Leutloff <hannes.leutloff@aol.de>
