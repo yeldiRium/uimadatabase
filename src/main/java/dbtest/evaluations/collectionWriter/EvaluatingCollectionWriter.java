@@ -17,8 +17,12 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
+import java.util.LongSummaryStatistics;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import java.util.stream.Collector;
@@ -39,11 +43,22 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 	protected String dbName;
 
 	protected BenchmarkQueryHandler queryHandler;
+	protected BufferedWriter output;
 
 	@Override
-	public void initialize(UimaContext context) throws ResourceInitializationException
+	public void initialize(UimaContext context)
+			throws ResourceInitializationException
 	{
 		super.initialize(context);
+
+		try
+		{
+			this.output = new BufferedWriter(new FileWriter(this.outputFile));
+		} catch (IOException e)
+		{
+			// TODO: improve error handling
+			e.printStackTrace();
+		}
 
 		this.dbName = context.getConfigParameterValue(PARAM_DBNAME).toString();
 		logger.info("Initializing CollectionWriter for db " + this.dbName);
@@ -73,6 +88,19 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		logger.info("Initialized CollectionWriter for db " + this.dbName);
 	}
 
+	@Override
+	public void destroy()
+	{
+		try
+		{
+			this.output.close();
+		} catch (IOException e)
+		{
+			// TODO: improve error handling
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Iterates over the jCas' structure and inserts all relevant elements into
 	 * the database.
@@ -82,89 +110,115 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 	@Override
 	public void process(JCas jCas) throws AnalysisEngineProcessException
 	{
-		final String documentId = DocumentMetaData.get(jCas)
-				.getDocumentId();
-
-		logger.info("Storing jCas '" + documentId + "' into " + this.dbName
-				+ "...");
-		long start = System.currentTimeMillis();
-		this.queryHandler.storeJCasDocument(jCas);
-
-		/*
-		 * Store each element of the jCas that was annotated as a Para-
-		 * graph.
-		 */
-		Paragraph previousParagraph = null;
-		for (Paragraph paragraph
-				: JCasUtil.select(jCas, Paragraph.class))
+		try
 		{
-			this.queryHandler.storeParagraph(
-					paragraph, jCas, previousParagraph
-			);
-			previousParagraph = paragraph;
+			final String documentId = DocumentMetaData.get(jCas)
+					.getDocumentId();
+
+			logger.info("Storing jCas '" + documentId + "' into "
+					+ this.dbName + "...");
+			long start = System.currentTimeMillis();
+			this.queryHandler.storeJCasDocument(jCas);
 
 			/*
-			 * Store each element of the jCas that was annotated as a Sen-
-			 * tence and is contained in the current paragraph.
+			 * Store each element of the jCas that was annotated as a Para-
+			 * graph.
 			 */
-			Sentence previousSentence = null;
-			for (Sentence sentence : JCasUtil.selectCovered(
-					jCas,
-					Sentence.class, paragraph
-			))
+			Paragraph previousParagraph = null;
+			for (Paragraph paragraph
+					: JCasUtil.select(jCas, Paragraph.class))
 			{
-				this.queryHandler.storeSentence(
-						sentence, jCas, paragraph, previousSentence
+				this.queryHandler.storeParagraph(
+						paragraph, jCas, previousParagraph
 				);
-				previousSentence = sentence;
-
+				previousParagraph = paragraph;
 
 				/*
-				 * Store each element of the jCas that was annotated as a Token
-				 * and is contained in the current sentence.
+				 * Store each element of the jCas that was annotated as a Sen-
+				 * tence and is contained in the current paragraph.
 				 */
-				Token previousToken = null;
-				for (Token token : JCasUtil.selectCovered(
-						jCas, Token.class, sentence
+				Sentence previousSentence = null;
+				for (Sentence sentence : JCasUtil.selectCovered(
+						jCas,
+						Sentence.class, paragraph
 				))
 				{
-					this.queryHandler.storeToken(
-							token, jCas, paragraph, sentence, previousToken
+					this.queryHandler.storeSentence(
+							sentence, jCas, paragraph, previousSentence
 					);
-					previousToken = token;
+					previousSentence = sentence;
+
+
+					/*
+					 * Store each element of the jCas that was annotated as a
+					 * Token and is contained in the current sentence.
+					 */
+					Token previousToken = null;
+					for (Token token : JCasUtil.selectCovered(
+							jCas, Token.class, sentence
+					))
+					{
+						this.queryHandler.storeToken(
+								token, jCas, paragraph, sentence, previousToken
+						);
+						previousToken = token;
+					}
 				}
 			}
+			long end = System.currentTimeMillis();
+
+			logger.info("JCas processed and stored.");
+			logger.info("Took " + (end - start) + "ms.");
+			this.output.write(documentId + "\n");
+
+			int storedParagraphs = this.queryHandler.getMethodBenchmarks()
+					.get("storeParagraph").getCallCount();
+			int averageParagraphInsertTime = (int)(this.queryHandler
+					.getMethodBenchmarks().get("storeParagraph").getCallTimes()
+					.stream().mapToLong(Long::longValue).sum()
+					/ (double) storedParagraphs);
+			logger.info(storedParagraphs + " paragraphs were inserted with" +
+					" an average insert-time of " + averageParagraphInsertTime
+					+ "ms.");
+			this.output.write("Paragraphs: " + storedParagraphs + "\"");
+			this.output.write("  Avg Time: " + averageParagraphInsertTime
+					+ "\"");
+
+			int storedSentences = this.queryHandler.getMethodBenchmarks()
+					.get("storeSentence").getCallCount();
+			int averageSentenceInsertTime = (int)(this.queryHandler
+					.getMethodBenchmarks().get("storeSentence").getCallTimes()
+					.stream().mapToLong(Long::longValue).sum()
+					/ (double) storedParagraphs);
+			logger.info(storedSentences + " sentences were inserted with " +
+					"an average insert-time of " + averageSentenceInsertTime
+					+ "ms.");
+			this.output.write("Sentences: " + storedSentences + "\"");
+			this.output.write("  Avg Time: " + averageSentenceInsertTime
+					+ "\"");
+
+			int storedTokens = this.queryHandler.getMethodBenchmarks()
+					.get("storeToken").getCallCount();
+			LongSummaryStatistics tokenInsertStatistic = this.queryHandler
+					.getMethodBenchmarks().get("storeToken").getCallTimes()
+					.stream().collect(
+							Collectors.summarizingLong(Long::longValue)
+					);
+			logger.info(storedTokens + " tokens were inserted with an " +
+					"average insert-time of " + tokenInsertStatistic
+					.getAverage() + "ms.");
+			logger.info("The longest token insert process took "
+					+ tokenInsertStatistic.getMax() + "ms.");
+			this.output.write("Tokens: " + storedTokens + "\"");
+			this.output.write("  Min Time:" + tokenInsertStatistic.getMin()
+					+ "\"");
+			this.output.write("  Max Time:" + tokenInsertStatistic.getMax()
+					+ "\"");
+			this.output.write("  Avg Time: " + tokenInsertStatistic
+					.getAverage() + "\"");
+		} catch (IOException e)
+		{
+			e.printStackTrace();
 		}
-		long end = System.currentTimeMillis();
-
-		logger.info("JCas processed and stored.");
-		logger.info("Took " + (end - start) + "ms.");
-
-		int storedParagraphs = this.queryHandler.getMethodBenchmarks()
-				.get("storeParagraph").getCallCount();
-		int averageParagraphInsertTime = (int)(this.queryHandler
-				.getMethodBenchmarks().get("storeParagraph").getCallTimes()
-				.stream().mapToLong(Long::longValue).sum()
-				/ (double) storedParagraphs);
-		logger.info(storedParagraphs + " paragraphs were inserted with an " +
-				"average insert-time of " + averageParagraphInsertTime + "ms.");
-
-		int storedSentences = this.queryHandler.getMethodBenchmarks()
-				.get("storeSentence").getCallCount();
-		int averageSentenceInsertTime = (int)(this.queryHandler
-				.getMethodBenchmarks().get("storeSentence").getCallTimes()
-				.stream().mapToLong(Long::longValue).sum()
-				/ (double) storedParagraphs);
-		logger.info(storedSentences + " sentences were inserted with an " +
-				"average insert-time of " + averageSentenceInsertTime + "ms.");
-
-		int storedTokens = this.queryHandler.getMethodBenchmarks()
-				.get("storeToken").getCallCount();
-		int averageTokenInsertTime = (int)(this.queryHandler
-				.getMethodBenchmarks().get("storeToken").getCallTimes()
-				.stream().mapToLong(Long::longValue).sum()
-				/ (double) storedParagraphs);
-		logger.info(storedTokens + " tokens were inserted " +
-				"average insert-time of " + averageTokenInsertTime + "ms.");
 	}
 }
