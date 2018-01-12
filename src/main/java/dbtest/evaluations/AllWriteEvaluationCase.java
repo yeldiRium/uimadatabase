@@ -44,7 +44,7 @@ public class AllWriteEvaluationCase implements EvaluationCase
 			CollectionReader reader = CollectionReaderFactory.createReader(
 					XmiReader.class,
 					XmiReader.PARAM_PATTERNS,
-					"[+]10012.xmi.gz", //
+					"[+]*.xmi.gz", //
 					XmiReader.PARAM_SOURCE_LOCATION,
 					System.getenv("INPUT_DIR"),
 					XmiReader.PARAM_LANGUAGE,

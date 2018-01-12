@@ -76,6 +76,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 			this.queryHandler = new BenchmarkQueryHandler(
 					connection.getQueryHandler()
 			);
+			this.queryHandler.clearDatabase();
 		} catch (InterruptedException | ExecutionException e)
 		{
 			logger.severe("Initialization for CollectionWriter failed. " +
