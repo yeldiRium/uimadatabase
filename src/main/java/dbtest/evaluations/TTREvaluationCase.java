@@ -7,6 +7,7 @@ import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.QueryHandlerInterface;
+import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import dbtest.queryHandler.implementation.Neo4jQueryHandler;
 import org.apache.commons.io.FileUtils;
@@ -82,6 +83,9 @@ public class TTREvaluationCase implements EvaluationCase
 					{
 						// TODO: better Error handling
 						// However, Tokens should be countable in all databases.
+						e.printStackTrace();
+					} catch (DocumentNotFoundException e)
+					{
 						e.printStackTrace();
 					}
 

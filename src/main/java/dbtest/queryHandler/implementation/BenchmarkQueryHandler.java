@@ -236,6 +236,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
+			throws DocumentNotFoundException
 	{
 		long start = System.currentTimeMillis();
 		Set<String> result = this.subjectQueryHandler.getLemmataForDocument(

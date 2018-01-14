@@ -1,5 +1,6 @@
 package dbtest.queryHandler;
 
+import dbtest.evaluations.collectionReader.EvaluatingCollectionReader;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
@@ -10,9 +11,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 public abstract class AbstractQueryHandler implements QueryHandlerInterface
 {
+	protected static final Logger logger =
+			Logger.getLogger(AbstractQueryHandler.class.getName());
+
 	/**
 	 * @param paragraph The Paragraph.
 	 * @param document  The document in which the paragraph occurs.
@@ -124,10 +129,19 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 	{
 		HashMap<String, Map<String, Double>> tfidfs = new HashMap<>();
 		this.getDocumentIds().forEach(documentId -> {
-			tfidfs.put(
-					documentId,
-					this.calculateTFIDFForLemmataInDocument(documentId)
-			);
+			try
+			{
+				tfidfs.put(
+						documentId,
+						this.calculateTFIDFForLemmataInDocument(documentId)
+				);
+			} catch (DocumentNotFoundException e)
+			{
+				logger.warning("DocumentId " + documentId + " could " +
+						"not be found in the database, although it was " +
+						"there just a moment ago. Please check for " +
+						"concurrent access.");
+			}
 		});
 		return tfidfs;
 	}

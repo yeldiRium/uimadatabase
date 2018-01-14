@@ -197,7 +197,8 @@ public interface QueryHandlerInterface
 	 * @param documentId the specified document's id.
 	 * @return a HashSet(String lemma).
 	 */
-	Set<String> getLemmataForDocument(String documentId);
+	Set<String> getLemmataForDocument(String documentId)
+		throws DocumentNotFoundException;
 
 	/**
 	 * Retrieves all stored objects in JCas format.
@@ -237,8 +238,8 @@ public interface QueryHandlerInterface
 	 *
 	 * @param documentId The id of the document from which elements are to be
 	 *                   counted.
-	 * @param type       Instance of Const.TYPE, namely TOKEN, LEMMA, POS,
-	 *                   DOCUMENT, SENTENCE or PARAGRAPH.
+	 * @param type       Instance of ElementType, namely Token, Lemma, Pos,
+	 *                   Document, sentence or Paragraph.
 	 * @return An integer.
 	 * @throws DocumentNotFoundException if the documentId can't be found in db
 	 * @throws TypeNotCountableException if the given type can't be counted.

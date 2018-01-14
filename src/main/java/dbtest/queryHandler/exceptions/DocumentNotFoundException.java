@@ -1,5 +1,5 @@
 package dbtest.queryHandler.exceptions;
 
-public class DocumentNotFoundException extends RuntimeException
+public class DocumentNotFoundException extends Exception
 {
 }

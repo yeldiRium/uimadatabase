@@ -358,7 +358,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 					if (!documentResult.hasNext())
 					{
 						tx.failure();
-						throw new DocumentNotFoundException();
+						return new DocumentNotFoundException();
 					}
 					Value document = documentResult.next().get("document");
 
@@ -413,6 +413,10 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			// ... and throw the Exception out here.
 			if (anException != null)
 			{
+				if (anException instanceof DocumentNotFoundException)
+				{
+					throw new DocumentNotFoundException();
+				}
 				throw new QHException(anException);
 			}
 		}

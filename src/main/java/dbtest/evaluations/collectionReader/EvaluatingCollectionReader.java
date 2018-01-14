@@ -3,6 +3,7 @@ package dbtest.evaluations.collectionReader;
 import dbtest.connection.*;
 import dbtest.connection.implementation.Neo4jConnection;
 import dbtest.queryHandler.QueryHandlerInterface;
+import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
 import dbtest.queryHandler.implementation.BenchmarkQueryHandler;
 import org.apache.uima.UimaContext;
@@ -83,12 +84,21 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 		{
 			logger.info("Populating CAS with document " + id + " from "
 					+ this.dbName + "...");
-			this.queryHandler.populateCasWithDocument(cas, id);
-			logger.info("CAS populated.");
-			List<Long> callTimes = this.queryHandler.getMethodBenchmarks()
-					.get("populateCasWithDocument").getCallTimes();
-			logger.info("Took " + callTimes.get(callTimes.size() - 1)
-					+ "ms.");
+			try
+			{
+				this.queryHandler.populateCasWithDocument(cas, id);
+				logger.info("CAS populated.");
+				List<Long> callTimes = this.queryHandler.getMethodBenchmarks()
+						.get("populateCasWithDocument").getCallTimes();
+				logger.info("Took " + callTimes.get(callTimes.size() - 1)
+						+ "ms.");
+			} catch (DocumentNotFoundException e)
+			{
+				logger.warning("DocumentId " + id + " could " +
+						"not be found in the database, although it was " +
+						"there just a moment ago. Please check for " +
+						"concurrent access.");
+			}
 		} catch (QHException e)
 		{
 			if (e.getException() instanceof CASException)
