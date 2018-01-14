@@ -3,6 +3,7 @@ package dbtest.evaluationFramework;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -100,14 +101,22 @@ public class BaseOutputProvider implements OutputProvider
 	}
 
 	@Override
-	public void writeJSON(String caller, String name, JSONObject jsonObject) throws IOException
+	public void writeJSON(String caller, String name, JSONObject jsonObject)
+			throws IOException
 	{
-
+		this.writeJSON(caller, name, jsonObject, false);
 	}
 
 	@Override
-	public void writeJSON(String caller, String name, JSONObject jsonObject, boolean keepOld) throws IOException
+	public void writeJSON(
+			String caller, String name, JSONObject jsonObject, boolean keepOld
+	)
+			throws IOException
 	{
-
+		File outputFile = this.createFile(caller, name, keepOld);
+		try (FileWriter writer = new FileWriter(outputFile))
+		{
+			writer.write(jsonObject.toString());
+		}
 	}
 }
