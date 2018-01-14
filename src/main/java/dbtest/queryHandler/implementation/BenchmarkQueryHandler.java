@@ -49,6 +49,12 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 		{
 			this.callTimes.add(callTime);
 		}
+
+		public void reset()
+		{
+			this.callCount = 0;
+			this.callTimes = new ArrayList<>();
+		}
 	}
 
 	protected QueryHandlerInterface subjectQueryHandler;
