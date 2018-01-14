@@ -59,13 +59,21 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 
 				do
 				{
-					result = tx.run("MATCH (n)\n" +
-							"OPTIONAL MATCH (n)-[r]-()\n" +
-							"WITH n,r LIMIT 50000\n" +
-							"DELETE n,r\n" +
-							"RETURN count(n) as deletedNodesCount");
+					result = tx.run("MATCH ()-[r]-()\n" +
+							"WITH r LIMIT 50000\n" +
+							"DELETE r\n" +
+							"RETURN count(r) as count");
 
-				} while (result.next().get("deletedNodesCount").asInt() > 0);
+				} while (result.next().get("count").asInt() > 0);
+				
+				do
+				{
+					result = tx.run("MATCH (n)\n" +
+							"WITH n LIMIT 50000\n" +
+							"DELETE n\n" +
+							"RETURN count(n) as count");
+
+				} while (result.next().get("count").asInt() > 0);
 
 				return 1;
 			});
