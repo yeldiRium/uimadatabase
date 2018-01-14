@@ -13,6 +13,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 
+import javax.naming.OperationNotSupportedException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -231,7 +232,7 @@ public interface QueryHandlerInterface
 	 *             DOCUMENT, SENTENCE or PARAGRAPH.
 	 * @return An integer.
 	 */
-	int countElementsOfType(ElementType type);
+	int countElementsOfType(ElementType type) throws TypeNotCountableException;
 
 	/**
 	 * Counts all elements of <i>type</i> in the specified document.
@@ -376,7 +377,8 @@ public interface QueryHandlerInterface
 	 * @param lemma the specified lemma.
 	 * @return a double.
 	 */
-	double calculateInverseDocumentFrequency(String lemma);
+	double calculateInverseDocumentFrequency(String lemma)
+			throws OperationNotSupportedException;
 
 	/**
 	 * Inverse-document-frequencies for all lemmata in the specified document.
@@ -387,7 +389,7 @@ public interface QueryHandlerInterface
 	Map<String, Double>
 	calculateInverseDocumentFrequenciesForLemmataInDocument(
 			String documentId
-	) throws DocumentNotFoundException;
+	) throws DocumentNotFoundException, OperationNotSupportedException;
 
 	/**
 	 * The TF-IDF for <i>lemma</i> in the specified document.
@@ -397,7 +399,7 @@ public interface QueryHandlerInterface
 	 * @return a double.
 	 */
 	double calculateTFIDFForLemmaInDocument(String lemma, String documentId)
-			throws DocumentNotFoundException;
+			throws DocumentNotFoundException, OperationNotSupportedException;
 
 	/**
 	 * The TF-IDF for <b>all lemmata</b> in the specified document.
@@ -407,7 +409,7 @@ public interface QueryHandlerInterface
 	 */
 	Map<String, Double> calculateTFIDFForLemmataInDocument(
 			String documentId
-	) throws DocumentNotFoundException;
+	) throws DocumentNotFoundException, OperationNotSupportedException;
 
 	/**
 	 * The TF-IDF for <b>all lemmata</b> in <i>all</i> documents.
@@ -416,7 +418,8 @@ public interface QueryHandlerInterface
 	 * @return a map from document id to a map from lemma to tfidf.
 	 */
 	Map<String, Map<String, Double>>
-	calculateTFIDFForLemmataInAllDocuments();
+	calculateTFIDFForLemmataInAllDocuments()
+			throws OperationNotSupportedException;
 
 
 	//--------------------------------------------------------------------------

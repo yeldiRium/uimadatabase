@@ -62,29 +62,30 @@ public class TTREvaluationCase implements EvaluationCase
 					queryHandler.calculateTTRForCollectionOfDocuments(Arrays.asList("105", "159"));
 					builder.append("getTTRForCollectionOfDocuments with two Documnts took: ")
 							.append(System.currentTimeMillis() - timeBegin)
-							.append("  ms\n")
-
-							.append("Testing countElementsOfType(LEMMA):\n");
-					timeBegin = System.currentTimeMillis();
-					queryHandler.countElementsOfType(ElementType.Lemma);
-					builder.append("countElementsOfType(LEMMA) took: ")
-							.append(System.currentTimeMillis() - timeBegin)
 							.append("  ms\n");
 
-					timeBegin = System.currentTimeMillis();
 					try
 					{
+						builder.append("Testing countElementsOfType(LEMMA):\n");
+						timeBegin = System.currentTimeMillis();
+						queryHandler.countElementsOfType(ElementType.Lemma);
+						builder.append("countElementsOfType(LEMMA) took: ")
+								.append(System.currentTimeMillis() - timeBegin)
+								.append("  ms\n");
+					} catch (TypeNotCountableException e)
+					{
+						e.printStackTrace();
+					}
+
+					try
+					{
+						timeBegin = System.currentTimeMillis();
 						builder.append("Testing countElementsInDocumentOfType(DocId, TOKEN):\n");
 						queryHandler.countElementsInDocumentOfType("105", ElementType.Token);
 						builder.append("countElementsInDocumentOfType(DocId, TOKEN) took: ")
 								.append(System.currentTimeMillis() - timeBegin)
 								.append("  ms\n");
-					} catch (TypeNotCountableException e)
-					{
-						// TODO: better Error handling
-						// However, Tokens should be countable in all databases.
-						e.printStackTrace();
-					} catch (DocumentNotFoundException e)
+					} catch (TypeNotCountableException | DocumentNotFoundException e)
 					{
 						e.printStackTrace();
 					}

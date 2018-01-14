@@ -2,11 +2,13 @@ package dbtest.queryHandler;
 
 import dbtest.evaluations.collectionReader.EvaluatingCollectionReader;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
+import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.jcas.JCas;
 
+import javax.naming.OperationNotSupportedException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -62,50 +64,69 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 
 	@Override
 	public double calculateInverseDocumentFrequency(String lemma)
+			throws OperationNotSupportedException
 	{
-		return Math.log((countElementsOfType(ElementType.Document) /
-				(double) countDocumentsContainingLemma(lemma))
-		);
+		try
+		{
+			return Math.log((countElementsOfType(ElementType.Document) /
+					(double) countDocumentsContainingLemma(lemma))
+			);
+		} catch (TypeNotCountableException e)
+		{
+			throw new OperationNotSupportedException();
+		}
 	}
 
 	@Override
 	public Map<String, Double>
 	calculateInverseDocumentFrequenciesForLemmataInDocument(String documentId)
-			throws DocumentNotFoundException
+			throws DocumentNotFoundException, OperationNotSupportedException
 	{
-		double docCount = (double) countElementsOfType(ElementType.Document);
-		Map<String, Double> inverseDocumentFrequencies =
-				new ConcurrentHashMap<>();
-		Set<String> lemmata = getLemmataForDocument(documentId);
-		Map<String, Integer> lemmaOccurenceCount =
-				this.countOccurencesForEachLemmaInAllDocuments();
+		try
+		{
+			double docCount = (double) countElementsOfType(ElementType.Document);
+			Map<String, Double> inverseDocumentFrequencies =
+					new ConcurrentHashMap<>();
+			Set<String> lemmata = getLemmataForDocument(documentId);
+			Map<String, Integer> lemmaOccurenceCount =
+					this.countOccurencesForEachLemmaInAllDocuments();
 
-		lemmata.parallelStream().forEach(e -> {
-			inverseDocumentFrequencies.put(
-					e.replaceAll("\"", ""),
-					Math.log(docCount /
-							((double) lemmaOccurenceCount.getOrDefault(e, 0))
-					)
-			);
-		});
-		return inverseDocumentFrequencies;
+			lemmata.parallelStream().forEach(e -> {
+				inverseDocumentFrequencies.put(
+						e.replaceAll("\"", ""),
+						Math.log(docCount /
+								((double) lemmaOccurenceCount.getOrDefault(e, 0))
+						)
+				);
+			});
+			return inverseDocumentFrequencies;
+		} catch (TypeNotCountableException e)
+		{
+			throw new OperationNotSupportedException();
+		}
 	}
 
 	@Override
 	public double calculateTFIDFForLemmaInDocument(
 			String lemma,
 			String documentId
-	) throws DocumentNotFoundException
+	) throws DocumentNotFoundException, OperationNotSupportedException
 	{
-		return this.calculateTermFrequencyWithLogNormForLemmaInDocument(
-				lemma, documentId
-		) * this.calculateInverseDocumentFrequency(lemma);
+		try
+		{
+			return this.calculateTermFrequencyWithLogNormForLemmaInDocument(
+					lemma, documentId
+			) * this.calculateInverseDocumentFrequency(lemma);
+		} catch (OperationNotSupportedException e)
+		{
+			throw new OperationNotSupportedException();
+		}
 	}
 
 	@Override
 	public Map<String, Double> calculateTFIDFForLemmataInDocument(
 			String documentId
-	) throws DocumentNotFoundException
+	) throws DocumentNotFoundException, OperationNotSupportedException
 	{
 		Map<String, Double> tf =
 				calculateTermFrequenciesForLemmataInDocument(documentId);
@@ -126,9 +147,11 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 	@Override
 	public Map<String, Map<String, Double>>
 	calculateTFIDFForLemmataInAllDocuments()
+			throws OperationNotSupportedException
 	{
 		HashMap<String, Map<String, Double>> tfidfs = new HashMap<>();
-		this.getDocumentIds().forEach(documentId -> {
+		for(String documentId : this.getDocumentIds())
+		{
 			try
 			{
 				tfidfs.put(
@@ -142,7 +165,7 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 						"there just a moment ago. Please check for " +
 						"concurrent access.");
 			}
-		});
+		};
 		return tfidfs;
 	}
 }

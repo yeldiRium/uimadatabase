@@ -11,6 +11,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 
+import javax.naming.OperationNotSupportedException;
 import java.util.*;
 
 /**
@@ -144,6 +145,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 
 	/**
 	 * Is not benchmarked, since it is only a virtual default method.
+	 *
 	 * @param paragraph The Paragraph.
 	 * @param document  The document in which the paragraph occurs.
 	 */
@@ -173,6 +175,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 
 	/**
 	 * Is not benchmarked, since it is only a virtual default method.
+	 *
 	 * @param sentence  The Sentence.
 	 * @param document  The Document in which the entence occurs.
 	 * @param paragraph The Paragraph, in which the Sentence occurs.
@@ -206,6 +209,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 
 	/**
 	 * Is not benchmarked, since it is only a virtual default method.
+	 *
 	 * @param token     The Token.
 	 * @param document  The Document in which the Token occurs.
 	 * @param paragraph The Paragraph, in which the Token occurs.
@@ -285,6 +289,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 
 	@Override
 	public int countElementsOfType(ElementType type)
+			throws TypeNotCountableException
 	{
 		long start = System.currentTimeMillis();
 		int result = this.subjectQueryHandler.countElementsOfType(type);
@@ -373,7 +378,8 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	public Map<String, Double> calculateTTRForAllDocuments()
 	{
 		long start = System.currentTimeMillis();
-		Map<String, Double> result = this.subjectQueryHandler.calculateTTRForAllDocuments();
+		Map<String, Double> result = this.subjectQueryHandler
+				.calculateTTRForAllDocuments();
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
 				"calculateTTRForAllDocuments"
@@ -389,7 +395,8 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			throws DocumentNotFoundException
 	{
 		long start = System.currentTimeMillis();
-		Double result = this.subjectQueryHandler.calculateTTRForDocument(documentId);
+		Double result = this.subjectQueryHandler
+				.calculateTTRForDocument(documentId);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
 				"calculateTTRForDocument"
@@ -406,9 +413,10 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	)
 	{
 		long start = System.currentTimeMillis();
-		Map<String, Double> result = this.subjectQueryHandler.calculateTTRForCollectionOfDocuments(
-				documentIds
-		);
+		Map<String, Double> result = this.subjectQueryHandler
+				.calculateTTRForCollectionOfDocuments(
+						documentIds
+				);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
 				"calculateTTRForCollectionFoDocuments"
@@ -479,6 +487,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 
 	@Override
 	public double calculateInverseDocumentFrequency(String lemma)
+			throws OperationNotSupportedException
 	{
 		long start = System.currentTimeMillis();
 		double result = this.subjectQueryHandler
@@ -496,7 +505,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	@Override
 	public Map<String, Double>
 	calculateInverseDocumentFrequenciesForLemmataInDocument(String documentId)
-			throws DocumentNotFoundException
+			throws DocumentNotFoundException, OperationNotSupportedException
 	{
 		long start = System.currentTimeMillis();
 		Map<String, Double> result = this.subjectQueryHandler
@@ -516,12 +525,13 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	@Override
 	public double calculateTFIDFForLemmaInDocument(
 			String lemma, String documentId
-	) throws DocumentNotFoundException
+	) throws DocumentNotFoundException, OperationNotSupportedException
 	{
 		long start = System.currentTimeMillis();
-		double result = this.subjectQueryHandler.calculateTFIDFForLemmaInDocument(
-				lemma, documentId
-		);
+		double result = this.subjectQueryHandler
+				.calculateTFIDFForLemmaInDocument(
+						lemma, documentId
+				);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
 				"calculateTFIDFForLemmaInDocument"
@@ -535,12 +545,13 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	@Override
 	public Map<String, Double> calculateTFIDFForLemmataInDocument(
 			String documentId
-	) throws DocumentNotFoundException
+	) throws DocumentNotFoundException, OperationNotSupportedException
 	{
 		long start = System.currentTimeMillis();
-		Map<String, Double> result = this.subjectQueryHandler.calculateTFIDFForLemmataInDocument(
-				documentId
-		);
+		Map<String, Double> result = this.subjectQueryHandler
+				.calculateTFIDFForLemmataInDocument(
+						documentId
+				);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
 				"calculateTFIDFForLemmataInDocument"
@@ -554,6 +565,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	@Override
 	public Map<String, Map<String, Double>>
 	calculateTFIDFForLemmataInAllDocuments()
+			throws OperationNotSupportedException
 	{
 		long start = System.currentTimeMillis();
 		Map<String, Map<String, Double>> result = this.subjectQueryHandler
@@ -574,9 +586,10 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		long start = System.currentTimeMillis();
-		Iterable<String> result = this.subjectQueryHandler.getBiGramsFromDocument(
-				documentId
-		);
+		Iterable<String> result = this.subjectQueryHandler
+				.getBiGramsFromDocument(
+						documentId
+				);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
 				"getBiGramsFromDocument"
@@ -592,7 +605,8 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			throws UnsupportedOperationException
 	{
 		long start = System.currentTimeMillis();
-		Iterable<String> result = this.subjectQueryHandler.getBiGramsFromAllDocuments();
+		Iterable<String> result = this.subjectQueryHandler
+				.getBiGramsFromAllDocuments();
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
 				"getBiGramsFromAllDocuments"
@@ -609,9 +623,10 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		long start = System.currentTimeMillis();
-		Iterable<String> result = this.subjectQueryHandler.getBiGramsFromDocumentsInCollection(
-				documentIds
-		);
+		Iterable<String> result = this.subjectQueryHandler
+				.getBiGramsFromDocumentsInCollection(
+						documentIds
+				);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
 				"getBiGramsFromDocumentsInCollection"
@@ -627,9 +642,10 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		long start = System.currentTimeMillis();
-		Iterable<String> result = this.subjectQueryHandler.getTriGramsFromDocument(
-				documentId
-		);
+		Iterable<String> result = this.subjectQueryHandler
+				.getTriGramsFromDocument(
+						documentId
+				);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
 				"getTriGramsFromDocument"
@@ -645,7 +661,8 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 			throws UnsupportedOperationException
 	{
 		long start = System.currentTimeMillis();
-		Iterable<String> result = this.subjectQueryHandler.getTriGramsFromAllDocuments();
+		Iterable<String> result = this.subjectQueryHandler
+				.getTriGramsFromAllDocuments();
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
 				"getTriGramsFromAllDocuments"
@@ -662,9 +679,10 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
 		long start = System.currentTimeMillis();
-		Iterable<String> result = this.subjectQueryHandler.getTriGramsFromDocumentsInCollection(
-				documentIds
-		);
+		Iterable<String> result = this.subjectQueryHandler
+				.getTriGramsFromDocumentsInCollection(
+						documentIds
+				);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
 				"getTriGramsFromDocumentsInCollection"
