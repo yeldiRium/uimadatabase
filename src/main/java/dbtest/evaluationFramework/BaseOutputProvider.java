@@ -1,5 +1,7 @@
 package dbtest.evaluationFramework;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -95,5 +97,17 @@ public class BaseOutputProvider implements OutputProvider
 		// current access could be a problem.
 		newFile.createNewFile();
 		return newFile;
+	}
+
+	@Override
+	public void writeJSON(String caller, String name, JSONObject jsonObject) throws IOException
+	{
+
+	}
+
+	@Override
+	public void writeJSON(String caller, String name, JSONObject jsonObject, boolean keepOld) throws IOException
+	{
+
 	}
 }

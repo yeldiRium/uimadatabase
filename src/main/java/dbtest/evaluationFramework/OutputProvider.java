@@ -1,5 +1,7 @@
 package dbtest.evaluationFramework;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -11,4 +13,11 @@ public interface OutputProvider
 
 	public File createFile(String caller, String name, boolean keepOld)
 			throws IOException;
+
+	public void writeJSON(String caller, String name, JSONObject jsonObject)
+			throws IOException;
+
+	public void writeJSON(
+			String caller, String name, JSONObject jsonObject, boolean keepOld
+	) throws IOException;
 }
