@@ -1,8 +1,8 @@
 package dbtest.queryHandler;
 
-import dbtest.evaluations.collectionReader.EvaluatingCollectionReader;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.TypeNotCountableException;
+import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -60,6 +60,21 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 	)
 	{
 		storeToken(token, document, paragraph, sentence, null);
+	}
+
+	/**
+	 * Throws an TypeHasNoValueException, if the given type has no value field.
+	 * I.e. documents don't have a value, but lemmata do.
+	 * @param type
+	 */
+	protected void checkTypeHasValueField(ElementType type)
+			throws TypeHasNoValueException
+	{
+		if (type == ElementType.Document || type == ElementType.Paragraph
+				|| type == ElementType.Sentence)
+		{
+			throw new TypeHasNoValueException();
+		}
 	}
 
 	@Override

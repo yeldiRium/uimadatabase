@@ -10,6 +10,7 @@ import com.arangodb.entity.EdgeDefinition;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
+import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import dbtest.queryHandler.exceptions.QHException;
 import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
@@ -20,7 +21,6 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
-import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 
 import java.util.*;
@@ -684,8 +684,9 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 
 	@Override
 	public int countElementsOfTypeWithValue(ElementType type, String value)
-			throws IllegalArgumentException
+			throws TypeHasNoValueException
 	{
+		this.checkTypeHasValueField(type);
 		String query = "FOR element IN @typeCollection" +
 				"   FILTER element.value == @value" +
 				"   COLLECT WITH COUNT INTO count" +
@@ -704,8 +705,10 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countElementsInDocumentOfTypeWithValue(
 			String documentId, ElementType type, String value
-	) throws DocumentNotFoundException, TypeNotCountableException
+	) throws DocumentNotFoundException, TypeNotCountableException,
+			TypeHasNoValueException
 	{
+		this.checkTypeHasValueField(type);
 		String query = "WITH @documentCollection, @typeCollection, @relationship " +
 				"FOR element " +
 				"   IN OUTBOUND @documentId " +

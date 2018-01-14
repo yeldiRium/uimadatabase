@@ -4,9 +4,9 @@ import dbtest.connection.Connection;
 import dbtest.connection.implementation.*;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
+import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import dbtest.queryHandler.implementation.*;
-import dbtest.queryHandler.implementation.ArangoDBQueryHandler;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -199,7 +199,7 @@ public interface QueryHandlerInterface
 	 * @return a HashSet(String lemma).
 	 */
 	Set<String> getLemmataForDocument(String documentId)
-		throws DocumentNotFoundException;
+			throws DocumentNotFoundException;
 
 	/**
 	 * Retrieves all stored objects in JCas format.
@@ -255,12 +255,12 @@ public interface QueryHandlerInterface
 	 * @param type  Instance of Const.TYPE, namely TOKEN, LEMMA or POS.
 	 * @param value String, value of the element.
 	 * @return An integer.
-	 * @throws IllegalArgumentException when the <i>type</i>
+	 * @throws TypeHasNoValueException when the <i>type</i>
 	 *                                  given does not match TOKEN, LEMMA or
 	 *                                  POS.
 	 */
 	int countElementsOfTypeWithValue(ElementType type, String value)
-			throws IllegalArgumentException;
+			throws TypeHasNoValueException;
 
 	/**
 	 * Counts all elements of <i>type</i> within one specified document with gi-
@@ -271,13 +271,14 @@ public interface QueryHandlerInterface
 	 * @param type       Instance of Const.TYPE, namely TOKEN, LEMMA or POS.
 	 * @param value      String, value of the element.
 	 * @return An integer.
-	 * @throws IllegalArgumentException when the <i>type</i>
+	 * @throws TypeHasNoValueException when the <i>type</i>
 	 *                                  given does not match TOKEN, LEMMA or
 	 *                                  POS.
 	 */
 	int countElementsInDocumentOfTypeWithValue(
 			String documentId, ElementType type, String value
-	) throws DocumentNotFoundException, TypeNotCountableException;
+	) throws DocumentNotFoundException, TypeNotCountableException,
+			TypeHasNoValueException;
 
 	/**
 	 * @return Map from lemma value to occurence count.
@@ -436,7 +437,7 @@ public interface QueryHandlerInterface
 	 *
 	 * @param documentId the specified document's id.
 	 * @return an Iterable of bi-grams.
-	 * @throws DocumentNotFoundException if the documentId can't be found in db.
+	 * @throws DocumentNotFoundException     if the documentId can't be found in db.
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
@@ -456,7 +457,7 @@ public interface QueryHandlerInterface
 	/**
 	 * A list of all token-bi-grams from all documents specified in the collec-
 	 * tion.
-	 *
+	 * <p>
 	 * If at least one of the documentIds is found, no Exception is thrown for
 	 * other ids, which can't be found.
 	 *
@@ -476,7 +477,7 @@ public interface QueryHandlerInterface
 	 *
 	 * @param documentId the specified document's id.
 	 * @return an Iterable of tri-grams.
-	 * @throws DocumentNotFoundException if the documentId can't be found in db.
+	 * @throws DocumentNotFoundException     if the documentId can't be found in db.
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */

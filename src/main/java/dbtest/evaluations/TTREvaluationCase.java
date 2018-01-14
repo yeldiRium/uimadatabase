@@ -8,6 +8,7 @@ import dbtest.evaluationFramework.OutputProvider;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.QueryHandlerInterface;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
+import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import dbtest.queryHandler.implementation.Neo4jQueryHandler;
 import org.apache.commons.io.FileUtils;
@@ -90,12 +91,18 @@ public class TTREvaluationCase implements EvaluationCase
 						e.printStackTrace();
 					}
 
-					builder.append("Testing countElementsOfTypeWithValue(LEMMA, Mensch):\n");
-					timeBegin = System.currentTimeMillis();
-					queryHandler.countElementsOfTypeWithValue(ElementType.Lemma, "Mensch");
-					builder.append("countElementsOfTypeWithValue(LEMMA, Mensch) took: ")
-							.append(System.currentTimeMillis() - timeBegin)
-							.append(" ms\n");
+					try
+					{
+						builder.append("Testing countElementsOfTypeWithValue(LEMMA, Mensch):\n");
+						timeBegin = System.currentTimeMillis();
+						queryHandler.countElementsOfTypeWithValue(ElementType.Lemma, "Mensch");
+						builder.append("countElementsOfTypeWithValue(LEMMA, Mensch) took: ")
+								.append(System.currentTimeMillis() - timeBegin)
+								.append(" ms\n");
+					} catch (TypeHasNoValueException e)
+					{
+						e.printStackTrace();
+					}
 
 					try
 					{

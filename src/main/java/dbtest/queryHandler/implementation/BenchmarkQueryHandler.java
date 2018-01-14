@@ -4,6 +4,7 @@ import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.QueryHandlerInterface;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
+import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
@@ -322,7 +323,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 
 	@Override
 	public int countElementsOfTypeWithValue(ElementType type, String value)
-			throws IllegalArgumentException
+			throws IllegalArgumentException, TypeHasNoValueException
 	{
 		long start = System.currentTimeMillis();
 		int result = this.subjectQueryHandler.countElementsOfTypeWithValue(
@@ -341,7 +342,8 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	@Override
 	public int countElementsInDocumentOfTypeWithValue(
 			String documentId, ElementType type, String value
-	) throws DocumentNotFoundException, TypeNotCountableException
+	) throws DocumentNotFoundException, TypeNotCountableException,
+			TypeHasNoValueException
 	{
 		long start = System.currentTimeMillis();
 		int result = this.subjectQueryHandler

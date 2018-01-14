@@ -3,6 +3,7 @@ package dbtest.queryHandler.implementation;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
+import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import dbtest.queryHandler.exceptions.QHException;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
@@ -12,7 +13,6 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
-import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.neo4j.driver.v1.*;
 
@@ -471,8 +471,9 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 
 	@Override
 	public int countElementsOfTypeWithValue(ElementType type, String value)
-			throws IllegalArgumentException
+			throws TypeHasNoValueException
 	{
+		this.checkTypeHasValueField(type);
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(
@@ -491,8 +492,9 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String documentId,
 			ElementType type,
 			String value
-	) throws DocumentNotFoundException
+	) throws DocumentNotFoundException, TypeHasNoValueException
 	{
+		this.checkTypeHasValueField(type);
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(
