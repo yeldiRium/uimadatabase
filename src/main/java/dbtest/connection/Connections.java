@@ -1,6 +1,7 @@
 package dbtest.connection;
 
 import dbtest.connection.implementation.*;
+import dbtest.queryHandler.implementation.*;
 
 public class Connections
 {
@@ -30,6 +31,33 @@ public class Connections
 			default:
 				return null;
 		}
+	}
+
+	public static DBName getIdentifierForConnectionClass(
+			Class<? extends Connection> connectionClass
+			)
+	{
+		DBName identifier = null;
+		if (connectionClass == ArangoDBConnection.class)
+		{
+			identifier = DBName.ArangoDB;
+		} else if (connectionClass == BaseXConnection.class)
+		{
+			identifier = DBName.BaseX;
+		} else if (connectionClass == CassandraConnection.class)
+		{
+			identifier = DBName.Cassandra;
+		} else if (connectionClass == MongoDBConnection.class)
+		{
+			identifier = DBName.MongoDB;
+		} else if (connectionClass == MySQLConnection.class)
+		{
+			identifier = DBName.MySQL;
+		} else if (connectionClass == Neo4jConnection.class)
+		{
+			identifier = DBName.Neo4j;
+		}
+		return identifier;
 	}
 
 	/**
