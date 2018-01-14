@@ -323,7 +323,8 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 
 	@Override
 	public int countElementsOfTypeWithValue(ElementType type, String value)
-			throws IllegalArgumentException, TypeHasNoValueException
+			throws IllegalArgumentException, TypeHasNoValueException,
+			TypeNotCountableException
 	{
 		long start = System.currentTimeMillis();
 		int result = this.subjectQueryHandler.countElementsOfTypeWithValue(

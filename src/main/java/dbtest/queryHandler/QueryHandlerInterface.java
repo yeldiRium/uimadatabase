@@ -260,7 +260,7 @@ public interface QueryHandlerInterface
 	 *                                  POS.
 	 */
 	int countElementsOfTypeWithValue(ElementType type, String value)
-			throws TypeHasNoValueException;
+			throws TypeNotCountableException, TypeHasNoValueException;
 
 	/**
 	 * Counts all elements of <i>type</i> within one specified document with gi-

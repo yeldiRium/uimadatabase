@@ -99,7 +99,7 @@ public class TTREvaluationCase implements EvaluationCase
 						builder.append("countElementsOfTypeWithValue(LEMMA, Mensch) took: ")
 								.append(System.currentTimeMillis() - timeBegin)
 								.append(" ms\n");
-					} catch (TypeHasNoValueException e)
+					} catch (TypeHasNoValueException | TypeNotCountableException e)
 					{
 						e.printStackTrace();
 					}
