@@ -78,18 +78,21 @@ public class AllQueryEvaluationCase implements EvaluationCase
 					);
 
 			// 1. getDocumentIds
-			stats.put("getDocumentIds", getDocumentIdsEvaluation(queryHandler));
+			stats.put(
+					"getDocumentIds",
+					this.getDocumentIdsEvaluation(queryHandler)
+			);
 
 			// 2. getLemmataForDocument
 			stats.put(
 					"getLemmataForDocument",
-					getLemmataForDocumentEvaluation(queryHandler)
+					this.getLemmataForDocumentEvaluation(queryHandler)
 			);
 
 			// 3. countDocumentsContainingLemma
 			stats.put(
 					"countDocumentsContainingLemma",
-					countDocumentsContainingLemmaEvaluation(queryHandler)
+					this.countDocumentsContainingLemmaEvaluation(queryHandler)
 			);
 
 			// 4. countElementsOfType
@@ -97,7 +100,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			{
 				stats.put(
 						"countElementsOfType-" + type,
-						countElementsOfTypeEvaluation(queryHandler, type)
+						this.countElementsOfTypeEvaluation(queryHandler, type)
 				);
 			}
 
@@ -115,7 +118,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			{
 				stats.put(
 						"countElementsInDocumentOfType-" + type,
-						countElementsInDocumentOfTypeEvaluation(
+						this.countElementsInDocumentOfTypeEvaluation(
 								queryHandler, type, randomDocumentIds
 						)
 				);
@@ -131,11 +134,37 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			{
 				stats.put(
 						"countElementsOfTypeWithValue-" + type,
-						countElementsOfTypeWithValueEvaluation(
+						this.countElementsOfTypeWithValueEvaluation(
 								queryHandler, type, randomValues
 						)
 				);
 			}
+
+			// 7. countElementsInDocumentOfTypeWithValue
+			for (ElementType type : new ElementType[]{
+					ElementType.Lemma,
+					ElementType.Token,
+					ElementType.Pos
+			})
+			{
+				stats.put(
+						"countElementsInDocumentOfTypeWithValue-" + type,
+						this.countElementsInDocumentOfTypeWithValue(
+								queryHandler,
+								type,
+								randomDocumentIds,
+								randomValues
+						)
+				);
+			}
+
+			// 8. countOccurencesForEachLemmaInAllDocuments
+			stats.put(
+					"countOccurencesForEachLemmaInAllDocuments",
+					this.countOccurencesForEachLemmaInAllDocumentsEvaluation(
+							queryHandler
+					)
+			);
 		}
 	}
 
@@ -286,9 +315,9 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	 * ment (Paragraph, Sentence, Token, Lemma) on a random subset of
 	 * the found documents from step one.
 	 *
-	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
-	 *                     med.
-	 * @param type The type for which to execute the evaluation.
+	 * @param queryHandler      The QueryHandler on which the evaluation is perfor-
+	 *                          med.
+	 * @param type              The type for which to execute the evaluation.
 	 * @param randomDocumentIds The set of document to evaluate on.
 	 * @return A JSONObject with stats regarding the evaluation.
 	 */
@@ -356,12 +385,13 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	 * The TypeHasNoValueException should never occur (this is not data-
 	 * basedependent), unless someone made a mistake in a QueryHandler-
 	 * implementation.
-
+	 * <p>
 	 * There is currently no way to test this for Pos elements, so the
 	 * statistics for it will return 0 for everything.
+	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
 	 *                     med.
-	 * @param type The type for which to execute the evaluation.
+	 * @param type         The type for which to execute the evaluation.
 	 * @param randomValues The set of values to evaluate on.
 	 * @return A JSONObject with stats regarding the evaluation.
 	 */
@@ -428,6 +458,114 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						)
 				);
 		return countElementsOfTypeWithValueStats;
+	}
+
+	/**
+	 * 7.
+	 * Executed for every type that has a value, like 6.
+	 *
+	 * @param queryHandler      The QueryHandler on which the evaluation is perfor-
+	 *                          med.
+	 * @param type              The type for which to execute the evaluation.
+	 * @param randomDocumentIds The set of document to evaluate on.
+	 * @param randomValues      The set of values to evaluate on.
+	 * @return A JSONObject with stats regarding the evaluation.
+	 */
+	private JSONObject countElementsInDocumentOfTypeWithValue(
+			BenchmarkQueryHandler queryHandler,
+			ElementType type,
+			Set<String> randomDocumentIds,
+			Set<String> randomValues
+	)
+	{
+		queryHandler.getMethodBenchmarks()
+				.get("countElementsInDocumentOfTypeWithValue").reset();
+
+		for (String documentId : randomDocumentIds)
+		{
+			for (String value : randomValues)
+			{
+				try
+				{
+					queryHandler.countElementsInDocumentOfTypeWithValue(
+							documentId, type, value
+					);
+				} catch (TypeNotCountableException e)
+				{
+					JSONObject error = new JSONObject();
+					error.put(
+							"method", "countElementsInDocumentOfTypeWithValue"
+					);
+					error.put(
+							"error", "Elements of type " + type + " could "
+									+ "not be counted."
+					);
+					return error;
+				} catch (TypeHasNoValueException e)
+				{
+					logger.severe("DB " + dbName + " stated, that type "
+							+ type + " does not have a value. This must "
+							+ " be a programming error, since that should "
+							+ " not be the case.");
+					JSONObject error = new JSONObject();
+					error.put(
+							"method", "countElementsInDocumentOfTypeWithValue"
+					);
+					error.put(
+							"error", "Elements of type " + type + " don't have "
+									+ "a value. Please check this, this should "
+									+ "not happen."
+					);
+					return error;
+				} catch (DocumentNotFoundException e)
+				{
+					logger.warning("DocumentId " + documentId + " could "
+							+ "not be found in the database, although it "
+							+ "was there just a moment ago. Please check "
+							+ "for concurrent access.");
+					break;
+				}
+			}
+		}
+		JSONObject countElementsInDocumentOfTypeWithValueStats =
+				this.createOutputForMethod(
+						"countElementsInDocumentOfTypeWithValue",
+						queryHandler
+				);
+		countElementsInDocumentOfTypeWithValueStats.getJSONObject("more")
+				.put(
+						"comment",
+						"called for type " + type.toString() + " on "
+								+ randomValues.size() + " different values in "
+								+ randomDocumentIds.size() + " different "
+								+ "documents. See \"searchedValues\"."
+				);
+		countElementsInDocumentOfTypeWithValueStats.getJSONObject("more")
+				.put(
+						"searchedValues",
+						randomValues.parallelStream().collect(
+								Collectors.joining(", ")
+						)
+				);
+		return countElementsInDocumentOfTypeWithValueStats;
+	}
+
+	/**
+	 * 8.
+	 *
+	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
+	 *                     med.
+	 * @return A JSONObject with stats regarding the evaluation.
+	 */
+	private JSONObject countOccurencesForEachLemmaInAllDocumentsEvaluation(
+			BenchmarkQueryHandler queryHandler
+	)
+	{
+		queryHandler.countOccurencesForEachLemmaInAllDocuments();
+		return this.createOutputForMethod(
+				"countOccurencesForEachLemmaInAllDocuments",
+				queryHandler
+		);
 	}
 
 	/**
