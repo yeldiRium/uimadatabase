@@ -48,7 +48,8 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		super.initialize(context);
 
 		this.dbName = context.getConfigParameterValue(PARAM_DBNAME).toString();
-		logger.info("Initializing CollectionWriter for db " + this.dbName);
+		logger.info("Initializing CollectionWriter for db " + this.dbName
+				+ ".");
 
 		Class<? extends Connection> connectionClass =
 				Connections.getConnectionClassForName(this.dbName);
@@ -63,6 +64,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 			this.queryHandler = new BenchmarkQueryHandler(
 					connection.getQueryHandler()
 			);
+			logger.info("Clearing database for " + this.dbName + ".");
 			this.queryHandler.clearDatabase();
 		} catch (InterruptedException | ExecutionException e)
 		{
@@ -73,7 +75,8 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 			Thread.currentThread().interrupt();
 		}
 
-		logger.info("Initialized CollectionWriter for db " + this.dbName);
+		logger.info("Initialized CollectionWriter for db " + this.dbName
+				+ ".");
 	}
 
 	/**
@@ -89,7 +92,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		final String documentId = DocumentMetaData.get(jCas)
 				.getDocumentId();
 
-		logger.info("Storing jCas '" + documentId + "' into "
+		logger.info("Storing jCas \"" + documentId + "\" into "
 				+ this.dbName + "...");
 		long start = System.currentTimeMillis();
 		this.queryHandler.storeJCasDocument(jCas);

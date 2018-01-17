@@ -98,7 +98,7 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 						+ "ms.");
 			} catch (DocumentNotFoundException e)
 			{
-				logger.warning("DocumentId " + id + " could " +
+				logger.warning("DocumentId \"" + id + "\" could " +
 						"not be found in the database, although it was " +
 						"there just a moment ago. Please check for " +
 						"concurrent access.");
@@ -129,6 +129,8 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 	/**
 	 * Logs and writes all statistics to output.
 	 * This is called after the pipeline is done with the reader.
+	 * TODO: seems not to be called
+	 * TODO: find a way to log and write files
 	 */
 	@Override
 	public void close()
