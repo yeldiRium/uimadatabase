@@ -5,7 +5,7 @@ import dbtest.connection.Connection;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.connection.Connections;
-import dbtest.connection.implementation.*;
+import dbtest.connection.implementation.Neo4jConnection;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import dbtest.queryHandler.ElementType;
@@ -25,13 +25,13 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
- * Expects data to exists in the database. Accomplish this by running it after
- * the AllWriteEvaluationCase.
- * <p>
  * Tests all purely query-related functionality. See the section 'Raw Querying'
  * in the QueryHandlerInterface, except all the store-methods and the 'populate-
  * CasWithDocument' method, since those are tested in the AllRead- and the All-
  * WriteEvaluationCase.
+ * <p>
+ * Expects data to exists in the database. Accomplish this by running it after
+ * the AllWriteEvaluationCase.
  */
 public class AllQueryEvaluationCase implements EvaluationCase
 {
@@ -49,15 +49,26 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	public ConnectionRequest requestConnection()
 	{
 		ConnectionRequest connectionRequest = new ConnectionRequest();
-		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
-		connectionRequest.addRequestedConnection(BaseXConnection.class);
-		connectionRequest.addRequestedConnection(CassandraConnection.class);
-		connectionRequest.addRequestedConnection(MongoDBConnection.class);
-		connectionRequest.addRequestedConnection(MySQLConnection.class);
+//		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
+//		connectionRequest.addRequestedConnection(BaseXConnection.class);
+//		connectionRequest.addRequestedConnection(CassandraConnection.class);
+//		connectionRequest.addRequestedConnection(MongoDBConnection.class);
+//		connectionRequest.addRequestedConnection(MySQLConnection.class);
 		connectionRequest.addRequestedConnection(Neo4jConnection.class);
 		return connectionRequest;
 	}
 
+	/**
+	 * Executes and benchmarks all purely query-related methods on
+	 * QueryHandlers for each Connection supplied.
+	 * This excludes the storage methods and the populateCasWithDocument method,
+	 * since they are covered in AllWrite- and AllReadEvaluationCase.
+	 *
+	 * @param connectionResponse Contains all Connections requested in
+	 *                           #requestConnection().
+	 * @param outputProvider     The provider for outputting results.
+	 * @throws IOException If an outputfile can not be created or written to.
+	 */
 	@Override
 	public void run(
 			ConnectionResponse connectionResponse,
@@ -165,12 +176,21 @@ public class AllQueryEvaluationCase implements EvaluationCase
 							queryHandler
 					)
 			);
+
+			// Write the results to a file. Catalogue previous results.
+			outputProvider.writeJSON(
+					AllQueryEvaluationCase.class.getName(),
+					this.dbName.toString(),
+					stats,
+					true
+			);
 		}
 	}
 
 	/**
 	 * 1.
-	 * Stores all documentIds in the database as an Iterable.
+	 * Queries all documentIds in the database and stores them as an Iterable
+	 * for further use.
 	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
 	 *                     med.
@@ -192,7 +212,8 @@ public class AllQueryEvaluationCase implements EvaluationCase
 
 	/**
 	 * 2.
-	 * Stores a set of all found lemmata in all documents returned in step 1.
+	 * Queries for all lemmata across all documents found in step 1 and stores
+	 * them as a Set for further use.
 	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
 	 *                     med.
@@ -223,7 +244,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 				queryHandler
 		);
 		lemmataStats.getJSONObject("more").put(
-				"comment", "called for each found documentId"
+				"comment", "Called method for each Document in the database."
 		);
 		return lemmataStats;
 	}
@@ -255,8 +276,8 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						queryHandler
 				);
 		countDocumentsContainingLemmaStats.getJSONObject("more").put(
-				"comment", "called for " + howManyLemmata + " random " +
-						"lemmata, see \"lemmataSearched\""
+				"comment", "Called method for " + howManyLemmata + " random " +
+						"Lemmata. See \"lemmataSearched\"."
 		);
 		countDocumentsContainingLemmaStats.getJSONObject("more").put(
 				"lemmataSearched", randomLemmata.parallelStream()
@@ -292,7 +313,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			countElementsOfTypeStats.getJSONObject("more")
 					.put(
 							"comment",
-							"called for type " + type
+							"Called for type \"" + type + "\"."
 					);
 			return countElementsOfTypeStats;
 		} catch (TypeNotCountableException e)
@@ -302,7 +323,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 					"method", "countElementsOfType"
 			);
 			error.put(
-					"error", "Elements of type " + type + " could not "
+					"error", "Elements of type \"" + type + "\" could not "
 							+ "be counted."
 			);
 			return error;
@@ -314,6 +335,8 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	 * This is executed for each type that can be contained in a docu-
 	 * ment (Paragraph, Sentence, Token, Lemma) on a random subset of
 	 * the found documents from step one.
+	 * If this is called for the types Document or Pos the result may not be
+	 * predictable.
 	 *
 	 * @param queryHandler      The QueryHandler on which the evaluation is perfor-
 	 *                          med.
@@ -339,18 +362,18 @@ public class AllQueryEvaluationCase implements EvaluationCase
 				);
 			} catch (DocumentNotFoundException e)
 			{
-				logger.warning("DocumentId " + documentId + " could "
+				logger.warning("DocumentId \"" + documentId + "\" could "
 						+ "not be found in the database, although it "
 						+ "was there just a moment ago. Please check "
 						+ "for concurrent access.");
 			} catch (TypeNotCountableException e)
 			{
 				logger.warning("QueryHandler for db " + dbName
-						+ " was not able to count elements of type "
-						+ type + ".");
+						+ " was not able to count elements of type \""
+						+ type + "\".");
 				JSONObject error = new JSONObject();
 				error.put("method", "countElementsInDocumentOfType");
-				error.put("error", "Elements of type " + type + " could"
+				error.put("error", "Elements of type \"" + type + "\" could"
 						+ " not be counted.");
 				return error;
 			}
@@ -363,9 +386,9 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		countElementsInDocumentOfTypeStats.getJSONObject("more")
 				.put(
 						"comment",
-						"called for type " + type + " on "
+						"Called method for type \"" + type + "\" on "
 								+ randomDocumentIds.size() + " random "
-								+ "documents. See \""
+								+ "Documents. See \""
 								+ "documentsSearched\"."
 				);
 		countElementsInDocumentOfTypeStats.getJSONObject("more")
@@ -384,7 +407,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	 * values as well as the tokens' values.
 	 * The TypeHasNoValueException should never occur (this is not data-
 	 * basedependent), unless someone made a mistake in a QueryHandler-
-	 * implementation.
+	 * implementation or in calling this method.
 	 * <p>
 	 * There is currently no way to test this for Pos elements, so the
 	 * statistics for it will return 0 for everything.
@@ -416,7 +439,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						"method", "countElementsOfTypeWithValue"
 				);
 				error.put(
-						"error", "Elements of type " + type + " could "
+						"error", "Elements of type \"" + type + "\" could "
 								+ "not be counted."
 				);
 				return error;
@@ -431,8 +454,8 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						"method", "countElementsOfTypeWithValue"
 				);
 				error.put(
-						"error", "Elements of type " + type + " don't have a "
-								+ "value. Please check this, this should not "
+						"error", "Elements of type \"" + type + "\" don't have "
+								+ "a value. Please check this, this should not "
 								+ "happen."
 				);
 				return error;
@@ -446,7 +469,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		countElementsOfTypeWithValueStats.getJSONObject("more")
 				.put(
 						"comment",
-						"called for type " + type.toString() + " on "
+						"Called method for type \"" + type.toString() + "\" on "
 								+ randomValues.size() + " different values. "
 								+ "See \"searchedValues\"."
 				);
@@ -463,9 +486,12 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	/**
 	 * 7.
 	 * Executed for every type that has a value, like 6.
+	 * If the TypeHasNoValueException ever occurs here, the regarding QueryHand-
+	 * ler is implemented wrong or this method is called with an incompatible
+	 * type.
 	 *
-	 * @param queryHandler      The QueryHandler on which the evaluation is perfor-
-	 *                          med.
+	 * @param queryHandler      The QueryHandler on which the evaluation is per-
+	 *                          formed.
 	 * @param type              The type for which to execute the evaluation.
 	 * @param randomDocumentIds The set of document to evaluate on.
 	 * @param randomValues      The set of values to evaluate on.
@@ -497,29 +523,29 @@ public class AllQueryEvaluationCase implements EvaluationCase
 							"method", "countElementsInDocumentOfTypeWithValue"
 					);
 					error.put(
-							"error", "Elements of type " + type + " could "
+							"error", "Elements of type \"" + type + "\" could "
 									+ "not be counted."
 					);
 					return error;
 				} catch (TypeHasNoValueException e)
 				{
-					logger.severe("DB " + dbName + " stated, that type "
-							+ type + " does not have a value. This must "
-							+ " be a programming error, since that should "
-							+ " not be the case.");
+					logger.severe("DB \"" + this.dbName + "\" stated, that "
+							+ "type \"" + type + "\" does not have a value. "
+							+ "This must  be a programming error, since that "
+							+ "should  not be the case.");
 					JSONObject error = new JSONObject();
 					error.put(
 							"method", "countElementsInDocumentOfTypeWithValue"
 					);
 					error.put(
-							"error", "Elements of type " + type + " don't have "
-									+ "a value. Please check this, this should "
-									+ "not happen."
+							"error", "Elements of type \"" + type + "\" don't"
+									+ " have a value. Please check this, this "
+									+ "should not happen."
 					);
 					return error;
 				} catch (DocumentNotFoundException e)
 				{
-					logger.warning("DocumentId " + documentId + " could "
+					logger.warning("DocumentId \"" + documentId + "\" could "
 							+ "not be found in the database, although it "
 							+ "was there just a moment ago. Please check "
 							+ "for concurrent access.");
@@ -535,15 +561,23 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		countElementsInDocumentOfTypeWithValueStats.getJSONObject("more")
 				.put(
 						"comment",
-						"called for type " + type.toString() + " on "
+						"Called method for type \"" + type.toString() + "\" on "
 								+ randomValues.size() + " different values in "
 								+ randomDocumentIds.size() + " different "
-								+ "documents. See \"searchedValues\"."
+								+ "documents. See \"searchedValues\" and "
+								+ "\"searchedDocuments\"."
 				);
 		countElementsInDocumentOfTypeWithValueStats.getJSONObject("more")
 				.put(
 						"searchedValues",
 						randomValues.parallelStream().collect(
+								Collectors.joining(", ")
+						)
+				);
+		countElementsInDocumentOfTypeWithValueStats.getJSONObject("more")
+				.put(
+						"searchedDocuments",
+						randomDocumentIds.parallelStream().collect(
 								Collectors.joining(", ")
 						)
 				);
@@ -569,8 +603,12 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * Creates generic statistics output for a given methodname.
+	 * Creates generic statistics output for a given method name.
 	 * Calculates count, min, avg, max and sum and puts them into a JSONObject.
+	 *
+	 * @param methodName   The method for which to create a statistic.
+	 * @param queryHandler The BenchmarkQueryHandler from which to pull data.
+	 * @return A JSONObject containing the stats in a predefined format.
 	 */
 	protected JSONObject createOutputForMethod(
 			String methodName,

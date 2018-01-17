@@ -7,7 +7,6 @@ import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import dbtest.evaluations.collectionWriter.EvaluatingCollectionWriter;
 import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiReader;
-import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiWriter;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
@@ -21,6 +20,15 @@ import java.util.List;
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 import static org.apache.uima.fit.pipeline.SimplePipeline.runPipeline;
 
+/**
+ * Evaluates the times for writing full documents to databases.
+ * Creates instances of AnalysisEngine from specific CollectionWriters which
+ * benchmark and document the time it takes to write full Documents and their
+ * respective structures to the databases and write results into here defined
+ * output files.
+ * <p>
+ * Tests all store* methods on QueryHandlerInterface implementations.
+ */
 public class AllWriteEvaluationCase implements EvaluationCase
 {
 	@Override
@@ -53,12 +61,11 @@ public class AllWriteEvaluationCase implements EvaluationCase
 
 			List<AnalysisEngine> writers = Arrays.asList(
 					//createWriter(outputProvider, Connections.DBName.ArangoDB),
-					//getMongoWriter(outputProvider),
-					//getCassandraWriter(outputProvider),
-					//getBasexWriter(outputProvider),
-					//getMysqlWriter(outputProvider),
+					//createWriter(outputProvider, Connections.DBName.BaseX),
+					//createWriter(outputProvider, Connections.DBName.Cassandra),
+					//createWriter(outputProvider, Connections.DBName.MongoDB),
+					//createWriter(outputProvider, Connections.DBName.MySQL),
 					createWriter(outputProvider, Connections.DBName.Neo4j)
-					//getXMIWriter(outputProvider)
 			);
 
 			for (AnalysisEngine writer : writers)
@@ -87,6 +94,20 @@ public class AllWriteEvaluationCase implements EvaluationCase
 		}
 	}
 
+	/**
+	 * Creates an AnalysisEngine for the UIMA pipeline for a given dbName.
+	 * Initializes the CollectionWriter with a different outputFile for each
+	 * database.
+	 *
+	 * @param outputProvider The outputProvider, which creates the output files.
+	 * @param dbName         The name of the database for which a writer should
+	 *                       be created.
+	 * @return The initialized AnalysisEngine containing a CollectionWriter.
+	 * @throws IOException                     If the output file can not be
+	 *                                         created.
+	 * @throws ResourceInitializationException If something inside UIMA went
+	 *                                         wrong.
+	 */
 	public static AnalysisEngine createWriter(
 			OutputProvider outputProvider, Connections.DBName dbName
 	) throws IOException, ResourceInitializationException
@@ -100,20 +121,6 @@ public class AllWriteEvaluationCase implements EvaluationCase
 						AllWriteEvaluationCase.class.getName(),
 						dbName.toString()
 				)
-		);
-	}
-
-	public static AnalysisEngine getXMIWriter(OutputProvider outputProvider)
-			throws ResourceInitializationException, IOException
-	{
-		return createEngine(
-				XmiWriter.class,
-				XmiWriter.PARAM_TARGET_LOCATION,
-				System.getenv("OUTPUT_DIR"),
-				XmiWriter.PARAM_USE_DOCUMENT_ID,
-				true,
-				XmiWriter.PARAM_OVERWRITE,
-				true
 		);
 	}
 }
