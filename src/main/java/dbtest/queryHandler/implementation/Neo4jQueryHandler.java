@@ -378,7 +378,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 						tokenParams.put("tokenBegin", foundToken.get("begin").asInt());
 						tokenParams.put("tokenEnd", foundToken.get("end").asInt());
 						tokenParams.put("tokenValue", foundToken.get("value").asString());
-						StatementResult lemmasResult = tx.run("MATCH (t:" + ElementType.Token + " {id:{documentId}, begin:{tokenBegin}, end:{tokenEnd}, value:{tokenValue}}))-[:" + Relationship.TokenHasLemma + "]->(l:" + ElementType.Lemma + ") RETURN l as lemma", tokenParams);
+						StatementResult lemmasResult = tx.run("MATCH (t:" + ElementType.Token + " {id:{documentId}, begin:{tokenBegin}, end:{tokenEnd}, value:{tokenValue}})-[:" + Relationship.TokenHasLemma + "]->(l:" + ElementType.Lemma + ") RETURN l as lemma", tokenParams);
 						while (lemmasResult.hasNext())
 						{
 							Value foundLemma = lemmasResult.next().get("lemma");
@@ -388,7 +388,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 							xmiToken.setLemma(lemma);
 						}
 
-						StatementResult posResult = tx.run("MATCH (t:" + ElementType.Token + " {id:{documentId}, begin:{tokenBegin}, end:{tokenEnd}, value:{tokenValue}}))-[:" + Relationship.TokenAtPos + "]->(pos:" + ElementType.Pos + ") RETURN pos", tokenParams);
+						StatementResult posResult = tx.run("MATCH (t:" + ElementType.Token + " {id:{documentId}, begin:{tokenBegin}, end:{tokenEnd}, value:{tokenValue}})-[:" + Relationship.TokenAtPos + "]->(pos:" + ElementType.Pos + ") RETURN pos", tokenParams);
 						while (posResult.hasNext())
 						{
 							Value foundPos = posResult.next().get("pos");
