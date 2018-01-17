@@ -77,45 +77,60 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	{
 		for (Connection connection : connectionResponse.getConnections())
 		{
+			this.dbName =
+					Connections.getIdentifierForConnectionClass(
+							connection.getClass()
+					);
+
+			logger.info("Starting AllQueryEvaluationCase for Database \""
+					+ this.dbName + "\".");
+
 			JSONObject stats = new JSONObject();
 
 			BenchmarkQueryHandler queryHandler = new BenchmarkQueryHandler(
 					connection.getQueryHandler()
 			);
 
-			this.dbName =
-					Connections.getIdentifierForConnectionClass(
-							connection.getClass()
-					);
-
 			// 1. getDocumentIds
+			logger.info("Step 1: run getDocumentIdsEvaluation");
 			stats.put(
 					"getDocumentIds",
 					this.getDocumentIdsEvaluation(queryHandler)
 			);
+			logger.info("Step 1 done.");
 
 			// 2. getLemmataForDocument
+			logger.info("Step 2: Running getLemmataForDocumentEvaluation.");
 			stats.put(
 					"getLemmataForDocument",
 					this.getLemmataForDocumentEvaluation(queryHandler)
 			);
+			logger.info("Step 2 done.");
 
 			// 3. countDocumentsContainingLemma
+			logger.info("Step 3: Running "
+					+ "countDocumentsContainingLemmaEvaluation.");
 			stats.put(
 					"countDocumentsContainingLemma",
 					this.countDocumentsContainingLemmaEvaluation(queryHandler)
 			);
+			logger.info("Step 3 done.");
 
 			// 4. countElementsOfType
+			logger.info("Step 4: Running countElementsOfTypeEvaluation.");
 			for (ElementType type : ElementType.values())
 			{
+				logger.info("Step 4: Type - \"" + type + "\".");
 				stats.put(
 						"countElementsOfType-" + type,
 						this.countElementsOfTypeEvaluation(queryHandler, type)
 				);
 			}
+			logger.info("Step 4 done.");
 
 			// 5. countElementsInDocumentOfType
+			logger.info("Step 5: Running "
+					+ "countElementsInDocumentOfTypeEvaluation.");
 			int howManyDocuments = 20;
 			Set<String> randomDocumentIds = chooseSubset(
 					Sets.newHashSet(documentIds),
@@ -127,6 +142,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 					ElementType.Token,
 					ElementType.Lemma})
 			{
+				logger.info("Step 5: Type - \"" + type + "\".");
 				stats.put(
 						"countElementsInDocumentOfType-" + type,
 						this.countElementsInDocumentOfTypeEvaluation(
@@ -134,8 +150,11 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						)
 				);
 			}
+			logger.info("Step 5 done.");
 
 			// 6. countElementsOfTypeWithValue
+			logger.info("Step 6: Running "
+					+ "countElementsOfTypeWithValueEvaluation.");
 			int howManyValues = 20;
 			Set<String> randomValues = chooseSubset(lemmata, howManyValues);
 			for (ElementType type : new ElementType[]{
@@ -143,6 +162,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 					ElementType.Token,
 					ElementType.Pos})
 			{
+				logger.info("Step 6: Type - \"" + type + "\".");
 				stats.put(
 						"countElementsOfTypeWithValue-" + type,
 						this.countElementsOfTypeWithValueEvaluation(
@@ -150,14 +170,18 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						)
 				);
 			}
+			logger.info("Step 6 done.");
 
 			// 7. countElementsInDocumentOfTypeWithValue
+			logger.info("Step 7: Running "
+					+ "countElementsInDocumentOfTypeWithValueEvaluation.");
 			for (ElementType type : new ElementType[]{
 					ElementType.Lemma,
 					ElementType.Token,
 					ElementType.Pos
 			})
 			{
+				logger.info("Step 7: Type - \"" + type + "\".");
 				stats.put(
 						"countElementsInDocumentOfTypeWithValue-" + type,
 						this.countElementsInDocumentOfTypeWithValue(
@@ -168,15 +192,20 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						)
 				);
 			}
+			logger.info("Step 7 done.");
 
 			// 8. countOccurencesForEachLemmaInAllDocuments
+			logger.info("Step 8: Running "
+					+ "countOccurencesForEachLemmaInAllDocumentsEvaluation.");
 			stats.put(
 					"countOccurencesForEachLemmaInAllDocuments",
 					this.countOccurencesForEachLemmaInAllDocumentsEvaluation(
 							queryHandler
 					)
 			);
+			logger.info("Step 8 done.");
 
+			logger.info("Writing results...");
 			// Write the results to a file. Catalogue previous results.
 			outputProvider.writeJSON(
 					AllQueryEvaluationCase.class.getName(),
@@ -184,6 +213,8 @@ public class AllQueryEvaluationCase implements EvaluationCase
 					stats,
 					true
 			);
+			logger.info("AllQueryEvaluationCase for Database \""
+					+ this.dbName + "\" done.");
 		}
 	}
 
