@@ -13,8 +13,7 @@ import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.logging.Logger;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 import static org.apache.uima.fit.pipeline.SimplePipeline.runPipeline;
@@ -22,13 +21,16 @@ import static org.apache.uima.fit.pipeline.SimplePipeline.runPipeline;
 /**
  * Evaluates the times for reading out full documents from databases.
  * Creates instances of specific CollectionReaders which document and benchmark
- * readtimes and write results into here defined output files.
+ * read times and write results into here defined output files.
  * <p>
  * Tests the populateCasWithDocument method on QueryHandlerInterface implementa-
  * tions.
  */
 public class AllReadEvaluationCase implements EvaluationCase
 {
+	protected static final Logger logger =
+			Logger.getLogger(AllReadEvaluationCase.class.getName());
+
 	@Override
 	public ConnectionRequest requestConnection()
 	{
@@ -40,40 +42,36 @@ public class AllReadEvaluationCase implements EvaluationCase
 		return new ConnectionRequest();
 	}
 
-	/**
-	 * Creates and executes an EvaluatingCollectionWriter for each database.
-	 *
-	 * @param connectionResponse
-	 */
 	@Override
 	public void run(
 			ConnectionResponse connectionResponse,
 			OutputProvider outputProvider
 	)
 	{
-		try
+		for (Connections.DBName dbName : Connections.DBName.values())
 		{
-			List<CollectionReader> readers = Arrays.asList(
-					//createReader(outputProvider, Connections.DBName.ArangoDB),
-					//createReader(outputProvider, Connections.DBName.BaseX),
-					//createReader(outputProvider, Connections.DBName.Cassandra),
-					//createReader(outputProvider, Connections.DBName.MongoDB),
-					//createReader(outputProvider, Connections.DBName.MySQL),
-					createReader(outputProvider, Connections.DBName.Neo4j)
-			);
-			for (CollectionReader reader : readers)
+			logger.info("Starting AllWriteEvaluationCase for Database \""
+					+ dbName + "\".");
+
+			try
 			{
 				runPipeline(
-						reader,
+						createReader(outputProvider, dbName),
 						// We don't need to process anything, since we only want
 						// to benchmark the reading process. So the
 						// AnalysisEngine here won't do anything.
 						createEngine(IdleCollectionWriter.class)
 				);
+			} catch (UIMAException | IOException e)
+			{
+				logger.severe("AllReadEvaluationCase for Database \""
+						+ dbName + "\" crashed.");
+				// TODO: handle better
+				e.printStackTrace();
 			}
-		} catch (UIMAException | IOException e)
-		{
-			e.printStackTrace();
+
+			logger.info("AllWriteEvaluationCase for Database \""
+					+ dbName + "\" done.");
 		}
 	}
 

@@ -14,8 +14,7 @@ import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.logging.Logger;
 
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 import static org.apache.uima.fit.pipeline.SimplePipeline.runPipeline;
@@ -31,6 +30,9 @@ import static org.apache.uima.fit.pipeline.SimplePipeline.runPipeline;
  */
 public class AllWriteEvaluationCase implements EvaluationCase
 {
+	protected static final Logger logger =
+			Logger.getLogger(AllWriteEvaluationCase.class.getName());
+
 	@Override
 	public ConnectionRequest requestConnection()
 	{
@@ -49,6 +51,8 @@ public class AllWriteEvaluationCase implements EvaluationCase
 	{
 		try
 		{
+			// This reader reads all .xmi.gz files in the environment-defined
+			// input folder.
 			CollectionReader reader = CollectionReaderFactory.createReader(
 					XmiReader.class,
 					XmiReader.PARAM_PATTERNS,
@@ -59,37 +63,31 @@ public class AllWriteEvaluationCase implements EvaluationCase
 					"de"
 			);
 
-			List<AnalysisEngine> writers = Arrays.asList(
-					//createWriter(outputProvider, Connections.DBName.ArangoDB),
-					//createWriter(outputProvider, Connections.DBName.BaseX),
-					//createWriter(outputProvider, Connections.DBName.Cassandra),
-					//createWriter(outputProvider, Connections.DBName.MongoDB),
-					//createWriter(outputProvider, Connections.DBName.MySQL),
-					createWriter(outputProvider, Connections.DBName.Neo4j)
-			);
-
-			for (AnalysisEngine writer : writers)
+			for (Connections.DBName dbName : Connections.DBName.values())
 			{
+				logger.info("Starting AllWriteEvaluationCase for Database \""
+						+ dbName + "\".");
+
 				try
 				{
 					runPipeline(
 							reader,
-							writer
+							createWriter(outputProvider, dbName)
 					);
 				} catch (UIMAException | IOException e)
 				{
+					logger.severe("AllWriteEvaluationCase for Database \""
+							+ dbName + "\" crashed.");
 					// TODO: handle better
 					e.printStackTrace();
 				}
-			}
 
+				logger.info("AllWriteEvaluationCase for Database \""
+						+ dbName + "\" done.");
+			}
 		} catch (ResourceInitializationException e)
 		{
 			// TODO: handle better
-			e.printStackTrace();
-		} catch (IOException e)
-		{
-			// TODO: handle better. This occurs, if an output file could not be created or sth.
 			e.printStackTrace();
 		}
 	}
