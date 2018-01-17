@@ -52,7 +52,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 				Connections.DBName.Neo4j
 		})
 		{
-			logger.info("Starting AllWriteEvaluationCase for Database \""
+			logger.info("Starting AllReadEvaluationCase for Database \""
 					+ dbName + "\".");
 
 			try
@@ -72,7 +72,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 				e.printStackTrace();
 			}
 
-			logger.info("AllWriteEvaluationCase for Database \""
+			logger.info("AllReadEvaluationCase for Database \""
 					+ dbName + "\" done.");
 		}
 	}
