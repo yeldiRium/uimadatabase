@@ -1,10 +1,8 @@
 package dbtest.evaluations.collectionWriter;
 
 import dbtest.connection.*;
-import dbtest.connection.implementation.Neo4jConnection;
-import dbtest.queryHandler.QueryHandlerInterface;
 import dbtest.queryHandler.implementation.BenchmarkQueryHandler;
-import dbtest.queryHandler.implementation.Neo4jQueryHandler;
+import dbtest.utility.Formatting;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
@@ -16,16 +14,15 @@ import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 import java.util.LongSummaryStatistics;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
@@ -43,22 +40,12 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 	protected String dbName;
 
 	protected BenchmarkQueryHandler queryHandler;
-	protected BufferedWriter output;
 
 	@Override
 	public void initialize(UimaContext context)
 			throws ResourceInitializationException
 	{
 		super.initialize(context);
-
-		try
-		{
-			this.output = new BufferedWriter(new FileWriter(this.outputFile));
-		} catch (IOException e)
-		{
-			// TODO: improve error handling
-			e.printStackTrace();
-		}
 
 		this.dbName = context.getConfigParameterValue(PARAM_DBNAME).toString();
 		logger.info("Initializing CollectionWriter for db " + this.dbName);
@@ -89,183 +76,178 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		logger.info("Initialized CollectionWriter for db " + this.dbName);
 	}
 
-	@Override
-	public void collectionProcessComplete()
-	{
-		try
-		{
-			logger.info("Collection process complete. Statistics:");
-
-			int storedDocuments = this.queryHandler.getMethodBenchmarks()
-					.get("storeJCasDocument").getCallCount();
-			LongSummaryStatistics documentInsertStatistic = this.queryHandler
-					.getMethodBenchmarks().get("storeJCasDocument").getCallTimes()
-					.stream().collect(
-							Collectors.summarizingLong(Long::longValue)
-					);
-
-			int storedParagraphs = this.queryHandler.getMethodBenchmarks()
-					.get("storeParagraph").getCallCount();
-			LongSummaryStatistics paragraphInsertStatistic = this.queryHandler
-					.getMethodBenchmarks().get("storeParagraph").getCallTimes()
-					.stream().collect(
-							Collectors.summarizingLong(Long::longValue)
-					);
-
-			int storedSentences = this.queryHandler.getMethodBenchmarks()
-					.get("storeSentence").getCallCount();
-			LongSummaryStatistics sentenceInsertStatistic = this.queryHandler
-					.getMethodBenchmarks().get("storeSentence").getCallTimes()
-					.stream().collect(
-							Collectors.summarizingLong(Long::longValue)
-					);
-
-			int storedTokens = this.queryHandler.getMethodBenchmarks()
-					.get("storeToken").getCallCount();
-			LongSummaryStatistics tokenInsertStatistic = this.queryHandler
-					.getMethodBenchmarks().get("storeToken").getCallTimes()
-					.stream().collect(
-							Collectors.summarizingLong(Long::longValue)
-					);
-
-			int averageDocumentStructureInsertTime = (int)(documentInsertStatistic.getSum()
-					+ paragraphInsertStatistic.getSum()
-					+ sentenceInsertStatistic.getSum()
-					+ tokenInsertStatistic.getSum()
-					/ (double) documentInsertStatistic.getCount());
-
-			String statistics = "Inserted " + documentInsertStatistic.getCount() + " documents.\n" +
-					"  Inserting a complete document structure took " + averageDocumentStructureInsertTime + "ms on average.\n" +
-					"Inserted " + paragraphInsertStatistic.getCount() + " paragraphs.\n" +
-					"  Inserting a paragraph took " + (int)paragraphInsertStatistic.getAverage() + "ms on average.\n" +
-					"  Inserting a paragraph took at most " + paragraphInsertStatistic.getMax() + "ms.\n" +
-					"  Spent " + paragraphInsertStatistic.getSum() + "ms overall on inserting paragraphs.\n" +
-					"Inserted " + sentenceInsertStatistic.getCount() + " sentences.\n" +
-					"  Inserting a sentence took " + (int)sentenceInsertStatistic.getAverage() + "ms on average.\n" +
-					"  Inserting a sentence took at most " + sentenceInsertStatistic.getMax() + "ms.\n" +
-					"  Spent " + sentenceInsertStatistic.getSum() + "ms overall on inserting sentences.\n" +
-					"Inserted " + tokenInsertStatistic.getCount() + " tokens.\n" +
-					"  Inserting a token took " + (int)tokenInsertStatistic.getAverage() + "ms on average.\n" +
-					"  Inserting a token took at most " + tokenInsertStatistic.getMax() + "ms.\n" +
-					"  Spent " + tokenInsertStatistic.getSum() + "ms overall on inserting tokens.\n";
-
-			logger.info(statistics);
-			this.output.write(statistics);
-
-			this.output.close();
-		} catch (IOException e)
-		{
-			// TODO: improve error handling
-			e.printStackTrace();
-		}
-	}
-
 	/**
 	 * Iterates over the jCas' structure and inserts all relevant elements into
 	 * the database.
+	 *
 	 * @param jCas The document to be processed.
 	 * @throws AnalysisEngineProcessException If anything goes wrong at all.
 	 */
 	@Override
 	public void process(JCas jCas) throws AnalysisEngineProcessException
 	{
-		try
-		{
-			final String documentId = DocumentMetaData.get(jCas)
-					.getDocumentId();
+		final String documentId = DocumentMetaData.get(jCas)
+				.getDocumentId();
 
-			logger.info("Storing jCas '" + documentId + "' into "
-					+ this.dbName + "...");
-			long start = System.currentTimeMillis();
-			this.queryHandler.storeJCasDocument(jCas);
+		logger.info("Storing jCas '" + documentId + "' into "
+				+ this.dbName + "...");
+		long start = System.currentTimeMillis();
+		this.queryHandler.storeJCasDocument(jCas);
+
+		/*
+		 * Store each element of the jCas that was annotated as a Para-
+		 * graph.
+		 */
+		Paragraph previousParagraph = null;
+		for (Paragraph paragraph
+				: JCasUtil.select(jCas, Paragraph.class))
+		{
+			this.queryHandler.storeParagraph(
+					paragraph, jCas, previousParagraph
+			);
+			previousParagraph = paragraph;
 
 			/*
-			 * Store each element of the jCas that was annotated as a Para-
-			 * graph.
+			 * Store each element of the jCas that was annotated as a Sen-
+			 * tence and is contained in the current paragraph.
 			 */
-			Paragraph previousParagraph = null;
-			for (Paragraph paragraph
-					: JCasUtil.select(jCas, Paragraph.class))
+			Sentence previousSentence = null;
+			for (Sentence sentence : JCasUtil.selectCovered(
+					jCas,
+					Sentence.class, paragraph
+			))
 			{
-				this.queryHandler.storeParagraph(
-						paragraph, jCas, previousParagraph
+				this.queryHandler.storeSentence(
+						sentence, jCas, paragraph, previousSentence
 				);
-				previousParagraph = paragraph;
+				previousSentence = sentence;
+
 
 				/*
-				 * Store each element of the jCas that was annotated as a Sen-
-				 * tence and is contained in the current paragraph.
+				 * Store each element of the jCas that was annotated as a
+				 * Token and is contained in the current sentence.
 				 */
-				Sentence previousSentence = null;
-				for (Sentence sentence : JCasUtil.selectCovered(
-						jCas,
-						Sentence.class, paragraph
+				Token previousToken = null;
+				for (Token token : JCasUtil.selectCovered(
+						jCas, Token.class, sentence
 				))
 				{
-					this.queryHandler.storeSentence(
-							sentence, jCas, paragraph, previousSentence
+					this.queryHandler.storeToken(
+							token, jCas, paragraph, sentence, previousToken
 					);
-					previousSentence = sentence;
-
-
-					/*
-					 * Store each element of the jCas that was annotated as a
-					 * Token and is contained in the current sentence.
-					 */
-					Token previousToken = null;
-					for (Token token : JCasUtil.selectCovered(
-							jCas, Token.class, sentence
-					))
-					{
-						this.queryHandler.storeToken(
-								token, jCas, paragraph, sentence, previousToken
-						);
-						previousToken = token;
-					}
+					previousToken = token;
 				}
 			}
-			long end = System.currentTimeMillis();
+		}
+		long end = System.currentTimeMillis();
 
-			logger.info("JCas processed and stored.");
-			logger.info("Took " + (end - start) + "ms.");
-			this.output.write(documentId + "\n");
+		logger.info("JCas \"" + documentId + "\" processed and stored.");
+		logger.info("Took " + (end - start) + "ms.");
+	}
 
-			int storedParagraphs = this.queryHandler.getMethodBenchmarks()
-					.get("storeParagraph").getCallCount();
-			int averageParagraphInsertTime = (int)(this.queryHandler
-					.getMethodBenchmarks().get("storeParagraph").getCallTimes()
-					.stream().mapToLong(Long::longValue).sum()
-					/ (double) storedParagraphs);
-			this.output.write("Paragraphs: " + storedParagraphs + "\"\n");
-			this.output.write("  Avg Time: " + averageParagraphInsertTime
-					+ "\"\n");
+	/**
+	 * Logs and writes all statistics to output.
+	 * This is called in a pipeline after all documents have been processed.
+	 */
+	@Override
+	public void collectionProcessComplete()
+	{
+		logger.info("Collection process complete. Statistics:");
 
-			int storedSentences = this.queryHandler.getMethodBenchmarks()
-					.get("storeSentence").getCallCount();
-			int averageSentenceInsertTime = (int)(this.queryHandler
-					.getMethodBenchmarks().get("storeSentence").getCallTimes()
-					.stream().mapToLong(Long::longValue).sum()
-					/ (double) storedParagraphs);
-			this.output.write("Sentences: " + storedSentences + "\"\n");
-			this.output.write("  Avg Time: " + averageSentenceInsertTime
-					+ "\"\n");
+		LongSummaryStatistics documentInsertStatistic = this.queryHandler
+				.getMethodBenchmarks().get("storeJCasDocument")
+				.getCallTimes()
+				.stream()
+				.collect(
+						Collectors.summarizingLong(Long::longValue)
+				);
 
-			int storedTokens = this.queryHandler.getMethodBenchmarks()
-					.get("storeToken").getCallCount();
-			LongSummaryStatistics tokenInsertStatistic = this.queryHandler
-					.getMethodBenchmarks().get("storeToken").getCallTimes()
-					.stream().collect(
-							Collectors.summarizingLong(Long::longValue)
-					);
-			this.output.write("Tokens: " + storedTokens + "\"\n");
-			this.output.write("  Min Time:" + tokenInsertStatistic.getMin()
-					+ "\"\n");
-			this.output.write("  Max Time:" + tokenInsertStatistic.getMax()
-					+ "\"\n");
-			this.output.write("  Avg Time: " + tokenInsertStatistic
-					.getAverage() + "\"\n");
+		LongSummaryStatistics paragraphInsertStatistic = this.queryHandler
+				.getMethodBenchmarks().get("storeParagraph")
+				.getCallTimes()
+				.stream()
+				.collect(
+						Collectors.summarizingLong(Long::longValue)
+				);
+
+		LongSummaryStatistics sentenceInsertStatistic = this.queryHandler
+				.getMethodBenchmarks().get("storeSentence")
+				.getCallTimes()
+				.stream()
+				.collect(
+						Collectors.summarizingLong(Long::longValue)
+				);
+
+		LongSummaryStatistics tokenInsertStatistic = this.queryHandler
+				.getMethodBenchmarks().get("storeToken")
+				.getCallTimes()
+				.stream()
+				.collect(
+						Collectors.summarizingLong(Long::longValue)
+				);
+
+		int averageDocumentStructureInsertTime = (int)
+				(documentInsertStatistic.getSum()
+				+ paragraphInsertStatistic.getSum()
+				+ sentenceInsertStatistic.getSum()
+				+ tokenInsertStatistic.getSum()
+				/ (double) documentInsertStatistic.getCount());
+
+		// Format statistics as strings for logging and user readable output.
+		String statistics = "Inserted " + documentInsertStatistic.getCount() + " documents.\n" +
+				"  Inserting a complete document structure took " + averageDocumentStructureInsertTime + "ms on average.\n" +
+				"Inserted " + paragraphInsertStatistic.getCount() + " paragraphs.\n" +
+				"  Inserting a paragraph took " + (int) paragraphInsertStatistic.getAverage() + "ms on average.\n" +
+				"  Inserting a paragraph took at most " + paragraphInsertStatistic.getMax() + "ms.\n" +
+				"  Spent " + paragraphInsertStatistic.getSum() + "ms overall on inserting paragraphs.\n" +
+				"Inserted " + sentenceInsertStatistic.getCount() + " sentences.\n" +
+				"  Inserting a sentence took " + (int) sentenceInsertStatistic.getAverage() + "ms on average.\n" +
+				"  Inserting a sentence took at most " + sentenceInsertStatistic.getMax() + "ms.\n" +
+				"  Spent " + sentenceInsertStatistic.getSum() + "ms overall on inserting sentences.\n" +
+				"Inserted " + tokenInsertStatistic.getCount() + " tokens.\n" +
+				"  Inserting a token took " + (int) tokenInsertStatistic.getAverage() + "ms on average.\n" +
+				"  Inserting a token took at most " + tokenInsertStatistic.getMax() + "ms.\n" +
+				"  Spent " + tokenInsertStatistic.getSum() + "ms overall on inserting tokens.\n";
+
+		logger.info(statistics);
+
+		// Format statistics as JSON for output files for easier processing
+		// later on.
+		JSONObject statisticsJSON = new JSONObject();
+		statisticsJSON.put(
+				"document",
+				Formatting.createOutputForMethod(
+						"storeJCasDocument", queryHandler
+				)
+		);
+		statisticsJSON.put(
+				"paragraph",
+				Formatting.createOutputForMethod(
+						"storeParagraph", queryHandler
+				)
+		);
+		statisticsJSON.put(
+				"sentence",
+				Formatting.createOutputForMethod(
+						"storeSentence", queryHandler
+				)
+		);
+		statisticsJSON.put(
+				"token",
+				Formatting.createOutputForMethod(
+						"storeToken", queryHandler
+				)
+		);
+
+		try(BufferedWriter output =
+				    new BufferedWriter(new FileWriter(this.outputFile))
+		)
+		{
+			output.write(statisticsJSON.toString());
 		} catch (IOException e)
 		{
+			// TODO: improve error handling
+			logger.severe("Was not able to write statistics to file.");
 			e.printStackTrace();
 		}
 	}

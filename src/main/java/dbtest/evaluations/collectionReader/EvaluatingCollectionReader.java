@@ -1,11 +1,10 @@
 package dbtest.evaluations.collectionReader;
 
 import dbtest.connection.*;
-import dbtest.connection.implementation.Neo4jConnection;
-import dbtest.queryHandler.QueryHandlerInterface;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
 import dbtest.queryHandler.implementation.BenchmarkQueryHandler;
+import dbtest.utility.Formatting;
 import org.apache.uima.UimaContext;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
@@ -14,13 +13,18 @@ import org.apache.uima.fit.component.CasCollectionReader_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
+import org.json.JSONObject;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.LongSummaryStatistics;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 {
@@ -82,7 +86,7 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 		String id = this.iterator.next();
 		try
 		{
-			logger.info("Populating CAS with document " + id + " from "
+			logger.info("Populating CAS with document \"" + id + "\" from "
 					+ this.dbName + "...");
 			try
 			{
@@ -119,5 +123,48 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 	public Progress[] getProgress()
 	{
 		return new Progress[0];
+	}
+
+
+	/**
+	 * Logs and writes all statistics to output.
+	 * This is called after the pipeline is done with the reader.
+	 */
+	@Override
+	public void close()
+	{
+		LongSummaryStatistics documentReadStatistic = this.queryHandler
+				.getMethodBenchmarks().get("populateCasWithDocument")
+				.getCallTimes()
+				.stream()
+				.collect(
+						Collectors.summarizingLong(Long::longValue)
+				);
+		double averageReadTime = documentReadStatistic.getSum()
+				/ documentReadStatistic.getAverage();
+
+		// Format statistics as strings for logging and user readable output.
+		String statistics = "Read " + documentReadStatistic.getCount() + " documents.\n" +
+				"  Reading a complete document structure took " + averageReadTime + "ms on average.\n";
+
+		logger.info(statistics);
+
+		// Format statistics as JSON for output files for easier processing
+		// later on.
+		JSONObject statisticsJSON = Formatting.createOutputForMethod(
+				"populateCasWithDocument", queryHandler
+		);
+
+		try (BufferedWriter output =
+				     new BufferedWriter(new FileWriter(this.outputFile))
+		)
+		{
+			output.write(statisticsJSON.toString());
+		} catch (IOException e)
+		{
+			// TODO: improve error handling
+			logger.severe("Was not able to write statistics to file.");
+			e.printStackTrace();
+		}
 	}
 }
