@@ -2,8 +2,8 @@ evaluations:
   - !!dbtest.evaluations.AllWriteEvaluationCase {}
   - !!dbtest.evaluations.AllReadEvaluationCase {}
   - !!dbtest.evaluations.AllQueryEvaluationCase {}
-  - !!dbtest.evaluations.AllCountEvaluationCase {}
-  - !!dbtest.evaluations.AllComplexQueryEvaluationCase {}
+  #- !!dbtest.evaluations.AllCountEvaluationCase {}
+  #- !!dbtest.evaluations.AllComplexQueryEvaluationCase {}
   #- !!dbtest.evaluations.CassandraCounterCreateEvaluationCase {}
   #- !!dbtest.evaluations.CassandraTTREvaluationCase {}
   #- !!dbtest.evaluations.TTREvaluationCase {}
