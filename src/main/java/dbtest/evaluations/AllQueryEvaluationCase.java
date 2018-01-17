@@ -13,12 +13,12 @@ import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import dbtest.queryHandler.implementation.BenchmarkQueryHandler;
+import dbtest.utility.Formatting;
 import org.json.JSONObject;
 import org.neo4j.helpers.collection.Iterators;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.LongSummaryStatistics;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -232,7 +232,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	)
 	{
 		this.documentIds = queryHandler.getDocumentIds();
-		JSONObject documentIdsStats = this.createOutputForMethod(
+		JSONObject documentIdsStats = Formatting.createOutputForMethod(
 				"getDocumentIds", queryHandler
 		);
 		documentIdsStats.getJSONObject("more").put(
@@ -270,7 +270,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						"concurrent access.");
 			}
 		}
-		JSONObject lemmataStats = this.createOutputForMethod(
+		JSONObject lemmataStats = Formatting.createOutputForMethod(
 				"getLemmataForDocument",
 				queryHandler
 		);
@@ -302,7 +302,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			);
 		}
 		JSONObject countDocumentsContainingLemmaStats =
-				this.createOutputForMethod(
+				Formatting.createOutputForMethod(
 						"countDocumentsContainingLemma",
 						queryHandler
 				);
@@ -337,7 +337,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		{
 			queryHandler.countElementsOfType(type);
 			JSONObject countElementsOfTypeStats =
-					this.createOutputForMethod(
+					Formatting.createOutputForMethod(
 							"countElementsOfType",
 							queryHandler
 					);
@@ -369,8 +369,8 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	 * If this is called for the types Document or Pos the result may not be
 	 * predictable.
 	 *
-	 * @param queryHandler      The QueryHandler on which the evaluation is perfor-
-	 *                          med.
+	 * @param queryHandler      The QueryHandler on which the evaluation is
+	 *                          performed.
 	 * @param type              The type for which to execute the evaluation.
 	 * @param randomDocumentIds The set of document to evaluate on.
 	 * @return A JSONObject with stats regarding the evaluation.
@@ -410,7 +410,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			}
 		}
 		JSONObject countElementsInDocumentOfTypeStats =
-				this.createOutputForMethod(
+				Formatting.createOutputForMethod(
 						"countElementsInDocumentOfType",
 						queryHandler
 				);
@@ -493,7 +493,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			}
 		}
 		JSONObject countElementsOfTypeWithValueStats =
-				this.createOutputForMethod(
+				Formatting.createOutputForMethod(
 						"countElementsOfTypeWithValue",
 						queryHandler
 				);
@@ -585,7 +585,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			}
 		}
 		JSONObject countElementsInDocumentOfTypeWithValueStats =
-				this.createOutputForMethod(
+				Formatting.createOutputForMethod(
 						"countElementsInDocumentOfTypeWithValue",
 						queryHandler
 				);
@@ -627,38 +627,10 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	)
 	{
 		queryHandler.countOccurencesForEachLemmaInAllDocuments();
-		return this.createOutputForMethod(
+		return Formatting.createOutputForMethod(
 				"countOccurencesForEachLemmaInAllDocuments",
 				queryHandler
 		);
-	}
-
-	/**
-	 * Creates generic statistics output for a given method name.
-	 * Calculates count, min, avg, max and sum and puts them into a JSONObject.
-	 *
-	 * @param methodName   The method for which to create a statistic.
-	 * @param queryHandler The BenchmarkQueryHandler from which to pull data.
-	 * @return A JSONObject containing the stats in a predefined format.
-	 */
-	protected JSONObject createOutputForMethod(
-			String methodName,
-			BenchmarkQueryHandler queryHandler
-	)
-	{
-		LongSummaryStatistics stats = queryHandler.getMethodBenchmarks()
-				.get(methodName).getCallTimes().parallelStream()
-				.mapToLong(Long::longValue).summaryStatistics();
-		JSONObject statsJSONObject = new JSONObject();
-
-		statsJSONObject.put("method", methodName);
-		statsJSONObject.put("callCount", stats.getCount());
-		statsJSONObject.put("minTime", stats.getMin());
-		statsJSONObject.put("avgTime", stats.getAverage());
-		statsJSONObject.put("maxTime", stats.getMax());
-		statsJSONObject.put("sumTime", stats.getSum());
-		statsJSONObject.put("more", new JSONObject());
-		return statsJSONObject;
 	}
 
 	/**
