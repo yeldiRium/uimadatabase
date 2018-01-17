@@ -48,7 +48,9 @@ public class AllReadEvaluationCase implements EvaluationCase
 			OutputProvider outputProvider
 	)
 	{
-		for (Connections.DBName dbName : Connections.DBName.values())
+		for (Connections.DBName dbName : new Connections.DBName[]{
+				Connections.DBName.Neo4j
+		})
 		{
 			logger.info("Starting AllWriteEvaluationCase for Database \""
 					+ dbName + "\".");
