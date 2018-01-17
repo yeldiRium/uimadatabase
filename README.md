@@ -24,19 +24,20 @@ for ease of access.
 Prerequisites:
 --------------
 ```
+java
+maven
 docker
 docker-compose
 ```
-Java, Maven etc. are not necessary, since they will be run inside the docker container.
 
 How to use:
 -----------
 ```
+mvn clean package
 docker-compose build
 docker-compose up
 ```
 This will compile and package the application, build and start up the docker containers and run the Main class.
-Currently this will start a test for all database server connections.
 
 More Information on Dockerization:
 ----------------------------------

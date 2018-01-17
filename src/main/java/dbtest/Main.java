@@ -34,7 +34,7 @@ public class Main
 		try
 		{
 			EvaluationRunner evaluationRunner = new EvaluationRunner(
-					new FileInputStream("src/main/resources/config.yml"),
+					new FileInputStream(System.getenv("CONFIG_PATH")),
 					connectionManager
 			);
 			logger.info("Running Evaluations...");
