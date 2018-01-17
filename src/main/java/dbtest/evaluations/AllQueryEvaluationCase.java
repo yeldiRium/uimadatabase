@@ -206,12 +206,11 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			logger.info("Step 8 done.");
 
 			logger.info("Writing results...");
-			// Write the results to a file. Catalogue previous results.
+			// Write the results to a file
 			outputProvider.writeJSON(
 					AllQueryEvaluationCase.class.getName(),
 					this.dbName.toString(),
-					stats,
-					true
+					stats
 			);
 			logger.info("AllQueryEvaluationCase for Database \""
 					+ this.dbName + "\" done.");
