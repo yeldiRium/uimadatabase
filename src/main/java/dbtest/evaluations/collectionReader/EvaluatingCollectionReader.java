@@ -13,6 +13,7 @@ import org.apache.uima.fit.component.CasCollectionReader_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedWriter;
@@ -42,6 +43,7 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 
 	protected BenchmarkQueryHandler queryHandler;
 	protected Iterator<String> iterator;
+	protected JSONArray specificDocumentStatistics;
 
 	@Override
 	public void initialize(final UimaContext context)
@@ -51,6 +53,8 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 
 		this.dbName = context.getConfigParameterValue(PARAM_DBNAME).toString();
 		logger.info("Initializing CollectionReader for db " + this.dbName);
+
+		this.specificDocumentStatistics = new JSONArray();
 
 		Class<? extends Connection> connectionClass =
 				Connections.getConnectionClassForName(this.dbName);
@@ -93,9 +97,23 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 				this.queryHandler.populateCasWithDocument(cas, id);
 				logger.info("CAS populated.");
 				List<Long> callTimes = this.queryHandler.getMethodBenchmarks()
-						.get("populateCasWithDocument").getCallTimes();
-				logger.info("Took " + callTimes.get(callTimes.size() - 1)
-						+ "ms.");
+						.get("populateCasWithDocument")
+						.getCallTimes();
+				long callTime = callTimes.get(callTimes.size() - 1);
+				logger.info("Took " + callTime + "ms.");
+
+				JSONObject specificDocumentStatistic = new JSONObject();
+				specificDocumentStatistic.put(
+						"documentId", id
+				);
+				specificDocumentStatistic.put(
+						"fullReadTime", callTime
+				);
+				specificDocumentStatistic.put(
+						"textLength", cas.getDocumentText().length()
+				);
+				this.specificDocumentStatistics.put(specificDocumentStatistic);
+
 			} catch (DocumentNotFoundException e)
 			{
 				logger.warning("DocumentId \"" + id + "\" could " +
@@ -152,6 +170,10 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 		// later on.
 		JSONObject statisticsJSON = Formatting.createOutputForMethod(
 				"populateCasWithDocument", queryHandler
+		);
+		statisticsJSON.put(
+				"specificDocumentStatistics",
+				this.specificDocumentStatistics
 		);
 
 		try (BufferedWriter output =

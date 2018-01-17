@@ -14,6 +14,7 @@ import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedWriter;
@@ -40,6 +41,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 	protected String dbName;
 
 	protected BenchmarkQueryHandler queryHandler;
+	protected JSONArray specificDocumentStatistics;
 
 	@Override
 	public void initialize(UimaContext context)
@@ -50,6 +52,8 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		this.dbName = context.getConfigParameterValue(PARAM_DBNAME).toString();
 		logger.info("Initializing CollectionWriter for db " + this.dbName
 				+ ".");
+
+		this.specificDocumentStatistics = new JSONArray();
 
 		Class<? extends Connection> connectionClass =
 				Connections.getConnectionClassForName(this.dbName);
@@ -97,6 +101,10 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		long start = System.currentTimeMillis();
 		this.queryHandler.storeJCasDocument(jCas);
 
+		int paragraphCount = 0;
+		int sentenceCount = 0;
+		int tokenCount = 0;
+
 		/*
 		 * Store each element of the jCas that was annotated as a Para-
 		 * graph.
@@ -108,6 +116,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 			this.queryHandler.storeParagraph(
 					paragraph, jCas, previousParagraph
 			);
+			paragraphCount++;
 			previousParagraph = paragraph;
 
 			/*
@@ -123,6 +132,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 				this.queryHandler.storeSentence(
 						sentence, jCas, paragraph, previousSentence
 				);
+				sentenceCount++;
 				previousSentence = sentence;
 
 
@@ -138,14 +148,37 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 					this.queryHandler.storeToken(
 							token, jCas, paragraph, sentence, previousToken
 					);
+					tokenCount++;
 					previousToken = token;
 				}
 			}
 		}
 		long end = System.currentTimeMillis();
+		long fullInsertTime = end - start;
+
+		JSONObject specificDocumentStatistic = new JSONObject();
+		specificDocumentStatistic.put(
+				"documentId", documentId
+		);
+		specificDocumentStatistic.put(
+				"paragraphs", paragraphCount
+		);
+		specificDocumentStatistic.put(
+				"sentences", sentenceCount
+		);
+		specificDocumentStatistic.put(
+				"tokens", tokenCount
+		);
+		specificDocumentStatistic.put(
+				"fullInsertTime", fullInsertTime
+		);
+		specificDocumentStatistic.put(
+				"textLength", jCas.getDocumentText().length()
+		);
+		this.specificDocumentStatistics.put(specificDocumentStatistic);
 
 		logger.info("JCas \"" + documentId + "\" processed and stored.");
-		logger.info("Took " + (end - start) + "ms.");
+		logger.info("Took " + fullInsertTime + "ms.");
 	}
 
 	/**
@@ -240,6 +273,10 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 				Formatting.createOutputForMethod(
 						"storeToken", queryHandler
 				)
+		);
+		statisticsJSON.put(
+				"specificDocumentStatistics",
+				this.specificDocumentStatistics
 		);
 
 		try(BufferedWriter output =

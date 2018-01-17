@@ -14,6 +14,7 @@ import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import dbtest.queryHandler.implementation.BenchmarkQueryHandler;
 import dbtest.utility.Formatting;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.neo4j.helpers.collection.Iterators;
 
@@ -334,7 +335,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 
 		try
 		{
-			queryHandler.countElementsOfType(type);
+			int count = queryHandler.countElementsOfType(type);
 			JSONObject countElementsOfTypeStats =
 					Formatting.createOutputForMethod(
 							"countElementsOfType",
@@ -344,6 +345,11 @@ public class AllQueryEvaluationCase implements EvaluationCase
 					.put(
 							"comment",
 							"Called for type \"" + type + "\"."
+					);
+			countElementsOfTypeStats.getJSONObject("more")
+					.put(
+							"count",
+							count
 					);
 			return countElementsOfTypeStats;
 		} catch (TypeNotCountableException e)
