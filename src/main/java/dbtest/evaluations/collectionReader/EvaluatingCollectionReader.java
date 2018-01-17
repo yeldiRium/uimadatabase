@@ -128,12 +128,9 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 
 	/**
 	 * Logs and writes all statistics to output.
-	 * This is called after the pipeline is done with the reader.
-	 * TODO: seems not to be called
-	 * TODO: find a way to log and write files
+	 * Must be manually called after completion.
 	 */
-	@Override
-	public void close()
+	public void writeOutput()
 	{
 		LongSummaryStatistics documentReadStatistic = this.queryHandler
 				.getMethodBenchmarks().get("populateCasWithDocument")

@@ -57,13 +57,18 @@ public class AllReadEvaluationCase implements EvaluationCase
 
 			try
 			{
+				EvaluatingCollectionReader reader =
+						(EvaluatingCollectionReader) createReader(
+								outputProvider, dbName
+						);
 				runPipeline(
-						createReader(outputProvider, dbName),
+						reader,
 						// We don't need to process anything, since we only want
 						// to benchmark the reading process. So the
 						// AnalysisEngine here won't do anything.
 						createEngine(IdleCollectionWriter.class)
 				);
+				reader.writeOutput();
 			} catch (UIMAException | IOException e)
 			{
 				logger.severe("AllReadEvaluationCase for Database \""
