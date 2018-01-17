@@ -2,9 +2,13 @@ package dbtest;
 
 import dbtest.connection.ConnectionManager;
 import dbtest.evaluationFramework.EvaluationRunner;
+import dbtest.logging.PlainFormatter;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
@@ -18,6 +22,14 @@ public class Main
 
 	public static void main(String[] args)
 	{
+		// Clean up logging to stdout
+		Logger rootLogger = LogManager.getLogManager().getLogger("");
+		Formatter plainFormatter = new PlainFormatter();
+		for(Handler h : rootLogger.getHandlers())
+		{
+			h.setFormatter(plainFormatter);
+		}
+
 		ConnectionManager connectionManager = ConnectionManager.getInstance();
 		try
 		{

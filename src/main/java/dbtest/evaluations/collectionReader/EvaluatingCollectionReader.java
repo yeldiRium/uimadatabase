@@ -147,7 +147,7 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 
 		// Format statistics as strings for logging and user readable output.
 		String statistics = "Read " + documentReadStatistic.getCount() + " documents.\n" +
-				"  Reading a complete document structure took " + averageReadTime + "ms on average.\n";
+				"  Reading a complete document structure took " + averageReadTime + "ms on average.";
 
 		logger.info(statistics);
 

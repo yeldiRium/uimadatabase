@@ -210,7 +210,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 				"Inserted " + tokenInsertStatistic.getCount() + " tokens.\n" +
 				"  Inserting a token took " + (int) tokenInsertStatistic.getAverage() + "ms on average.\n" +
 				"  Inserting a token took at most " + tokenInsertStatistic.getMax() + "ms.\n" +
-				"  Spent " + tokenInsertStatistic.getSum() + "ms overall on inserting tokens.\n";
+				"  Spent " + tokenInsertStatistic.getSum() + "ms overall on inserting tokens.";
 
 		logger.info(statistics);
 
