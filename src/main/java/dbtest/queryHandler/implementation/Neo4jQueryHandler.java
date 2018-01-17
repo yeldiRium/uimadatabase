@@ -3,8 +3,8 @@ package dbtest.queryHandler.implementation;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
-import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import dbtest.queryHandler.exceptions.QHException;
+import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
@@ -65,7 +65,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 							"RETURN count(r) as count");
 
 				} while (result.next().get("count").asInt() > 0);
-				
+
 				do
 				{
 					result = tx.run("MATCH (n)\n" +
@@ -311,7 +311,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			});
 			for (Record record : result.list())
 			{
-				ids.add(record.get("id").toString());
+				ids.add(record.get("id").asString());
 			}
 		}
 		return ids;
@@ -331,7 +331,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			while (result.hasNext())
 			{
 				Record row = result.next();
-				lemmata.add(row.get("lemma").toString());
+				lemmata.add(row.get("lemma").asString());
 			}
 			return lemmata;
 		}
@@ -363,9 +363,9 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 					Value document = documentResult.next().get("document");
 
 					DocumentMetaData meta = DocumentMetaData.create(aCAS);
-					meta.setDocumentId(document.get("id").toString());
-					aCAS.setDocumentLanguage(document.get("language").toString());
-					aCAS.setDocumentText(document.get("text").toString());
+					meta.setDocumentId(document.get("id").asString());
+					aCAS.setDocumentLanguage(document.get("language").asString());
+					aCAS.setDocumentText(document.get("text").asString());
 					StatementResult tokensResult = tx.run("MATCH (t:" + ElementType.Token + " {id:{documentId}}) RETURN t as token", documentParams);
 					while (tokensResult.hasNext())
 					{
@@ -383,7 +383,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 						{
 							Value foundLemma = lemmasResult.next().get("lemma");
 							Lemma lemma = new Lemma(aCAS.getJCas(), xmiToken.getBegin(), xmiToken.getEnd());
-							lemma.setValue(foundLemma.get("value").toString());
+							lemma.setValue(foundLemma.get("value").asString());
 							lemma.addToIndexes();
 							xmiToken.setLemma(lemma);
 						}
@@ -393,7 +393,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 						{
 							Value foundPos = posResult.next().get("pos");
 							POS pos = new POS(aCAS.getJCas(), xmiToken.getBegin(), xmiToken.getEnd());
-							pos.setPosValue(foundPos.get("value").toString());
+							pos.setPosValue(foundPos.get("value").asString());
 							pos.addToIndexes();
 							xmiToken.setPos(pos);
 						}
@@ -533,7 +533,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			{
 				Record row = result.next();
 				lemmaOccurenceCount.put(
-						row.get("lemma").toString(),
+						row.get("lemma").asString(),
 						row.get("count").asInt()
 				);
 			}
@@ -553,7 +553,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			while (result.hasNext())
 			{
 				Record aRecord = result.next();
-				documentTTRMap.put(aRecord.get("id").toString(), aRecord.get("ttr").asDouble());
+				documentTTRMap.put(aRecord.get("id").asString(), aRecord.get("ttr").asDouble());
 			}
 			return documentTTRMap;
 		}
@@ -587,7 +587,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			{
 				Record aRecord = result.next();
 				documentTTRMap.put(
-						aRecord.get("id").toString(),
+						aRecord.get("id").asString(),
 						aRecord.get("ttr").asDouble()
 				);
 			}
@@ -631,7 +631,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			while (result.hasNext())
 			{
 				Record row = result.next();
-				rtf.put(row.get("lemma").toString().replaceAll("\"", ""), row.get("count").asInt());
+				rtf.put(row.get("lemma").asString().replaceAll("\"", ""), row.get("count").asInt());
 			}
 		}
 		return rtf;
@@ -763,10 +763,10 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			{
 				Record row = result.next();
 				biGrams.add(
-						row.get("t1.value").toString()
+						row.get("t1.value").asString()
 								.replaceAll("\"", "")
 								+ "-"
-								+ row.get("t2.value").toString()
+								+ row.get("t2.value").asString()
 								.replaceAll("\"", ""));
 			}
 		}
@@ -788,10 +788,10 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			{
 				Record row = result.next();
 				biGrams.add(
-						row.get("t1.value").toString()
+						row.get("t1.value").asString()
 								.replaceAll("\"", "")
 								+ "-"
-								+ row.get("t2.value").toString()
+								+ row.get("t2.value").asString()
 								.replaceAll("\"", ""));
 			}
 		}
@@ -823,10 +823,10 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			{
 				Record row = result.next();
 				biGrams.add(
-						row.get("t1.value").toString()
+						row.get("t1.value").asString()
 								.replaceAll("\"", "")
 								+ "-"
-								+ row.get("t2.value").toString()
+								+ row.get("t2.value").asString()
 								.replaceAll("\"", ""));
 			}
 		}
@@ -857,13 +857,13 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			{
 				Record row = result.next();
 				triGrams.add(
-						row.get("t1.value").toString()
+						row.get("t1.value").asString()
 								.replaceAll("\"", "")
 								+ "-"
-								+ row.get("t2.value").toString()
+								+ row.get("t2.value").asString()
 								.replaceAll("\"", "")
 								+ "-"
-								+ row.get("t3.value").toString()
+								+ row.get("t3.value").asString()
 								.replaceAll("\"", "")
 				);
 			}
@@ -886,13 +886,13 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			{
 				Record row = result.next();
 				triGrams.add(
-						row.get("t1.value").toString()
+						row.get("t1.value").asString()
 								.replaceAll("\"", "")
 								+ "-"
-								+ row.get("t2.value").toString()
+								+ row.get("t2.value").asString()
 								.replaceAll("\"", "")
 								+ "-"
-								+ row.get("t3.value").toString()
+								+ row.get("t3.value").asString()
 								.replaceAll("\"", "")
 				);
 			}
@@ -925,13 +925,13 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			{
 				Record row = result.next();
 				triGrams.add(
-						row.get("t1.value").toString()
+						row.get("t1.value").asString()
 								.replaceAll("\"", "")
 								+ "-"
-								+ row.get("t2.value").toString()
+								+ row.get("t2.value").asString()
 								.replaceAll("\"", "")
 								+ "-"
-								+ row.get("t3.value").toString()
+								+ row.get("t3.value").asString()
 								.replaceAll("\"", "")
 				);
 			}
