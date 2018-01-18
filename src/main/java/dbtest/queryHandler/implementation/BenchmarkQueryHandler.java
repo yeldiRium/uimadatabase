@@ -422,7 +422,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 				);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
-				"calculateTTRForCollectionFoDocuments"
+				"calculateTTRForCollectionOfDocuments"
 		);
 		mb.increaseCallCount();
 		mb.addCallTime(end - start);
