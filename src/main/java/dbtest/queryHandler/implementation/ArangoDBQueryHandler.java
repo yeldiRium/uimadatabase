@@ -10,8 +10,8 @@ import com.arangodb.entity.EdgeDefinition;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
-import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import dbtest.queryHandler.exceptions.QHException;
+import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
@@ -26,7 +26,6 @@ import org.apache.uima.jcas.JCas;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class ArangoDBQueryHandler extends AbstractQueryHandler
@@ -451,11 +450,10 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				query, null, null, BaseDocument.class
 		);
 
-		Stream<String> keyStream = StreamSupport
+		return StreamSupport
 				.stream(result.spliterator(), false)
-				.map(BaseDocument::getKey);
-
-		return keyStream::iterator;
+				.map(BaseDocument::getKey)
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
@@ -580,7 +578,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				"   FOR document IN INBOUND lemma " + Relationship.DocumentHasLemma + " " +
 				"RETURN {'count': LENGTH(lemma)}";
 		Map<String, Object> bindParam = new HashMap<>();
-		
+
 		bindParam.put("lemmaValue", lemma);
 		ArangoCursor<BaseDocument> result = this.db.query(
 				query, bindParam, null, BaseDocument.class
