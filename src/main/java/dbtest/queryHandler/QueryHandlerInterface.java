@@ -363,6 +363,7 @@ public interface QueryHandlerInterface
 	/**
 	 * Compute and return term-frequencies for all lemmata in the specified
 	 * document.
+	 * Per default this should use a double normalization with parameter 0.5.
 	 *
 	 * @param documentId the specified document's id.
 	 * @return a HashMap(String lemma, Double term-frequency).
