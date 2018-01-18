@@ -179,8 +179,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 					+ "countElementsInDocumentOfTypeWithValueEvaluation.");
 			for (ElementType type : new ElementType[]{
 					ElementType.Lemma,
-					ElementType.Token,
-					ElementType.Pos
+					ElementType.Token
 			})
 			{
 				logger.info("Step 7: Type - \"" + type + "\".");
@@ -522,7 +521,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 
 	/**
 	 * 7.
-	 * Executed for every type that has a value, like 6.
+	 * Executed for every type that has a value and is connected to a document.
 	 * If the TypeHasNoValueException ever occurs here, the regarding QueryHand-
 	 * ler is implemented wrong or this method is called with an incompatible
 	 * type.
