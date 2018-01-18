@@ -461,21 +461,10 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
 	{
-		String query = "WITH @documentCollection, @documentHasLemma, @lemmaCollection " +
-				"FOR lemma IN OUTBOUND @documentId @documentHasLemma " +
+		String query = "WITH " + ElementType.Document + ", " + Relationship.DocumentHasLemma + ", " + ElementType.Lemma + " " +
+				"FOR lemma IN OUTBOUND @documentId " + Relationship.DocumentHasLemma + " " +
 				"RETURN DISTINCT lemma";
 		Map<String, Object> bindParams = new HashMap<>();
-		bindParams.put(
-				"documentCollection",
-				ElementType.Document.toString()
-		);
-		bindParams.put(
-				"documentHasLemma", Relationship.DocumentHasLemma.toString()
-		);
-		bindParams.put(
-				"lemmaCollection",
-				ElementType.Lemma.toString()
-		);
 		bindParams.put(
 				"documentId", ElementType.Document + "/" + documentId
 		);
@@ -507,20 +496,10 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 					.toString());
 
 			// query all Tokens in the Document
-			String tokenQuery = "WITH @documentCollection, @documentHasToken, @tokenCollection " +
-					"FOR token IN OUTBOUND @documentId @documentHasToken " +
+			String tokenQuery = "WITH " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + " " +
+					"FOR token IN OUTBOUND @documentId " + Relationship.DocumentHasToken + " " +
 					"RETURN DISTINCT token";
 			Map<String, Object> bindParams = new HashMap<>();
-			bindParams.put(
-					"documentCollection", ElementType.Document.toString()
-			);
-			bindParams.put(
-					"documentHasToken",
-					Relationship.DocumentHasToken.toString()
-			);
-			bindParams.put(
-					"tokenCollection", ElementType.Token.toString()
-			);
 			bindParams.put(
 					"documentId",
 					ElementType.Document.toString() + "/" + documentId
@@ -541,20 +520,10 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				);
 
 				// query Lemmata connected to Token (probably only one)
-				String lemmaQuery = "WITH @tokenCollection, @tokenHasLemma, @lemmaCollection " +
-						"FOR lemma IN OUTBOUND @tokenId @tokenHasLemma " +
+				String lemmaQuery = "WITH " + ElementType.Token + ", " + Relationship.TokenHasLemma + ", " + ElementType.Lemma + " " +
+						"FOR lemma IN OUTBOUND @tokenId " + Relationship.TokenHasLemma + " " +
 						"RETURN DISTINCT lemma";
 				Map<String, Object> lemmaParams = new HashMap<>();
-				lemmaParams.put(
-						"tokenCollection", ElementType.Token.toString()
-				);
-				lemmaParams.put(
-						"tokenHasLemma",
-						Relationship.TokenHasLemma.toString()
-				);
-				lemmaParams.put(
-						"lemmaCollection", ElementType.Lemma.toString()
-				);
 				lemmaParams.put("tokenId", tokenObject.getId());
 				ArangoCursor<BaseDocument> lemmaResult = this.db.query(
 						lemmaQuery, lemmaParams, null, BaseDocument.class
@@ -573,18 +542,10 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				}
 
 				// query POS connected to Token (probably only one)
-				String posQuery = "WITH @tokenCollection, @tokenAtPos, @posCollection " +
-						"FOR pos IN OUTBOUND @tokenId @tokenAtPos " +
+				String posQuery = "WITH " + ElementType.Token + ", " + Relationship.TokenAtPos + ", " + ElementType.Pos + " " +
+						"FOR pos IN OUTBOUND @tokenId " + Relationship.TokenAtPos + " " +
 						"RETURN DISTINCT pos";
 				Map<String, Object> posParams = new HashMap<>();
-				posParams.put(
-						"tokenCollection", ElementType.Token.toString()
-				);
-				posParams.put(
-						"tokenAtPos",
-						Relationship.TokenAtPos.toString()
-				);
-				posParams.put("posCollection", ElementType.Pos.toString());
 				posParams.put("tokenId", tokenObject.getId());
 				ArangoCursor<BaseDocument> posResult = this.db.query(
 						posQuery, posParams, null, BaseDocument.class
@@ -613,18 +574,13 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countDocumentsContainingLemma(String lemma)
 	{
-		String query = "WITH @lemmaCollection, @documentHasLemma, @documentCollection " +
-				"FOR lemma IN @lemmaCollection " +
+		String query = "WITH " + ElementType.Lemma + ", " + Relationship.DocumentHasLemma + ", " + ElementType.Document + " " +
+				"FOR lemma IN " + ElementType.Lemma + " " +
 				"FILTER lemma.value == @lemmaValue " +
-				"   FOR document IN INBOUND lemma @documentHasLemma " +
+				"   FOR document IN INBOUND lemma " + Relationship.DocumentHasLemma + " " +
 				"RETURN {'count': LENGTH(lemma)}";
 		Map<String, Object> bindParam = new HashMap<>();
-		bindParam.put("lemmaCollection", ElementType.Lemma.toString());
-		bindParam.put(
-				"documentHasLemma",
-				Relationship.DocumentHasLemma.toString()
-		);
-		bindParam.put("documentCollection", ElementType.Document.toString());
+		
 		bindParam.put("lemmaValue", lemma);
 		ArangoCursor<BaseDocument> result = this.db.query(
 				query, bindParam, null, BaseDocument.class
@@ -638,11 +594,9 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countElementsOfType(ElementType type)
 	{
-		String query = "RETURN {'count': LENGTH(@typeCollection)}";
-		Map<String, Object> bindParam = new HashMap<>();
-		bindParam.put("typeCollection", type.toString());
+		String query = "RETURN {'count': LENGTH(" + type + ")}";
 		ArangoCursor<BaseDocument> result = this.db.query(
-				query, bindParam, null, BaseDocument.class
+				query, null, null, BaseDocument.class
 		);
 		return Integer.parseInt(
 				result.next().getAttribute("count").toString()
@@ -654,7 +608,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			String documentId, ElementType type
 	) throws DocumentNotFoundException, TypeNotCountableException
 	{
-		String query = "WITH @documentCollection, @typeCollection, @relationship " +
+		String query = "WITH " + ElementType.Document + ", " + type + ", " + this.getRelationshipFromDocumentToType(type) + " " +
 				"FOR element " +
 				"   IN OUTBOUND @documentId " +
 				"   @relationship " +
@@ -662,16 +616,8 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				"   RETURN count";
 		Map<String, Object> bindParams = new HashMap<>();
 		bindParams.put(
-				"documentCollection", ElementType.Document.toString()
-		);
-		bindParams.put("typeCollection", type.toString());
-		bindParams.put(
 				"documentId",
 				ElementType.Document.toString() + "/" + documentId
-		);
-		bindParams.put(
-				"relationship",
-				this.getRelationshipFromDocumentToType(type)
 		);
 
 		ArangoCursor<BaseDocument> result = this.db.query(
@@ -687,12 +633,11 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			throws TypeHasNoValueException
 	{
 		this.checkTypeHasValueField(type);
-		String query = "FOR element IN @typeCollection" +
+		String query = "FOR element IN " + type +
 				"   FILTER element.value == @value" +
 				"   COLLECT WITH COUNT INTO count" +
 				"RETURN count";
 		Map<String, Object> bindParam = new HashMap<>();
-		bindParam.put("typeCollection", type.toString());
 		bindParam.put("value", value);
 		ArangoCursor<BaseDocument> result = this.db.query(
 				query, bindParam, null, BaseDocument.class
@@ -709,7 +654,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			TypeHasNoValueException
 	{
 		this.checkTypeHasValueField(type);
-		String query = "WITH @documentCollection, @typeCollection, @relationship " +
+		String query = "WITH " + ElementType.Document + ", " + type + ", " + this.getRelationshipFromDocumentToType(type) + " " +
 				"FOR element " +
 				"   IN OUTBOUND @documentId " +
 				"   @relationship " +
@@ -718,18 +663,10 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				"   RETURN count";
 		Map<String, Object> bindParams = new HashMap<>();
 		bindParams.put(
-				"documentCollection", ElementType.Document.toString()
-		);
-		bindParams.put("typeCollection", type.toString());
-		bindParams.put(
 				"documentId",
 				ElementType.Document.toString() + "/" + documentId
 		);
 		bindParams.put("value", value);
-		bindParams.put(
-				"relationship",
-				this.getRelationshipFromDocumentToType(type)
-		);
 
 		ArangoCursor<BaseDocument> result = this.db.query(
 				query, bindParams, null, BaseDocument.class
@@ -776,27 +713,15 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
 	{
 		Map<String, Integer> lemmaOccurenceCount = new HashMap<>();
-		String query = "WITH @lemmaCollection, @tokenHasLemma, @tokenCollection" +
-				"FOR lemma IN @lemmaCollection" +
+		String query = "WITH " + ElementType.Lemma + ", " + Relationship.TokenHasLemma + ", " + ElementType.Token + "" +
+				"FOR lemma IN " + ElementType.Lemma + "" +
 				"   LET occurenceCount = (" +
-				"       FOR token IN INBOUND lemma @tokenHasLemma" +
+				"       FOR token IN INBOUND lemma " + Relationship.TokenHasLemma + "" +
 				"           COLLECT WITH COUNT INTO count" +
 				"           RETURN count" +
 				"   ) " +
 				"   RETURN {'lemma': lemma.value, 'count': occurenceCount}";
 		Map<String, Object> bindParams = new HashMap<>();
-		bindParams.put(
-				"lemmaCollection",
-				ElementType.Lemma.toString()
-		);
-		bindParams.put(
-				"tokenHasLemma",
-				Relationship.TokenHasLemma.toString()
-		);
-		bindParams.put(
-				"tokenCollection",
-				ElementType.Token.toString()
-		);
 		ArangoCursor<BaseDocument> result = this.db.query(
 				query, bindParams, null, BaseDocument.class
 		);
@@ -818,35 +743,20 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	{
 		Map<String, Double> documentTTRMap = new ConcurrentHashMap<>();
 
-		String query = "WITH @documentCollection, @documentHasToken, @tokenCollection, @documentHasLemma, @lemmaCollection " +
-				"FOR document IN @documentCollection " +
+		String query = "WITH " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + ", " + Relationship.DocumentHasLemma + ", " + ElementType.Lemma + " " +
+				"FOR document IN " + ElementType.Document + " " +
 				"   LET tokenCount = (" +
-				"       FOR token IN OUTBOUND document @documentHasToken " +
+				"       FOR token IN OUTBOUND document " + Relationship.DocumentHasToken + " " +
 				"           COLLECT WITH COUNT INTO count " +
 				"           RETURN count" +
 				"   ) " +
 				"   LET lemmaCount = (" +
-				"       FOR lemma IN OUTBOUND document @documentHasLemma " +
+				"       FOR lemma IN OUTBOUND document " + Relationship.DocumentHasLemma + " " +
 				"           COLLECT lemma.value WITH COUNT INTO count " +
 				"           RETURN count " +
 				"   ) " +
 				"   RETURN {'document': document.key, 'ttr': (lemmaCount/tokenCount)}";
 		Map<String, Object> bindParams = new HashMap<>();
-		bindParams.put(
-				"documentCollection", ElementType.Document.toString()
-		);
-		bindParams.put(
-				"documentHasToken", Relationship.DocumentHasToken.toString()
-		);
-		bindParams.put(
-				"tokenCollection", ElementType.Token.toString()
-		);
-		bindParams.put(
-				"documentHasLemma", Relationship.DocumentHasLemma.toString()
-		);
-		bindParams.put(
-				"lemmaCollection", ElementType.Lemma.toString()
-		);
 
 		ArangoCursor<BaseDocument> result = this.db.query(
 				query, bindParams, null, BaseDocument.class
