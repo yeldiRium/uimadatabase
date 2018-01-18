@@ -34,4 +34,16 @@ public class Formatting
 		statsJSONObject.put("more", new JSONObject());
 		return statsJSONObject;
 	}
+
+	public static JSONObject createUnsupportedOperationError(String methodName)
+	{
+		JSONObject error = new JSONObject();
+		error.put(
+				"method", methodName
+		);
+		error.put(
+				"error", "Operation not supported."
+		);
+		return error;
+	}
 }
