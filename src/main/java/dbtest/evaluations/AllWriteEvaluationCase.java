@@ -51,18 +51,6 @@ public class AllWriteEvaluationCase implements EvaluationCase
 	{
 		try
 		{
-			// This reader reads all .xmi.gz files in the environment-defined
-			// input folder.
-			CollectionReader reader = CollectionReaderFactory.createReader(
-					XmiReader.class,
-					XmiReader.PARAM_PATTERNS,
-					"[+]*.xmi.gz", //
-					XmiReader.PARAM_SOURCE_LOCATION,
-					System.getenv("INPUT_DIR"),
-					XmiReader.PARAM_LANGUAGE,
-					"de"
-			);
-
 			for (Connections.DBName dbName : new Connections.DBName[]{
 					Connections.DBName.ArangoDB,
 					Connections.DBName.Neo4j
@@ -70,6 +58,18 @@ public class AllWriteEvaluationCase implements EvaluationCase
 			{
 				logger.info("Starting AllWriteEvaluationCase for Database \""
 						+ dbName + "\".");
+
+				// This reader reads all .xmi.gz files in the environment-defined
+				// input folder.
+				CollectionReader reader = CollectionReaderFactory.createReader(
+						XmiReader.class,
+						XmiReader.PARAM_PATTERNS,
+						"[+]*.xmi.gz", //
+						XmiReader.PARAM_SOURCE_LOCATION,
+						System.getenv("INPUT_DIR"),
+						XmiReader.PARAM_LANGUAGE,
+						"de"
+				);
 
 				try
 				{
