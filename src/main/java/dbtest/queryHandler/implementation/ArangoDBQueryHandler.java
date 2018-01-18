@@ -609,7 +609,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		String query = "WITH " + ElementType.Document + ", " + type + ", " + this.getRelationshipFromDocumentToType(type) + " " +
 				"FOR element " +
 				"   IN OUTBOUND @documentId " +
-				"   @relationship " +
+				"   " + this.getRelationshipFromDocumentToType(type) + " " +
 				"   COLLECT WITH COUNT INTO count" +
 				"   RETURN count";
 		Map<String, Object> bindParams = new HashMap<>();
@@ -655,7 +655,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		String query = "WITH " + ElementType.Document + ", " + type + ", " + this.getRelationshipFromDocumentToType(type) + " " +
 				"FOR element " +
 				"   IN OUTBOUND @documentId " +
-				"   @relationship " +
+				"   " + this.getRelationshipFromDocumentToType(type) + " " +
 				"   FILTER element.value == @value" +
 				"   COLLECT WITH COUNT INTO count" +
 				"   RETURN count";
