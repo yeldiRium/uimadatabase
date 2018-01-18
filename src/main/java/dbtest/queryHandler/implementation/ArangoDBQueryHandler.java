@@ -218,7 +218,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 
 		// Create Edge object from Document to Paragraph and insert
 		BaseEdgeDocument documentHasParagraphEdge = new BaseEdgeDocument(
-				documentId, paragraphObject.getKey()
+				ElementType.Document + "/" + documentId, paragraphObject.getId()
 		);
 		this.graph.edgeCollection(Relationship.DocumentHasParagraph.toString())
 				.insertEdge(documentHasParagraphEdge);
@@ -243,8 +243,8 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				// Create Edge object from previous Paragraph to current one
 				// and insert into graph
 				BaseEdgeDocument nextParagraphEdge = new BaseEdgeDocument(
-						paragraphObject.getKey(),
-						previousParagraphObject.getKey()
+						paragraphObject.getId(),
+						previousParagraphObject.getId()
 				);
 				this.graph.edgeCollection(Relationship.NextParagraph.toString())
 						.insertEdge(nextParagraphEdge);
@@ -275,7 +275,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 
 		// Create Edge object from Document to Sentence and insert
 		BaseEdgeDocument documentHasSentenceEdge = new BaseEdgeDocument(
-				documentId, sentenceObject.getKey()
+				ElementType.Document + "/" + documentId, sentenceObject.getId()
 		);
 		this.graph.edgeCollection(Relationship.DocumentHasSentence.toString())
 				.insertEdge(documentHasSentenceEdge);
@@ -293,7 +293,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 
 		// Create Edge object from Sentence to Paragraph and insert
 		BaseEdgeDocument sentenceInParagraphEdge = new BaseEdgeDocument(
-				sentenceObject.getKey(), paragraphObject.getKey()
+				sentenceObject.getId(), paragraphObject.getId()
 		);
 		this.graph.edgeCollection(Relationship.SentenceInParagraph.toString())
 				.insertEdge(sentenceInParagraphEdge);
@@ -314,8 +314,8 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			// Create Edge object from previous Sentence to current one
 			// and insert into graph
 			BaseEdgeDocument nextSentenceEdge = new BaseEdgeDocument(
-					sentenceObject.getKey(),
-					previousSentenceObject.getKey()
+					sentenceObject.getId(),
+					previousSentenceObject.getId()
 			);
 			this.graph.edgeCollection(Relationship.NextSentence.toString())
 					.insertEdge(nextSentenceEdge);
@@ -346,11 +346,11 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				.insertVertex(tokenObject);
 
 		// Create Edge object from Document to Token and insert
-		BaseEdgeDocument documentHasSentenceEdge = new BaseEdgeDocument(
-				documentId, tokenObject.getKey()
+		BaseEdgeDocument documentHasTokenEdge = new BaseEdgeDocument(
+				ElementType.Document + "/" + documentId, tokenObject.getId()
 		);
-		this.graph.edgeCollection(Relationship.DocumentHasSentence.toString())
-				.insertEdge(documentHasSentenceEdge);
+		this.graph.edgeCollection(Relationship.DocumentHasToken.toString())
+				.insertEdge(documentHasTokenEdge);
 
 		// Query Paragraph Object to add an edge from the Token
 		String paragraphQuery = "FOR p IN " + ElementType.Paragraph + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end RETURN p";
@@ -365,7 +365,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 
 		// Create Edge object from Token to Paragraph and insert
 		BaseEdgeDocument tokenInParagraphEdge = new BaseEdgeDocument(
-				tokenObject.getKey(), paragraphObject.getKey()
+				tokenObject.getId(), paragraphObject.getId()
 		);
 		this.graph.edgeCollection(Relationship.TokenInParagraph.toString())
 				.insertEdge(tokenInParagraphEdge);
@@ -383,7 +383,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 
 		// Create Edge object from Token to Sentence and insert
 		BaseEdgeDocument tokenInSentenceEdge = new BaseEdgeDocument(
-				tokenObject.getKey(), sentenceObject.getKey()
+				tokenObject.getId(), sentenceObject.getId()
 		);
 		this.graph.edgeCollection(Relationship.TokenInSentence.toString())
 				.insertEdge(tokenInSentenceEdge);
@@ -395,13 +395,13 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				.insertVertex(lemmaObject);
 		// Create edge from Token to Lemma and insert into graph
 		BaseEdgeDocument tokenHasLemmaEdge = new BaseEdgeDocument(
-				tokenObject.getKey(), lemmaObject.getKey()
+				tokenObject.getId(), lemmaObject.getId()
 		);
 		this.graph.edgeCollection(Relationship.TokenHasLemma.toString())
 				.insertEdge(tokenHasLemmaEdge);
 		// Create edge from Document to Lemma and insert into graph
 		BaseEdgeDocument documentHasLemmaEdge = new BaseEdgeDocument(
-				documentId, lemmaObject.getKey()
+				ElementType.Document + "/" + documentId, lemmaObject.getId()
 		);
 		this.graph.edgeCollection(Relationship.DocumentHasLemma.toString())
 				.insertEdge(documentHasLemmaEdge);
@@ -413,7 +413,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				.insertVertex(posObject);
 		// Create edge from Token to POS and insert into graph
 		BaseEdgeDocument tokenAtPosEdge = new BaseEdgeDocument(
-				tokenObject.getKey(), posObject.getKey()
+				tokenObject.getId(), posObject.getId()
 		);
 		this.graph.edgeCollection(Relationship.TokenAtPos.toString())
 				.insertEdge(tokenAtPosEdge);
@@ -435,8 +435,8 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			// Create Edge object from previous Token to current one
 			// and insert into graph
 			BaseEdgeDocument nextTokenEdge = new BaseEdgeDocument(
-					tokenObject.getKey(),
-					previouseTokenObject.getKey()
+					tokenObject.getId(),
+					previouseTokenObject.getId()
 			);
 			this.graph.edgeCollection(Relationship.NextToken.toString())
 					.insertEdge(nextTokenEdge);
