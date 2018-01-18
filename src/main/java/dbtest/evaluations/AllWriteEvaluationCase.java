@@ -64,6 +64,7 @@ public class AllWriteEvaluationCase implements EvaluationCase
 			);
 
 			for (Connections.DBName dbName : new Connections.DBName[]{
+					Connections.DBName.ArangoDB,
 					Connections.DBName.Neo4j
 			})
 			{
