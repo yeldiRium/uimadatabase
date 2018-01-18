@@ -612,7 +612,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			Map<String, Object> queryParams = new HashMap<>();
 			queryParams.put("documentId", documentId);
 			StatementResult result = session.readTransaction(tx ->
-					tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}) RETURN d", queryParams)
+					tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}}) RETURN d", queryParams)
 			);
 			if (result == null || !result.hasNext())
 			{
@@ -655,7 +655,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			Map<String, Object> documentParams = new HashMap<>();
 			documentParams.put("documentId", documentId);
 			StatementResult result = session.readTransaction(tx ->
-					tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}) RETURN d", documentParams)
+					tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}}) RETURN d", documentParams)
 			);
 			if (result == null || !result.hasNext())
 			{
