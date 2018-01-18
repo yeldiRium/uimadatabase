@@ -387,11 +387,26 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		this.graph.edgeCollection(Relationship.TokenInSentence.toString())
 				.insertEdge(tokenInSentenceEdge);
 
-		// Create Lemma object and insert into collection
-		BaseDocument lemmaObject = new BaseDocument();
-		lemmaObject.addAttribute("value", token.getLemma().getValue());
-		this.graph.vertexCollection(ElementType.Lemma.toString())
-				.insertVertex(lemmaObject);
+		// Check if a Lemma with this Token's value already exists since Lemmata
+		// should be reused.
+		String lemmaQuery = "FOR l in " + ElementType.Lemma + " FILTER l.value == @lemmaValue RETURN l";
+		Map<String, Object> lemmaParams = new HashMap<>();
+		lemmaParams.put("lemmaValue", token.getLemma().getValue());
+		ArangoCursor<BaseDocument> lemmaResult = this.db.query(
+				lemmaQuery, lemmaParams, null, BaseDocument.class
+		);
+		BaseDocument lemmaObject;
+		if (lemmaResult.hasNext())
+		{
+			// If a Lemma was found, reuse it.
+			lemmaObject = lemmaResult.next();
+		} else {
+			// If not, create a new Lemma object and insert into collection.
+			lemmaObject = new BaseDocument();
+			lemmaObject.addAttribute("value", token.getLemma().getValue());
+			this.graph.vertexCollection(ElementType.Lemma.toString())
+					.insertVertex(lemmaObject);
+		}
 		// Create edge from Token to Lemma and insert into graph
 		BaseEdgeDocument tokenHasLemmaEdge = new BaseEdgeDocument(
 				tokenObject.getId(), lemmaObject.getId()
@@ -604,14 +619,14 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countElementsInDocumentOfType(
 			String documentId, ElementType type
-	) throws DocumentNotFoundException, TypeNotCountableException
+	) throws TypeNotCountableException
 	{
 		String query = "WITH " + ElementType.Document + ", " + type + ", " + this.getRelationshipFromDocumentToType(type) + " " +
 				"FOR element " +
 				"   IN OUTBOUND @documentId " +
 				"   " + this.getRelationshipFromDocumentToType(type) + " " +
-				"   COLLECT WITH COUNT INTO count" +
-				"   RETURN count";
+				"   COLLECT WITH COUNT INTO count " +
+				"   RETURN {'count':count}";
 		Map<String, Object> bindParams = new HashMap<>();
 		bindParams.put(
 				"documentId",
@@ -632,9 +647,9 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	{
 		this.checkTypeHasValueField(type);
 		String query = "FOR element IN " + type +
-				"   FILTER element.value == @value" +
-				"   COLLECT WITH COUNT INTO count" +
-				"RETURN count";
+				"   FILTER element.value == @value " +
+				"   COLLECT WITH COUNT INTO count " +
+				"RETURN {'count':count}";
 		Map<String, Object> bindParam = new HashMap<>();
 		bindParam.put("value", value);
 		ArangoCursor<BaseDocument> result = this.db.query(
@@ -656,9 +671,9 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				"FOR element " +
 				"   IN OUTBOUND @documentId " +
 				"   " + this.getRelationshipFromDocumentToType(type) + " " +
-				"   FILTER element.value == @value" +
-				"   COLLECT WITH COUNT INTO count" +
-				"   RETURN count";
+				"   FILTER element.value == @value " +
+				"   COLLECT WITH COUNT INTO count " +
+				"   RETURN {'count':count}";
 		Map<String, Object> bindParams = new HashMap<>();
 		bindParams.put(
 				"documentId",
@@ -711,17 +726,15 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
 	{
 		Map<String, Integer> lemmaOccurenceCount = new HashMap<>();
-		String query = "WITH " + ElementType.Lemma + ", " + Relationship.TokenHasLemma + ", " + ElementType.Token + "" +
-				"FOR lemma IN " + ElementType.Lemma + "" +
-				"   LET occurenceCount = (" +
-				"       FOR token IN INBOUND lemma " + Relationship.TokenHasLemma + "" +
-				"           COLLECT WITH COUNT INTO count" +
-				"           RETURN count" +
+		String query = "WITH " + ElementType.Lemma + ", " + Relationship.TokenHasLemma + ", " + ElementType.Token + " " +
+				"FOR lemma IN " + ElementType.Lemma + " " +
+				"   LET occurenceCount = LENGTH(" +
+				"       FOR token IN INBOUND lemma " + Relationship.TokenHasLemma + " " +
+				"           RETURN token" +
 				"   ) " +
 				"   RETURN {'lemma': lemma.value, 'count': occurenceCount}";
-		Map<String, Object> bindParams = new HashMap<>();
 		ArangoCursor<BaseDocument> result = this.db.query(
-				query, bindParams, null, BaseDocument.class
+				query, null, null, BaseDocument.class
 		);
 
 		while (result.hasNext())
@@ -743,15 +756,13 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 
 		String query = "WITH " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + ", " + Relationship.DocumentHasLemma + ", " + ElementType.Lemma + " " +
 				"FOR document IN " + ElementType.Document + " " +
-				"   LET tokenCount = (" +
+				"   LET tokenCount = LENGTH(" +
 				"       FOR token IN OUTBOUND document " + Relationship.DocumentHasToken + " " +
-				"           COLLECT WITH COUNT INTO count " +
-				"           RETURN count" +
+				"           RETURN token " +
 				"   ) " +
-				"   LET lemmaCount = (" +
+				"   LET lemmaCount = LENGTH(" +
 				"       FOR lemma IN OUTBOUND document " + Relationship.DocumentHasLemma + " " +
-				"           COLLECT lemma.value WITH COUNT INTO count " +
-				"           RETURN count " +
+				"           RETURN lemma " +
 				"   ) " +
 				"   RETURN {'document': document.key, 'ttr': (lemmaCount/tokenCount)}";
 		Map<String, Object> bindParams = new HashMap<>();
