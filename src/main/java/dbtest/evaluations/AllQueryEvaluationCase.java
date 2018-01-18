@@ -15,16 +15,16 @@ import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import dbtest.queryHandler.exceptions.TypeNotCountableException;
 import dbtest.queryHandler.implementation.BenchmarkQueryHandler;
 import dbtest.utility.Formatting;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.neo4j.helpers.collection.Iterators;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import static dbtest.utility.Collections.chooseSubset;
 
 /**
  * Tests all purely query-related functionality. See the section 'Raw Querying'
@@ -39,9 +39,6 @@ public class AllQueryEvaluationCase implements EvaluationCase
 {
 	protected static final Logger logger =
 			Logger.getLogger(AllQueryEvaluationCase.class.getName());
-
-	protected static Random random = new Random();
-
 
 	protected Connections.DBName dbName;
 	protected Iterable<String> documentIds;
@@ -636,31 +633,5 @@ public class AllQueryEvaluationCase implements EvaluationCase
 				"countOccurencesForEachLemmaInAllDocuments",
 				queryHandler
 		);
-	}
-
-	/**
-	 * Chooses a random subset of size `count` from the given set.
-	 * If `count` is bigger than the set's size, the whole set is returned.
-	 */
-	protected static <E> Set<E> chooseSubset(Set<E> set, int count)
-	{
-		int n = set.size();
-		if (count > n)
-		{
-			return set;
-		}
-
-		Set<E> result = new HashSet<>();
-		E[] elements = (E[]) set.toArray();
-		for (int i = 0; i < count; i++)
-		{
-			int k = random.nextInt(n);
-			n--;
-			E tmp = elements[n];
-			elements[n] = elements[k];
-			elements[k] = tmp;
-			result.add(elements[n]);
-		}
-		return result;
 	}
 }
