@@ -285,7 +285,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 						+ "the used documents."
 		);
 		ttrStats.getJSONObject("more").put(
-				"results", new JSONObject(results)
+				"results", results
 		);
 		return ttrStats;
 	}
@@ -331,7 +331,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 						+ "more details."
 		);
 		ttrStats.getJSONObject("more").put(
-				"results", new JSONObject(results)
+				"results", results
 		);
 		return ttrStats;
 	}
