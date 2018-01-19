@@ -513,7 +513,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 		}
 
 		JSONObject termFrequencyStats = Formatting.createOutputForMethod(
-				"calculateTermFrequencyForLemmataInDocument",
+				"calculateTermFrequenciesForLemmataInDocument",
 				queryHandler
 		);
 		termFrequencyStats.getJSONObject("more").put(
