@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import static java.lang.Double.isNaN;
+
 public abstract class AbstractQueryHandler implements QueryHandlerInterface
 {
 	protected static final Logger logger =
@@ -83,9 +85,14 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 	{
 		try
 		{
-			return Math.log((countElementsOfType(ElementType.Document) /
-					(double) countDocumentsContainingLemma(lemma))
-			);
+			double result = countElementsOfType(ElementType.Document) /
+					(double) countDocumentsContainingLemma(lemma);
+			if (result == 0 || isNaN(result))
+			{
+				return 0;
+			} else {
+				return Math.log(result);
+			}
 		} catch (TypeNotCountableException e)
 		{
 			throw new OperationNotSupportedException();
