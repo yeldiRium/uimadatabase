@@ -19,10 +19,13 @@ import org.json.JSONObject;
 import org.neo4j.helpers.collection.Iterators;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static dbtest.utility.Collections.chooseSubset;
 
@@ -235,6 +238,12 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		documentIdsStats.getJSONObject("more").put(
 				"documentsFound", Iterators.count(this.documentIds.iterator())
 		);
+		documentIdsStats.getJSONObject("more").put(
+				"results",
+				StreamSupport
+						.stream(this.documentIds.spliterator(), false)
+						.collect(Collectors.joining(", "))
+		);
 		return documentIdsStats;
 	}
 
@@ -274,6 +283,10 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		lemmataStats.getJSONObject("more").put(
 				"comment", "Called method for each Document in the database."
 		);
+		lemmataStats.getJSONObject("more").put(
+				"results",
+				this.lemmata.stream().collect(Collectors.joining(", "))
+		);
 		return lemmataStats;
 	}
 
@@ -292,10 +305,16 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	{
 		int howManyLemmata = 20;
 		Set<String> randomLemmata = chooseSubset(lemmata, howManyLemmata);
+
+		JSONObject results = new JSONObject();
+
 		for (String lemma : randomLemmata)
 		{
-			queryHandler.countDocumentsContainingLemma(
-					lemma
+			results.put(
+					lemma,
+					queryHandler.countDocumentsContainingLemma(
+							lemma
+					)
 			);
 		}
 		JSONObject countDocumentsContainingLemmaStats =
@@ -310,6 +329,9 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		countDocumentsContainingLemmaStats.getJSONObject("more").put(
 				"lemmataSearched", randomLemmata.parallelStream()
 						.collect(Collectors.joining(", "))
+		);
+		countDocumentsContainingLemmaStats.getJSONObject("more").put(
+				"results", results
 		);
 		return countDocumentsContainingLemmaStats;
 	}
@@ -345,7 +367,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 					);
 			countElementsOfTypeStats.getJSONObject("more")
 					.put(
-							"count",
+							"results",
 							count
 					);
 			return countElementsOfTypeStats;
@@ -386,12 +408,17 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		queryHandler.getMethodBenchmarks()
 				.get("countElementsInDocumentOfType").reset();
 
+		JSONObject results = new JSONObject();
+
 		for (String documentId : randomDocumentIds)
 		{
 			try
 			{
-				queryHandler.countElementsInDocumentOfType(
-						documentId, type
+				results.put(
+						documentId,
+						queryHandler.countElementsInDocumentOfType(
+								documentId, type
+						)
 				);
 			} catch (DocumentNotFoundException e)
 			{
@@ -411,25 +438,27 @@ public class AllQueryEvaluationCase implements EvaluationCase
 				return error;
 			}
 		}
+
 		JSONObject countElementsInDocumentOfTypeStats =
 				Formatting.createOutputForMethod(
 						"countElementsInDocumentOfType",
 						queryHandler
 				);
-		countElementsInDocumentOfTypeStats.getJSONObject("more")
-				.put(
-						"comment",
-						"Called method for type \"" + type + "\" on "
-								+ randomDocumentIds.size() + " random "
-								+ "Documents. See \""
-								+ "documentsSearched\"."
-				);
-		countElementsInDocumentOfTypeStats.getJSONObject("more")
-				.put(
-						"documentsSearched",
-						randomDocumentIds.parallelStream()
-								.collect(Collectors.joining(", "))
-				);
+		countElementsInDocumentOfTypeStats.getJSONObject("more").put(
+				"comment",
+				"Called method for type \"" + type + "\" on "
+						+ randomDocumentIds.size() + " random "
+						+ "Documents. See \""
+						+ "documentsSearched\"."
+		);
+		countElementsInDocumentOfTypeStats.getJSONObject("more").put(
+				"documentsSearched",
+				randomDocumentIds.parallelStream()
+						.collect(Collectors.joining(", "))
+		);
+		countElementsInDocumentOfTypeStats.getJSONObject("more").put(
+				"results", results
+		);
 		return countElementsInDocumentOfTypeStats;
 	}
 
@@ -460,11 +489,16 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		queryHandler.getMethodBenchmarks()
 				.get("countElementsOfTypeWithValue").reset();
 
+		JSONObject results = new JSONObject();
+
 		for (String value : randomValues)
 		{
 			try
 			{
-				queryHandler.countElementsOfTypeWithValue(type, value);
+				results.put(
+						value,
+						queryHandler.countElementsOfTypeWithValue(type, value)
+				);
 			} catch (TypeNotCountableException e)
 			{
 				JSONObject error = new JSONObject();
@@ -494,25 +528,27 @@ public class AllQueryEvaluationCase implements EvaluationCase
 				return error;
 			}
 		}
+
 		JSONObject countElementsOfTypeWithValueStats =
 				Formatting.createOutputForMethod(
 						"countElementsOfTypeWithValue",
 						queryHandler
 				);
-		countElementsOfTypeWithValueStats.getJSONObject("more")
-				.put(
-						"comment",
-						"Called method for type \"" + type.toString() + "\" on "
-								+ randomValues.size() + " different values. "
-								+ "See \"searchedValues\"."
-				);
-		countElementsOfTypeWithValueStats.getJSONObject("more")
-				.put(
-						"searchedValues",
-						randomValues.parallelStream().collect(
-								Collectors.joining(", ")
-						)
-				);
+		countElementsOfTypeWithValueStats.getJSONObject("more").put(
+				"comment",
+				"Called method for type \"" + type.toString() + "\" on "
+						+ randomValues.size() + " different values. "
+						+ "See \"searchedValues\"."
+		);
+		countElementsOfTypeWithValueStats.getJSONObject("more").put(
+				"searchedValues",
+				randomValues.parallelStream().collect(
+						Collectors.joining(", ")
+				)
+		);
+		countElementsOfTypeWithValueStats.getJSONObject("more").put(
+				"results", results
+		);
 		return countElementsOfTypeWithValueStats;
 	}
 
@@ -540,14 +576,19 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		queryHandler.getMethodBenchmarks()
 				.get("countElementsInDocumentOfTypeWithValue").reset();
 
+		JSONObject results = new JSONObject();
+
 		for (String documentId : randomDocumentIds)
 		{
+			JSONObject docResults = new JSONObject();
 			for (String value : randomValues)
 			{
 				try
 				{
-					queryHandler.countElementsInDocumentOfTypeWithValue(
-							documentId, type, value
+					docResults.put(
+							value, queryHandler.countElementsInDocumentOfTypeWithValue(
+									documentId, type, value
+							)
 					);
 				} catch (TypeNotCountableException e)
 				{
@@ -585,35 +626,40 @@ public class AllQueryEvaluationCase implements EvaluationCase
 					break;
 				}
 			}
+			results.put(
+					documentId,
+					docResults
+			);
 		}
+
 		JSONObject countElementsInDocumentOfTypeWithValueStats =
 				Formatting.createOutputForMethod(
 						"countElementsInDocumentOfTypeWithValue",
 						queryHandler
 				);
-		countElementsInDocumentOfTypeWithValueStats.getJSONObject("more")
-				.put(
-						"comment",
-						"Called method for type \"" + type.toString() + "\" on "
-								+ randomValues.size() + " different values in "
-								+ randomDocumentIds.size() + " different "
-								+ "documents. See \"searchedValues\" and "
-								+ "\"searchedDocuments\"."
-				);
-		countElementsInDocumentOfTypeWithValueStats.getJSONObject("more")
-				.put(
-						"searchedValues",
-						randomValues.parallelStream().collect(
-								Collectors.joining(", ")
-						)
-				);
-		countElementsInDocumentOfTypeWithValueStats.getJSONObject("more")
-				.put(
-						"searchedDocuments",
-						randomDocumentIds.parallelStream().collect(
-								Collectors.joining(", ")
-						)
-				);
+		countElementsInDocumentOfTypeWithValueStats.getJSONObject("more").put(
+				"comment",
+				"Called method for type \"" + type.toString() + "\" on "
+						+ randomValues.size() + " different values in "
+						+ randomDocumentIds.size() + " different "
+						+ "documents. See \"searchedValues\" and "
+						+ "\"searchedDocuments\"."
+		);
+		countElementsInDocumentOfTypeWithValueStats.getJSONObject("more").put(
+				"searchedValues",
+				randomValues.parallelStream().collect(
+						Collectors.joining(", ")
+				)
+		);
+		countElementsInDocumentOfTypeWithValueStats.getJSONObject("more").put(
+				"searchedDocuments",
+				randomDocumentIds.parallelStream().collect(
+						Collectors.joining(", ")
+				)
+		);
+		countElementsInDocumentOfTypeWithValueStats.getJSONObject("more").put(
+				"results", results
+		);
 		return countElementsInDocumentOfTypeWithValueStats;
 	}
 
@@ -628,10 +674,16 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
-		queryHandler.countOccurencesForEachLemmaInAllDocuments();
-		return Formatting.createOutputForMethod(
+		Map<String, Integer> results =
+				queryHandler.countOccurencesForEachLemmaInAllDocuments();
+
+		JSONObject stats = Formatting.createOutputForMethod(
 				"countOccurencesForEachLemmaInAllDocuments",
 				queryHandler
 		);
+		stats.getJSONObject("more").put(
+				"results", results
+		);
+		return stats;
 	}
 }
