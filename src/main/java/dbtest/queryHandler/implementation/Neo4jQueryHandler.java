@@ -548,7 +548,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(
-					tx -> tx.run("MATCH (d:" + ElementType.Document + ")--(t:" + ElementType.Token + ")--(l:" + ElementType.Lemma + ") WITH d, count(DISTINCT l)/count(t) AS ttr RETURN d.id AS id, ttr")
+					tx -> tx.run("MATCH (d:" + ElementType.Document + ")--(t:" + ElementType.Token + ")--(l:" + ElementType.Lemma + ") WITH d.id AS id, count(DISTINCT l) AS cl, count(t) AS ct RETURN id, (cl / toFloat(ct)) AS ttr")
 			);
 			while (result.hasNext())
 			{
@@ -580,7 +580,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 					tx -> {
 						Map<String, Object> queryParams = new HashMap<>();
 						queryParams.put("documentIds", documentIds);
-						return tx.run("MATCH (d:" + ElementType.Document + ")--(t:" + ElementType.Token + ")--(l:" + ElementType.Lemma + ") WHERE d.id in {documentIds} WITH d, count(DISTINCT l)/count(t) AS ttr RETURN d.id AS id, ttr", queryParams);
+						return tx.run("MATCH (d:" + ElementType.Document + ")-->(t:" + ElementType.Token + ")-->(l:" + ElementType.Lemma + ") WHERE d.id in {documentIds} WITH d.id AS id, count(DISTINCT l) as cl, count(t) AS ct RETURN id, (cl / toFloat(ct)) AS ttr", queryParams);
 					}
 			);
 			while (result.hasNext())
