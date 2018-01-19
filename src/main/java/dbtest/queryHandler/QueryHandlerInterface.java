@@ -376,6 +376,8 @@ public interface QueryHandlerInterface
 	 * The natural logarithm from the division of the count of documents and the
 	 * documents containing <i>lemma</i>.
 	 *
+	 * Returns 0 if the lemma is not found in the database.
+	 *
 	 * @param lemma the specified lemma.
 	 * @return a double.
 	 */
@@ -395,6 +397,8 @@ public interface QueryHandlerInterface
 
 	/**
 	 * The TF-IDF for <i>lemma</i> in the specified document.
+	 *
+	 * Returns 0 if the lemma is not found in the document.
 	 *
 	 * @param lemma      the specified lemma.
 	 * @param documentId the specified document's id.
