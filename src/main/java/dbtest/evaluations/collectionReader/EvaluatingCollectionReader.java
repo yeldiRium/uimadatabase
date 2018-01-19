@@ -1,5 +1,6 @@
 package dbtest.evaluations.collectionReader;
 
+import com.google.common.collect.Iterables;
 import dbtest.connection.*;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
@@ -43,6 +44,8 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 
 	protected BenchmarkQueryHandler queryHandler;
 	protected Iterator<String> iterator;
+	protected int currentIndex;
+	protected int documentCount;
 	protected JSONArray specificDocumentStatistics;
 
 	@Override
@@ -79,6 +82,8 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 		}
 
 		Iterable<String> ids = this.queryHandler.getDocumentIds();
+		this.documentCount = Iterables.size(ids);
+		this.currentIndex = 0;
 		this.iterator = ids.iterator();
 
 		logger.info("Initialized CollectionReader for db " + this.dbName);
@@ -88,9 +93,11 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 	public void getNext(CAS cas) throws IOException, CollectionException
 	{
 		String id = this.iterator.next();
+		this.currentIndex++;
 		try
 		{
-			logger.info("Populating CAS with document \"" + id + "\" from "
+			logger.info(this.currentIndex + "/" + this.documentCount + " "
+					+ "Populating CAS with document \"" + id + "\" from "
 					+ this.dbName + "...");
 			try
 			{

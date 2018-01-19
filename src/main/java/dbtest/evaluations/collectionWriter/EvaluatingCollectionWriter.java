@@ -42,6 +42,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 
 	protected BenchmarkQueryHandler queryHandler;
 	protected JSONArray specificDocumentStatistics;
+	protected int currentIndex;
 
 	@Override
 	public void initialize(UimaContext context)
@@ -54,6 +55,7 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 				+ ".");
 
 		this.specificDocumentStatistics = new JSONArray();
+		this.currentIndex = 0;
 
 		Class<? extends Connection> connectionClass =
 				Connections.getConnectionClassForName(this.dbName);
@@ -93,11 +95,12 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 	@Override
 	public void process(JCas jCas) throws AnalysisEngineProcessException
 	{
+		this.currentIndex++;
 		final String documentId = DocumentMetaData.get(jCas)
 				.getDocumentId();
 
-		logger.info("Storing jCas \"" + documentId + "\" into "
-				+ this.dbName + "...");
+		logger.info(this.currentIndex + " Storing jCas \"" + documentId
+				+ "\" into " + this.dbName + "...");
 		long start = System.currentTimeMillis();
 		this.queryHandler.storeJCasDocument(jCas);
 
