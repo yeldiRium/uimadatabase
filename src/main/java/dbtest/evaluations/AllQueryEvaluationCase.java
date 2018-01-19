@@ -51,7 +51,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	public ConnectionRequest requestConnection()
 	{
 		ConnectionRequest connectionRequest = new ConnectionRequest();
-		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
+//		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
 //		connectionRequest.addRequestedConnection(BaseXConnection.class);
 //		connectionRequest.addRequestedConnection(CassandraConnection.class);
 //		connectionRequest.addRequestedConnection(MongoDBConnection.class);
