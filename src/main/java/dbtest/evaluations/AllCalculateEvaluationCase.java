@@ -680,6 +680,11 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 							)
 					);
 				}
+
+				results.put(
+						documentId,
+						lemmaResults
+				);
 			} catch (DocumentNotFoundException e)
 			{
 				logger.warning("DocumentId \"" + documentId + "\" could "
@@ -736,7 +741,10 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 		{
 			try
 			{
-				queryHandler.calculateTFIDFForLemmataInDocument(documentId);
+				results.put(
+						documentId,
+						queryHandler.calculateTFIDFForLemmataInDocument(documentId)
+				);
 			} catch (DocumentNotFoundException e)
 			{
 				logger.warning("DocumentId \"" + documentId + "\" could "
