@@ -526,7 +526,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(tx ->
-					tx.run("MATCH (:" + ElementType.Token + ")-[:" + Relationship.TokenHasLemma + "]-(l:LEMMA) RETURN l.value AS lemma, count(l) AS count;")
+					tx.run("MATCH (l:" + ElementType.Lemma + ") RETURN l.value AS lemma, size((l)-[:" + Relationship.TokenHasLemma + "]-(:" + ElementType.Token + ")) AS count")
 			);
 
 			while (result.hasNext())
@@ -700,7 +700,6 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String documentId
 	) throws DocumentNotFoundException
 	{
-		double tf = 0;
 		try (Session session = this.driver.session())
 		{
 			Integer lemmaCount =
@@ -714,7 +713,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 				return 1;
 			} else
 			{
-				return 1 + Math.log(tf);
+				return 1 + Math.log(lemmaCount);
 			}
 		}
 	}
