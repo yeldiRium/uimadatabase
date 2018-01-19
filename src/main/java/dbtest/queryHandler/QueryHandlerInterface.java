@@ -256,8 +256,8 @@ public interface QueryHandlerInterface
 	 * @param value String, value of the element.
 	 * @return An integer.
 	 * @throws TypeHasNoValueException when the <i>type</i>
-	 *                                  given does not match TOKEN, LEMMA or
-	 *                                  POS.
+	 *                                 given does not match TOKEN, LEMMA or
+	 *                                 POS.
 	 */
 	int countElementsOfTypeWithValue(ElementType type, String value)
 			throws TypeNotCountableException, TypeHasNoValueException;
@@ -272,8 +272,8 @@ public interface QueryHandlerInterface
 	 * @param value      String, value of the element.
 	 * @return An integer.
 	 * @throws TypeHasNoValueException when the <i>type</i>
-	 *                                  given does not match TOKEN, LEMMA or
-	 *                                  POS.
+	 *                                 given does not match TOKEN, LEMMA or
+	 *                                 POS.
 	 */
 	int countElementsInDocumentOfTypeWithValue(
 			String documentId, ElementType type, String value
@@ -375,7 +375,7 @@ public interface QueryHandlerInterface
 	/**
 	 * The natural logarithm from the division of the count of documents and the
 	 * documents containing <i>lemma</i>.
-	 *
+	 * <p>
 	 * Returns 0 if the lemma is not found in the database.
 	 *
 	 * @param lemma the specified lemma.
@@ -397,7 +397,7 @@ public interface QueryHandlerInterface
 
 	/**
 	 * The TF-IDF for <i>lemma</i> in the specified document.
-	 *
+	 * <p>
 	 * Returns 0 if the lemma is not found in the document.
 	 *
 	 * @param lemma      the specified lemma.
@@ -442,7 +442,8 @@ public interface QueryHandlerInterface
 	 *
 	 * @param documentId the specified document's id.
 	 * @return an Iterable of bi-grams.
-	 * @throws DocumentNotFoundException     if the documentId can't be found in db.
+	 * @throws DocumentNotFoundException     if the documentId can't be found in
+	 *                                       the db.
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
@@ -468,6 +469,8 @@ public interface QueryHandlerInterface
 	 *
 	 * @param documentIds the specified document's id.
 	 * @return an Iterable of bi-grams.
+	 * @throws DocumentNotFoundException     if none of the documentIds is
+	 *                                       found.
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
@@ -482,7 +485,8 @@ public interface QueryHandlerInterface
 	 *
 	 * @param documentId the specified document's id.
 	 * @return an Iterable of tri-grams.
-	 * @throws DocumentNotFoundException     if the documentId can't be found in db.
+	 * @throws DocumentNotFoundException     if the documentId can't be found in
+	 *                                       the db.
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
@@ -508,7 +512,8 @@ public interface QueryHandlerInterface
 	 *
 	 * @param documentIds the specified document's ids.
 	 * @return an Iterable of tri-grams.
-	 * @throws DocumentNotFoundException     if none of the documentIds is found.
+	 * @throws DocumentNotFoundException     if none of the documentIds is
+	 *                                       found.
 	 * @throws UnsupportedOperationException if the database does not support
 	 *                                       this operation.
 	 */
