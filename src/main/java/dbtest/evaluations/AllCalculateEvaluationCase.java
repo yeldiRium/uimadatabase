@@ -280,7 +280,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 		);
 		ttrStats.getJSONObject("more").put(
 				"comment",
-				"Called for " + howManyDocuments + " different random "
+				"Called for " + randomDocumentIds.size() + " different random "
 						+ "documents. See the keys in \"results\" for a list of"
 						+ "the used documents."
 		);
@@ -326,8 +326,9 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 		ttrStats.getJSONObject("more").put(
 				"comment",
 				"Called for " + howManySubsets + " different random subsets of "
-						+ "documents, each containing " + howManyDocuments
-						+ " documents. See \"results\" for more details."
+						+ "documents, each containing at most "
+						+ howManyDocuments + " documents. See \"results\" for "
+						+ "more details."
 		);
 		ttrStats.getJSONObject("more").put(
 				"results", new JSONObject(results)
@@ -393,9 +394,9 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 		);
 		termFrequencyStats.getJSONObject("more").put(
 				"comment",
-				"Called for " + howManyLemmata + " random lemmata each on "
-						+ howManyDocuments + " documents. See \"results\" for "
-						+ "more details."
+				"Called for at most " + howManyLemmata + " random lemmata each "
+						+ "on " + randomDocumentIds.size() + " documents. See "
+						+ "\"results\" for more details."
 		);
 		termFrequencyStats.getJSONObject("more").put(
 				"results", results
@@ -461,9 +462,9 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 		);
 		termFrequencyStats.getJSONObject("more").put(
 				"comment",
-				"Called for " + howManyLemmata + " random lemmata each on "
-						+ howManyDocuments + " documents. See \"results\" for "
-						+ "more details."
+				"Called for at most " + howManyLemmata + " random lemmata each "
+						+ "on " + randomDocumentIds.size() + " documents. See "
+						+ "\"results\" for more details."
 		);
 		termFrequencyStats.getJSONObject("more").put(
 				"results", results
@@ -518,8 +519,8 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 		);
 		termFrequencyStats.getJSONObject("more").put(
 				"comment",
-				"Called for " + howManyDocuments + " documents. See \"results\""
-						+ " for more details."
+				"Called for " + randomDocumentIds.size() + " documents. See "
+						+ "\"results\" for more details."
 		);
 		termFrequencyStats.getJSONObject("more").put(
 				"results", results
@@ -568,8 +569,8 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 				);
 		inverseDocumentFrequencyStats.getJSONObject("more").put(
 				"comment",
-				"Called for " + howManyLemmata + " lemmata. See \"results\""
-						+ " for more details."
+				"Called for " + randomLemmata.size() + " lemmata. See "
+						+ "\"results\" for more details."
 		);
 		inverseDocumentFrequencyStats.getJSONObject("more").put(
 				"results", results
@@ -629,8 +630,8 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 				);
 		inverseDocumentFrequencyStats.getJSONObject("more").put(
 				"comment",
-				"Called for " + howManyDocuments + " documents. See \"results\""
-						+ " for more details."
+				"Called for " + randomDocumentIds.size() + " documents. See "
+						+ "\"results\" for more details."
 		);
 		inverseDocumentFrequencyStats.getJSONObject("more").put(
 				"results", results
@@ -700,9 +701,9 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 				);
 		tfidfStats.getJSONObject("more").put(
 				"comment",
-				"Called for " + howManyLemmata + " lemmata on each of "
-						+ howManyDocuments + " documents. See \"results\""
-						+ " for more details."
+				"Called for at most " + howManyLemmata + " lemmata on each of "
+						+ randomDocumentIds.size() + " documents. See "
+						+ "\"results\" for more details."
 		);
 		tfidfStats.getJSONObject("more").put(
 				"results", results
@@ -757,8 +758,8 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 				);
 		tfidfStats.getJSONObject("more").put(
 				"comment",
-				"Called for " + howManyDocuments + " documents. See \"results\""
-						+ " for more details."
+				"Called for " + randomDocumentIds.size() + " documents. See "
+						+ "\"results\" for more details."
 		);
 		tfidfStats.getJSONObject("more").put(
 				"results", results

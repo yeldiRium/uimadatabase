@@ -323,8 +323,8 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						queryHandler
 				);
 		countDocumentsContainingLemmaStats.getJSONObject("more").put(
-				"comment", "Called method for " + howManyLemmata + " random " +
-						"Lemmata. See \"lemmataSearched\"."
+				"comment", "Called method for " + randomLemmata.size()
+						+ " random Lemmata. See \"lemmataSearched\"."
 		);
 		countDocumentsContainingLemmaStats.getJSONObject("more").put(
 				"lemmataSearched", randomLemmata.parallelStream()
