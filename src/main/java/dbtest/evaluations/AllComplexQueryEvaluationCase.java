@@ -1,13 +1,24 @@
 package dbtest.evaluations;
 
+import com.google.common.collect.Sets;
+import dbtest.connection.Connection;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
+import dbtest.connection.Connections;
 import dbtest.connection.implementation.Neo4jConnection;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
-import dbtest.evaluationFramework.exceptions.EvaluationFailedRerunnableException;
+import dbtest.queryHandler.exceptions.DocumentNotFoundException;
+import dbtest.queryHandler.implementation.BenchmarkQueryHandler;
+import dbtest.utility.Formatting;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import static dbtest.utility.Collections.chooseSubset;
 
 /**
  * Evaluates the times for all complex query methods on QueryHandlers. This
@@ -19,6 +30,12 @@ import java.io.IOException;
  */
 public class AllComplexQueryEvaluationCase implements EvaluationCase
 {
+	protected static final Logger logger =
+			Logger.getLogger(AllComplexQueryEvaluationCase.class.getName());
+
+	protected Connections.DBName dbName;
+	protected Set<String> documentIds;
+
 	@Override
 	public ConnectionRequest requestConnection()
 	{
@@ -33,8 +50,356 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 	}
 
 	@Override
-	public void run(ConnectionResponse connectionResponse, OutputProvider outputProvider) throws EvaluationFailedRerunnableException, IOException
+	public void run(
+			ConnectionResponse connectionResponse, OutputProvider outputProvider
+	) throws IOException
 	{
+		for (Connection connection : connectionResponse.getConnections())
+		{
+			this.dbName =
+					Connections.getIdentifierForConnectionClass(
+							connection.getClass()
+					);
 
+			logger.info("Starting AllComplexQueryEvaluationCase for Database \""
+					+ this.dbName + "\".");
+
+			BenchmarkQueryHandler queryHandler = new BenchmarkQueryHandler(
+					connection.getQueryHandler()
+			);
+
+			// We'll need the documentIds from the database later on for the
+			// evaluations.
+			this.documentIds = Sets.newTreeSet(queryHandler.getDocumentIds());
+
+			JSONObject stats = new JSONObject();
+
+			logger.info("Step 1: Running getBiGramsFromDocumentEvaluation");
+			stats.put(
+					"getBiGramsFromDocumentEvaluation",
+					this.getBiGramsFromDocumentEvaluation(
+							queryHandler
+					)
+			);
+			logger.info("Step 1 done.");
+
+			logger.info("Step 2: Running getBiGramsFromAllDocumentsEvaluation");
+			stats.put(
+					"getBiGramsFromAllDocumentsEvaluation",
+					this.getBiGramsFromAllDocumentsEvaluation(
+							queryHandler
+					)
+			);
+			logger.info("Step 2 done.");
+
+			logger.info("Step 3: Running getBiGramsFromDocumentsInCollectionEvaluation");
+			stats.put(
+					"getBiGramsFromDocumentsInCollectionEvaluation",
+					this.getBiGramsFromDocumentsInCollectionEvaluation(
+							queryHandler
+					)
+			);
+			logger.info("Step 3 done.");
+
+			logger.info("Step 4: Running getTriGramsFromDocumentEvaluation");
+			stats.put(
+					"getTriGramsFromDocumentEvaluation",
+					this.getTriGramsFromDocumentEvaluation(
+							queryHandler
+					)
+			);
+			logger.info("Step 4 done.");
+
+			logger.info("Step 5: Running getTriGramsFromAllDocumentsEvaluation");
+			stats.put(
+					"getTriGramsFromAllDocumentsEvaluation",
+					this.getTriGramsFromAllDocumentsEvaluation(
+							queryHandler
+					)
+			);
+			logger.info("Step 5 done.");
+
+			logger.info("Step 6: Running getTriGramsFromDocumentsInCollectionEvaluation");
+			stats.put(
+					"getTriGramsFromDocumentsInCollectionEvaluation",
+					this.getTriGramsFromDocumentsInCollectionEvaluation(
+							queryHandler
+					)
+			);
+			logger.info("Step 6 done.");
+
+			logger.info("Writing results...");
+			// Write the results to a file
+			outputProvider.writeJSON(
+					AllComplexQueryEvaluationCase.class.getName(),
+					this.dbName.toString(),
+					stats
+			);
+			logger.info("AllComplexQueryEvaluationCase for Database \""
+					+ this.dbName + "\" done.");
+		}
 	}
+
+	/**
+	 * 1.
+	 * Executes getBiGramsFromDocument for a random subsets of documentIds.
+	 *
+	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
+	 *                     med.
+	 * @return A JSONObject with stats regarding the evaluation.
+	 */
+	protected JSONObject getBiGramsFromDocumentEvaluation(
+			BenchmarkQueryHandler queryHandler
+	)
+	{
+		int howManyDocuments = 20;
+		Set<String> randomDocumentIds = chooseSubset(
+				this.documentIds,
+				howManyDocuments
+		);
+
+		JSONObject results = new JSONObject();
+
+		for (String documentId : randomDocumentIds)
+		{
+			try
+			{
+				results.put(
+						documentId,
+						queryHandler.getBiGramsFromDocument(documentId)
+				);
+			} catch (DocumentNotFoundException e)
+			{
+				logger.warning("DocumentId \"" + documentId + "\" could "
+						+ "not be found in the database, although it "
+						+ "was there just a moment ago. Please check "
+						+ "for concurrent access.");
+			}
+		}
+
+		JSONObject biGramStats = Formatting.createOutputForMethod(
+				"getBiGramsFromDocument",
+				queryHandler
+		);
+		biGramStats.getJSONObject("more").put(
+				"comment",
+				"Called for " + randomDocumentIds.size() + " different "
+						+ "documents. See \"results\" for more details."
+		);
+		biGramStats.getJSONObject("more").put(
+				"results", results
+		);
+		return biGramStats;
+	}
+
+	/**
+	 * 2.
+	 *
+	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
+	 *                     med.
+	 * @return A JSONObject with stats regarding the evaluation.
+	 */
+	protected JSONObject getBiGramsFromAllDocumentsEvaluation(
+			BenchmarkQueryHandler queryHandler
+	)
+	{
+		Iterable<String> result = queryHandler.getBiGramsFromAllDocuments();
+
+		JSONObject biGramStats = Formatting.createOutputForMethod(
+				"getBiGramsFromAllDocuments",
+				queryHandler
+		);
+		biGramStats.getJSONObject("more").put(
+				"results", result
+		);
+		return biGramStats;
+	}
+
+	/**
+	 * 3.
+	 * Executes getBiGramsFromDocumentsInCollection for multiple random subsets
+	 * of documentIds.
+	 *
+	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
+	 *                     med.
+	 * @return A JSONObject with stats regarding the evaluation.
+	 */
+	protected JSONObject getBiGramsFromDocumentsInCollectionEvaluation(
+			BenchmarkQueryHandler queryHandler
+	)
+	{
+		int howManySubsets = 20;
+		int howManyDocuments = 20;
+
+		JSONArray results = new JSONArray();
+
+		for (int i = 0; i < howManySubsets; i++)
+		{
+			Set<String> randomDocumentIds = chooseSubset(
+					this.documentIds,
+					howManyDocuments
+			);
+			try
+			{
+				results.put(
+						queryHandler.getBiGramsFromDocumentsInCollection(
+								randomDocumentIds
+						)
+				);
+			} catch (DocumentNotFoundException e)
+			{
+				logger.warning("A number of DocumentIds could "
+						+ "not be found in the database, although they "
+						+ "were there just a moment ago. Please check "
+						+ "for concurrent access.");
+			}
+		}
+
+		JSONObject biGramStats = Formatting.createOutputForMethod(
+				"getBiGramsFromDocumentsInCollection",
+				queryHandler
+		);
+		biGramStats.getJSONObject("more").put(
+				"comment",
+				"Called for " + howManySubsets + " different random subsets of"
+						+ " at most " + howManyDocuments + "documents. See "
+						+ "\"results\" for more details."
+		);
+		biGramStats.getJSONObject("more").put(
+				"results", results
+		);
+		return biGramStats;
+	}
+
+	/**
+	 * 4.
+	 * Executes getTriGramsFromDocument for a random subsets of documentIds.
+	 *
+	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
+	 *                     med.
+	 * @return A JSONObject with stats regarding the evaluation.
+	 */
+	protected JSONObject getTriGramsFromDocumentEvaluation(
+			BenchmarkQueryHandler queryHandler
+	)
+	{
+		int howManyDocuments = 20;
+		Set<String> randomDocumentIds = chooseSubset(
+				this.documentIds,
+				howManyDocuments
+		);
+
+		JSONObject results = new JSONObject();
+
+		for (String documentId : randomDocumentIds)
+		{
+			try
+			{
+				results.put(
+						documentId,
+						queryHandler.getTriGramsFromDocument(documentId)
+				);
+			} catch (DocumentNotFoundException e)
+			{
+				logger.warning("DocumentId \"" + documentId + "\" could "
+						+ "not be found in the database, although it "
+						+ "was there just a moment ago. Please check "
+						+ "for concurrent access.");
+			}
+		}
+
+		JSONObject triGramStats = Formatting.createOutputForMethod(
+				"getTriGramsFromDocument",
+				queryHandler
+		);
+		triGramStats.getJSONObject("more").put(
+				"comment",
+				"Called for " + randomDocumentIds.size() + " different "
+						+ "documents. See \"results\" for more details."
+		);
+		triGramStats.getJSONObject("more").put(
+				"results", results
+		);
+		return triGramStats;
+	}
+
+	/**
+	 * 5.
+	 *
+	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
+	 *                     med.
+	 * @return A JSONObject with stats regarding the evaluation.
+	 */
+	protected JSONObject getTriGramsFromAllDocumentsEvaluation(
+			BenchmarkQueryHandler queryHandler
+	)
+	{
+		Iterable<String> result = queryHandler.getTriGramsFromAllDocuments();
+
+		JSONObject triGramStats = Formatting.createOutputForMethod(
+				"getTriGramsFromAllDocuments",
+				queryHandler
+		);
+		triGramStats.getJSONObject("more").put(
+				"results", result
+		);
+		return triGramStats;
+	}
+
+	/**
+	 * 6.
+	 * Executes getBiGramsFromDocumentsInCollection for multiple random subsets
+	 * of documentIds.
+	 *
+	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
+	 *                     med.
+	 * @return A JSONObject with stats regarding the evaluation.
+	 */
+	protected JSONObject getTriGramsFromDocumentsInCollectionEvaluation(
+			BenchmarkQueryHandler queryHandler
+	)
+	{
+		int howManySubsets = 20;
+		int howManyDocuments = 20;
+
+		JSONArray results = new JSONArray();
+
+		for (int i = 0; i < howManySubsets; i++)
+		{
+			Set<String> randomDocumentIds = chooseSubset(
+					this.documentIds,
+					howManyDocuments
+			);
+			try
+			{
+				results.put(
+						queryHandler.getTriGramsFromDocumentsInCollection(
+								randomDocumentIds
+						)
+				);
+			} catch (DocumentNotFoundException e)
+			{
+				logger.warning("A number of DocumentIds could "
+						+ "not be found in the database, although they "
+						+ "were there just a moment ago. Please check "
+						+ "for concurrent access.");
+			}
+		}
+
+		JSONObject triGramStats = Formatting.createOutputForMethod(
+				"getTriGramsFromDocumentsInCollection",
+				queryHandler
+		);
+		triGramStats.getJSONObject("more").put(
+				"comment",
+				"Called for " + howManySubsets + " different random subsets of"
+						+ " at most " + howManyDocuments + "documents. See "
+						+ "\"results\" for more details."
+		);
+		triGramStats.getJSONObject("more").put(
+				"results", results
+		);
+		return triGramStats;
+	}
+
 }
