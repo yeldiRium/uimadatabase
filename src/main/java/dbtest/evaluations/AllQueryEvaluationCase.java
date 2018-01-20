@@ -60,8 +60,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		return connectionRequest;
 	}
 
-	/**
-	 * Executes and benchmarks all purely query-related methods on
+	/**Executes and benchmarks all purely query-related methods on
 	 * QueryHandlers for each Connection supplied.
 	 * This excludes the storage methods and the populateCasWithDocument method,
 	 * since they are covered in AllWrite- and AllReadEvaluationCase.
@@ -93,45 +92,50 @@ public class AllQueryEvaluationCase implements EvaluationCase
 					connection.getQueryHandler()
 			);
 
-			// 1. getDocumentIds
-			logger.info("Step 1: run getDocumentIdsEvaluation");
+			int step = 1;
+			// getDocumentIds
+			logger.info("Step " + step + ": run getDocumentIdsEvaluation");
 			stats.put(
 					"getDocumentIds",
 					this.getDocumentIdsEvaluation(queryHandler)
 			);
-			logger.info("Step 1 done.");
+			logger.info("Step " + step + " done.");
 
-			// 2. getLemmataForDocument
-			logger.info("Step 2: Running getLemmataForDocumentEvaluation.");
+			// getLemmataForDocument
+			step++;
+			logger.info("Step " + step + ": Running getLemmataForDocumentEvaluation.");
 			stats.put(
 					"getLemmataForDocument",
 					this.getLemmataForDocumentEvaluation(queryHandler)
 			);
-			logger.info("Step 2 done.");
+			logger.info("Step " + step + " done.");
 
-			// 3. countDocumentsContainingLemma
-			logger.info("Step 3: Running "
+			// countDocumentsContainingLemma
+			step++;
+			logger.info("Step " + step + ": Running "
 					+ "countDocumentsContainingLemmaEvaluation.");
 			stats.put(
 					"countDocumentsContainingLemma",
 					this.countDocumentsContainingLemmaEvaluation(queryHandler)
 			);
-			logger.info("Step 3 done.");
+			logger.info("Step " + step + " done.");
 
-			// 4. countElementsOfType
-			logger.info("Step 4: Running countElementsOfTypeEvaluation.");
+			// countElementsOfType
+			step++;
+			logger.info("Step " + step + ": Running countElementsOfTypeEvaluation.");
 			for (ElementType type : ElementType.values())
 			{
-				logger.info("Step 4: Type - \"" + type + "\".");
+				logger.info("Step " + step + ": Type - \"" + type + "\".");
 				stats.put(
 						"countElementsOfType-" + type,
 						this.countElementsOfTypeEvaluation(queryHandler, type)
 				);
 			}
-			logger.info("Step 4 done.");
+			logger.info("Step " + step + " done.");
 
-			// 5. countElementsInDocumentOfType
-			logger.info("Step 5: Running "
+			// countElementsInDocumentOfType
+			step++;
+			logger.info("Step " + step + ": Running "
 					+ "countElementsInDocumentOfTypeEvaluation.");
 			int howManyDocuments = 20;
 			Set<String> randomDocumentIds = chooseSubset(
@@ -144,7 +148,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 					ElementType.Token,
 					ElementType.Lemma})
 			{
-				logger.info("Step 5: Type - \"" + type + "\".");
+				logger.info("Step " + step + ": Type - \"" + type + "\".");
 				stats.put(
 						"countElementsInDocumentOfType-" + type,
 						this.countElementsInDocumentOfTypeEvaluation(
@@ -152,10 +156,11 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						)
 				);
 			}
-			logger.info("Step 5 done.");
+			logger.info("Step " + step + " done.");
 
-			// 6. countElementsOfTypeWithValue
-			logger.info("Step 6: Running "
+			// countElementsOfTypeWithValue
+			step++;
+			logger.info("Step " + step + ": Running "
 					+ "countElementsOfTypeWithValueEvaluation.");
 			int howManyValues = 20;
 			Set<String> randomValues = chooseSubset(lemmata, howManyValues);
@@ -164,7 +169,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 					ElementType.Token,
 					ElementType.Pos})
 			{
-				logger.info("Step 6: Type - \"" + type + "\".");
+				logger.info("Step " + step + ": Type - \"" + type + "\".");
 				stats.put(
 						"countElementsOfTypeWithValue-" + type,
 						this.countElementsOfTypeWithValueEvaluation(
@@ -172,17 +177,18 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						)
 				);
 			}
-			logger.info("Step 6 done.");
+			logger.info("Step " + step + " done.");
 
-			// 7. countElementsInDocumentOfTypeWithValue
-			logger.info("Step 7: Running "
+			// countElementsInDocumentOfTypeWithValue
+			step++;
+			logger.info("Step " + step + ": Running "
 					+ "countElementsInDocumentOfTypeWithValueEvaluation.");
 			for (ElementType type : new ElementType[]{
 					ElementType.Lemma,
 					ElementType.Token
 			})
 			{
-				logger.info("Step 7: Type - \"" + type + "\".");
+				logger.info("Step " + step + ": Type - \"" + type + "\".");
 				stats.put(
 						"countElementsInDocumentOfTypeWithValue-" + type,
 						this.countElementsInDocumentOfTypeWithValue(
@@ -193,10 +199,11 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						)
 				);
 			}
-			logger.info("Step 7 done.");
+			logger.info("Step " + step + " done.");
 
-			// 8. countOccurencesForEachLemmaInAllDocuments
-			logger.info("Step 8: Running "
+			// countOccurencesForEachLemmaInAllDocuments
+			step++;
+			logger.info("Step " + step + ": Running "
 					+ "countOccurencesForEachLemmaInAllDocumentsEvaluation.");
 			stats.put(
 					"countOccurencesForEachLemmaInAllDocuments",
@@ -204,7 +211,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 							queryHandler
 					)
 			);
-			logger.info("Step 8 done.");
+			logger.info("Step " + step + " done.");
 
 			logger.info("Writing results...");
 			// Write the results to a file
@@ -219,7 +226,6 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 1.
 	 * Queries all documentIds in the database and stores them as an Iterable
 	 * for further use.
 	 *
@@ -248,7 +254,6 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 2.
 	 * Queries for all lemmata across all documents found in step 1 and stores
 	 * them as a Set for further use.
 	 *
@@ -291,7 +296,6 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 3.
 	 * This is executed for a random subset of the found lemmata from
 	 * the second step.
 	 *
@@ -337,7 +341,6 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 4.
 	 * This is executed for each type and logged under fitting names.
 	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
@@ -386,7 +389,6 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 5.
 	 * This is executed for each type that can be contained in a docu-
 	 * ment (Paragraph, Sentence, Token, Lemma) on a random subset of
 	 * the found documents from step one.
@@ -463,7 +465,6 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 6.
 	 * This is executed for each type that can have a value on a random
 	 * subset of the found lemmata, since they correspond to their
 	 * values as well as the tokens' values.
@@ -553,8 +554,6 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 7.
-	 * Executed for every type that has a value and is connected to a document.
 	 * If the TypeHasNoValueException ever occurs here, the regarding QueryHand-
 	 * ler is implemented wrong or this method is called with an incompatible
 	 * type.
@@ -664,8 +663,6 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 8.
-	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
 	 *                     med.
 	 * @return A JSONObject with stats regarding the evaluation.

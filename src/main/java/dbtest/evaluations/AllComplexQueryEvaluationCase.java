@@ -75,59 +75,66 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 
 			JSONObject stats = new JSONObject();
 
-			logger.info("Step 1: Running getBiGramsFromDocumentEvaluation");
+			int step = 1;
+
+			logger.info("Step " + step + ": Running getBiGramsFromDocumentEvaluation");
 			stats.put(
 					"getBiGramsFromDocumentEvaluation",
 					this.getBiGramsFromDocumentEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 1 done.");
+			logger.info("Step " + step + " done.");
 
-			logger.info("Step 2: Running getBiGramsFromAllDocumentsEvaluation");
+			step++;
+			logger.info("Step " + step + ": Running getBiGramsFromAllDocumentsEvaluation");
 			stats.put(
 					"getBiGramsFromAllDocumentsEvaluation",
 					this.getBiGramsFromAllDocumentsEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 2 done.");
+			logger.info("Step " + step + " done.");
 
-			logger.info("Step 3: Running getBiGramsFromDocumentsInCollectionEvaluation");
+			step++;
+			logger.info("Step " + step + ": Running getBiGramsFromDocumentsInCollectionEvaluation");
 			stats.put(
 					"getBiGramsFromDocumentsInCollectionEvaluation",
 					this.getBiGramsFromDocumentsInCollectionEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 3 done.");
+			logger.info("Step " + step + " done.");
 
-			logger.info("Step 4: Running getTriGramsFromDocumentEvaluation");
+			step++;
+			logger.info("Step " + step + ": Running getTriGramsFromDocumentEvaluation");
 			stats.put(
 					"getTriGramsFromDocumentEvaluation",
 					this.getTriGramsFromDocumentEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 4 done.");
+			logger.info("Step " + step + " done.");
 
-			logger.info("Step 5: Running getTriGramsFromAllDocumentsEvaluation");
+			step++;
+			logger.info("Step " + step + ": Running getTriGramsFromAllDocumentsEvaluation");
 			stats.put(
 					"getTriGramsFromAllDocumentsEvaluation",
 					this.getTriGramsFromAllDocumentsEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 5 done.");
+			logger.info("Step " + step + " done.");
 
-			logger.info("Step 6: Running getTriGramsFromDocumentsInCollectionEvaluation");
+			step++;
+			logger.info("Step " + step + ": Running getTriGramsFromDocumentsInCollectionEvaluation");
 			stats.put(
 					"getTriGramsFromDocumentsInCollectionEvaluation",
 					this.getTriGramsFromDocumentsInCollectionEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 6 done.");
+			logger.info("Step " + step + " done.");
 
 			logger.info("Writing results...");
 			// Write the results to a file
@@ -142,7 +149,6 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 1.
 	 * Executes getBiGramsFromDocument for a random subsets of documentIds.
 	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
@@ -194,8 +200,6 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 2.
-	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
 	 *                     med.
 	 * @return A JSONObject with stats regarding the evaluation.
@@ -217,7 +221,6 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 3.
 	 * Executes getBiGramsFromDocumentsInCollection for multiple random subsets
 	 * of documentIds.
 	 *
@@ -273,7 +276,6 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 4.
 	 * Executes getTriGramsFromDocument for a random subsets of documentIds.
 	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
@@ -325,8 +327,6 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 5.
-	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
 	 *                     med.
 	 * @return A JSONObject with stats regarding the evaluation.
@@ -348,7 +348,6 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 6.
 	 * Executes getBiGramsFromDocumentsInCollection for multiple random subsets
 	 * of documentIds.
 	 *

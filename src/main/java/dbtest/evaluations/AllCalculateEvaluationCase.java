@@ -94,135 +94,149 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 
 			JSONObject stats = new JSONObject();
 
-			// 1. calculateTTRForAllDocuments
-			logger.info("Step 1: Running calculateTTRForAllDocumentsEvaluation");
+			int step = 1;
+
+			// calculateTTRForAllDocuments
+			logger.info("Step " + step + ": Running calculateTTRForAllDocumentsEvaluation");
 			stats.put(
 					"calculateTTRForAllDocumentsEvaluation",
 					this.calculateTTRForAllDocumentsEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 1 done.");
+			logger.info("Step " + step + " done.");
 
-			// 2. calculateTTRForDocument
-			logger.info("Step 2: Running calculateTTRForDocumentEvaluation");
+			// calculateTTRForDocument
+			step++;
+			logger.info("Step " + step + ": Running calculateTTRForDocumentEvaluation");
 			stats.put(
 					"calculateTTRForDocumentEvaluation",
 					this.calculateTTRForDocumentEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 2 done.");
+			logger.info("Step " + step + " done.");
 
-			// 3. calculateTTRForCollectionOfDocuments
-			logger.info("Step 3: Running calculateTTRForCollectionOfDocumentsEvaluation");
+			// calculateTTRForCollectionOfDocuments
+			step++;
+			logger.info("Step " + step + ": Running calculateTTRForCollectionOfDocumentsEvaluation");
 			stats.put(
 					"calculateTTRForCollectionOfDocumentsEvaluation",
 					this.calculateTTRForCollectionOfDocumentsEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 3 done.");
+			logger.info("Step " + step + " done.");
 
-			// 4. calculateRawTermFrequenciesInDocument
-			logger.info("Step 4: Running calculateRawTermFrequenciesInDocumentEvaluation");
+			// calculateRawTermFrequenciesInDocument
+			step++;
+			logger.info("Step " + step + ": Running calculateRawTermFrequenciesInDocumentEvaluation");
 			stats.put(
 					"calculateRawTermFrequenciesInDocumentEvaluation",
 					this.calculateRawTermFrequenciesInDocumentEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 4 done.");
+			logger.info("Step " + step + " done.");
 
-			// 5. calculateRawTermFrequencyForLemmaInDocument
-			logger.info("Step 5: Running calculateRawTermFrequencyForLemmaInDocumentEvaluation");
+			// calculateRawTermFrequencyForLemmaInDocu
+			// step++;ment
+			logger.info("Step " + step + ": Running calculateRawTermFrequencyForLemmaInDocumentEvaluation");
 			stats.put(
 					"calculateRawTermFrequencyForLemmaInDocumentEvaluation",
 					this.calculateRawTermFrequencyForLemmaInDocumentEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 5 done.");
+			logger.info("Step " + step + " done.");
 
-			// 6. calculateTermFrequencyWithDoubleNormForLemmaInDocument
-			logger.info("Step 6: Running calculateTermFrequencyWithDoubleNormForLemmaInDocumentEvaluation");
+			// calculateTermFrequencyWithDoubleNormFor
+			// step++;LemmaInDocument
+			logger.info("Step " + step + ": Running calculateTermFrequencyWithDoubleNormForLemmaInDocumentEvaluation");
 			stats.put(
 					"calculateTermFrequencyWithDoubleNormForLemmaInDocumentEvaluation",
 					this.calculateTermFrequencyWithDoubleNormForLemmaInDocumentEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 6 done.");
+			logger.info("Step " + step + " done.");
 
-			// 7. calculateTermFrequencyWithLogNormForLemmaInDocument
-			logger.info("Step 7: Running calculateTermFrequencyWithLogNormForLemmaInDocumentEvaluation");
+			// calculateTermFrequencyWithLogNormForLem
+			// step++;maInDocument
+			logger.info("Step " + step + ": Running calculateTermFrequencyWithLogNormForLemmaInDocumentEvaluation");
 			stats.put(
 					"calculateTermFrequencyWithLogNormForLemmaInDocumentEvaluation",
 					this.calculateTermFrequencyWithLogNormForLemmaInDocumentEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 7 done.");
+			logger.info("Step " + step + " done.");
 
-			// 8. calculateTermFrequenciesForLemmataInDocument
-			logger.info("Step 8: Running calculateTermFrequenciesForLemmataInDocumentEvaluation");
+			// calculateTermFrequenciesForLemmataInDoc
+			// step++;ument
+			logger.info("Step " + step + ": Running calculateTermFrequenciesForLemmataInDocumentEvaluation");
 			stats.put(
 					"calculateTermFrequenciesForLemmataInDocumentEvaluation",
 					this.calculateTermFrequenciesForLemmataInDocumentEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 8 done.");
+			logger.info("Step " + step + " done.");
 
-			// 9. calculateInverseDocumentFrequency
-			logger.info("Step 9: Running calculateInverseDocumentFrequencyEvaluation");
+			// calculateInverseDocumentFrequency
+			step++;
+			logger.info("Step " + step + ": Running calculateInverseDocumentFrequencyEvaluation");
 			stats.put(
 					"calculateInverseDocumentFrequencyEvaluation",
 					this.calculateInverseDocumentFrequencyEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 9 done.");
+			logger.info("Step " + step + " done.");
 
-			// 10. calculateInverseDocumentFrequenciesForLemmataInDocument
-			logger.info("Step 10: Running calculateInverseDocumentFrequenciesForLemmataInDocumentEvaluation");
+			// calculateInverseDocumentFrequenciesForL
+			// step++;emmataInDocument
+			logger.info("Step " + step + ": Running calculateInverseDocumentFrequenciesForLemmataInDocumentEvaluation");
 			stats.put(
 					"calculateInverseDocumentFrequenciesForLemmataInDocumentEvaluation",
 					this.calculateInverseDocumentFrequenciesForLemmataInDocumentEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 10 done.");
+			logger.info("Step " + step + " done.");
 
-			// 11. calculateTFIDFForLemmaInDocument
-			logger.info("Step 11: Running calculateTFIDFForLemmaInDocumentEvaluation");
+			// calculateTFIDFForLemmaInDocument
+			step++;
+			logger.info("Step " + step + ": Running calculateTFIDFForLemmaInDocumentEvaluation");
 			stats.put(
 					"calculateTFIDFForLemmaInDocumentEvaluation",
 					this.calculateTFIDFForLemmaInDocumentEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 11 done.");
+			logger.info("Step " + step + " done.");
 
-			// 12. calculateTFIDFForLemmataInDocument
-			logger.info("Step 12: Running calculateTFIDFForLemmataInDocumentEvaluation");
+			// calculateTFIDFForLemmataInDocument
+			step++;
+			logger.info("Step " + step + ": Running calculateTFIDFForLemmataInDocumentEvaluation");
 			stats.put(
 					"calculateTFIDFForLemmataInDocumentEvaluation",
 					this.calculateTFIDFForLemmataInDocumentEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 12 done.");
+			logger.info("Step " + step + " done.");
 
-			// 13. calculateTFIDFForLemmataInAllDocuments
-			logger.info("Step 13: Running calculateTFIDFForLemmataInAllDocumentsEvaluation");
+			// calculateTFIDFForLemmataInAllDocuments
+			step++;
+			logger.info("Step " + step + ": Running calculateTFIDFForLemmataInAllDocumentsEvaluation");
 			stats.put(
 					"calculateTFIDFForLemmataInAllDocumentsEvaluation",
 					this.calculateTFIDFForLemmataInAllDocumentsEvaluation(
 							queryHandler
 					)
 			);
-			logger.info("Step 13 done.");
+			logger.info("Step " + step + " done.");
 
 			logger.info("Writing results...");
 			// Write the results to a file
@@ -237,7 +251,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 1.
 	 * Calculates the TTR for all documents in the database.
 	 * Outputs all found TTRs.
 	 *
@@ -261,7 +274,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 2.
 	 * Calculates the TTR for a randomly chosen subset of documentIds.
 	 * Outputs all found TTRs.
 	 *
@@ -312,7 +324,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 3.
 	 * Calculates the TTR for multiple randomly chosen subsets of documentIds.
 	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
@@ -358,8 +369,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 4.
-	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
 	 *                     med.
 	 * @return A JSONObject with stats regarding the evaluation.
@@ -410,8 +419,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 5.
-	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
 	 *                     med.
 	 * @return A JSONObject with stats regarding the evaluation.
@@ -474,7 +481,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 6.
 	 * Calculates the term frequency for a randomly chosen subset of documentIds
 	 * and a randomly chosen subset of the lemmata in each of those documents
 	 * using a double normalization.
@@ -542,7 +548,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 7.
 	 * Calculates the term frequency for a randomly chosen subset of documentIds
 	 * and a randomly chosen subset of the lemmata in each of those documents
 	 * using a logarithmic normalization.
@@ -610,7 +615,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 8.
 	 * Calculates the term frequency for a randomly chosen subset of documentIds
 	 * using a double normalization.
 	 *
@@ -666,7 +670,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 9.
 	 * Calculates the inverse document frequency for a randomly chosen subset
 	 * of all lemmata in the database.
 	 *
@@ -716,7 +719,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 10.
 	 * Calculates the inverse document frequency for each lemma on a randomly
 	 * chosen subset of documentIds.
 	 *
@@ -777,7 +779,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 11.
 	 * Calculates the tfidf for a randomly chosen subset of documentIds
 	 * and a randomly chosen subset of the lemmata in each of those documents.
 	 *
@@ -854,7 +855,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 12.
 	 * Calculates the tfidf for a randomly chosen subset of document-
 	 * Ids.
 	 *
@@ -913,7 +913,6 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	}
 
 	/**
-	 * 13.
 	 * Calculates the tfidf for all lemmata in the database.
 	 *
 	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
