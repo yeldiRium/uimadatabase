@@ -342,7 +342,9 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
+			throws DocumentNotFoundException
 	{
+		this.checkIfDocumentExists(documentId);
 		try (Session session = this.driver.session())
 		{
 			Map<String, Object> queryParams = new HashMap<>();
@@ -479,6 +481,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			ElementType type
 	) throws DocumentNotFoundException
 	{
+		this.checkIfDocumentExists(documentId);
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(
@@ -518,6 +521,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	) throws DocumentNotFoundException, TypeHasNoValueException
 	{
 		this.checkTypeHasValueField(type);
+		this.checkIfDocumentExists(documentId);
 		try (Session session = this.driver.session())
 		{
 			StatementResult result = session.readTransaction(
@@ -586,6 +590,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	public Double calculateTTRForDocument(String documentId)
 			throws DocumentNotFoundException
 	{
+		this.checkIfDocumentExists(documentId);
 		return this.calculateTTRForCollectionOfDocuments(
 				Arrays.asList(documentId)
 		).get(documentId);
@@ -630,20 +635,14 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String documentId
 	) throws DocumentNotFoundException
 	{
+		this.checkIfDocumentExists(documentId);
 		HashMap<String, Integer> rtf = new HashMap<>();
 		try (Session session = this.driver.session())
 		{
 			Map<String, Object> queryParams = new HashMap<>();
 			queryParams.put("documentId", documentId);
-			StatementResult result = session.readTransaction(tx ->
-					tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}}) RETURN d", queryParams)
-			);
-			if (result == null || !result.hasNext())
-			{
-				throw new DocumentNotFoundException();
-			}
 
-			result = session.readTransaction(tx ->
+			StatementResult result = session.readTransaction(tx ->
 					tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}})--(:" + ElementType.Token + ")--(l:" + ElementType.Lemma + ") WITH l, count(l.value) AS count RETURN l.value AS lemma, count;", queryParams)
 			);
 
@@ -675,22 +674,13 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String documentId
 	) throws DocumentNotFoundException
 	{
+		this.checkIfDocumentExists(documentId);
 		try (Session session = this.driver.session())
 		{
-			Map<String, Object> documentParams = new HashMap<>();
-			documentParams.put("documentId", documentId);
-			StatementResult result = session.readTransaction(tx ->
-					tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}}) RETURN d", documentParams)
-			);
-			if (result == null || !result.hasNext())
-			{
-				throw new DocumentNotFoundException();
-			}
-
 			Map<String, Object> lemmaParams = new HashMap<>();
 			lemmaParams.put("documentId", documentId);
 			lemmaParams.put("lemmaValue", lemma);
-			result = session.readTransaction(tx ->
+			StatementResult result = session.readTransaction(tx ->
 					tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}})-[:" + Relationship.DocumentHasToken + "]-(:" + ElementType.Token + ")-[:" + Relationship.TokenHasLemma + "]-(l:" + ElementType.Lemma + " {value:{lemmaValue}}) WITH count(l.value) AS count RETURN count;", lemmaParams)
 			);
 
