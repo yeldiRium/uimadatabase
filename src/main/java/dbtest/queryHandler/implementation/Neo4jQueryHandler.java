@@ -702,21 +702,18 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String documentId
 	) throws DocumentNotFoundException
 	{
-		try (Session session = this.driver.session())
-		{
-			Integer lemmaCount =
-					this.calculateRawTermFrequencyForLemmaInDocument(
-							lemma,
-							documentId
-					);
+		Integer lemmaCount =
+				this.calculateRawTermFrequencyForLemmaInDocument(
+						lemma,
+						documentId
+				);
 
-			if (lemmaCount == 0)
-			{
-				return 1;
-			} else
-			{
-				return 1 + Math.log(lemmaCount);
-			}
+		if (lemmaCount == 0)
+		{
+			return 1;
+		} else
+		{
+			return 1 + Math.log(lemmaCount);
 		}
 	}
 
