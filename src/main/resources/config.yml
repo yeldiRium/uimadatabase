@@ -3,6 +3,6 @@ evaluations:
   - !!dbtest.evaluations.AllReadEvaluationCase {}
   - !!dbtest.evaluations.AllQueryEvaluationCase {}
   - !!dbtest.evaluations.AllCalculateEvaluationCase {}
-  - !!dbtest.evaluations.AllComplexQueryEvaluationCase {}
+  #- !!dbtest.evaluations.AllComplexQueryEvaluationCase {}
   #- !!dbtest.evaluations.CassandraCounterCreateEvaluationCase {}
 outputProvider: !!dbtest.evaluationFramework.BaseOutputProvider {}
