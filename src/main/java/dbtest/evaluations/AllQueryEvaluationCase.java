@@ -101,6 +101,15 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			);
 			logger.info("Step " + step + " done.");
 
+			// checkIfDocumentExists
+			step++;
+			logger.info("Step " + step + ": Running checkIfDocumentExistsEvaluation.");
+			stats.put(
+					"checkIfDocumentExists",
+					this.checkIfDocumentExistsEvaluation(queryHandler)
+			);
+			logger.info("Step " + step + " done.");
+
 			// getLemmataForDocument
 			step++;
 			logger.info("Step " + step + ": Running getLemmataForDocumentEvaluation.");
@@ -251,6 +260,52 @@ public class AllQueryEvaluationCase implements EvaluationCase
 						.collect(Collectors.joining(", "))
 		);
 		return documentIdsStats;
+	}
+
+	/**
+	 * Checks for a few documents, if they exist.
+	 *
+	 * @param queryHandler The QueryHandler on which the evaluation is perfor-
+	 *                     med.
+	 * @return A JSONObject with stats regarding the evaluation.
+	 */
+	private JSONObject checkIfDocumentExistsEvaluation(
+			BenchmarkQueryHandler queryHandler
+	)
+	{
+		int howManyDocuments = 20;
+		Set<String> randomDocumentIds = chooseSubset(
+				Sets.newTreeSet(this.documentIds), howManyDocuments
+		);
+
+		int notFoundCounter = 0;
+		for (String documentId : randomDocumentIds)
+		{
+			try
+			{
+				queryHandler.checkIfDocumentExists(documentId);
+			} catch (DocumentNotFoundException e)
+			{
+				logger.warning("DocumentId \"" + documentId + "\" could "
+						+ "not be found in the database, although it "
+						+ "was there just a moment ago. Please check "
+						+ "for concurrent access.");
+				notFoundCounter++;
+			}
+		}
+
+		JSONObject checkStats = Formatting.createOutputForMethod(
+				"checkIfDocumentExists",
+				queryHandler
+		);
+		checkStats.getJSONObject("more").put(
+				"comment", "Checked the existence of " + randomDocumentIds
+						.size() + " random documents."
+		);
+		checkStats.getJSONObject("more").put(
+				"results", notFoundCounter + " documents were NOT found."
+		);
+		return checkStats;
 	}
 
 	/**
