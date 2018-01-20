@@ -682,61 +682,6 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public double calculateTermFrequencyWithDoubleNormForLemmaInDocument(
-			String lemma,
-			String documentId
-	) throws DocumentNotFoundException
-	{
-		Map<String, Integer> rtf = this.calculateRawTermFrequenciesInDocument(
-				documentId
-		);
-		return 0.5 + 0.5 * (
-				((double) rtf.getOrDefault(lemma, 0)) /
-						((double) Collections.max(rtf.values()))
-		);
-	}
-
-	@Override
-	public double calculateTermFrequencyWithLogNormForLemmaInDocument(
-			String lemma,
-			String documentId
-	) throws DocumentNotFoundException
-	{
-		Integer lemmaCount =
-				this.calculateRawTermFrequencyForLemmaInDocument(
-						lemma,
-						documentId
-				);
-
-		if (lemmaCount == 0)
-		{
-			return 1;
-		} else
-		{
-			return 1 + Math.log(lemmaCount);
-		}
-	}
-
-	@Override
-	public Map<String, Double> calculateTermFrequenciesForLemmataInDocument(
-			String documentId
-	) throws DocumentNotFoundException
-	{
-		Map<String, Integer> rawTermFrequencies =
-				this.calculateRawTermFrequenciesInDocument(documentId);
-		Map<String, Double> termFrequencies = new ConcurrentHashMap<>();
-
-		double max = Collections.max(rawTermFrequencies.values());
-		rawTermFrequencies.entrySet().parallelStream().forEach(e -> {
-			termFrequencies.put(
-					e.getKey(),
-					0.5 + 0.5 * (e.getValue() / max)
-			);
-		});
-		return termFrequencies;
-	}
-
-	@Override
 	public Iterable<String> getBiGramsFromDocument(
 			String documentId
 	) throws UnsupportedOperationException, DocumentNotFoundException

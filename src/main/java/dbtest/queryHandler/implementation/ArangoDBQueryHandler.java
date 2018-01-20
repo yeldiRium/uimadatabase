@@ -811,30 +811,6 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public double calculateTermFrequencyWithDoubleNormForLemmaInDocument(
-			String lemma, String documentId
-	) throws DocumentNotFoundException
-	{
-		return 0;
-	}
-
-	@Override
-	public double calculateTermFrequencyWithLogNormForLemmaInDocument(
-			String lemma, String documentId
-	) throws DocumentNotFoundException
-	{
-		return 0;
-	}
-
-	@Override
-	public Map<String, Double> calculateTermFrequenciesForLemmataInDocument(
-			String documentId
-	) throws DocumentNotFoundException
-	{
-		return null;
-	}
-
-	@Override
 	public Iterable<String> getBiGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
