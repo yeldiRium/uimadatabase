@@ -186,6 +186,13 @@ public interface QueryHandlerInterface
 	void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence);
 
 	/**
+	 * @throws DocumentNotFoundException If the given documentId was not found
+	 *                                   in the database.
+	 */
+	void checkIfDocumentExists(String documentId)
+			throws DocumentNotFoundException;
+
+	/**
 	 * Return the ids of all documents currently stored.
 	 *
 	 * @return The ids of all Documents stored in the database.

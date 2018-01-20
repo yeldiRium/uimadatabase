@@ -17,7 +17,6 @@ import org.apache.uima.jcas.JCas;
 import org.neo4j.driver.v1.*;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Neo4jQueryHandler extends AbstractQueryHandler
 {
@@ -294,6 +293,30 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 				tx.success();
 				return 1;
 			});
+		}
+	}
+
+	@Override
+	public void checkIfDocumentExists(String documentId)
+			throws DocumentNotFoundException
+	{
+		try (Session session = this.driver.session())
+		{
+			DocumentNotFoundException e = session.readTransaction(tx -> {
+				Map<String, Object> documentParams = new HashMap<>();
+				documentParams.put("documentId", documentId);
+				StatementResult documentResult = tx.run("MATCH (d:" + ElementType.Document + " {id:{documentId}}) RETURN d as document", documentParams);
+				if (!documentResult.hasNext())
+				{
+					tx.failure();
+					return new DocumentNotFoundException();
+				}
+				return null;
+			});
+			if (e != null)
+			{
+				throw e;
+			}
 		}
 	}
 

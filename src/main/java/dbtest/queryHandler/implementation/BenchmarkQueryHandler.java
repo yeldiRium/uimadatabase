@@ -227,6 +227,18 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
+	public void checkIfDocumentExists(String documentId)
+			throws DocumentNotFoundException
+	{
+		long start = System.currentTimeMillis();
+		this.subjectQueryHandler.checkIfDocumentExists(documentId);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get("checkIfDocumentExists");
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+	}
+
+	@Override
 	public Iterable<String> getDocumentIds()
 	{
 		long start = System.currentTimeMillis();

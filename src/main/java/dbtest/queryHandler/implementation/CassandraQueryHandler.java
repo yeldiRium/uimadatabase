@@ -104,6 +104,12 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
+	public void checkIfDocumentExists(String documentId) throws DocumentNotFoundException
+	{
+
+	}
+
+	@Override
 	public Iterable<String> getDocumentIds()
 	{
 		return null;
