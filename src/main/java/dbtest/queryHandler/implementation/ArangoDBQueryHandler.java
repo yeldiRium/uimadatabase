@@ -799,6 +799,18 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
+	public Map<String, Integer> calculateRawTermFrequenciesInDocument(String documentId) throws DocumentNotFoundException
+	{
+		return null;
+	}
+
+	@Override
+	public Integer calculateRawTermFrequencyForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
+	{
+		return null;
+	}
+
+	@Override
 	public double calculateTermFrequencyWithDoubleNormForLemmaInDocument(
 			String lemma, String documentId
 	) throws DocumentNotFoundException

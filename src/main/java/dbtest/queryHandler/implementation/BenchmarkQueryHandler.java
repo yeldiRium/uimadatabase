@@ -431,6 +431,42 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
+	public Map<String, Integer> calculateRawTermFrequenciesInDocument(String documentId) throws DocumentNotFoundException
+	{
+		long start = System.currentTimeMillis();
+		Map<String, Integer> result = this.subjectQueryHandler
+				.calculateRawTermFrequenciesInDocument(
+						documentId
+				);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateRawTermFreqeunciesInDocument"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
+	}
+
+	@Override
+	public Integer calculateRawTermFrequencyForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
+	{
+		long start = System.currentTimeMillis();
+		Integer result = this.subjectQueryHandler
+				.calculateRawTermFrequencyForLemmaInDocument(
+						lemma, documentId
+				);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks.get(
+				"calculateRawTermFrequencyForLemmaInDocument"
+		);
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+
+		return result;
+	}
+
+	@Override
 	public double calculateTermFrequencyWithDoubleNormForLemmaInDocument(
 			String lemma, String documentId
 	) throws DocumentNotFoundException

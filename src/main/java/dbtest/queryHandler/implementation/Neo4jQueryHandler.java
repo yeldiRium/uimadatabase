@@ -602,7 +602,8 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	 * @param documentId The document to calculate frequencies for.
 	 * @return a map from lemma to frequency
 	 */
-	protected Map<String, Integer> calculateRawTermFrequenciesInDocument(
+	@Override
+	public Map<String, Integer> calculateRawTermFrequenciesInDocument(
 			String documentId
 	) throws DocumentNotFoundException
 	{
@@ -645,7 +646,8 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	 * @param documentId The document to calculate frequencies for.
 	 * @return the lemma's term frequency
 	 */
-	protected Integer calculateRawTermFrequencyForLemmaInDocument(
+	@Override
+	public Integer calculateRawTermFrequencyForLemmaInDocument(
 			String lemma,
 			String documentId
 	) throws DocumentNotFoundException

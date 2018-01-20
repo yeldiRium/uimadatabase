@@ -339,6 +339,30 @@ public interface QueryHandlerInterface
 	//--------------------------------------------------------------------------
 
 	/**
+	 * Computes the term frequency without norming for each lemma in the speci-
+	 * fied document.
+	 *
+	 * @param documentId The document to calculate frequencies for.
+	 * @return a map from lemma to frequency
+	 */
+	Map<String, Integer> calculateRawTermFrequenciesInDocument(
+			String documentId
+	) throws DocumentNotFoundException;
+
+	/**
+	 * Computes the term frequency without norming for the given lemma in the
+	 * specified document.
+	 *
+	 * @param lemma      The lemma to search for.
+	 * @param documentId The document to calculate frequencies for.
+	 * @return the lemma's term frequency
+	 */
+	Integer calculateRawTermFrequencyForLemmaInDocument(
+			String lemma,
+			String documentId
+	) throws DocumentNotFoundException;
+
+	/**
 	 * The term-frequency normed with 0.5 (a double).
 	 *
 	 * @param lemma      the specified lemma.
