@@ -39,6 +39,19 @@ docker-compose up
 ```
 This will compile and package the application, build and start up the docker containers and run the Main class.
 
+Input Files:
+------------
+The input files have to reside in `~/nlpdbeval_data/input` and can be parameterized by editing
+the `docker-compose.yml` file.
+
+Output:
+-------
+Output will be written to `~/nlpdbeval_data/output`
+
+Database volumes:
+-----------------
+The database contents will be stored in `~/nlpdbeval_dbs/dbname/data`.
+
 More Information on Dockerization:
 ----------------------------------
 Docker-Compose simplifies the task to execute a number of complicated Docker commands.

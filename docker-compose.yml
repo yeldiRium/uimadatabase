@@ -4,29 +4,29 @@ services:
   arangodb:
     build: ./dbs/arangodb
     volumes:
-      - ./dbs/arangodb/data:/var/lib/arangodb3
+      - ~/nlpdbeval_dbs/arangodb/data:/var/lib/arangodb3
     environment:
      - ARANGO_ROOT_PASSWORD=root
 
   basex:
     build: ./dbs/basex
     volumes:
-      - ./dbs/basex/data:/srv/BaseXData
+      - ~/nlpdbeval_dbs/basex/data:/srv/BaseXData
 
   cassandra:
     build: ./dbs/cassandra
     volumes:
-      - ./dbs/cassandra/data:/var/lib/cassandra
+      - ~/nlpdbeval_dbs/cassandra/data:/var/lib/cassandra
 
   mongodb:
     build: ./dbs/mongodb
     volumes:
-      - ./dbs/mongodb/data:/data/db
+      - ~/nlpdbeval_dbs/mongodb/data:/data/db
 
   mysql:
     build: ./dbs/mysql
     volumes:
-      - ./dbs/mysql/data:/var/lib/mysql
+      - ~/nlpdbeval_dbs/mysql/data:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=uimadatabase
@@ -34,7 +34,7 @@ services:
   neo4j:
     build: ./dbs/neo4j
     volumes:
-      - ./dbs/neo4j/data:/var/lib/neo4j/data
+      - ~/nlpdbeval_dbs/neo4j/data:/var/lib/neo4j/data
     environment:
       - NEO4J_AUTH=none
 
@@ -50,8 +50,8 @@ services:
       - mysql
       - neo4j
     volumes:
-      - ./input/biologie:/code/input
-      - ./output:/code/output
+      - ~/nlpdbeval_data/input/biologie:/code/input
+      - ~/nlpdbeval_data/output:/code/output
     environment:
       - INPUT_DIR=/code/input
       - OUTPUT_DIR=/code/output
