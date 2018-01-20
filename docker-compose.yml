@@ -40,7 +40,6 @@ services:
 
   main:
     build: ./
-    restart: always
     ports:
       - 4567:4567
     links:
