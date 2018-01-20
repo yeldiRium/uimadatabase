@@ -494,7 +494,9 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
+			throws DocumentNotFoundException
 	{
+		this.checkIfDocumentExists(documentId);
 		String query = "WITH " + ElementType.Document + ", " + Relationship.DocumentHasLemma + ", " + ElementType.Lemma + " " +
 				"FOR lemma IN OUTBOUND @documentId " + Relationship.DocumentHasLemma + " " +
 				"RETURN DISTINCT lemma";
@@ -520,6 +522,9 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			BaseDocument documentObject = this.db
 					.collection(ElementType.Document.toString())
 					.getDocument(documentId, BaseDocument.class);
+
+			if (documentObject == null)
+				throw new DocumentNotFoundException();
 
 			DocumentMetaData meta = DocumentMetaData.create(aCAS);
 			meta.setDocumentId(documentObject.getAttribute("id")
@@ -643,8 +648,9 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countElementsInDocumentOfType(
 			String documentId, ElementType type
-	) throws TypeNotCountableException
+	) throws TypeNotCountableException, DocumentNotFoundException
 	{
+		this.checkIfDocumentExists(documentId);
 		String query = "WITH " + ElementType.Document + ", " + type + ", " + this.getRelationshipFromDocumentToType(type) + " " +
 				"FOR element " +
 				"   IN OUTBOUND @documentId " +
@@ -691,6 +697,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			TypeHasNoValueException
 	{
 		this.checkTypeHasValueField(type);
+		this.checkIfDocumentExists(documentId);
 		String query = "WITH " + ElementType.Document + ", " + type + ", " + this.getRelationshipFromDocumentToType(type) + " " +
 				"FOR element " +
 				"   IN OUTBOUND @documentId " +
@@ -810,6 +817,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	public Double calculateTTRForDocument(String documentId)
 			throws DocumentNotFoundException
 	{
+		this.checkIfDocumentExists(documentId);
 		return this.calculateTTRForCollectionOfDocuments(
 				Arrays.asList(documentId)
 		).get(documentId);
@@ -854,9 +862,11 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public Map<String, Integer> calculateRawTermFrequenciesInDocument(String documentId) throws DocumentNotFoundException
+	public Map<String, Integer> calculateRawTermFrequenciesInDocument(
+			String documentId
+	) throws DocumentNotFoundException
 	{
-		// TODO: check if document exists
+		this.checkIfDocumentExists(documentId);
 		Map<String, Integer> termFrequencyMap = new ConcurrentHashMap<>();
 
 		String query = "WITH " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + ", " + Relationship.TokenHasLemma + ", " + ElementType.Lemma + " " +
@@ -886,9 +896,11 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public Integer calculateRawTermFrequencyForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
+	public Integer calculateRawTermFrequencyForLemmaInDocument(
+			String lemma, String documentId
+	) throws DocumentNotFoundException
 	{
-		// TODO: check if document exists
+		this.checkIfDocumentExists(documentId);
 		String query = "WITH " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + ", " + Relationship.TokenHasLemma + ", " + ElementType.Lemma + " " +
 				"FOR lemma IN 2 OUTBOUND @documentId " + Relationship.DocumentHasToken + ", " + Relationship.TokenHasLemma + " " +
 				"    FILTER lemma.value == @lemmaValue " +
