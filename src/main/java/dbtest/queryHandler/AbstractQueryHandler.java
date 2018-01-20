@@ -199,6 +199,12 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 		Map<String, Integer> rtf = this.calculateRawTermFrequenciesInDocument(
 				documentId
 		);
+
+		if (rtf.isEmpty())
+		{
+			return 0.0;
+		}
+
 		return 0.5 + 0.5 * (
 				((double) rtf.getOrDefault(lemma, 0)) /
 						((double) Collections.max(rtf.values()))
@@ -234,6 +240,11 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 		Map<String, Integer> rawTermFrequencies =
 				this.calculateRawTermFrequenciesInDocument(documentId);
 		Map<String, Double> termFrequencies = new ConcurrentHashMap<>();
+
+		if (rawTermFrequencies.isEmpty())
+		{
+			return termFrequencies;
+		}
 
 		double max = Collections.max(rawTermFrequencies.values());
 		rawTermFrequencies.entrySet().parallelStream().forEach(e -> {
