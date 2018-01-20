@@ -7,6 +7,7 @@ import com.arangodb.ArangoGraph;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.BaseEdgeDocument;
 import com.arangodb.entity.EdgeDefinition;
+import com.google.common.collect.Lists;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
@@ -589,9 +590,12 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	{
 		String query = "WITH " + ElementType.Lemma + ", " + Relationship.DocumentHasLemma + ", " + ElementType.Document + " " +
 				"FOR lemma IN " + ElementType.Lemma + " " +
-				"FILTER lemma.value == @lemmaValue " +
-				"   FOR document IN INBOUND lemma " + Relationship.DocumentHasLemma + " " +
-				"RETURN {'count': LENGTH(lemma)}";
+				"    FILTER lemma.value == @lemmaValue " +
+				"    LET docCount = LENGTH( " +
+				"        FOR document IN INBOUND lemma " + Relationship.DocumentHasLemma + " " +
+				"            RETURN DISTINCT document " +
+				"    ) " +
+				"RETURN {'count': docCount}";
 		Map<String, Object> bindParam = new HashMap<>();
 
 		bindParam.put("lemmaValue", lemma);
@@ -758,17 +762,16 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				"FOR document IN " + ElementType.Document + " " +
 				"   LET tokenCount = LENGTH(" +
 				"       FOR token IN OUTBOUND document " + Relationship.DocumentHasToken + " " +
-				"           RETURN token " +
+				"           RETURN DISTINCT token " +
 				"   ) " +
 				"   LET lemmaCount = LENGTH(" +
 				"       FOR lemma IN OUTBOUND document " + Relationship.DocumentHasLemma + " " +
-				"           RETURN lemma " +
+				"           RETURN DISTINCT lemma " +
 				"   ) " +
-				"   RETURN {'document': document.key, 'ttr': (lemmaCount/tokenCount)}";
-		Map<String, Object> bindParams = new HashMap<>();
+				"   RETURN {'document': document._key, 'ttr': (lemmaCount/tokenCount)}";
 
 		ArangoCursor<BaseDocument> result = this.db.query(
-				query, bindParams, null, BaseDocument.class
+				query, null, null, BaseDocument.class
 		);
 
 		while (result.hasNext())
@@ -787,7 +790,9 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	public Double calculateTTRForDocument(String documentId)
 			throws DocumentNotFoundException
 	{
-		return null;
+		return this.calculateTTRForCollectionOfDocuments(
+				Arrays.asList(documentId)
+		).get(documentId);
 	}
 
 	@Override
@@ -795,19 +800,100 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	)
 	{
-		return null;
+		Map<String, Double> documentTTRMap = new ConcurrentHashMap<>();
+
+		String query = "WITH " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + ", " + Relationship.DocumentHasLemma + ", " + ElementType.Lemma + " " +
+				"FOR document IN " + ElementType.Document + " " +
+				"   FILTER document._key IN @documentIds " +
+				"   LET tokenCount = LENGTH(" +
+				"       FOR token IN OUTBOUND document " + Relationship.DocumentHasToken + " " +
+				"           RETURN DISTINCT token " +
+				"   ) " +
+				"   LET lemmaCount = LENGTH(" +
+				"       FOR lemma IN OUTBOUND document " + Relationship.DocumentHasLemma + " " +
+				"           RETURN DISTINCT lemma " +
+				"   ) " +
+				"   RETURN {'document': document._key, 'ttr': (lemmaCount/tokenCount)}";
+		Map<String, Object> bindParams = new HashMap<>();
+		bindParams.put("documentIds", documentIds);
+
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, bindParams, null, BaseDocument.class
+		);
+
+		while (result.hasNext())
+		{
+			BaseDocument ttr = result.next();
+			documentTTRMap.put(
+					ttr.getAttribute("document").toString(),
+					Double.parseDouble(ttr.getAttribute("ttr").toString())
+			);
+		}
+
+		return documentTTRMap;
 	}
 
 	@Override
 	public Map<String, Integer> calculateRawTermFrequenciesInDocument(String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		// TODO: check if document exists
+		Map<String, Integer> termFrequencyMap = new ConcurrentHashMap<>();
+
+		String query = "WITH " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + ", " + Relationship.TokenHasLemma + ", " + ElementType.Lemma + " " +
+				"FOR lemma IN 2 OUTBOUND @documentId " + Relationship.DocumentHasToken + ", " + Relationship.TokenHasLemma + " " +
+				"    COLLECT value = lemma.value WITH COUNT INTO count " +
+				"RETURN {'lemma': value, 'count': count}";
+		Map<String, Object> queryParams = new HashMap<>();
+		queryParams.put(
+				"documentId",
+				ElementType.Document + "/" + documentId
+		);
+
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, queryParams, null, BaseDocument.class
+		);
+
+		while (result.hasNext())
+		{
+			BaseDocument document = result.next();
+			termFrequencyMap.put(
+					document.getAttribute("lemma").toString(),
+					Integer.parseInt(document.getAttribute("count").toString())
+			);
+		}
+
+		return termFrequencyMap;
 	}
 
 	@Override
 	public Integer calculateRawTermFrequencyForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		// TODO: check if document exists
+		String query = "WITH " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + ", " + Relationship.TokenHasLemma + ", " + ElementType.Lemma + " " +
+				"FOR lemma IN 2 OUTBOUND @documentId " + Relationship.DocumentHasToken + ", " + Relationship.TokenHasLemma + " " +
+				"    FILTER lemma.value == @lemmaValue " +
+				"    COLLECT value = lemma.value WITH COUNT INTO count " +
+				"RETURN {'lemma': value, 'count': count}";
+		Map<String, Object> queryParams = new HashMap<>();
+		queryParams.put(
+				"documentId",
+				ElementType.Document + "/" + documentId
+		);
+		queryParams.put(
+				"lemmaValue", lemma
+		);
+
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, queryParams, null, BaseDocument.class
+		);
+
+		if (!result.hasNext())
+		{
+			return 0;
+		}
+		return Integer.parseInt(
+				result.next().getAttribute("count").toString()
+		);
 	}
 
 	@Override
