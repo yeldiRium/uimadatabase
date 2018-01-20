@@ -5,6 +5,4 @@ evaluations:
   - !!dbtest.evaluations.AllCalculateEvaluationCase {}
   - !!dbtest.evaluations.AllComplexQueryEvaluationCase {}
   #- !!dbtest.evaluations.CassandraCounterCreateEvaluationCase {}
-  #- !!dbtest.evaluations.CassandraTTREvaluationCase {}
-  #- !!dbtest.evaluations.TTREvaluationCase {}
 outputProvider: !!dbtest.evaluationFramework.BaseOutputProvider {}
