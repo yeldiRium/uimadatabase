@@ -440,7 +440,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 				);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get(
-				"calculateRawTermFreqeunciesInDocument"
+				"calculateRawTermFrequenciesInDocument"
 		);
 		mb.increaseCallCount();
 		mb.addCallTime(end - start);
