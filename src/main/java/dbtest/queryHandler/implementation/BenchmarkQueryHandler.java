@@ -98,7 +98,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
-	public void clearDatabase()
+	public void clearDatabase() throws IOException
 	{
 		long start = System.currentTimeMillis();
 		this.subjectQueryHandler.clearDatabase();

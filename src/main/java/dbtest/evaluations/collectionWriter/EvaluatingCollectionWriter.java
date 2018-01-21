@@ -79,6 +79,13 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 					+ this.dbName + ".");
 			e.printStackTrace();
 			Thread.currentThread().interrupt();
+		} catch (IOException e)
+		{
+			logger.severe("Initialization for CollectionWriter failed. " +
+					"Exception occured when clearing database for "
+					+ this.dbName + ".");
+			e.printStackTrace();
+			Thread.currentThread().interrupt();
 		}
 
 		logger.info("Initialized CollectionWriter for db " + this.dbName

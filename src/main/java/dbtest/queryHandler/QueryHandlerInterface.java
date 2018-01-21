@@ -103,7 +103,7 @@ public interface QueryHandlerInterface
 	 * Clears the database from any content. However, it leaves any necessary
 	 * structures intact.
 	 */
-	void clearDatabase();
+	void clearDatabase() throws IOException;
 
 	//--------------------------------------------------------------------------
 	// Raw Querying
