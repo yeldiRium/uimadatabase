@@ -118,7 +118,7 @@ public interface QueryHandlerInterface
 	 *
 	 * @param document The JCas document.
 	 */
-	void storeJCasDocument(JCas document);
+	void storeJCasDocument(JCas document) throws QHException;
 
 	/**
 	 * Stores more than one JCas document at once.

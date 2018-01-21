@@ -109,7 +109,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
-	public void storeJCasDocument(JCas document)
+	public void storeJCasDocument(JCas document) throws QHException
 	{
 		long start = System.currentTimeMillis();
 		this.subjectQueryHandler.storeJCasDocument(document);

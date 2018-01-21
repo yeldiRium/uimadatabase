@@ -1,6 +1,7 @@
 package dbtest.evaluations.collectionWriter;
 
 import dbtest.connection.*;
+import dbtest.queryHandler.exceptions.QHException;
 import dbtest.queryHandler.implementation.BenchmarkQueryHandler;
 import dbtest.utility.Formatting;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
@@ -109,7 +110,16 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		logger.info(this.currentIndex + " Storing jCas \"" + documentId
 				+ "\" into " + this.dbName + "...");
 		long start = System.currentTimeMillis();
-		this.queryHandler.storeJCasDocument(jCas);
+		try
+		{
+			this.queryHandler.storeJCasDocument(jCas);
+		} catch (QHException e)
+		{
+			logger.severe("There was an error when trying to insert "
+					+ documentId + ".");
+			e.getException().printStackTrace();
+			return;
+		}
 
 		int paragraphCount = 0;
 		int sentenceCount = 0;
