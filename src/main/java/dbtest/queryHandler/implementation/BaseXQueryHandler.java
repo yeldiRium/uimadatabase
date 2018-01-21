@@ -17,6 +17,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.basex.api.client.ClientSession;
 import org.basex.core.cmd.CreateDB;
+import org.basex.core.cmd.Delete;
 import org.basex.core.cmd.DropDB;
 import org.basex.core.cmd.Retrieve;
 import org.xml.sax.SAXException;
@@ -36,6 +37,7 @@ import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 public class BaseXQueryHandler extends AbstractQueryHandler
 {
 	protected ClientSession clientSession;
+	protected final String dbName = System.getenv("BASEX_DBNAME");
 
 	public BaseXQueryHandler(ClientSession clientSession)
 	{
@@ -48,14 +50,13 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	@Override
 	public void setUpDatabase() throws IOException
 	{
-		this.clientSession.execute(new DropDB("uimadatabase"));
-		this.clientSession.execute(new CreateDB("uimadatabase"));
+		this.clientSession.execute(new CreateDB(this.dbName));
 	}
 
 	@Override
 	public void clearDatabase() throws IOException
 	{
-		this.setUpDatabase();
+		this.clientSession.execute(new Delete("*"));
 	}
 
 	@Override

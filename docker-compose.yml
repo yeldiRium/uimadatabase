@@ -55,6 +55,7 @@ services:
       - BASEX_PORT=1984
       - BASEX_USER=admin
       - BASEX_PASS=admin
+      - BASEX_DBNAME=uimadatabase
       # See README.txt in dbs/cassandra for details on:
       - CASSANDRA_HOST=cassandra
       - CASSANDRA_PORT=9042
