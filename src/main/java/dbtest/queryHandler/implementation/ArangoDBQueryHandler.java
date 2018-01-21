@@ -414,12 +414,31 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		);
 		this.graph.edgeCollection(Relationship.TokenHasLemma.toString())
 				.insertEdge(tokenHasLemmaEdge);
-		// Create edge from Document to Lemma and insert into graph
-		BaseEdgeDocument documentHasLemmaEdge = new BaseEdgeDocument(
-				ElementType.Document + "/" + documentId, lemmaObject.getId()
+
+		// Check, if an edge from Document to Lemma already exists.
+		// This happens, if the Lemma already occured in the current document.
+		Map<String, Object> edgeParams = new HashMap<>();
+		edgeParams.put(
+				"documentId", ElementType.Document + "/" + documentId
 		);
-		this.graph.edgeCollection(Relationship.DocumentHasLemma.toString())
-				.insertEdge(documentHasLemmaEdge);
+		edgeParams.put(
+				"lemmaId", lemmaObject.getId()
+		);
+		String edgeQuery = "FOR e IN " + Relationship.DocumentHasLemma + " " +
+				"FILTER e._from == @documentId && e._to == @lemmaId " +
+				"RETURN e";
+		ArangoCursor<BaseEdgeDocument> edgeResult = this.db.query(
+				edgeQuery, edgeParams, null, BaseEdgeDocument.class
+		);
+		if (!edgeResult.hasNext())
+		{
+			// Edge does not yet exist, so create it and insert into graph
+			BaseEdgeDocument documentHasLemmaEdge = new BaseEdgeDocument(
+					ElementType.Document + "/" + documentId, lemmaObject.getId()
+			);
+			this.graph.edgeCollection(Relationship.DocumentHasLemma.toString())
+					.insertEdge(documentHasLemmaEdge);
+		}
 
 		// Create POS object and insert into collection
 		BaseDocument posObject = new BaseDocument();
