@@ -114,59 +114,70 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		int paragraphCount = 0;
 		int sentenceCount = 0;
 		int tokenCount = 0;
+		JSONObject specificDocumentStatistic = new JSONObject();
 
-		/*
-		 * Store each element of the jCas that was annotated as a Para-
-		 * graph.
-		 */
-		Paragraph previousParagraph = null;
-		for (Paragraph paragraph
-				: JCasUtil.select(jCas, Paragraph.class))
+		try
 		{
-			this.queryHandler.storeParagraph(
-					paragraph, jCas, previousParagraph
-			);
-			paragraphCount++;
-			previousParagraph = paragraph;
-
 			/*
-			 * Store each element of the jCas that was annotated as a Sen-
-			 * tence and is contained in the current paragraph.
+			 * Store each element of the jCas that was annotated as a Para-
+			 * graph.
 			 */
-			Sentence previousSentence = null;
-			for (Sentence sentence : JCasUtil.selectCovered(
-					jCas,
-					Sentence.class, paragraph
-			))
+			Paragraph previousParagraph = null;
+			for (Paragraph paragraph
+					: JCasUtil.select(jCas, Paragraph.class))
 			{
-				this.queryHandler.storeSentence(
-						sentence, jCas, paragraph, previousSentence
+				this.queryHandler.storeParagraph(
+						paragraph, jCas, previousParagraph
 				);
-				sentenceCount++;
-				previousSentence = sentence;
-
+				paragraphCount++;
+				previousParagraph = paragraph;
 
 				/*
-				 * Store each element of the jCas that was annotated as a
-				 * Token and is contained in the current sentence.
+				 * Store each element of the jCas that was annotated as a Sen-
+				 * tence and is contained in the current paragraph.
 				 */
-				Token previousToken = null;
-				for (Token token : JCasUtil.selectCovered(
-						jCas, Token.class, sentence
+				Sentence previousSentence = null;
+				for (Sentence sentence : JCasUtil.selectCovered(
+						jCas,
+						Sentence.class, paragraph
 				))
 				{
-					this.queryHandler.storeToken(
-							token, jCas, paragraph, sentence, previousToken
+					this.queryHandler.storeSentence(
+							sentence, jCas, paragraph, previousSentence
 					);
-					tokenCount++;
-					previousToken = token;
+					sentenceCount++;
+					previousSentence = sentence;
+
+
+					/*
+					 * Store each element of the jCas that was annotated as a
+					 * Token and is contained in the current sentence.
+					 */
+					Token previousToken = null;
+					for (Token token : JCasUtil.selectCovered(
+							jCas, Token.class, sentence
+					))
+					{
+						this.queryHandler.storeToken(
+								token, jCas, paragraph, sentence, previousToken
+						);
+						tokenCount++;
+						previousToken = token;
+					}
 				}
 			}
+		} catch (UnsupportedOperationException e)
+		{
+			specificDocumentStatistic.put(
+					"error", "An insert method was not supported."
+			);
+			specificDocumentStatistic.put(
+					"stackTrace", e.getStackTrace()
+			);
 		}
 		long end = System.currentTimeMillis();
 		long fullInsertTime = end - start;
 
-		JSONObject specificDocumentStatistic = new JSONObject();
 		specificDocumentStatistic.put(
 				"documentId", documentId
 		);
