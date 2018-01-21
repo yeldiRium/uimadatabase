@@ -462,17 +462,8 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	public void checkIfDocumentExists(String documentId)
 			throws DocumentNotFoundException
 	{
-		String query = "FOR d IN " + ElementType.Document + " " +
-				"FILTER d._key == @documentId " +
-				"RETURN d";
-		Map<String, Object> params = new HashMap<>();
-		params.put("documentId", ElementType.Document + "/" + documentId);
-
-		ArangoCursor<BaseDocument> result = this.db.query(
-				query, params, null, BaseDocument.class
-		);
-
-		if (!result.hasNext())
+		if (!this.db.collection(ElementType.Document.toString())
+			.documentExists(documentId))
 		{
 			throw new DocumentNotFoundException();
 		}
