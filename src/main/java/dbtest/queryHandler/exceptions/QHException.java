@@ -1,6 +1,6 @@
 package dbtest.queryHandler.exceptions;
 
-public class QHException extends Exception
+public class QHException extends RuntimeException
 {
 	protected Exception exception;
 
