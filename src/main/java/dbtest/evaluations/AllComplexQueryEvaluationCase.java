@@ -5,8 +5,7 @@ import dbtest.connection.Connection;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.connection.Connections;
-import dbtest.connection.implementation.ArangoDBConnection;
-import dbtest.connection.implementation.Neo4jConnection;
+import dbtest.connection.implementation.BaseXConnection;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
@@ -41,8 +40,8 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 	public ConnectionRequest requestConnection()
 	{
 		ConnectionRequest connectionRequest = new ConnectionRequest();
-		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
-//		connectionRequest.addRequestedConnection(BaseXConnection.class);
+//		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
+		connectionRequest.addRequestedConnection(BaseXConnection.class);
 //		connectionRequest.addRequestedConnection(CassandraConnection.class);
 //		connectionRequest.addRequestedConnection(MongoDBConnection.class);
 //		connectionRequest.addRequestedConnection(MySQLConnection.class);

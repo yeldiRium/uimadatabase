@@ -5,8 +5,7 @@ import dbtest.connection.Connection;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.connection.Connections;
-import dbtest.connection.implementation.ArangoDBConnection;
-import dbtest.connection.implementation.Neo4jConnection;
+import dbtest.connection.implementation.BaseXConnection;
 import dbtest.evaluationFramework.EvaluationCase;
 import dbtest.evaluationFramework.OutputProvider;
 import dbtest.queryHandler.ElementType;
@@ -19,7 +18,6 @@ import org.json.JSONObject;
 import org.neo4j.helpers.collection.Iterators;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -51,8 +49,8 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	public ConnectionRequest requestConnection()
 	{
 		ConnectionRequest connectionRequest = new ConnectionRequest();
-		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
-//		connectionRequest.addRequestedConnection(BaseXConnection.class);
+//		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
+		connectionRequest.addRequestedConnection(BaseXConnection.class);
 //		connectionRequest.addRequestedConnection(CassandraConnection.class);
 //		connectionRequest.addRequestedConnection(MongoDBConnection.class);
 //		connectionRequest.addRequestedConnection(MySQLConnection.class);
@@ -60,7 +58,8 @@ public class AllQueryEvaluationCase implements EvaluationCase
 		return connectionRequest;
 	}
 
-	/**Executes and benchmarks all purely query-related methods on
+	/**
+	 * Executes and benchmarks all purely query-related methods on
 	 * QueryHandlers for each Connection supplied.
 	 * This excludes the storage methods and the populateCasWithDocument method,
 	 * since they are covered in AllWrite- and AllReadEvaluationCase.
