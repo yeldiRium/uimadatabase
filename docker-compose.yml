@@ -3,38 +3,26 @@ version: '3.1'
 services:
   arangodb:
     build: ./dbs/arangodb
-    volumes:
-      - ~/nlpdbeval_dbs/arangodb/data:/var/lib/arangodb3
     environment:
      - ARANGO_ROOT_PASSWORD=root
 
   basex:
     build: ./dbs/basex
-    volumes:
-      - ~/nlpdbeval_dbs/basex/data:/srv/BaseXData
 
   cassandra:
     build: ./dbs/cassandra
-    volumes:
-      - ~/nlpdbeval_dbs/cassandra/data:/var/lib/cassandra
 
   mongodb:
     build: ./dbs/mongodb
-    volumes:
-      - ~/nlpdbeval_dbs/mongodb/data:/data/db
 
   mysql:
     build: ./dbs/mysql
-    volumes:
-      - ~/nlpdbeval_dbs/mysql/data:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=uimadatabase
 
   neo4j:
     build: ./dbs/neo4j
-    volumes:
-      - ~/nlpdbeval_dbs/neo4j/data:/var/lib/neo4j/data
     environment:
       - NEO4J_AUTH=none
 

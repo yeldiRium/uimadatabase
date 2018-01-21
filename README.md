@@ -48,10 +48,6 @@ Output:
 -------
 Output will be written to `~/nlpdbeval_data/output`
 
-Database volumes:
------------------
-The database contents will be stored in `~/nlpdbeval_dbs/dbname/data`.
-
 More Information on Dockerization:
 ----------------------------------
 Docker-Compose simplifies the task to execute a number of complicated Docker commands.
