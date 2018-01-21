@@ -49,6 +49,7 @@ public abstract class Connection
 					this.createQueryHandler();
 					try
 					{
+						LOGGER.fine("Setting up database...");
 						this.getQueryHandler().setUpDatabase();
 						isEstablished = true;
 						return;

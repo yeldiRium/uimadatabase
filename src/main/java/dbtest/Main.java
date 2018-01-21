@@ -6,10 +6,7 @@ import dbtest.logging.PlainFormatter;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.logging.Formatter;
-import java.util.logging.Handler;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 /**
  * Main entrance point for the evaluation system.
@@ -24,6 +21,7 @@ public class Main
 	{
 		// Clean up logging to stdout
 		Logger rootLogger = LogManager.getLogManager().getLogger("");
+		rootLogger.setLevel(Level.ALL);
 		Formatter plainFormatter = new PlainFormatter();
 		for(Handler h : rootLogger.getHandlers())
 		{
