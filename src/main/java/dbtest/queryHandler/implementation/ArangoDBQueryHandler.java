@@ -942,14 +942,48 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	public Iterable<String> getBiGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+		String query = "With " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + " " +
+				"FOR t1 IN OUTBOUND @documentId " + Relationship.DocumentHasToken + " " +
+				"    FOR t2 IN OUTBOUND t1 " + Relationship.NextToken + " " +
+				"        return DISTINCT {'bigram': CONCAT(t1.value, '-', t2.value)}";
+		Map<String, Object> params = new HashMap<>();
+		params.put("documentId", ElementType.Document + "/" + documentId);
+
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, params, null, BaseDocument.class
+		);
+		ArrayList<String> biGrams = new ArrayList<>();
+
+		while (result.hasNext())
+		{
+			BaseDocument element = result.next();
+			biGrams.add(element.getAttribute("bigram").toString());
+		}
+		return biGrams;
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return null;
+		String query = "With " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + " " +
+				"FOR d IN " + ElementType.Document + " " +
+				"    FOR t1 IN OUTBOUND d " + Relationship.DocumentHasToken + " " +
+				"        FOR t2 IN OUTBOUND t1 " + Relationship.NextToken + " " +
+				"            return DISTINCT {'bigram': CONCAT(t1.value, '-', t2.value)}";
+
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, null, null, BaseDocument.class
+		);
+		ArrayList<String> biGrams = new ArrayList<>();
+
+		while (result.hasNext())
+		{
+			BaseDocument element = result.next();
+			biGrams.add(element.getAttribute("bigram").toString());
+		}
+		return biGrams;
 	}
 
 	@Override
@@ -957,21 +991,76 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		String query = "With " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + " " +
+				"FOR d IN " + ElementType.Document + " " +
+				"    FILTER d._key in @documentKeys " +
+				"    FOR t1 IN OUTBOUND d " + Relationship.DocumentHasToken + " " +
+				"        FOR t2 IN OUTBOUND t1 " + Relationship.NextToken + " " +
+				"            return DISTINCT {'bigram': CONCAT(t1.value, '-', t2.value)}";
+		Map<String, Object> params = new HashMap<>();
+		params.put("documentKeys", documentIds);
+
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, params, null, BaseDocument.class
+		);
+		ArrayList<String> biGrams = new ArrayList<>();
+
+		while (result.hasNext())
+		{
+			BaseDocument element = result.next();
+			biGrams.add(element.getAttribute("bigram").toString());
+		}
+		return biGrams;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+		String query = "With " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + " " +
+				"FOR t1 IN OUTBOUND @documentId " + Relationship.DocumentHasToken + " " +
+				"    FOR t2 IN OUTBOUND t1 " + Relationship.NextToken + " " +
+				"        FOR t3 IN OUTBOUND t2 " + Relationship.NextToken + " " +
+				"            return DISTINCT {'trigram': CONCAT(t1.value, '-', t2.value, '-', t3.value)}";
+		Map<String, Object> params = new HashMap<>();
+		params.put("documentId", ElementType.Document + "/" + documentId);
+
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, params, null, BaseDocument.class
+		);
+		ArrayList<String> triGrams = new ArrayList<>();
+
+		while (result.hasNext())
+		{
+			BaseDocument element = result.next();
+			triGrams.add(element.getAttribute("trigram").toString());
+		}
+		return triGrams;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return null;
+		String query = "With " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + " " +
+				"FOR d IN " + ElementType.Document + " " +
+				"    FOR t1 IN OUTBOUND d " + Relationship.DocumentHasToken + " " +
+				"        FOR t2 IN OUTBOUND t1 " + Relationship.NextToken + " " +
+				"            FOR t3 IN OUTBOUND t2 " + Relationship.NextToken + " " +
+				"                return DISTINCT {'trigram': CONCAT(t1.value, '-', t2.value, '-', t3.value)}";
+
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, null, null, BaseDocument.class
+		);
+		ArrayList<String> triGrams = new ArrayList<>();
+
+		while (result.hasNext())
+		{
+			BaseDocument element = result.next();
+			triGrams.add(element.getAttribute("trigram").toString());
+		}
+		return triGrams;
 	}
 
 	@Override
@@ -979,6 +1068,26 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		String query = "With " + ElementType.Document + ", " + Relationship.DocumentHasToken + ", " + ElementType.Token + " " +
+				"FOR d IN " + ElementType.Document + " " +
+				"    FILTER d._key IN @documentKeys " +
+				"    FOR t1 IN OUTBOUND d " + Relationship.DocumentHasToken + " " +
+				"        FOR t2 IN OUTBOUND t1 " + Relationship.NextToken + " " +
+				"            FOR t3 IN OUTBOUND t2 " + Relationship.NextToken + " " +
+				"                return DISTINCT {'trigram': CONCAT(t1.value, '-', t2.value, '-', t3.value)}";
+		Map<String, Object> params = new HashMap<>();
+		params.put("documentKeys", documentIds);
+
+		ArangoCursor<BaseDocument> result = this.db.query(
+				query, params, null, BaseDocument.class
+		);
+		ArrayList<String> triGrams = new ArrayList<>();
+
+		while (result.hasNext())
+		{
+			BaseDocument element = result.next();
+			triGrams.add(element.getAttribute("trigram").toString());
+		}
+		return triGrams;
 	}
 }
