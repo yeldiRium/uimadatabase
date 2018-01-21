@@ -127,7 +127,7 @@ public interface QueryHandlerInterface
 	 *
 	 * @param documents An iterable object of documents.
 	 */
-	void storeJCasDocuments(Iterable<JCas> documents);
+	void storeJCasDocuments(Iterable<JCas> documents) throws QHException;
 
 	/**
 	 * Stores a Paragraph in the database.

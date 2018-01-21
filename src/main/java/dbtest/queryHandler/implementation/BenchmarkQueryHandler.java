@@ -120,7 +120,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
-	public void storeJCasDocuments(Iterable<JCas> documents)
+	public void storeJCasDocuments(Iterable<JCas> documents) throws QHException
 	{
 		long start = System.currentTimeMillis();
 		this.subjectQueryHandler.storeJCasDocuments(documents);
