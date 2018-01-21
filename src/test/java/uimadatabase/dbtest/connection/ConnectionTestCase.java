@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestTemplate;
 import org.mockito.Mockito;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -75,7 +76,7 @@ public class ConnectionTestCase
 	}
 
 	@Test
-	void Given_Connection_When_Established_Then_SetUpDatabaseShouldBeCalledOnQueryHandler()
+	void Given_Connection_When_Established_Then_SetUpDatabaseShouldBeCalledOnQueryHandler() throws IOException
 	{
 		TestConnection connection = new TestConnection();
 		connection.injectedQueryHandler = Mockito.mock(QueryHandlerInterface.class);

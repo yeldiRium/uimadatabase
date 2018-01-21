@@ -14,6 +14,7 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 
 import javax.naming.OperationNotSupportedException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -96,7 +97,7 @@ public interface QueryHandlerInterface
 	 * <p>
 	 * This may rebuild the database and should result in an empty database.
 	 */
-	void setUpDatabase();
+	void setUpDatabase() throws IOException;
 
 	/**
 	 * Clears the database from any content. However, it leaves any necessary

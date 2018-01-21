@@ -13,6 +13,7 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 
 import javax.naming.OperationNotSupportedException;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -86,7 +87,7 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
-	public void setUpDatabase()
+	public void setUpDatabase() throws IOException
 	{
 		long start = System.currentTimeMillis();
 		this.subjectQueryHandler.setUpDatabase();

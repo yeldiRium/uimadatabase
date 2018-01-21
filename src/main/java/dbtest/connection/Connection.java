@@ -2,6 +2,7 @@ package dbtest.connection;
 
 import dbtest.queryHandler.QueryHandlerInterface;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
@@ -46,9 +47,16 @@ public abstract class Connection
 					LOGGER.fine("Connection for " + this.getClass().getName()
 							+ " successful!");
 					this.createQueryHandler();
-					this.getQueryHandler().setUpDatabase();
-					isEstablished = true;
-					return;
+					try
+					{
+						this.getQueryHandler().setUpDatabase();
+						isEstablished = true;
+						return;
+					} catch (IOException e)
+					{
+						LOGGER.fine("Setting up database for "
+								+ this.getClass().getName() + " failed.");
+					}
 				} else
 				{
 					LOGGER.fine("Connection for " + this.getClass().getName()
