@@ -5,9 +5,11 @@ import dbtest.connection.ConnectionManager;
 import dbtest.connection.ConnectionRequest;
 import dbtest.connection.ConnectionResponse;
 import dbtest.connection.implementation.*;
+import dbtest.logging.PlainFormatter;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.logging.*;
 
 /**
  * Requests all Connections from the ConnectionManager.
@@ -18,9 +20,23 @@ import java.util.concurrent.Future;
  */
 public class DBConnectionTest
 {
+	protected static Logger logger = Logger.getLogger(
+			DBConnectionTest.class.getName()
+	);
+
 	public static void main(String[] args)
 	{
+		Logger rootLogger = LogManager.getLogManager().getLogger("");
+		rootLogger.setLevel(Level.ALL);
+		Formatter plainFormatter = new PlainFormatter();
+		for(Handler h : rootLogger.getHandlers())
+		{
+			h.setFormatter(plainFormatter);
+			h.setLevel(Level.ALL);
+		}
+
 		ConnectionManager connectionManager = ConnectionManager.getInstance();
+		logger.info("blub");
 
 		ConnectionRequest connectionRequest = new ConnectionRequest();
 		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
@@ -30,24 +46,28 @@ public class DBConnectionTest
 		connectionRequest.addRequestedConnection(MySQLConnection.class);
 		connectionRequest.addRequestedConnection(Neo4jConnection.class);
 
+		logger.info("blub2");
+
 		Future<ConnectionResponse> futureConnectionResponse
 				= connectionManager.submitRequest(connectionRequest);
+
+		logger.info("blub3");
 
 		try
 		{
 			ConnectionResponse connectionResponse = futureConnectionResponse.get();
-			System.out.println("Connections Established:");
+			logger.info("Connections Established:");
 			for (Connection connection : connectionResponse.getConnections())
 			{
 				if (connection.isEstablished())
 				{
-					System.out.println("Connection " + connection.getClass().getName() + " established.");
+					logger.info("Connection " + connection.getClass().getName() + " established.");
 				}
 			}
 
 		} catch (InterruptedException | ExecutionException e)
 		{
-			System.out.println("Something went really wrong:");
+			logger.info("Something went really wrong:");
 			e.printStackTrace();
 		}
 	}

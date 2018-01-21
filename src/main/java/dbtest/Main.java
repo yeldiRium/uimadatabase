@@ -26,6 +26,7 @@ public class Main
 		for(Handler h : rootLogger.getHandlers())
 		{
 			h.setFormatter(plainFormatter);
+			h.setLevel(Level.ALL);
 		}
 
 		ConnectionManager connectionManager = ConnectionManager.getInstance();
