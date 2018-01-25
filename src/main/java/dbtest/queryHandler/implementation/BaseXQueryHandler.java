@@ -8,26 +8,23 @@ import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiWriter;
-import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.impl.XmiCasDeserializer;
 import org.apache.uima.cas.impl.XmiCasSerializer;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.resource.ResourceInitializationException;
+import org.basex.api.client.ClientQuery;
 import org.basex.api.client.ClientSession;
 import org.basex.core.cmd.CreateDB;
 import org.basex.core.cmd.Delete;
-import org.basex.core.cmd.DropDB;
+import org.basex.core.cmd.Open;
 import org.basex.core.cmd.Retrieve;
 import org.xml.sax.SAXException;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 
 /**
  * In BaseX, only full files can be added to the database.
@@ -44,6 +41,16 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 		this.clientSession = clientSession;
 	}
 
+	protected String getDocumentIdFromUri(String uri)
+	{
+		return uri.replace(this.dbName + "/", "");
+	}
+
+	protected String getUriFromDocumentId(String documentId)
+	{
+		return this.dbName + "/" + documentId;
+	}
+
 	/**
 	 * Creates an empty database.
 	 */
@@ -51,6 +58,7 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	public void setUpDatabase() throws IOException
 	{
 		this.clientSession.execute(new CreateDB(this.dbName));
+		this.clientSession.execute(new Open(this.dbName));
 	}
 
 	@Override
@@ -66,11 +74,10 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 				.getDocumentId();
 		try
 		{
-			PipedInputStream input = new PipedInputStream();
-			PipedOutputStream output = new PipedOutputStream();
-			output.connect(input);
-
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
 			XmiCasSerializer.serialize(document.getCas(), output);
+			ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+
 			this.clientSession.add(documentId, input);
 		} catch (SAXException | IOException e)
 		{
@@ -146,12 +153,18 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	public void checkIfDocumentExists(String documentId) throws DocumentNotFoundException
 	{
 		this.clientSession.setOutputStream(null);
-		try
+		String queryString = "declare variable $doc as xs:string external; " +
+				"fn:doc-available($doc)";
+		try (ClientQuery query = this.clientSession.query(queryString))
 		{
-			if (this.clientSession.execute(new Retrieve(documentId)) == null)
+			query.bind("$doc", this.getUriFromDocumentId(documentId));
+			if (!Boolean.parseBoolean(query.execute()))
+			{
 				throw new DocumentNotFoundException();
+			}
 		} catch (IOException e)
 		{
+			e.printStackTrace();
 			throw new QHException(e);
 		}
 	}
@@ -159,7 +172,20 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	@Override
 	public Iterable<String> getDocumentIds()
 	{
-		return null;
+		String queryString = "for $doc in fn:collection() return fn:document-uri($doc)";
+		ArrayList<String> documentIds = new ArrayList<>();
+		try(ClientQuery query = this.clientSession.query(queryString))
+		{
+			while (query.more())
+			{
+				documentIds.add(this.getDocumentIdFromUri(query.next()));
+			}
+			return documentIds;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
@@ -173,16 +199,18 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 			throws DocumentNotFoundException, QHException
 	{
 		this.checkIfDocumentExists(documentId);
-		try
+		String queryString = "declare variable $doc as xs:string external; " +
+				"fn:doc($doc)";
+		try (ClientQuery query = this.clientSession.query(queryString))
 		{
-			PipedInputStream input = new PipedInputStream();
-			PipedOutputStream output = new PipedOutputStream();
-			output.connect(input);
-			this.clientSession.setOutputStream(output);
-			this.clientSession.execute(new Retrieve(documentId));
+			query.bind("$doc", this.getUriFromDocumentId(documentId));
+
+			String documentXmi = query.execute();
+			InputStream input = new ByteArrayInputStream(
+					documentXmi.getBytes()
+			);
 
 			XmiCasDeserializer.deserialize(input, aCAS);
-			this.clientSession.setOutputStream(null);
 		} catch (SAXException | IOException e)
 		{
 			throw new QHException(e);
