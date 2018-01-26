@@ -17,10 +17,12 @@ import org.basex.api.client.ClientSession;
 import org.basex.core.cmd.CreateDB;
 import org.basex.core.cmd.Delete;
 import org.basex.core.cmd.Open;
-import org.basex.core.cmd.Retrieve;
 import org.xml.sax.SAXException;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -171,7 +173,7 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	{
 		String queryString = "for $doc in fn:collection() return fn:document-uri($doc)";
 		ArrayList<String> documentIds = new ArrayList<>();
-		try(ClientQuery query = this.clientSession.query(queryString))
+		try (ClientQuery query = this.clientSession.query(queryString))
 		{
 			while (query.more())
 			{
@@ -259,7 +261,39 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countElementsOfType(ElementType type)
 	{
-		return 0;
+		String queryString = null;
+		switch (type)
+		{
+			case Document:
+				queryString = "fn:count(fn:collection())";
+				break;
+			case Paragraph:
+			case Sentence:
+			case Token:
+			case Pos:
+				// Pos aren't separate elements in XMI but attributes on Token.
+				// So by counting Tokens we implicitly count Pos.
+				String typeName = (type == ElementType.Pos)
+						? ElementType.Token.toString() : type.toString();
+				queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+						"fn:count( " +
+						"    //type4:" + typeName +
+						")";
+				break;
+			case Lemma:
+				// Lemmata should be distinct
+				queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+						"fn:count(fn:distinct-values( " +
+						"   //type4:Lemma/@value" +
+						"))";
+		}
+		try (ClientQuery query = this.clientSession.query(queryString))
+		{
+			return Integer.parseInt(query.execute());
+		} catch (IOException e)
+		{
+			throw new QHException(e);
+		}
 	}
 
 	@Override
