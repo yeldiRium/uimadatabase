@@ -301,7 +301,42 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 			String documentId, ElementType type
 	) throws DocumentNotFoundException
 	{
-		return 0;
+		this.checkIfDocumentExists(documentId);
+		String queryString = null;
+		switch (type)
+		{
+			case Document:
+				return 1;
+			case Paragraph:
+			case Sentence:
+			case Token:
+			case Pos:
+				// Pos aren't separate elements in XMI but attributes on Token.
+				// So by counting Tokens we implicitly count Pos.
+				String typeName = (type == ElementType.Pos)
+						? ElementType.Token.toString() : type.toString();
+				queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+						"declare variable $docId as xs:string external; " +
+						"fn:count( " +
+						"    fn:doc($docId)//type4:" + typeName +
+						")";
+				break;
+			case Lemma:
+				// Lemmata should be distinct
+				queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+						"declare variable $docId as xs:string external; " +
+						"fn:count(fn:distinct-values( " +
+						"   fn:doc($docId)//type4:Lemma/@value" +
+						"))";
+		}
+		try (ClientQuery query = this.clientSession.query(queryString))
+		{
+			query.bind("$docId", this.getUriFromDocumentId(documentId));
+			return Integer.parseInt(query.execute());
+		} catch (IOException e)
+		{
+			throw new QHException(e);
+		}
 	}
 
 	@Override
