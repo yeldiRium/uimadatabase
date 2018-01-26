@@ -1,7 +1,7 @@
 evaluations:
   - !!dbtest.evaluations.AllWriteEvaluationCase {}
   - !!dbtest.evaluations.AllReadEvaluationCase {}
-  #- !!dbtest.evaluations.AllQueryEvaluationCase {}
+  - !!dbtest.evaluations.AllQueryEvaluationCase {}
   #- !!dbtest.evaluations.AllCalculateEvaluationCase {}
   #- !!dbtest.evaluations.AllComplexQueryEvaluationCase {}
   #- !!dbtest.evaluations.CassandraCounterCreateEvaluationCase {}

@@ -21,10 +21,7 @@ import org.basex.core.cmd.Retrieve;
 import org.xml.sax.SAXException;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * In BaseX, only full files can be added to the database.
@@ -189,9 +186,29 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public Set<String> getLemmataForDocument(String documentId)
+	public Set<String> getLemmataForDocument(String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+		String queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+				"declare variable $docId as xs:string external; " +
+				"for $lemma in fn:doc($docId)//type4:Lemma/@value return string($lemma)";
+
+		Set<String> lemmata = new TreeSet<>();
+		try (ClientQuery query = this.clientSession.query(queryString))
+		{
+			query.bind("$docId", this.getUriFromDocumentId(documentId));
+
+			while (query.more())
+			{
+				lemmata.add(query.next());
+			}
+
+			return lemmata;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
@@ -220,7 +237,23 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countDocumentsContainingLemma(String lemma)
 	{
-		return 0;
+		String queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+				"declare variable $lemma as xs:string external; " +
+				"fn:count( " +
+				"    for $doc in fn:collection() " +
+				"        where fn:exists($doc//type4:Lemma[@value = $lemma]) " +
+				"        return 1 " +
+				")";
+
+		try (ClientQuery query = this.clientSession.query(queryString))
+		{
+			query.bind("$lemma", lemma);
+
+			return Integer.parseInt(query.execute());
+		} catch (IOException e)
+		{
+			throw new QHException(e);
+		}
 	}
 
 	@Override
