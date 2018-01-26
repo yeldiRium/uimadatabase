@@ -4,6 +4,7 @@ import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
 import dbtest.queryHandler.exceptions.QHException;
+import dbtest.queryHandler.exceptions.TypeHasNoValueException;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
@@ -341,9 +342,47 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 
 	@Override
 	public int countElementsOfTypeWithValue(ElementType type, String value)
-			throws IllegalArgumentException
+			throws IllegalArgumentException, TypeHasNoValueException
 	{
-		return 0;
+		this.checkTypeHasValueField(type);
+
+		String queryString = null;
+		switch (type)
+		{
+			case Document:
+			case Paragraph:
+			case Sentence:
+				// Will never happen, since these cases throw an exception in
+				// the check above.
+				return 0;
+			case Pos:
+				// Pos values aren't really queryable or even relevant.
+				return 0;
+			case Token:
+				queryString = "declare namespace xmi = 'http://www.omg.org/XMI'; " +
+						"declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+						"declare variable $value as xs:string external; " +
+						"fn:count(" +
+						"    for $lemmaId in //type4:Lemma[@value = $value]/@xmi:id " +
+						"        return //type4:Token[@lemma = string($lemmaId)] " +
+						")";
+				break;
+			case Lemma:
+				// Lemmata should be distinct
+				queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+						"declare variable $value as xs:string external; " +
+						"fn:count(fn:distinct-values( " +
+						"    //type4:Lemma[@value = $value] " +
+						"))";
+		}
+		try (ClientQuery query = this.clientSession.query(queryString))
+		{
+			query.bind("$value", value);
+			return Integer.parseInt(query.execute());
+		} catch (IOException e)
+		{
+			throw new QHException(e);
+		}
 	}
 
 	@Override
