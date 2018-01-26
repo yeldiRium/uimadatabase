@@ -439,7 +439,36 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	@Override
 	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
 	{
-		return null;
+		Map<String, Integer> occurenceMap = new TreeMap<>();
+		String valueQueryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+				"fn:distinct-values(//type4:Lemma/@value)";
+		try (ClientQuery valueQuery =
+				     this.clientSession.query(valueQueryString))
+		{
+			while (valueQuery.more())
+			{
+				String value = valueQuery.next();
+				String occurenceQueryString = "declare namespace xmi = 'http://www.omg.org/XMI'; " +
+						"declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+						"declare variable $value as xs:string external; " +
+						"fn:count( " +
+						"    for $lemmaId in //type4:Lemma[@value = $value]/@xmi:id " +
+						"        return //type4:Token[@lemma = string($lemmaId)]" +
+						")";
+				try (ClientQuery occurenceQuery =
+						     this.clientSession.query(occurenceQueryString))
+				{
+					occurenceQuery.bind("$value", value);
+					occurenceMap.put(
+							value, Integer.parseInt(occurenceQuery.execute())
+					);
+				}
+			}
+			return occurenceMap;
+		} catch (IOException e)
+		{
+			throw new QHException(e);
+		}
 	}
 
 	@Override
