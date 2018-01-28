@@ -49,9 +49,9 @@ public class AllReadEvaluationCase implements EvaluationCase
 	)
 	{
 		for (Connections.DBName dbName : new Connections.DBName[]{
-//				Connections.DBName.ArangoDB,
+				Connections.DBName.ArangoDB,
 				Connections.DBName.BaseX,
-//				Connections.DBName.Neo4j
+				Connections.DBName.Neo4j
 		})
 		{
 			logger.info("Starting AllReadEvaluationCase for Database \""
