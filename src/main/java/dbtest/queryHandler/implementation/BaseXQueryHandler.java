@@ -195,7 +195,7 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 		this.checkIfDocumentExists(documentId);
 		String queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
 				"declare variable $docId as xs:string external; " +
-				"for $lemma in fn:doc($docId)//type4:Lemma/@value return string($lemma)";
+				"for $lemma in fn:distinct-values(fn:doc($docId)//type4:Lemma/@value) return string($lemma)";
 
 		Set<String> lemmata = new TreeSet<>();
 		try (ClientQuery query = this.clientSession.query(queryString))
