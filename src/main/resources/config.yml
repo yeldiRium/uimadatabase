@@ -2,7 +2,7 @@ evaluations:
   - !!dbtest.evaluations.AllWriteEvaluationCase {}
   - !!dbtest.evaluations.AllReadEvaluationCase {}
   - !!dbtest.evaluations.AllQueryEvaluationCase {}
-  #- !!dbtest.evaluations.AllCalculateEvaluationCase {}
+  - !!dbtest.evaluations.AllCalculateEvaluationCase {}
   - !!dbtest.evaluations.AllComplexQueryEvaluationCase {}
   #- !!dbtest.evaluations.CassandraCounterCreateEvaluationCase {}
 outputProvider: !!dbtest.evaluationFramework.BaseOutputProvider {}

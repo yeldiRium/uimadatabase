@@ -1,6 +1,7 @@
 package dbtest.queryHandler.implementation;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
@@ -256,6 +257,7 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 			return Integer.parseInt(query.execute());
 		} catch (IOException e)
 		{
+			e.printStackTrace();
 			throw new QHException(e);
 		}
 	}
@@ -475,14 +477,33 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	@Override
 	public Map<String, Double> calculateTTRForAllDocuments()
 	{
-		return null;
+		return this.calculateTTRForCollectionOfDocuments(
+				Lists.newArrayList(this.getDocumentIds())
+		);
 	}
 
 	@Override
 	public Double calculateTTRForDocument(String documentId)
 			throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+		String queryString = "declare namespace xmi = 'http://www.omg.org/XMI'; " +
+				"declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+				"declare variable $docId as xs:string external; " +
+				"let $lemmaCount := fn:count(fn:distinct-values(fn:doc($docId)//type4:Lemma/@value)) " +
+				"let $tokenCount := fn:count(fn:doc($docId)//type4:Token) " +
+				"return ($lemmaCount div $tokenCount)";
+
+		try (ClientQuery query = this.clientSession.query(queryString))
+		{
+			query.bind("$docId", this.getUriFromDocumentId(documentId));
+
+			return Double.parseDouble(query.execute());
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
@@ -490,19 +511,74 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	)
 	{
-		return null;
+		Map<String, Double> ttrMap = new HashMap<>();
+		for (String documentId : documentIds)
+		{
+			try {
+				ttrMap.put(
+						documentId, this.calculateTTRForDocument(documentId)
+				);
+			} catch (DocumentNotFoundException e)
+			{
+				// missing documents in collections are ignored
+			}
+		}
+		return ttrMap;
 	}
 
 	@Override
 	public Map<String, Integer> calculateRawTermFrequenciesInDocument(String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+		Map<String, Integer> frequencyMap = new HashMap<>();
+		String queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+				"declare variable $docId as xs:string external; " +
+				"let $doc := fn:doc($docId) " +
+				"for $value in fn:distinct-values($doc//type4:Lemma/@value) " +
+				"    let $valueString := string($value) " +
+				"    return ($value, fn:count($doc//type4:Lemma[@value = $valueString]))";
+
+		try (ClientQuery query = this.clientSession.query(queryString))
+		{
+			query.bind("$docId", this.getUriFromDocumentId(documentId));
+
+			// query returns alternatingly lemma values and their frequency
+			while (query.more())
+			{
+				frequencyMap.put(
+						query.next(), Integer.parseInt(query.next())
+				);
+			}
+			return frequencyMap;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
 	public Integer calculateRawTermFrequencyForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+		String queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+				"declare variable $docId as xs:string external; " +
+				"declare variable $lemma as xs:string external; " +
+				"fn:count(fn:doc($docId)//type4:Lemma[@value = $lemma])";
+
+		try (ClientQuery query = this.clientSession.query(queryString))
+		{
+			query.bind("$docId", this.getUriFromDocumentId(documentId));
+			query.bind("$lemma", lemma);
+
+			String result = query.execute();
+			logger.info(result);
+			return Integer.parseInt(result);
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	/**

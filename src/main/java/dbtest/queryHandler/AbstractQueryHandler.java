@@ -112,7 +112,7 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 					new ConcurrentHashMap<>();
 			Set<String> lemmata = getLemmataForDocument(documentId);
 
-			lemmata.parallelStream().forEach(e -> {
+			lemmata.stream().forEach(e -> {
 				inverseDocumentFrequencies.put(
 						e.replaceAll("\"", ""),
 						Math.log(docCount /
