@@ -1,5 +1,6 @@
 package dbtest.queryHandler.implementation;
 
+import com.google.common.collect.Iterables;
 import dbtest.queryHandler.AbstractQueryHandler;
 import dbtest.queryHandler.ElementType;
 import dbtest.queryHandler.exceptions.DocumentNotFoundException;
@@ -504,18 +505,60 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 		return null;
 	}
 
+	/**
+	 * @param query A query that results in multiple string values.
+	 */
+	protected Iterable<String> putResultsIntoIterable(
+			ClientQuery query
+	) throws IOException
+	{
+		ArrayList<String> list = new ArrayList<>();
+		while (query.more())
+		{
+			list.add(query.next());
+		}
+		return list;
+	}
+
 	@Override
 	public Iterable<String> getBiGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+		String queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+				"declare variable $docId as xs:string external; " +
+				"for $lemma in fn:doc($docId)//type4:Lemma[position() < last()] " +
+				"    let $value := string($lemma/@value) " +
+				"    let $nextValue := string($lemma/following-sibling::*[1]/@value)" +
+				"    return string-join(($value, $nextValue), '-') ";
+
+		try (ClientQuery query = this.clientSession.query(queryString))
+		{
+			query.bind("$docId", this.getUriFromDocumentId(documentId));
+			return this.putResultsIntoIterable(query);
+		} catch (IOException e)
+		{
+			throw new QHException(e);
+		}
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return null;
+		String queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+				"for $lemma in //type4:Lemma[position() < last()] " +
+				"    let $value := string($lemma/@value) " +
+				"    let $nextValue := string($lemma/following-sibling::*[1]/@value)" +
+				"    return string-join(($value, $nextValue), '-') ";
+
+		try (ClientQuery query = this.clientSession.query(queryString))
+		{
+			return this.putResultsIntoIterable(query);
+		} catch (IOException e)
+		{
+			throw new QHException(e);
+		}
 	}
 
 	@Override
@@ -523,21 +566,78 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		String queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+				"declare variable $docId as xs:string external; " +
+				"for $lemma in fn:doc($docId)//type4:Lemma[position() < last()] " +
+				"    let $value := string($lemma/@value) " +
+				"    let $nextValue := string($lemma/following-sibling::*[1]/@value)" +
+				"    return string-join(($value, $nextValue), '-') ";
+
+		Iterable<String> biGrams = null;
+		for (String documentId : documentIds)
+		{
+			try (ClientQuery query = this.clientSession.query(queryString))
+			{
+				query.bind("$docId", this.getUriFromDocumentId(documentId));
+				if (biGrams == null)
+				{
+					biGrams = this.putResultsIntoIterable(query);
+				} else
+				{
+					biGrams = Iterables.concat(
+							biGrams,
+							this.putResultsIntoIterable(query)
+					);
+				}
+			} catch (IOException e)
+			{
+				throw new QHException(e);
+			}
+		}
+		return biGrams;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+		String queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+				"declare variable $docId as xs:string external; " +
+				"for $lemma in fn:doc($docId)//type4:Lemma[position() < (last() - 1)] " +
+				"    let $value := string($lemma/@value) " +
+				"    let $nextValue := string($lemma/following-sibling::*[1]/@value)" +
+				"    let $thirdValue := string($lemma/following-sibling::*[2]/@value)" +
+				"    return string-join(($value, $nextValue, $thirdValue), '-') ";
+
+		try (ClientQuery query = this.clientSession.query(queryString))
+		{
+			query.bind("$docId", this.getUriFromDocumentId(documentId));
+			return this.putResultsIntoIterable(query);
+		} catch (IOException e)
+		{
+			throw new QHException(e);
+		}
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return null;
+		String queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+				"for $lemma in //type4:Lemma[position() < last()] " +
+				"    let $value := string($lemma/@value) " +
+				"    let $nextValue := string($lemma/following-sibling::*[1]/@value)" +
+				"    let $thirdValue := string($lemma/following-sibling::*[2]/@value)" +
+				"    return string-join(($value, $nextValue, $thirdValue), '-') ";
+
+		try (ClientQuery query = this.clientSession.query(queryString))
+		{
+			return this.putResultsIntoIterable(query);
+		} catch (IOException e)
+		{
+			throw new QHException(e);
+		}
 	}
 
 	@Override
@@ -545,6 +645,35 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		String queryString = "declare namespace type4 = 'http:///de/tudarmstadt/ukp/dkpro/core/api/segmentation/type.ecore'; " +
+				"declare variable $docId as xs:string external; " +
+				"for $lemma in fn:doc($docId)//type4:Lemma[position() < last()] " +
+				"    let $value := string($lemma/@value) " +
+				"    let $nextValue := string($lemma/following-sibling::*[1]/@value)" +
+				"    let $thirdValue := string($lemma/following-sibling::*[2]/@value)" +
+				"    return string-join(($value, $nextValue, $thirdValue), '-') ";
+
+		Iterable<String> triGrams = null;
+		for (String documentId : documentIds)
+		{
+			try (ClientQuery query = this.clientSession.query(queryString))
+			{
+				query.bind("$docId", this.getUriFromDocumentId(documentId));
+				if (triGrams == null)
+				{
+					triGrams = this.putResultsIntoIterable(query);
+				} else
+				{
+					triGrams = Iterables.concat(
+							triGrams,
+							this.putResultsIntoIterable(query)
+					);
+				}
+			} catch (IOException e)
+			{
+				throw new QHException(e);
+			}
+		}
+		return triGrams;
 	}
 }
