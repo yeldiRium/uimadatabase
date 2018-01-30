@@ -862,10 +862,17 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		while (result.hasNext())
 		{
 			BaseDocument ttr = result.next();
-			documentTTRMap.put(
-					ttr.getAttribute("document").toString(),
-					Double.parseDouble(ttr.getAttribute("ttr").toString())
-			);
+			if (ttr.getAttribute("ttr") == null) {
+				documentTTRMap.put(
+						ttr.getAttribute("document").toString(),
+						0.0d
+				);
+			} else {
+				documentTTRMap.put(
+						ttr.getAttribute("document").toString(),
+						Double.parseDouble(ttr.getAttribute("ttr").toString())
+				);
+			}
 		}
 
 		return documentTTRMap;
