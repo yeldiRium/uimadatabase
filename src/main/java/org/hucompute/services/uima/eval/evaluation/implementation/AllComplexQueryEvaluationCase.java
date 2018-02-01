@@ -139,7 +139,7 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			logger.info("Writing results...");
 			// Write the results to a file
 			outputProvider.writeJSON(
-					AllComplexQueryEvaluationCase.class.getName(),
+					AllComplexQueryEvaluationCase.class.getSimpleName(),
 					this.dbName.toString(),
 					stats
 			);

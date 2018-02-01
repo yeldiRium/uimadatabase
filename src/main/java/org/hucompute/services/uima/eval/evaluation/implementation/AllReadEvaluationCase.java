@@ -114,7 +114,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 				dbName.toString(),
 				EvaluatingCollectionReader.PARAM_OUTPUT_FILE,
 				outputProvider.createFile(
-						AllReadEvaluationCase.class.getName(),
+						AllReadEvaluationCase.class.getSimpleName(),
 						dbName.toString()
 				)
 		);

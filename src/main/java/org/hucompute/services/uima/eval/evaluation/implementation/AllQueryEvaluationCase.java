@@ -225,7 +225,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			logger.info("Writing results...");
 			// Write the results to a file
 			outputProvider.writeJSON(
-					AllQueryEvaluationCase.class.getName(),
+					AllQueryEvaluationCase.class.getSimpleName(),
 					this.dbName.toString(),
 					stats
 			);

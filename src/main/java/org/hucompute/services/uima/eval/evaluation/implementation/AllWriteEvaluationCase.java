@@ -125,7 +125,7 @@ public class AllWriteEvaluationCase implements EvaluationCase
 				dbName.toString(),
 				EvaluatingCollectionWriter.PARAM_OUTPUT_FILE,
 				outputProvider.createFile(
-						AllWriteEvaluationCase.class.getName(),
+						AllWriteEvaluationCase.class.getSimpleName(),
 						dbName.toString()
 				)
 		);
