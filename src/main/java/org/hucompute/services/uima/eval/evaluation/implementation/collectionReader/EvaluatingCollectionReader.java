@@ -183,11 +183,14 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 				this.specificDocumentStatistics
 		);
 
+		JSONObject wrapperJSON = new JSONObject();
+		wrapperJSON.put("read", statisticsJSON);
+
 		try (BufferedWriter output =
 				     new BufferedWriter(new FileWriter(this.outputFile))
 		)
 		{
-			output.write(statisticsJSON.toString());
+			output.write(wrapperJSON.toString());
 		} catch (IOException e)
 		{
 			// TODO: improve error handling
