@@ -25,6 +25,12 @@ public class GraphToTexWriter
 			"pink", "purple", "teal", "violet", "white"
 	};
 
+	protected static String escape(String text)
+	{
+		return text.replace("_", "\\_")
+				.replace("[", "{[")
+				.replace("]", "]}");
+	}
 
 	/**
 	 * Creates a plot element for use in a pgfplot from a template and adds
@@ -87,10 +93,10 @@ public class GraphToTexWriter
 		}
 
 		return template
-				.replace("%%TITLE%%", title)
-				.replace("%%XLABEL%%", xLabel)
-				.replace("%%YLABEL%%", yLabel)
-				.replace("%%LEGENDENTRIES%%", legend.toString())
+				.replace("%%TITLE%%", escape(title))
+				.replace("%%XLABEL%%", escape(xLabel))
+				.replace("%%YLABEL%%", escape(yLabel))
+				.replace("%%LEGENDENTRIES%%", escape(legend.toString()))
 				.replace("%%PLOTS%%", plots.toString());
 	}
 
