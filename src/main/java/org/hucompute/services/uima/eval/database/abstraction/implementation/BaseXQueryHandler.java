@@ -572,9 +572,7 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 			query.bind("$docId", this.getUriFromDocumentId(documentId));
 			query.bind("$lemma", lemma);
 
-			String result = query.execute();
-			logger.info(result);
-			return Integer.parseInt(result);
+			return Integer.parseInt(query.execute());
 		} catch (IOException e)
 		{
 			e.printStackTrace();
