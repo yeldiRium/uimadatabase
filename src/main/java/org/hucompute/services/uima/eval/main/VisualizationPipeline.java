@@ -62,7 +62,6 @@ public class VisualizationPipeline
 		List<String> fileList = Lists.newArrayList(
 				new File(System.getenv("OUTPUT_DIR")).list()
 		);
-		fileList.forEach(blub -> logger.info(blub));
 
 		// Iterate over all output files in the output directory.
 		// For each of them, create an OutputFileData object with all needed
