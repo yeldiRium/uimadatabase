@@ -187,7 +187,7 @@ public class VisualizationPipeline
 
 			File graphFile = new File(
 					System.getenv("OUTPUT_DIR") + "/graphs/" +
-							entry.getKey()
+							entry.getKey() + ".tex"
 			);
 
 			if (graphFile.exists())
