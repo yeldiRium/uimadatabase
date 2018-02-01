@@ -1,9 +1,9 @@
-package org.hucompute.services.uima.database;
+package org.hucompute.services.uima.legacy;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.uima.UimaContext;
-import org.apache.uima.fit.component.CasCollectionReader_ImplBase;
+import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.resource.ResourceInitializationException;
 
@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 
-public abstract class AbstractCollectionReader extends CasCollectionReader_ImplBase
+public abstract class AbstractWriter extends JCasConsumer_ImplBase
 {
 	Logger logger;
 
@@ -25,7 +25,7 @@ public abstract class AbstractCollectionReader extends CasCollectionReader_ImplB
 	public File logFile;
 
 	public StopWatch stopWatch;
-	int processed = 0;
+	public int processed = 0;
 
 	@Override
 	public void initialize(UimaContext context)
@@ -52,10 +52,10 @@ public abstract class AbstractCollectionReader extends CasCollectionReader_ImplB
 
 	public void log()
 	{
-		if (processed++ % 100 == 0)
+		if (processed++ % 10 == 0)
 		{
-			logger.info("Reader processed documentscount: " + processed + " in " + getSeconds(stopWatch.toString()) + " ms");
-			System.out.println("Reader processed documentscount: " + processed + " in " + getSeconds(stopWatch.toString()) + " ms");
+			logger.info("Writer processed documentscount: " + processed + " in " + getSeconds(stopWatch.toString()) + " ms");
+			System.out.println("Writer processed documentscount: " + processed + " in " + getSeconds(stopWatch.toString()) + " ms");
 			if (logFile != null)
 				try
 				{

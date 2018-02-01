@@ -18,10 +18,10 @@ import java.util.logging.*;
  *
  * @author Hannes Leutloff <hannes.leutloff@aol.de>
  */
-public class DBConnectionTest
+public class DBConnectionTestMain
 {
 	protected static Logger logger = Logger.getLogger(
-			DBConnectionTest.class.getName()
+			DBConnectionTestMain.class.getName()
 	);
 
 	public static void main(String[] args)

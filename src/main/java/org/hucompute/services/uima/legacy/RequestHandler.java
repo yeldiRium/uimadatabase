@@ -1,8 +1,8 @@
-package org.hucompute.services.uima.database;
+package org.hucompute.services.uima.legacy;
 
 import com.datastax.driver.core.exceptions.NoHostAvailableException;
-import org.hucompute.services.uima.database.cassandra.CassandraIndexWriter;
-import org.hucompute.services.uima.database.cassandra.CassandraQueryHandler;
+import org.hucompute.services.uima.legacy.cassandra.CassandraIndexWriter;
+import org.hucompute.services.uima.legacy.cassandra.CassandraQueryHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

@@ -1,10 +1,10 @@
-package org.hucompute.services.uima.database.mysql;
+package org.hucompute.services.uima.legacy.mysql;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.hucompute.services.uima.database.AbstractWriter;
+import org.hucompute.services.uima.legacy.AbstractWriter;
 
 public class MysqlWriter extends AbstractWriter
 {

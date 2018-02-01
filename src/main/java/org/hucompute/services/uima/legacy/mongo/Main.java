@@ -1,4 +1,4 @@
-package org.hucompute.services.uima.database.mongo;
+package org.hucompute.services.uima.legacy.mongo;
 //package org.apache.uima.mongo;
 //
 //import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;

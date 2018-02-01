@@ -1,4 +1,4 @@
-package org.hucompute.services.uima.database.mongo;
+package org.hucompute.services.uima.legacy.mongo;
 
 import com.mongodb.Bytes;
 import com.mongodb.DBCursor;
@@ -11,7 +11,7 @@ import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.json.JsonCasDeserializer;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
-import org.hucompute.services.uima.database.AbstractCollectionReader;
+import org.hucompute.services.uima.legacy.AbstractCollectionReader;
 import org.json.JSONObject;
 
 import java.io.IOException;

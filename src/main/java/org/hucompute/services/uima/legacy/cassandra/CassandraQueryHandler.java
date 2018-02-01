@@ -1,13 +1,13 @@
-package org.hucompute.services.uima.database.cassandra;
+package org.hucompute.services.uima.legacy.cassandra;
 
 import com.datastax.driver.core.*;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.jcas.JCas;
-import org.hucompute.services.uima.database.AbstractQueryHandler;
-import org.hucompute.services.uima.database.Const.TYPE;
-import org.hucompute.services.uima.database.RequestHandler;
+import org.hucompute.services.uima.legacy.AbstractQueryHandler;
+import org.hucompute.services.uima.legacy.Const.TYPE;
+import org.hucompute.services.uima.legacy.RequestHandler;
 import org.json.JSONObject;
 
 import java.util.*;

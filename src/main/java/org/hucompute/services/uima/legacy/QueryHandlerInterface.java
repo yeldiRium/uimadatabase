@@ -1,4 +1,4 @@
-package org.hucompute.services.uima.database;
+package org.hucompute.services.uima.legacy;
 
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;

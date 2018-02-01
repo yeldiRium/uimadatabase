@@ -1,4 +1,4 @@
-package org.hucompute.services.uima.database.mongo;
+package org.hucompute.services.uima.legacy.mongo;
 
 import java.util.ArrayList;
 import java.util.Collections;

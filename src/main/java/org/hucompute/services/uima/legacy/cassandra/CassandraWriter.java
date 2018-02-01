@@ -1,4 +1,4 @@
-package org.hucompute.services.uima.database.cassandra;
+package org.hucompute.services.uima.legacy.cassandra;
 
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.exceptions.SyntaxError;
@@ -18,7 +18,7 @@ import org.apache.uima.json.JsonCasSerializer;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.hucompute.services.type.WikiDataHyponym;
 import org.hucompute.services.type.Wikify;
-import org.hucompute.services.uima.database.AbstractWriter;
+import org.hucompute.services.uima.legacy.AbstractWriter;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;

@@ -1,4 +1,4 @@
-package org.hucompute.services.uima.database.cassandra;
+package org.hucompute.services.uima.legacy.cassandra;
 
 import com.datastax.driver.core.*;
 

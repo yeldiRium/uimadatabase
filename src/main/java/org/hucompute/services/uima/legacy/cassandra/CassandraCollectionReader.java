@@ -1,4 +1,4 @@
-package org.hucompute.services.uima.database.cassandra;
+package org.hucompute.services.uima.legacy.cassandra;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
@@ -19,7 +19,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
 import org.hucompute.services.type.WikiDataHyponym;
 import org.hucompute.services.type.Wikify;
-import org.hucompute.services.uima.database.AbstractCollectionReader;
+import org.hucompute.services.uima.legacy.AbstractCollectionReader;
 
 import java.io.IOException;
 import java.util.Arrays;

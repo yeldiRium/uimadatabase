@@ -1,4 +1,4 @@
-package org.hucompute.services.uima.database.mongo;
+package org.hucompute.services.uima.legacy.mongo;
 
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -9,7 +9,7 @@ import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.json.JsonCasSerializerModified;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.hucompute.services.uima.database.AbstractWriter;
+import org.hucompute.services.uima.legacy.AbstractWriter;
 
 import java.io.IOException;
 import java.io.StringWriter;

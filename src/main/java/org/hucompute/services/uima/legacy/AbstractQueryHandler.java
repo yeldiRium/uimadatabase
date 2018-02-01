@@ -1,4 +1,4 @@
-package org.hucompute.services.uima.database;
+package org.hucompute.services.uima.legacy;
 
 import org.json.JSONObject;
 
