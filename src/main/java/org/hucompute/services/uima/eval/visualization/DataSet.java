@@ -28,4 +28,9 @@ public class DataSet<T extends Number> {
 	{
 		this.values.add(value);
 	}
+
+	public void addValue(DataSet<T> aDataSet)
+	{
+		this.values.addAll(aDataSet.getValues());
+	}
 }

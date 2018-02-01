@@ -33,7 +33,7 @@ public class GraphToTexWriter
 	 * @param plotColor The color in which the set will be plotted.
 	 * @return A String for use in .tex with the pgfplots library.
 	 */
-	protected String makePlot(DataSet<Number> dataSet, String plotColor)
+	protected static String makePlot(DataSet<Number> dataSet, String plotColor)
 			throws IOException
 	{
 		String template = IOUtils.toString(new FileInputStream(new File(
@@ -66,7 +66,7 @@ public class GraphToTexWriter
 	 * @return
 	 * @throws IOException
 	 */
-	protected String fillGraphTemplate(
+	protected static String fillGraphTemplate(
 			String template,
 			List<DataSet<Number>> data,
 			String title,
@@ -79,9 +79,9 @@ public class GraphToTexWriter
 
 		int colorIndex = 0;
 
-		for (DataSet aDataSet : data)
+		for (DataSet<Number> aDataSet : data)
 		{
-			plots.append(this.makePlot(aDataSet, colors[colorIndex++]));
+			plots.append(makePlot(aDataSet, colors[colorIndex++]));
 			legend.append((legend.length() > 0) ? "," : "")
 					.append(aDataSet.getName());
 		}
@@ -100,7 +100,7 @@ public class GraphToTexWriter
 	 * @param data
 	 * @return
 	 */
-	public String logarithmicGraph(
+	public static String logarithmicGraph(
 			List<DataSet<Number>> data,
 			String title,
 			String xLabel,
@@ -111,7 +111,7 @@ public class GraphToTexWriter
 				"src/main/resources/templates/tex/logarithmicGraph.tex"
 		)));
 
-		return this.fillGraphTemplate(template, data, title, xLabel, yLabel);
+		return fillGraphTemplate(template, data, title, xLabel, yLabel);
 	}
 
 
@@ -121,7 +121,7 @@ public class GraphToTexWriter
 	 * @param data
 	 * @return
 	 */
-	public String linearGraph(
+	public static String linearGraph(
 			List<DataSet<Number>> data,
 			String title,
 			String xLabel,
@@ -132,6 +132,6 @@ public class GraphToTexWriter
 				"src/main/resources/templates/tex/linearGraph.tex"
 		)));
 
-		return this.fillGraphTemplate(template, data, title, xLabel, yLabel);
+		return fillGraphTemplate(template, data, title, xLabel, yLabel);
 	}
 }

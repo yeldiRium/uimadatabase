@@ -58,7 +58,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>libs/</classpathPrefix>
-							<mainClass>org.hucompute.services.uima.eval.main.EvaluationPipeline</mainClass>
+							<mainClass>org.hucompute.services.uima.eval.main.VisualizationPipeline</mainClass>
 							<useUniqueVersions>false</useUniqueVersions>
 						</manifest>
 					</archive>
