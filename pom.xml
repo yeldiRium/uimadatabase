@@ -58,7 +58,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>libs/</classpathPrefix>
-							<mainClass>dbtest.Main</mainClass>
+							<mainClass>org.hucompute.services.uima.eval.main.EvaluationPipeline</mainClass>
 							<useUniqueVersions>false</useUniqueVersions>
 						</manifest>
 					</archive>

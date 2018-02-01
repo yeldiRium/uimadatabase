@@ -1,4 +1,4 @@
 evaluations:
-  - !!uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationA {}
-  - !!uimadatabase.dbtest.evaluationFramework.testEvaluations.TestEvaluationB {}
-outputProvider: !!uimadatabase.dbtest.evaluationFramework.testEvaluations.TestOutputProvider {}
+  - !!org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestEvaluationA {}
+  - !!org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestEvaluationB {}
+outputProvider: !!org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestOutputProvider {}
