@@ -1,7 +1,9 @@
 package org.hucompute.services.uima.eval.evaluation.implementation;
 
 import com.google.common.collect.Sets;
+import org.hucompute.services.uima.eval.database.abstraction.ElementType;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 import org.hucompute.services.uima.eval.database.abstraction.implementation.BenchmarkQueryHandler;
 import org.hucompute.services.uima.eval.database.connection.Connection;
 import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
@@ -17,6 +19,7 @@ import org.hucompute.services.uima.eval.utility.Formatting;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -55,6 +58,7 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			ConnectionResponse connectionResponse, OutputProvider outputProvider
 	) throws IOException
 	{
+		int inputFiles = new File(System.getenv("INPUT_DIR")).list().length;
 		for (Connection connection : connectionResponse.getConnections())
 		{
 			this.dbName =
@@ -140,7 +144,7 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			// Write the results to a file
 			outputProvider.writeJSON(
 					AllComplexQueryEvaluationCase.class.getSimpleName(),
-					this.dbName.toString(),
+					this.dbName.toString() + "_" + inputFiles,
 					stats
 			);
 			logger.info("AllComplexQueryEvaluationCase for Database \""

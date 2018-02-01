@@ -1,27 +1,23 @@
 package org.hucompute.services.uima.eval.evaluation.implementation;
 
-import org.apache.uima.fit.factory.AnalysisEngineFactory;
-import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
-import org.hucompute.services.uima.eval.database.connection.ConnectionResponse;
-import org.hucompute.services.uima.eval.database.connection.Connections;
-import org.hucompute.services.uima.eval.database.connection.Connections;
-import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
-import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
-import org.hucompute.services.uima.eval.evaluation.implementation.collectionWriter.EvaluatingCollectionWriter;
-import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
-import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
-import org.hucompute.services.uima.eval.evaluation.implementation.collectionWriter.EvaluatingCollectionWriter;
 import de.tudarmstadt.ukp.dkpro.core.io.xmi.XmiReader;
 import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.collection.CollectionReader;
+import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
+import org.hucompute.services.uima.eval.database.connection.ConnectionResponse;
+import org.hucompute.services.uima.eval.database.connection.Connections;
+import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
+import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
+import org.hucompute.services.uima.eval.evaluation.implementation.collectionWriter.EvaluatingCollectionWriter;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 import static org.apache.uima.fit.pipeline.SimplePipeline.runPipeline;
 
 /**
@@ -54,6 +50,7 @@ public class AllWriteEvaluationCase implements EvaluationCase
 			OutputProvider outputProvider
 	)
 	{
+		int inputFiles = new File(System.getenv("INPUT_DIR")).list().length;
 		try
 		{
 			for (Connections.DBName dbName : new Connections.DBName[]{
@@ -81,7 +78,7 @@ public class AllWriteEvaluationCase implements EvaluationCase
 				{
 					runPipeline(
 							reader,
-							createWriter(outputProvider, dbName)
+							createWriter(outputProvider, dbName, inputFiles)
 					);
 				} catch (UIMAException | IOException e)
 				{
@@ -116,7 +113,9 @@ public class AllWriteEvaluationCase implements EvaluationCase
 	 *                                         wrong.
 	 */
 	public static AnalysisEngine createWriter(
-			OutputProvider outputProvider, Connections.DBName dbName
+			OutputProvider outputProvider,
+			Connections.DBName dbName,
+			int inputFiles
 	) throws IOException, ResourceInitializationException
 	{
 		return AnalysisEngineFactory.createEngine(
@@ -126,7 +125,7 @@ public class AllWriteEvaluationCase implements EvaluationCase
 				EvaluatingCollectionWriter.PARAM_OUTPUT_FILE,
 				outputProvider.createFile(
 						AllWriteEvaluationCase.class.getSimpleName(),
-						dbName.toString()
+						dbName.toString() + "_" + inputFiles
 				)
 		);
 	}

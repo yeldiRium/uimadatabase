@@ -1,27 +1,22 @@
 package org.hucompute.services.uima.eval.evaluation.implementation;
 
+import org.apache.uima.UIMAException;
+import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
+import org.apache.uima.fit.factory.CollectionReaderFactory;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
 import org.hucompute.services.uima.eval.database.connection.ConnectionResponse;
 import org.hucompute.services.uima.eval.database.connection.Connections;
-import org.hucompute.services.uima.eval.database.connection.Connections;
 import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
 import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
 import org.hucompute.services.uima.eval.evaluation.implementation.collectionReader.EvaluatingCollectionReader;
 import org.hucompute.services.uima.eval.evaluation.implementation.collectionWriter.IdleCollectionWriter;
-import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
-import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
-import org.hucompute.services.uima.eval.evaluation.implementation.collectionReader.EvaluatingCollectionReader;
-import org.hucompute.services.uima.eval.evaluation.implementation.collectionWriter.IdleCollectionWriter;
-import org.apache.uima.UIMAException;
-import org.apache.uima.collection.CollectionReader;
-import org.apache.uima.fit.factory.CollectionReaderFactory;
-import org.apache.uima.resource.ResourceInitializationException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 import static org.apache.uima.fit.pipeline.SimplePipeline.runPipeline;
 
 /**
@@ -54,6 +49,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 			OutputProvider outputProvider
 	)
 	{
+		int inputFiles = new File(System.getenv("INPUT_DIR")).list().length;
 		for (Connections.DBName dbName : new Connections.DBName[]{
 				Connections.DBName.ArangoDB,
 				Connections.DBName.BaseX,
@@ -67,7 +63,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 			{
 				EvaluatingCollectionReader reader =
 						(EvaluatingCollectionReader) createReader(
-								outputProvider, dbName
+								outputProvider, dbName, inputFiles
 						);
 				runPipeline(
 						reader,
@@ -105,7 +101,8 @@ public class AllReadEvaluationCase implements EvaluationCase
 	 */
 	public static CollectionReader createReader(
 			OutputProvider outputProvider,
-			Connections.DBName dbName
+			Connections.DBName dbName,
+			int inputFiles
 	) throws IOException, ResourceInitializationException
 	{
 		return CollectionReaderFactory.createReader(
@@ -115,7 +112,7 @@ public class AllReadEvaluationCase implements EvaluationCase
 				EvaluatingCollectionReader.PARAM_OUTPUT_FILE,
 				outputProvider.createFile(
 						AllReadEvaluationCase.class.getSimpleName(),
-						dbName.toString()
+						dbName.toString() + "_" + inputFiles
 				)
 		);
 	}

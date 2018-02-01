@@ -1,7 +1,9 @@
 package org.hucompute.services.uima.eval.evaluation.implementation;
 
 import com.google.common.collect.Sets;
+import org.hucompute.services.uima.eval.database.abstraction.ElementType;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 import org.hucompute.services.uima.eval.database.abstraction.implementation.BenchmarkQueryHandler;
 import org.hucompute.services.uima.eval.database.connection.Connection;
 import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
@@ -18,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.naming.OperationNotSupportedException;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
@@ -59,6 +62,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 			OutputProvider outputProvider
 	) throws IOException
 	{
+		int inputFiles = new File(System.getenv("INPUT_DIR")).list().length;
 		for (Connection connection : connectionResponse.getConnections())
 		{
 			this.dbName =
@@ -242,7 +246,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 			// Write the results to a file
 			outputProvider.writeJSON(
 					AllCalculateEvaluationCase.class.getSimpleName(),
-					this.dbName.toString(),
+					this.dbName.toString() + "_" + inputFiles,
 					stats
 			);
 			logger.info("AllCalculateEvaluationCase for Database \""

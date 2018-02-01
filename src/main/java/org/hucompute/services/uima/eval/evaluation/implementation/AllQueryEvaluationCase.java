@@ -20,6 +20,7 @@ import org.hucompute.services.uima.eval.utility.Formatting;
 import org.json.JSONObject;
 import org.neo4j.helpers.collection.Iterators;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
@@ -76,6 +77,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			OutputProvider outputProvider
 	) throws IOException
 	{
+		int inputFiles = new File(System.getenv("INPUT_DIR")).list().length;
 		for (Connection connection : connectionResponse.getConnections())
 		{
 			this.dbName =
@@ -226,7 +228,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			// Write the results to a file
 			outputProvider.writeJSON(
 					AllQueryEvaluationCase.class.getSimpleName(),
-					this.dbName.toString(),
+					this.dbName.toString() + "_" + inputFiles,
 					stats
 			);
 			logger.info("AllQueryEvaluationCase for Database \""
