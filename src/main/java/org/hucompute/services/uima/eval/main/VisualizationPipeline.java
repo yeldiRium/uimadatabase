@@ -200,8 +200,8 @@ public class VisualizationPipeline
 					GraphToTexWriter.linearGraph(
 							Lists.newArrayList(entry.getValue().values()),
 							entry.getKey(),
-							"Time [ms]",
-							"Documents"
+							"Documents",
+							"Time [ms]"
 					),
 					new FileOutputStream(graphFile));
 		}
