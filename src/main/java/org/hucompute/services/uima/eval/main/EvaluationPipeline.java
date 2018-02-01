@@ -49,5 +49,6 @@ public class EvaluationPipeline
 			connectionManager.close();
 			logger.info("Connections closed. Exiting...");
 		}
+		System.exit(0);
 	}
 }
