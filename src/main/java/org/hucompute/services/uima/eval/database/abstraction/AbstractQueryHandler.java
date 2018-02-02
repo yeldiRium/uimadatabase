@@ -155,12 +155,18 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 				calculateInverseDocumentFrequenciesForLemmataInDocument(
 						documentId
 				);
+		Map<String, Double> concurrentIdf = new ConcurrentHashMap<>(idf);
 		Map<String, Double> tfidf = new ConcurrentHashMap<>();
 		tf.entrySet().parallelStream().forEach(
-				e -> tfidf.put(
-						e.getKey(),
-						e.getValue() * idf.get(e.getKey())
-				)
+				e -> {
+					if (concurrentIdf.containsKey(e.getKey()))
+					{
+						tfidf.put(
+								e.getKey(),
+								e.getValue() * concurrentIdf.get(e.getKey())
+						);
+					}
+				}
 		);
 		return tfidf;
 	}
