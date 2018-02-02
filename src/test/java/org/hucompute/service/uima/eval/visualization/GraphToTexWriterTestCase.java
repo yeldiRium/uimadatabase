@@ -20,7 +20,7 @@ public class GraphToTexWriterTestCase
 	@Test
 	public void Given_GraphToTexWriterAndTestDataSet_When_WritingLinearGraph_Then_CorrectTexStringIsCreated() throws IOException
 	{
-		DataSet<Number> one = new DataSet<>("one");
+		DataSet<Integer> one = new DataSet<>("one");
 		one.addValue(new Vector<>(Lists.newArrayList(1, 1)));
 		one.addValue(new Vector<>(Lists.newArrayList(2, 2)));
 		one.addValue(new Vector<>(Lists.newArrayList(3, 3)));
@@ -28,7 +28,7 @@ public class GraphToTexWriterTestCase
 		one.addValue(new Vector<>(Lists.newArrayList(5, 5)));
 		one.addValue(new Vector<>(Lists.newArrayList(6, 6)));
 
-		DataSet<Number> two = new DataSet<>("two");
+		DataSet<Integer> two = new DataSet<>("two");
 		two.addValue(new Vector<>(Lists.newArrayList(1, 5)));
 		two.addValue(new Vector<>(Lists.newArrayList(2, 1)));
 		two.addValue(new Vector<>(Lists.newArrayList(3, 3)));
@@ -36,7 +36,7 @@ public class GraphToTexWriterTestCase
 		two.addValue(new Vector<>(Lists.newArrayList(5, 2)));
 		two.addValue(new Vector<>(Lists.newArrayList(6, 2)));
 
-		List<DataSet<Number>> dataList = new ArrayList<>();
+		List<DataSet<Integer>> dataList = new ArrayList<>();
 		dataList.add(one);
 		dataList.add(two);
 
@@ -58,7 +58,7 @@ public class GraphToTexWriterTestCase
 	@Test
 	public void Given_GraphToTexWriterAndTestDataSet_When_WritingLogarithmicGraph_Then_CorrectTexStringIsCreated() throws IOException
 	{
-		DataSet<Number> one = new DataSet<>("one");
+		DataSet<Integer> one = new DataSet<>("one");
 		one.addValue(new Vector<>(Lists.newArrayList(1, 1)));
 		one.addValue(new Vector<>(Lists.newArrayList(2, 2)));
 		one.addValue(new Vector<>(Lists.newArrayList(3, 3)));
@@ -66,7 +66,7 @@ public class GraphToTexWriterTestCase
 		one.addValue(new Vector<>(Lists.newArrayList(5, 5)));
 		one.addValue(new Vector<>(Lists.newArrayList(6, 6)));
 
-		DataSet<Number> two = new DataSet<>("two");
+		DataSet<Integer> two = new DataSet<>("two");
 		two.addValue(new Vector<>(Lists.newArrayList(1, 5)));
 		two.addValue(new Vector<>(Lists.newArrayList(2, 1)));
 		two.addValue(new Vector<>(Lists.newArrayList(3, 3)));
@@ -74,7 +74,7 @@ public class GraphToTexWriterTestCase
 		two.addValue(new Vector<>(Lists.newArrayList(5, 2)));
 		two.addValue(new Vector<>(Lists.newArrayList(6, 2)));
 
-		List<DataSet<Number>> dataList = new ArrayList<>();
+		List<DataSet<Integer>> dataList = new ArrayList<>();
 		dataList.add(one);
 		dataList.add(two);
 

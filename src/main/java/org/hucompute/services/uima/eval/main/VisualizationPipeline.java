@@ -71,7 +71,7 @@ public class VisualizationPipeline
 		// For each of those create (if needed) a Map from DBName to DataSet.
 		// Then create (if needed) the according DataSet and add the current in-
 		// putFileCount and time value.
-		Map<String, Map<String, DataSet<Number>>> plottableResults = fileList
+		Map<String, Map<String, DataSet<Double>>> plottableResults = fileList
 				.parallelStream()
 				.map(file -> {
 					Matcher match = outputFilePattern.matcher(file);
@@ -91,7 +91,7 @@ public class VisualizationPipeline
 				.filter(Objects::nonNull)
 				.collect(
 						ConcurrentHashMap::new,
-						(Map<String, Map<String, DataSet<Number>>> map,
+						(Map<String, Map<String, DataSet<Double>>> map,
 						 OutputFileData fileData) -> {
 							try
 							{
@@ -110,7 +110,7 @@ public class VisualizationPipeline
 									String plotName = fileData.eval + "_" +
 											testName;
 
-									Map<String, DataSet<Number>> plottableSets;
+									Map<String, DataSet<Double>> plottableSets;
 									if (!map.containsKey(plotName))
 									{
 										plottableSets =
@@ -121,7 +121,7 @@ public class VisualizationPipeline
 										plottableSets = map.get(plotName);
 									}
 
-									DataSet<Number> aDataSet;
+									DataSet<Double> aDataSet;
 									if (!plottableSets.containsKey(
 											fileData.dbName
 									))
@@ -138,8 +138,8 @@ public class VisualizationPipeline
 												fileData.dbName
 										);
 									}
-									Vector<Number> aVector = new Vector<>(2, 0);
-									aVector.add(fileData.fileCount);
+									Vector<Double> aVector = new Vector<>(2, 0);
+									aVector.add((double) fileData.fileCount);
 									logger.info("parsing data for " + plotName + " in db " + fileData.dbName);
 									aVector.add(Double.parseDouble(testData.get("avgTime").toString()));
 									aDataSet.addValue(aVector);
@@ -149,15 +149,15 @@ public class VisualizationPipeline
 								e.printStackTrace();
 							}
 						},
-						(Map<String, Map<String, DataSet<Number>>> map1,
-						 Map<String, Map<String, DataSet<Number>>> map2) -> {
+						(Map<String, Map<String, DataSet<Double>>> map1,
+						 Map<String, Map<String, DataSet<Double>>> map2) -> {
 							map2.forEach((testName, testData2) -> {
 								if (!map1.containsKey(testName))
 								{
 									map1.put(testName, testData2);
 								} else
 								{
-									Map<String, DataSet<Number>> testData1 =
+									Map<String, DataSet<Double>> testData1 =
 											map1.get(testName);
 									testData2.forEach((dbName, dataSet) -> {
 										if (!testData1.containsKey(dbName))
@@ -174,7 +174,7 @@ public class VisualizationPipeline
 						}
 				);
 
-		for (Map.Entry<String, Map<String, DataSet<Number>>> entry :
+		for (Map.Entry<String, Map<String, DataSet<Double>>> entry :
 				plottableResults.entrySet())
 		{
 			File graphDir =

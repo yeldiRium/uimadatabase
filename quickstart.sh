@@ -31,7 +31,8 @@ mkdir ~/nlpdbeval_data/pdfs
 cd $(mktemp -d)
 for filename in ~/nlpdbeval_data/output/graphs/*.tex
 do
-	pdflatex -interaction batchmode $filename
+	pdflatex -interaction batchmode $filename >/dev/null
+	echo "$filename converted"
 done
 
 mv *.pdf ~/nlpdbeval_data/pdfs

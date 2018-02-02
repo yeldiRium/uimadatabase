@@ -1,10 +1,11 @@
 package org.hucompute.services.uima.eval.visualization;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
-public class DataSet<T extends Number> {
+public class DataSet<T extends Number & Comparable> {
 	String name;
 	List<Vector<T>> values;
 
@@ -27,6 +28,7 @@ public class DataSet<T extends Number> {
 	public void addValue(Vector<T> value)
 	{
 		this.values.add(value);
+		this.values.sort(Comparator.comparing(v -> v.get(0)));
 	}
 
 	public void addValue(DataSet<T> aDataSet)

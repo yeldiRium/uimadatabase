@@ -39,7 +39,7 @@ public class GraphToTexWriter
 	 * @param plotColor The color in which the set will be plotted.
 	 * @return A String for use in .tex with the pgfplots library.
 	 */
-	protected static String makePlot(DataSet<Number> dataSet, String plotColor)
+	protected static <T extends Number & Comparable> String makePlot(DataSet<T> dataSet, String plotColor)
 			throws IOException
 	{
 		String template = IOUtils.toString(new FileInputStream(new File(
@@ -47,7 +47,7 @@ public class GraphToTexWriter
 		)));
 		StringBuilder plotLineBuilder = new StringBuilder();
 
-		for (Vector<Number> v : dataSet.getValues())
+		for (Vector<T> v : dataSet.getValues())
 		{
 			plotLineBuilder.append(String.format(
 					"(%1$s,%2$s)%n", v.get(0), v.get(1))
@@ -72,9 +72,9 @@ public class GraphToTexWriter
 	 * @return
 	 * @throws IOException
 	 */
-	protected static String fillGraphTemplate(
+	protected static <T extends Number & Comparable> String fillGraphTemplate(
 			String template,
-			List<DataSet<Number>> data,
+			List<DataSet<T>> data,
 			String title,
 			String xLabel,
 			String yLabel
@@ -85,7 +85,7 @@ public class GraphToTexWriter
 
 		int colorIndex = 0;
 
-		for (DataSet<Number> aDataSet : data)
+		for (DataSet<T> aDataSet : data)
 		{
 			plots.append(makePlot(aDataSet, colors[colorIndex++]));
 			legend.append((legend.length() > 0) ? "," : "")
@@ -106,8 +106,8 @@ public class GraphToTexWriter
 	 * @param data
 	 * @return
 	 */
-	public static String logarithmicGraph(
-			List<DataSet<Number>> data,
+	public static <T extends Number & Comparable> String logarithmicGraph(
+			List<DataSet<T>> data,
 			String title,
 			String xLabel,
 			String yLabel
@@ -127,8 +127,8 @@ public class GraphToTexWriter
 	 * @param data
 	 * @return
 	 */
-	public static String linearGraph(
-			List<DataSet<Number>> data,
+	public static <T extends Number & Comparable> String linearGraph(
+			List<DataSet<T>> data,
 			String title,
 			String xLabel,
 			String yLabel
