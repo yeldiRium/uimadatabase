@@ -493,7 +493,12 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 				"declare variable $docId as xs:string external; " +
 				"let $lemmaCount := fn:count(fn:distinct-values(fn:doc($docId)//type4:Lemma/@value)) " +
 				"let $tokenCount := fn:count(fn:doc($docId)//type4:Token) " +
-				"return ($lemmaCount div $tokenCount)";
+				"return (" +
+				"    if ($tokenCount > 0) then " +
+				"        ($lemmaCount div $tokenCount) " +
+				"    else " +
+				"        0 " +
+				")";
 
 		try (ClientQuery query = this.clientSession.query(queryString))
 		{
