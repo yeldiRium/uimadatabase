@@ -187,7 +187,7 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 				);
 			} catch (DocumentNotFoundException e)
 			{
-				logger.warning("DocumentId " + documentId + " could " +
+				logger.warning("DocumentId \"" + documentId + "\" could " +
 						"not be found in the database, although it was " +
 						"there just a moment ago. Please check for " +
 						"concurrent access.");
