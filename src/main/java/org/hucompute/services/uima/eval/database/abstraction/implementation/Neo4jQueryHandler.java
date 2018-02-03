@@ -1,10 +1,5 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
-import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
-import org.hucompute.services.uima.eval.database.abstraction.ElementType;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
@@ -18,6 +13,7 @@ import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandle
 import org.hucompute.services.uima.eval.database.abstraction.ElementType;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import org.neo4j.driver.v1.*;
 
 import java.util.*;
@@ -703,6 +699,8 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			String documentId
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
+		this.checkIfDocumentExists(documentId);
+
 		ArrayList<String> biGrams = new ArrayList<>();
 		try (Session session = this.driver.session())
 		{
@@ -716,7 +714,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 
 			if (result == null || !result.hasNext())
 			{
-				throw new DocumentNotFoundException();
+				return biGrams;
 			}
 
 			while (result.hasNext())
@@ -763,6 +761,21 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
+		int documentsFound = 0;
+		for (String documentId : documentIds)
+		{
+			try
+			{
+				this.checkIfDocumentExists(documentId);
+				documentsFound++;
+			} catch (DocumentNotFoundException ignored)
+			{
+			}
+		}
+		if (documentsFound == 0) {
+			throw new DocumentNotFoundException();
+		}
+
 		ArrayList<String> biGrams = new ArrayList<>();
 		try (Session session = this.driver.session())
 		{
@@ -776,7 +789,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 
 			if (result == null || !result.hasNext())
 			{
-				throw new DocumentNotFoundException();
+				return biGrams;
 			}
 
 			while (result.hasNext())
@@ -797,6 +810,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	public Iterable<String> getTriGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
+		this.checkIfDocumentExists(documentId);
 		ArrayList<String> triGrams = new ArrayList<>();
 		try (Session session = this.driver.session())
 		{
@@ -810,7 +824,8 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 
 			if (result == null || !result.hasNext())
 			{
-				throw new DocumentNotFoundException();
+				// Probably no Tokens in the document.
+				return triGrams;
 			}
 
 			while (result.hasNext())
@@ -865,6 +880,21 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
+		int documentsFound = 0;
+		for (String documentId : documentIds)
+		{
+			try
+			{
+				this.checkIfDocumentExists(documentId);
+				documentsFound++;
+			} catch (DocumentNotFoundException ignored)
+			{
+			}
+		}
+		if (documentsFound == 0) {
+			throw new DocumentNotFoundException();
+		}
+
 		ArrayList<String> triGrams = new ArrayList<>();
 		try (Session session = this.driver.session())
 		{
@@ -878,7 +908,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 
 			if (result == null || !result.hasNext())
 			{
-				throw new DocumentNotFoundException();
+				return triGrams;
 			}
 
 			while (result.hasNext())
