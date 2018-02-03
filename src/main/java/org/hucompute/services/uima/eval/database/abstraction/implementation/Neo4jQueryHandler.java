@@ -440,7 +440,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			{
 				if (anException instanceof DocumentNotFoundException)
 				{
-					throw new DocumentNotFoundException();
+					throw (DocumentNotFoundException) anException;
 				}
 				throw new QHException(anException);
 			}
@@ -648,7 +648,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 
 			if (result == null || !result.hasNext())
 			{
-				throw new DocumentNotFoundException();
+				return rtf;
 			}
 
 			while (result.hasNext())
