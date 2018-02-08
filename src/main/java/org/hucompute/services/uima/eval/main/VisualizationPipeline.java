@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.hucompute.services.uima.eval.utility.logging.PlainFormatter;
 import org.hucompute.services.uima.eval.visualization.DataSet;
 import org.hucompute.services.uima.eval.visualization.GraphToTexWriter;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -147,6 +148,8 @@ public class VisualizationPipeline
 							} catch (IOException e)
 							{
 								e.printStackTrace();
+							} catch (JSONException ignored)
+							{
 							}
 						},
 						(Map<String, Map<String, DataSet<Double>>> map1,
