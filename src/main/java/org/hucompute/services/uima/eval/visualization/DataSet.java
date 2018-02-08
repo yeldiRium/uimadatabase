@@ -34,5 +34,6 @@ public class DataSet<T extends Number & Comparable> {
 	public void addValue(DataSet<T> aDataSet)
 	{
 		this.values.addAll(aDataSet.getValues());
+		this.values.sort(Comparator.comparing(v -> v.get(0)));
 	}
 }
