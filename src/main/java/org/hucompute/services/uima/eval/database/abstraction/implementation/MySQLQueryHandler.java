@@ -1,5 +1,6 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
 import org.hucompute.services.uima.eval.database.abstraction.ElementType;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
@@ -10,11 +11,14 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.neo4j.driver.v1.Session;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -157,13 +161,28 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	@Override
 	public void storeJCasDocument(JCas document)
 	{
-
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
+		String createDocument = "INSERT INTO " + ElementType.Document + " " +
+				"VALUES ( ?, ?, ?);";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(createDocument))
+		{
+			aStatement.setString(1, documentId);
+			aStatement.setString(2, document.getDocumentText());
+			aStatement.setString(3, document.getDocumentLanguage());
+			aStatement.executeUpdate();
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
 	public void storeJCasDocuments(Iterable<JCas> documents)
 	{
-
+		documents.forEach(this::storeJCasDocument);
 	}
 
 	@Override
