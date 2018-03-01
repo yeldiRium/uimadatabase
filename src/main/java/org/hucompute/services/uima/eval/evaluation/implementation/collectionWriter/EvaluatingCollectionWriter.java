@@ -195,6 +195,12 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		// later on.
 		JSONObject statisticsJSON = new JSONObject();
 		statisticsJSON.put(
+				"hierarchy",
+				Formatting.createOutputForMethod(
+						"storeDocumentHierarchy", queryHandler
+				)
+		);
+		statisticsJSON.put(
 				"document",
 				Formatting.createOutputForMethod(
 						"storeJCasDocument", queryHandler

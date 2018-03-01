@@ -1,11 +1,5 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
-import org.hucompute.services.uima.eval.database.abstraction.ElementType;
-import org.hucompute.services.uima.eval.database.abstraction.QueryHandlerInterface;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -15,6 +9,8 @@ import org.hucompute.services.uima.eval.database.abstraction.ElementType;
 import org.hucompute.services.uima.eval.database.abstraction.QueryHandlerInterface;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.IOException;
@@ -113,121 +109,162 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
-	public void storeJCasDocument(JCas document) throws QHException
+	public void storeDocumentHierarchy(JCas document) throws QHException
 	{
 		long start = System.currentTimeMillis();
-		this.subjectQueryHandler.storeJCasDocument(document);
+		this.subjectQueryHandler.storeDocumentHierarchy(document);
+		long end = System.currentTimeMillis();
+		MethodBenchmark mb = this.methodBenchmarks
+				.get("storeDocumentHierarchy");
+		mb.increaseCallCount();
+		mb.addCallTime(end - start);
+	}
+
+	@Override
+	public String storeJCasDocument(JCas document) throws QHException
+	{
+		long start = System.currentTimeMillis();
+		String documentId = this.subjectQueryHandler
+				.storeJCasDocument(document);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get("storeJCasDocument");
 		mb.increaseCallCount();
 		mb.addCallTime(end - start);
+
+		return documentId;
 	}
 
 	@Override
-	public void storeJCasDocuments(Iterable<JCas> documents) throws QHException
+	public Iterable<String> storeJCasDocuments(Iterable<JCas> documents)
+			throws QHException
 	{
 		long start = System.currentTimeMillis();
-		this.subjectQueryHandler.storeJCasDocuments(documents);
+		Iterable<String> documentIds = this.subjectQueryHandler
+				.storeJCasDocuments(documents);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get("storeJCasDocuments");
 		mb.increaseCallCount();
 		mb.addCallTime(end - start);
+
+		return documentIds;
 	}
 
 	@Override
-	public void storeParagraph(
-			Paragraph paragraph, JCas document, Paragraph previousParagraph
+	public String storeParagraph(
+			Paragraph paragraph,
+			String documentId,
+			String previousParagraphId
 	)
 	{
 		long start = System.currentTimeMillis();
-		this.subjectQueryHandler.storeParagraph(
-				paragraph, document, previousParagraph
+		String paragraphId = this.subjectQueryHandler.storeParagraph(
+				paragraph, documentId, previousParagraphId
 		);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get("storeParagraph");
 		mb.increaseCallCount();
 		mb.addCallTime(end - start);
+
+		return paragraphId;
 	}
 
 	/**
 	 * Is not benchmarked, since it is only a virtual default method.
 	 *
-	 * @param paragraph The Paragraph.
-	 * @param document  The document in which the paragraph occurs.
+	 * @param paragraph  The Paragraph.
+	 * @param documentId The id of the document in which the paragraph
+	 *                   occurs.
+	 * @return The Paragraph's id.
 	 */
 	@Override
-	public void storeParagraph(Paragraph paragraph, JCas document)
+	public String storeParagraph(Paragraph paragraph, String documentId)
 	{
-		this.subjectQueryHandler.storeParagraph(paragraph, document);
+		return this.subjectQueryHandler.storeParagraph(paragraph, documentId);
 	}
 
 	@Override
-	public void storeSentence(
+	public String storeSentence(
 			Sentence sentence,
-			JCas document,
-			Paragraph paragraph,
-			Sentence previousSentence
+			String documentId,
+			String paragraphId,
+			String previousSentenceId
 	)
 	{
 		long start = System.currentTimeMillis();
-		this.subjectQueryHandler.storeSentence(
-				sentence, document, paragraph, previousSentence
+		String sentenceId = this.subjectQueryHandler.storeSentence(
+				sentence, documentId, paragraphId, previousSentenceId
 		);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get("storeSentence");
 		mb.increaseCallCount();
 		mb.addCallTime(end - start);
+
+		return sentenceId;
 	}
 
 	/**
 	 * Is not benchmarked, since it is only a virtual default method.
 	 *
-	 * @param sentence  The Sentence.
-	 * @param document  The Document in which the entence occurs.
-	 * @param paragraph The Paragraph, in which the Sentence occurs.
+	 * @param sentence    The Sentence.
+	 * @param documentId  The id of the document in which the paragraph
+	 *                    occurs.
+	 * @param paragraphId The id of the Paragraph in which the Sentence occurs.
+	 * @return The Sentence's id.
 	 */
 	@Override
-	public void storeSentence(
-			Sentence sentence, JCas document, Paragraph paragraph
+	public String storeSentence(
+			Sentence sentence,
+			String documentId,
+			String paragraphId
 	)
 	{
-		this.subjectQueryHandler.storeSentence(sentence, document, paragraph);
+		return this.subjectQueryHandler.storeSentence(
+				sentence, documentId, paragraphId
+		);
 	}
 
 	@Override
-	public void storeToken(
+	public String storeToken(
 			Token token,
-			JCas document,
-			Paragraph paragraph,
-			Sentence sentence,
-			Token previousToken
+			String documentId,
+			String paragraphId,
+			String sentenceId,
+			String previousTokenId
 	)
 	{
 		long start = System.currentTimeMillis();
-		this.subjectQueryHandler.storeToken(
-				token, document, paragraph, sentence, previousToken
+		String tokenId = this.subjectQueryHandler.storeToken(
+				token, documentId, paragraphId, sentenceId, previousTokenId
 		);
 		long end = System.currentTimeMillis();
 		MethodBenchmark mb = this.methodBenchmarks.get("storeToken");
 		mb.increaseCallCount();
 		mb.addCallTime(end - start);
+
+		return tokenId;
 	}
 
 	/**
 	 * Is not benchmarked, since it is only a virtual default method.
 	 *
-	 * @param token     The Token.
-	 * @param document  The Document in which the Token occurs.
-	 * @param paragraph The Paragraph, in which the Token occurs.
-	 * @param sentence  The Sentence, in which the Token occurs.
+	 * @param token       The Token.
+	 * @param documentId  The id of the document in which the paragraph
+	 *                    occurs.
+	 * @param paragraphId The id of the Paragraph in which the Sentence
+	 *                    occurs.
+	 * @param sentenceId  The id of the Sentence in which the Token occurs.
+	 * @return The Token's id.
 	 */
 	@Override
-	public void storeToken(
-			Token token, JCas document, Paragraph paragraph, Sentence sentence
+	public String storeToken(
+			Token token,
+			String documentId,
+			String paragraphId,
+			String sentenceId
 	)
 	{
-		this.subjectQueryHandler.storeToken(
-				token, document, paragraph, sentence
+		return this.subjectQueryHandler.storeToken(
+				token, documentId, paragraphId, sentenceId
 		);
 	}
 
@@ -448,7 +485,9 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
-	public Map<String, Integer> calculateRawTermFrequenciesInDocument(String documentId) throws DocumentNotFoundException
+	public Map<String, Integer> calculateRawTermFrequenciesInDocument(
+			String documentId
+	) throws DocumentNotFoundException
 	{
 		long start = System.currentTimeMillis();
 		Map<String, Integer> result = this.subjectQueryHandler
@@ -466,7 +505,9 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
-	public Integer calculateRawTermFrequencyForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
+	public Integer calculateRawTermFrequencyForLemmaInDocument(
+			String lemma, String documentId
+	) throws DocumentNotFoundException
 	{
 		long start = System.currentTimeMillis();
 		Integer result = this.subjectQueryHandler
