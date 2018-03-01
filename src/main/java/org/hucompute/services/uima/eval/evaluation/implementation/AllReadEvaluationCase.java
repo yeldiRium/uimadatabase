@@ -51,9 +51,10 @@ public class AllReadEvaluationCase implements EvaluationCase
 	{
 		int inputFiles = new File(System.getenv("INPUT_DIR")).list().length;
 		for (Connections.DBName dbName : new Connections.DBName[]{
-				Connections.DBName.ArangoDB,
-				Connections.DBName.BaseX,
-				Connections.DBName.Neo4j
+//				Connections.DBName.ArangoDB,
+//				Connections.DBName.BaseX,
+				Connections.DBName.MySQL,
+//				Connections.DBName.Neo4j
 		})
 		{
 			logger.info("Starting AllReadEvaluationCase for Database \""

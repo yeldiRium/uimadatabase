@@ -1,24 +1,18 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
-import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
-import org.hucompute.services.uima.eval.database.abstraction.ElementType;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
+import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
+import org.hucompute.services.uima.eval.database.abstraction.ElementType;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
-import org.neo4j.driver.v1.Session;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -119,7 +113,7 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			aStatement.executeUpdate(createPosTable);
 			aStatement.executeUpdate(createTokenLemmaMap);
 			aStatement.executeUpdate(createDocumentLemmaMap);
-			} catch (SQLException e)
+		} catch (SQLException e)
 		{
 			throw new QHException(e);
 		}
@@ -164,6 +158,7 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
 		String createDocument = "INSERT INTO " + ElementType.Document + " " +
+				"(`id`, `text`, `language`) " +
 				"VALUES ( ?, ?, ?);";
 		try (PreparedStatement aStatement =
 				     this.connection.prepareStatement(createDocument))
@@ -190,13 +185,64 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			Paragraph paragraph, JCas document, Paragraph previousParagraph
 	)
 	{
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
 
+		// MySQL id field can't have value -1. So if it is still -1 after the
+		// query for the previousParagraph, none exists.
+		int previousParagraphId = -1;
+		if (previousParagraph != null)
+		{
+			String selectPrevious = "SELECT id FROM " + ElementType.Paragraph +
+					" WHERE documentId = ? AND begin = ? AND end = ?;";
+			try (PreparedStatement aStatement =
+					     this.connection.prepareStatement(selectPrevious))
+			{
+				aStatement.setString(1, documentId);
+				aStatement.setInt(2, previousParagraph.getBegin());
+				aStatement.setInt(3, previousParagraph.getEnd());
+				ResultSet previousParagraphResult = aStatement.executeQuery();
+				if (previousParagraphResult.next())
+				{
+					previousParagraphId = previousParagraphResult.getInt("id");
+				}
+			} catch (SQLException e)
+			{
+				e.printStackTrace();
+				throw new QHException(e);
+			}
+		}
+
+		String insertParagraph = "INSERT INTO " + ElementType.Paragraph +
+				" (`documentId`, `previousParagraphId`, `begin`, `end`) " +
+				" VALUES (?, ?, ?, ?);";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(insertParagraph))
+		{
+			aStatement.setString(1, documentId);
+			aStatement.setInt(3, paragraph.getBegin());
+			aStatement.setInt(4, paragraph.getEnd());
+
+			if (previousParagraphId == -1)
+			{
+				aStatement.setNull(2, Types.BIGINT);
+			} else
+			{
+				aStatement.setInt(2, previousParagraphId);
+			}
+
+			aStatement.executeUpdate();
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
 	public void storeParagraph(Paragraph paragraph, JCas document)
 	{
-
+		this.storeParagraph(paragraph, document, null);
 	}
 
 	@Override
@@ -207,7 +253,59 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			Sentence previousSentence
 	)
 	{
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
 
+		// MySQL id field can't have value -1. So if it is still -1 after the
+		// query for the previousSentence, none exists.
+		int previousSentenceId = -1;
+		if (previousSentence != null)
+		{
+			String selectPrevious = "SELECT id FROM " + ElementType.Sentence +
+					" WHERE documentId = ? AND paragraphId = ? AND begin = ? AND end = ?;";
+			try (PreparedStatement aStatement =
+					     this.connection.prepareStatement(selectPrevious))
+			{
+				aStatement.setString(1, documentId);
+				aStatement.setInt(2, /*get id for paragraph*/);
+				aStatement.setInt(3, previousSentence.getBegin());
+				aStatement.setInt(4, previousSentence.getEnd());
+				ResultSet previousSentenceResult = aStatement.executeQuery();
+				if (previousSentenceResult.next())
+				{
+					previousSentenceId = previousSentenceResult.getInt("id");
+				}
+			} catch (SQLException e)
+			{
+				e.printStackTrace();
+				throw new QHException(e);
+			}
+		}
+
+		String insertSentence = "INSERT INTO " + ElementType.Sentence +
+				" (`documentId`, `previousSentenceId`, `begin`, `end`) " +
+				" VALUES (?, ?, ?, ?);";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(insertSentence))
+		{
+			aStatement.setString(1, documentId);
+			aStatement.setInt(3, paragraph.getBegin());
+			aStatement.setInt(4, paragraph.getEnd());
+
+			if (previousSentenceId == -1)
+			{
+				aStatement.setNull(2, Types.BIGINT);
+			} else
+			{
+				aStatement.setInt(2, previousSentenceId);
+			}
+
+			aStatement.executeUpdate();
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override

@@ -1,17 +1,13 @@
 package org.hucompute.services.uima.eval.evaluation.implementation;
 
 import com.google.common.collect.Sets;
-import org.hucompute.services.uima.eval.database.abstraction.ElementType;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 import org.hucompute.services.uima.eval.database.abstraction.implementation.BenchmarkQueryHandler;
 import org.hucompute.services.uima.eval.database.connection.Connection;
 import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
 import org.hucompute.services.uima.eval.database.connection.ConnectionResponse;
 import org.hucompute.services.uima.eval.database.connection.Connections;
-import org.hucompute.services.uima.eval.database.connection.implementation.ArangoDBConnection;
-import org.hucompute.services.uima.eval.database.connection.implementation.BaseXConnection;
-import org.hucompute.services.uima.eval.database.connection.implementation.Neo4jConnection;
+import org.hucompute.services.uima.eval.database.connection.implementation.MySQLConnection;
 import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
 import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
 import org.hucompute.services.uima.eval.utility.Collections;
@@ -47,12 +43,12 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	public ConnectionRequest requestConnection()
 	{
 		ConnectionRequest connectionRequest = new ConnectionRequest();
-		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
-		connectionRequest.addRequestedConnection(BaseXConnection.class);
+//		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
+//		connectionRequest.addRequestedConnection(BaseXConnection.class);
 //		connectionRequest.addRequestedConnection(CassandraConnection.class);
 //		connectionRequest.addRequestedConnection(MongoDBConnection.class);
-//		connectionRequest.addRequestedConnection(MySQLConnection.class);
-		connectionRequest.addRequestedConnection(Neo4jConnection.class);
+		connectionRequest.addRequestedConnection(MySQLConnection.class);
+//		connectionRequest.addRequestedConnection(Neo4jConnection.class);
 		return connectionRequest;
 	}
 
