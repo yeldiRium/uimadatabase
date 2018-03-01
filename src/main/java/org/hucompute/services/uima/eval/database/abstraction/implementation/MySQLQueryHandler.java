@@ -1,10 +1,13 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
 import org.hucompute.services.uima.eval.database.abstraction.ElementType;
@@ -12,9 +15,7 @@ import org.hucompute.services.uima.eval.database.abstraction.exceptions.Document
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
 
 import java.sql.*;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MySQLQueryHandler extends AbstractQueryHandler
 {
@@ -42,9 +43,9 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 					"  PRIMARY KEY (id) " +
 					")";
 			String createParagraphTable = "CREATE TABLE " + ElementType.Paragraph + " ( " +
-					"  id BIGINT NOT NULL AUTO_INCREMENT, " +
+					"  id VARCHAR(36) NOT NULL, " +
 					"  documentId VARCHAR(50) NOT NULL, " +
-					"  previousParagraphId BIGINT NOT NULL, " +
+					"  previousParagraphId VARCHAR(36), " +
 					"  begin INT NOT NULL, " +
 					"  end INT NOT NULL, " +
 					"  PRIMARY KEY (id), " +
@@ -52,10 +53,10 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 					"  FOREIGN KEY (previousParagraphId) REFERENCES " + ElementType.Paragraph + "(id) " +
 					")";
 			String createSentenceTable = "CREATE TABLE " + ElementType.Sentence + " ( " +
-					"  id BIGINT NOT NULL AUTO_INCREMENT, " +
-					"  paragraphId BIGINT NOT NULL, " +
+					"  id VARCHAR(36) NOT NULL, " +
+					"  paragraphId VARCHAR(36) NOT NULL, " +
 					"  documentId VARCHAR(50) NOT NULL, " +
-					"  previousSentenceId BIGINT NOT NULL, " +
+					"  previousSentenceId VARCHAR(36), " +
 					"  begin INT NOT NULL, " +
 					"  end INT NOT NULL, " +
 					"  PRIMARY KEY (id), " +
@@ -64,11 +65,11 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 					"  FOREIGN KEY (previousSentenceId) REFERENCES " + ElementType.Sentence + "(id) " +
 					")";
 			String createTokenTable = "CREATE TABLE " + ElementType.Token + " ( " +
-					"  id BIGINT NOT NULL AUTO_INCREMENT, " +
-					"  sentenceId BIGINT NOT NULL, " +
-					"  paragraphId BIGINT NOT NULL, " +
+					"  id VARCHAR(36) NOT NULL, " +
+					"  sentenceId VARCHAR(36) NOT NULL, " +
+					"  paragraphId VARCHAR(36) NOT NULL, " +
 					"  documentId VARCHAR(50) NOT NULL, " +
-					"  previousTokenId BIGINT NOT NULL, " +
+					"  previousTokenId VARCHAR(36), " +
 					"  value VARCHAR(255) NOT NULL, " +
 					"  begin INT NOT NULL, " +
 					"  end INT NOT NULL, " +
@@ -79,27 +80,21 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 					"  FOREIGN KEY (previousTokenId) REFERENCES " + ElementType.Token + "(id) " +
 					")";
 			String createLemmaTable = "CREATE TABLE " + ElementType.Lemma + " ( " +
-					"  id BIGINT NOT NULL AUTO_INCREMENT, " +
+					"  id VARCHAR(36) NOT NULL, " +
 					"  value VARCHAR(255) NOT NULL, " +
 					"  PRIMARY KEY (id), " +
 					"  UNIQUE(value) " +
 					")";
-			String createPosTable = "CREATE TABLE " + ElementType.Pos + " ( " +
-					"  tokenId BIGINT NOT NULL, " +
-					"  begin INT NOT NULL, " +
-					"  end INT NOT NULL, " +
-					"  FOREIGN KEY (tokenId) REFERENCES " + ElementType.Token + "(id) " +
-					")";
 
 			String createTokenLemmaMap = "CREATE TABLE tokenLemmaMap ( " +
-					"  tokenId BIGINT NOT NULL, " +
-					"  lemmaId BIGINT NOT NULL, " +
+					"  tokenId VARCHAR(36) NOT NULL, " +
+					"  lemmaId VARCHAR(36) NOT NULL, " +
 					"  FOREIGN KEY (tokenId) REFERENCES " + ElementType.Token + "(id), " +
 					"  FOREIGN KEY (lemmaId) REFERENCES " + ElementType.Lemma + "(id) " +
 					")";
 			String createDocumentLemmaMap = "CREATE TABLE documentLemmaMap ( " +
 					"  documentId VARCHAR(50) NOT NULL, " +
-					"  lemmaId BIGINT NOT NULL, " +
+					"  lemmaId VARCHAR(36) NOT NULL, " +
 					"  FOREIGN KEY (documentId) REFERENCES " + ElementType.Document + "(id), " +
 					"  FOREIGN KEY (lemmaId) REFERENCES " + ElementType.Lemma + "(id) " +
 					")";
@@ -110,7 +105,6 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			aStatement.executeUpdate(createSentenceTable);
 			aStatement.executeUpdate(createTokenTable);
 			aStatement.executeUpdate(createLemmaTable);
-			aStatement.executeUpdate(createPosTable);
 			aStatement.executeUpdate(createTokenLemmaMap);
 			aStatement.executeUpdate(createDocumentLemmaMap);
 		} catch (SQLException e)
@@ -132,7 +126,6 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			String clearDocumentLemmaMap = "DELETE FROM documentLemmaMap;";
 
 			String clearLemmata = "DELETE FROM " + ElementType.Lemma + ";";
-			String clearPos = "DELETE FROM " + ElementType.Pos + ";";
 			String clearTokens = "DELETE FROM " + ElementType.Token + " ORDER BY id DESC;";
 			String clearSentences = "DELETE FROM " + ElementType.Sentence + " ORDER BY id DESC;";
 			String clearParagraphs = "DELETE FROM " + ElementType.Paragraph + " ORDER BY id DESC;";
@@ -141,7 +134,6 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			aStatement.executeUpdate(clearTokenLemmaMap);
 			aStatement.executeUpdate(clearDocumentLemmaMap);
 			aStatement.executeUpdate(clearLemmata);
-			aStatement.executeUpdate(clearPos);
 			aStatement.executeUpdate(clearTokens);
 			aStatement.executeUpdate(clearSentences);
 			aStatement.executeUpdate(clearParagraphs);
@@ -157,9 +149,9 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	{
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
-		String createDocument = "INSERT INTO " + ElementType.Document + " " +
-				"(`id`, `text`, `language`) " +
-				"VALUES ( ?, ?, ?);";
+		String createDocument = "INSERT INTO " + ElementType.Document +
+				" (`id`, `text`, `language`)" +
+				" VALUES (?, ?, ?);";
 		try (PreparedStatement aStatement =
 				     this.connection.prepareStatement(createDocument))
 		{
@@ -183,48 +175,27 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			String previousParagraphId
 	)
 	{
-		// MySQL id field can't have value -1. So if it is still -1 after the
-		// query for the previousParagraph, none exists.
-		int previousParagraphId = -1;
-		if (previousParagraphId != null)
-		{
-			String selectPrevious = "SELECT id FROM " + ElementType.Paragraph +
-					" WHERE documentId = ? AND begin = ? AND end = ?;";
-			try (PreparedStatement aStatement =
-					     this.connection.prepareStatement(selectPrevious))
-			{
-				aStatement.setString(1, documentId);
-				aStatement.setInt(2, previousParagraphId.getBegin());
-				aStatement.setInt(3, previousParagraphId.getEnd());
-				ResultSet previousParagraphResult = aStatement.executeQuery();
-				if (previousParagraphResult.next())
-				{
-					previousParagraphId = previousParagraphResult.getInt("id");
-				}
-			} catch (SQLException e)
-			{
-				e.printStackTrace();
-				throw new QHException(e);
-			}
-		}
+		String paragraphId = UUID.randomUUID().toString();
 
 		String insertParagraph = "INSERT INTO " + ElementType.Paragraph +
-				" (`documentId`, `previousParagraphId`, `begin`, `end`) " +
-				" VALUES (?, ?, ?, ?);";
+				" (`id`, `documentId`, `previousParagraphId`, `begin`, `end`)" +
+				" VALUES (?, ?, ?, ?, ?);";
 		try (PreparedStatement aStatement =
 				     this.connection.prepareStatement(insertParagraph))
 		{
-			aStatement.setString(1, documentId);
-			aStatement.setInt(3, paragraph.getBegin());
-			aStatement.setInt(4, paragraph.getEnd());
+			aStatement.setString(1, paragraphId);
+			aStatement.setString(2, documentId);
 
-			if (previousParagraphId == -1)
+			if (previousParagraphId == null)
 			{
-				aStatement.setNull(2, Types.BIGINT);
+				aStatement.setNull(3, Types.VARCHAR);
 			} else
 			{
-				aStatement.setInt(2, previousParagraphId);
+				aStatement.setString(3, previousParagraphId);
 			}
+
+			aStatement.setInt(4, paragraph.getBegin());
+			aStatement.setInt(5, paragraph.getEnd());
 
 			aStatement.executeUpdate();
 		} catch (SQLException e)
@@ -232,6 +203,8 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			e.printStackTrace();
 			throw new QHException(e);
 		}
+
+		return paragraphId;
 	}
 
 	@Override
@@ -242,52 +215,27 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			String previousSentenceId
 	)
 	{
-		final String documentId = DocumentMetaData.get(document)
-				.getDocumentId();
-
-		// MySQL id field can't have value -1. So if it is still -1 after the
-		// query for the previousSentence, none exists.
-		int previousSentenceId = -1;
-		if (previousSentence != null)
-		{
-			String selectPrevious = "SELECT id FROM " + ElementType.Sentence +
-					" WHERE documentId = ? AND paragraphId = ? AND begin = ? AND end = ?;";
-			try (PreparedStatement aStatement =
-					     this.connection.prepareStatement(selectPrevious))
-			{
-				aStatement.setString(1, documentId);
-				aStatement.setInt(2, /*get id for paragraph*/);
-				aStatement.setInt(3, previousSentence.getBegin());
-				aStatement.setInt(4, previousSentence.getEnd());
-				ResultSet previousSentenceResult = aStatement.executeQuery();
-				if (previousSentenceResult.next())
-				{
-					previousSentenceId = previousSentenceResult.getInt("id");
-				}
-			} catch (SQLException e)
-			{
-				e.printStackTrace();
-				throw new QHException(e);
-			}
-		}
-
+		String sentenceId = UUID.randomUUID().toString();
 		String insertSentence = "INSERT INTO " + ElementType.Sentence +
-				" (`documentId`, `previousSentenceId`, `begin`, `end`) " +
-				" VALUES (?, ?, ?, ?);";
+				" (`id`, `documentId`, `paragraphId`, `previousSentenceId`, `begin`, `end`) " +
+				" VALUES (?, ?, ?, ?, ?, ?);";
 		try (PreparedStatement aStatement =
 				     this.connection.prepareStatement(insertSentence))
 		{
-			aStatement.setString(1, documentId);
-			aStatement.setInt(3, paragraph.getBegin());
-			aStatement.setInt(4, paragraph.getEnd());
+			aStatement.setString(1, sentenceId);
+			aStatement.setString(2, documentId);
+			aStatement.setString(3, paragraphId);
 
-			if (previousSentenceId == -1)
+			if (previousSentenceId == null)
 			{
-				aStatement.setNull(2, Types.BIGINT);
+				aStatement.setNull(4, Types.VARCHAR);
 			} else
 			{
-				aStatement.setInt(2, previousSentenceId);
+				aStatement.setString(4, previousSentenceId);
 			}
+
+			aStatement.setInt(5, sentence.getBegin());
+			aStatement.setInt(6, sentence.getEnd());
 
 			aStatement.executeUpdate();
 		} catch (SQLException e)
@@ -296,7 +244,7 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			throw new QHException(e);
 		}
 
-		return null;
+		return sentenceId;
 	}
 
 	@Override
@@ -308,19 +256,206 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			String previousTokenId
 	)
 	{
-		return null;
+		String tokenId = UUID.randomUUID().toString();
+		String insertSentence = "INSERT INTO " + ElementType.Token +
+				" (`id`, `documentId`, `paragraphId`, `sentenceId`, `previousTokenId`, `value`, `begin`, `end`)" +
+				" VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(insertSentence))
+		{
+			aStatement.setString(1, tokenId);
+			aStatement.setString(2, documentId);
+			aStatement.setString(3, paragraphId);
+			aStatement.setString(4, sentenceId);
+
+			if (previousTokenId == null)
+			{
+				aStatement.setNull(5, Types.VARCHAR);
+			} else
+			{
+				aStatement.setString(5, previousTokenId);
+			}
+
+			aStatement.setString(6, token.getCoveredText());
+			aStatement.setInt(7, token.getBegin());
+			aStatement.setInt(8, token.getEnd());
+
+			aStatement.executeUpdate();
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		// Get Lemma ID (and insert, if necessary)
+		String lemmaId = this.getLemmaId(token.getLemma().getValue());
+		// Insert connection from Token to Lemma.
+		String insertTokenLemmaConnection = "INSERT INTO `tokenLemmaMap`" +
+				" (`tokenId`, `lemmaId`)" +
+				" VALUES (?, ?);";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(
+						     insertTokenLemmaConnection
+				     ))
+		{
+			aStatement.setString(1, tokenId);
+			aStatement.setString(2, lemmaId);
+
+			aStatement.executeUpdate();
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		// Insert connection between Document and Lemma, if non exists yet.
+		this.insertDocumentLemmaConnection(documentId, lemmaId);
+
+		return tokenId;
+	}
+
+	/**
+	 * Creates a new Lemma if none with the given value exists.
+	 * Otherwise retrieves the existing one.
+	 *
+	 * @param value The Lemma's value.
+	 * @return The Lemma's id.
+	 */
+	protected String getLemmaId(String value)
+	{
+		String selectLemma = "SELECT `id` FROM " + ElementType.Lemma +
+				" WHERE `value` = ?";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(selectLemma))
+		{
+			aStatement.setString(1, value);
+			ResultSet result = aStatement.executeQuery();
+
+			if (result.next())
+			{
+				// If a Lemma was found, return its id.
+				return result.getString(1);
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		// If no Lemma was found, a new one has to be created.
+		String lemmaId = UUID.randomUUID().toString();
+		String insertLemma = "INSERT INTO " + ElementType.Lemma +
+				" (`id`, `value`)" +
+				" VALUES (?, ?);";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(insertLemma))
+		{
+			aStatement.setString(1, lemmaId);
+			aStatement.setString(2, value);
+
+			aStatement.executeUpdate();
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return lemmaId;
+	}
+
+	/**
+	 * Inserts a connection from Document to Lemma into the table
+	 * documentLemmaMap.
+	 *
+	 * @param documentId
+	 * @param lemmaId
+	 * @return False, if the connection already existed. True otherwise.
+	 */
+	protected boolean insertDocumentLemmaConnection(
+			String documentId, String lemmaId
+	)
+	{
+		String selectConnection = "SELECT `documentId`, `lemmaId` " +
+				" FROM documentLemmaMap" +
+				" WHERE `documentId` = ? AND `lemmaId` = ?;";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(selectConnection))
+		{
+			aStatement.setString(1, documentId);
+			aStatement.setString(2, lemmaId);
+
+			ResultSet result = aStatement.executeQuery();
+
+			if (result.next())
+			{
+				// A Connection exists, nothing to be done here.
+				return false;
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+
+		String insertConnection = "INSERT INTO documentLemmaMap" +
+				" (`documentId`, `lemmaId`)" +
+				" VALUES (?, ?);";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(insertConnection))
+		{
+			aStatement.setString(1, documentId);
+			aStatement.setString(2, lemmaId);
+
+			aStatement.executeUpdate();
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+
+		return true;
 	}
 
 	@Override
-	public void checkIfDocumentExists(String documentId) throws DocumentNotFoundException
+	public void checkIfDocumentExists(String documentId)
+			throws DocumentNotFoundException
 	{
+		String selectDocument = "SELECT * FROM " + ElementType.Document +
+				" WHERE `id` = ?;";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(selectDocument))
+		{
+			aStatement.setString(1, documentId);
 
+			ResultSet result = aStatement.executeQuery();
+
+			if (!result.next())
+			{
+				throw new DocumentNotFoundException();
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
 	public Iterable<String> getDocumentIds()
 	{
-		return null;
+		String selectDocumentIdsQuery = "SELECT `id`" +
+				" FROM " + ElementType.Document + ";";
+		List<String> documentIds = new ArrayList<>();
+		try (Statement aStatement = this.connection.createStatement())
+		{
+			ResultSet result = aStatement.executeQuery(selectDocumentIdsQuery);
+			while (result.next()) {
+				documentIds.add(result.getString(1));
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+		return documentIds;
 	}
 
 	@Override
@@ -333,7 +468,68 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	public void populateCasWithDocument(CAS aCAS, String documentId)
 			throws DocumentNotFoundException, QHException
 	{
+		try
+		{
+			// Retrieve Document
+			String selectDocumentQuery = "SELECT `language`, `text`" +
+					" FROM " + ElementType.Document +
+					" WHERE `id` = ?;";
+			PreparedStatement selectDocumentStatement =
+					this.connection.prepareStatement(selectDocumentQuery);
+			selectDocumentStatement.setString(1, documentId);
+			ResultSet documentResult = selectDocumentStatement.executeQuery();
+			if (!documentResult.next()) {
+				throw new DocumentNotFoundException();
+			}
 
+			// Create Document CAS
+			DocumentMetaData meta = DocumentMetaData.create(aCAS);
+			meta.setDocumentId(documentId);
+			aCAS.setDocumentLanguage(documentResult.getString(1));
+			aCAS.setDocumentText(documentResult.getString(2));
+
+			// Retrieve connected Tokens
+			String selectTokenQuery = "SELECT `begin`, `end`, `value`" +
+					" FROM " + ElementType.Token +
+					" WHERE `documentId` = ?;";
+			PreparedStatement selectTokenStatement =
+					this.connection.prepareStatement(selectTokenQuery);
+			selectTokenStatement.setString(1, documentId);
+			ResultSet tokenResult = selectTokenStatement.executeQuery();
+
+			while (tokenResult.next())
+			{
+				Token xmiToken = new Token(
+						aCAS.getJCas(),
+						tokenResult.getInt(1),
+						tokenResult.getInt(2)
+				);
+
+				Lemma lemma = new Lemma(
+						aCAS.getJCas(),
+						xmiToken.getBegin(),
+						xmiToken.getEnd()
+				);
+				lemma.setValue(tokenResult.getString(3));
+				lemma.addToIndexes();
+				xmiToken.setLemma(lemma);
+
+				POS pos = new POS(
+						aCAS.getJCas(),
+						xmiToken.getBegin(),
+						xmiToken.getEnd()
+				);
+				pos.setPosValue(tokenResult.getString(3));
+				pos.addToIndexes();
+				xmiToken.setPos(pos);
+
+				xmiToken.addToIndexes();
+			}
+		} catch (CASException | SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
