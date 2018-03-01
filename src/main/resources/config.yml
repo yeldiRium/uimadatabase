@@ -1,7 +1,7 @@
 evaluations:
   - !!org.hucompute.services.uima.eval.evaluation.implementation.AllWriteEvaluationCase {}
   - !!org.hucompute.services.uima.eval.evaluation.implementation.AllReadEvaluationCase {}
-#  - !!org.hucompute.services.uima.eval.evaluation.implementation.AllQueryEvaluationCase {}
+  - !!org.hucompute.services.uima.eval.evaluation.implementation.AllQueryEvaluationCase {}
 #  - !!org.hucompute.services.uima.eval.evaluation.implementation.AllCalculateEvaluationCase {}
 #  - !!org.hucompute.services.uima.eval.evaluation.implementation.AllComplexQueryEvaluationCase {}
 outputProvider: !!org.hucompute.services.uima.eval.evaluation.framework.BaseOutputProvider {}
