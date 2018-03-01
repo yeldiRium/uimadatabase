@@ -91,55 +91,58 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public void storeParagraph(
-			Paragraph paragraph, JCas document, Paragraph previousParagraph
+	public String storeParagraph(
+			Paragraph paragraph, String documentId, String paragraphId
 	)
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void storeParagraph(Paragraph paragraph, JCas document)
+	public String storeParagraph(Paragraph paragraph, String documentId)
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void storeSentence(
+	public String storeSentence(
 			Sentence sentence,
-			JCas document,
-			Paragraph paragraph,
-			Sentence previousSentence
+			String documentId,
+			String paragraphId,
+			String previousSentenceId
 	)
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void storeSentence(
+	public String storeSentence(
 			Sentence sentence,
-			JCas document,
-			Paragraph paragraph
+			String documentId,
+			String paragraphId
 	)
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void storeToken(
+	public String storeToken(
 			Token token,
-			JCas document,
-			Paragraph paragraph,
-			Sentence sentence,
-			Token previousToken
+			String documentId,
+			String paragraphId,
+			String sentenceId,
+			String previousTokenId
 	)
 	{
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void storeToken(
-			Token token, JCas document, Paragraph paragraph, Sentence sentence
+	public String storeToken(
+			Token token,
+			String documentId,
+			String paragraphId,
+			String sentenceId
 	)
 	{
 		throw new UnsupportedOperationException();
