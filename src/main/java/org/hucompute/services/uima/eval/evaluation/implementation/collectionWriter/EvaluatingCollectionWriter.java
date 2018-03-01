@@ -115,103 +115,11 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		logger.info(this.currentIndex + " Storing jCas \"" + documentId
 				+ "\" into " + this.dbName + "...");
 		long start = System.currentTimeMillis();
-		try
-		{
-			this.queryHandler.storeJCasDocument(jCas);
-		} catch (QHException e)
-		{
-			logger.severe("There was an error when trying to insert "
-					+ documentId + ".");
-			e.getException().printStackTrace();
-			return;
-		}
 
-		int paragraphCount = 0;
-		int sentenceCount = 0;
-		int tokenCount = 0;
-		JSONObject specificDocumentStatistic = new JSONObject();
+		this.queryHandler.storeDocumentHierarchy(jCas);
 
-		try
-		{
-			/*
-			 * Store each element of the jCas that was annotated as a Para-
-			 * graph.
-			 */
-			Paragraph previousParagraph = null;
-			for (Paragraph paragraph
-					: JCasUtil.select(jCas, Paragraph.class))
-			{
-				this.queryHandler.storeParagraph(
-						paragraph, jCas, previousParagraph
-				);
-				paragraphCount++;
-				previousParagraph = paragraph;
-
-				/*
-				 * Store each element of the jCas that was annotated as a Sen-
-				 * tence and is contained in the current paragraph.
-				 */
-				Sentence previousSentence = null;
-				for (Sentence sentence : JCasUtil.selectCovered(
-						jCas,
-						Sentence.class, paragraph
-				))
-				{
-					this.queryHandler.storeSentence(
-							sentence, jCas, paragraph, previousSentence
-					);
-					sentenceCount++;
-					previousSentence = sentence;
-
-
-					/*
-					 * Store each element of the jCas that was annotated as a
-					 * Token and is contained in the current sentence.
-					 */
-					Token previousToken = null;
-					for (Token token : JCasUtil.selectCovered(
-							jCas, Token.class, sentence
-					))
-					{
-						this.queryHandler.storeToken(
-								token, jCas, paragraph, sentence, previousToken
-						);
-						tokenCount++;
-						previousToken = token;
-					}
-				}
-			}
-		} catch (UnsupportedOperationException e)
-		{
-			specificDocumentStatistic.put(
-					"error", "An insert method was not supported."
-			);
-			specificDocumentStatistic.put(
-					"stackTrace", e.getStackTrace()
-			);
-		}
 		long end = System.currentTimeMillis();
 		long fullInsertTime = end - start;
-
-		specificDocumentStatistic.put(
-				"documentId", documentId
-		);
-		specificDocumentStatistic.put(
-				"paragraphs", paragraphCount
-		);
-		specificDocumentStatistic.put(
-				"sentences", sentenceCount
-		);
-		specificDocumentStatistic.put(
-				"tokens", tokenCount
-		);
-		specificDocumentStatistic.put(
-				"fullInsertTime", fullInsertTime
-		);
-		specificDocumentStatistic.put(
-				"textLength", jCas.getDocumentText().length()
-		);
-		this.specificDocumentStatistics.put(specificDocumentStatistic);
 
 		logger.info("JCas \"" + documentId + "\" processed and stored.");
 		logger.info("Took " + fullInsertTime + "ms.");
@@ -309,10 +217,6 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 				Formatting.createOutputForMethod(
 						"storeToken", queryHandler
 				)
-		);
-		statisticsJSON.put(
-				"specificDocumentStatistics",
-				this.specificDocumentStatistics
 		);
 
 		try (BufferedWriter output =

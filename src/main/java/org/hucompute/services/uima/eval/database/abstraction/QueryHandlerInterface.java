@@ -114,20 +114,32 @@ public interface QueryHandlerInterface
 	//--------------------------------------------------------------------------
 
 	/**
-	 * Stores a JCas document in an appropriate way.
+	 * Stores the full Document hierarchy.
+	 * This includes iteration over Paragraphs, Sentences etc.
 	 *
-	 * @param document The JCas document.
+	 * @param document The Document to insert.
+	 * @throws QHException If anything goes wrong. Encapsulates underlying
+	 *                     Exceptions.
 	 */
-	void storeJCasDocument(JCas document) throws QHException;
+	void storeDocumentHierarchy(JCas document) throws QHException;
 
 	/**
-	 * Stores more than one JCas document at once.
+	 * Stores a JCas Document in an appropriate way.
+	 *
+	 * @param document The JCas Document.
+	 * @return The Document's id.
+	 */
+	String storeJCasDocument(JCas document) throws QHException;
+
+	/**
+	 * Stores more than one JCas Document at once.
 	 * Difference to multiple #storeJCasDocument calls could optionally be im-
 	 * proved performance on some systems.
 	 *
-	 * @param documents An iterable object of documents.
+	 * @param documents An iterable object of Documents.
+	 * @return The Documents' ids.
 	 */
-	void storeJCasDocuments(Iterable<JCas> documents) throws QHException;
+	Iterable<String> storeJCasDocuments(Iterable<JCas> documents) throws QHException;
 
 	/**
 	 * Stores a Paragraph in the database.
@@ -136,8 +148,9 @@ public interface QueryHandlerInterface
 	 * @param documentId          The id of the document in which the paragraph
 	 *                            occurs.
 	 * @param previousParagraphId The predecessing Paragraph's id.
+	 * @return The Paragraph's id.
 	 */
-	void storeParagraph(
+	String storeParagraph(
 			Paragraph paragraph,
 			String documentId,
 			String previousParagraphId
@@ -149,8 +162,9 @@ public interface QueryHandlerInterface
 	 * @param paragraph  The Paragraph.
 	 * @param documentId The id of the document in which the paragraph
 	 *                   occurs.
+	 * @return The Paragraph's id.
 	 */
-	void storeParagraph(Paragraph paragraph, String documentId);
+	String storeParagraph(Paragraph paragraph, String documentId);
 
 	/**
 	 * Stores a Sentence in the database.
@@ -161,8 +175,9 @@ public interface QueryHandlerInterface
 	 * @param paragraphId        The id of the Paragraph in which the Sentence
 	 *                           occurs.
 	 * @param previousSentenceId The predecessing Sentence's id.
+	 * @return The Sentence's id.
 	 */
-	void storeSentence(
+	String storeSentence(
 			Sentence sentence,
 			String documentId,
 			String paragraphId,
@@ -176,8 +191,9 @@ public interface QueryHandlerInterface
 	 * @param documentId  The id of the document in which the paragraph
 	 *                    occurs.
 	 * @param paragraphId The id of the Paragraph in which the Sentence occurs.
+	 * @return The Sentence's id.
 	 */
-	void storeSentence(
+	String storeSentence(
 			Sentence sentence,
 			String documentId,
 			String paragraphId
@@ -193,8 +209,9 @@ public interface QueryHandlerInterface
 	 *                        occurs.
 	 * @param sentenceId      The id of the Sentence in which the Token occurs.
 	 * @param previousTokenId The predecessing Token's id.
+	 * @return The Token's id.
 	 */
-	void storeToken(
+	String storeToken(
 			Token token,
 			String documentId,
 			String paragraphId,
@@ -211,8 +228,9 @@ public interface QueryHandlerInterface
 	 * @param paragraphId The id of the Paragraph in which the Sentence
 	 *                    occurs.
 	 * @param sentenceId  The id of the Sentence in which the Token occurs.
+	 * @return The Token's id.
 	 */
-	void storeToken(
+	String storeToken(
 			Token token,
 			String documentId,
 			String paragraphId,

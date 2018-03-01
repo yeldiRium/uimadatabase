@@ -1,17 +1,18 @@
 package org.hucompute.services.uima.eval.database.abstraction;
 
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import org.apache.uima.fit.util.JCasUtil;
+import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 
 import javax.naming.OperationNotSupportedException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -22,14 +23,92 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 	protected static final Logger logger =
 			Logger.getLogger(AbstractQueryHandler.class.getName());
 
+	@Override
+	public void storeDocumentHierarchy(JCas document) throws QHException
+	{
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
+
+		try
+		{
+			this.storeJCasDocument(document);
+		} catch (QHException e)
+		{
+			logger.severe("There was an error when trying to insert "
+					+ documentId + ".");
+			logger.severe(Arrays.toString(e.getException().getStackTrace()));
+			return;
+		}
+
+		try
+		{
+			/*
+			 * Store each element of the document that was annotated as a Para-
+			 * graph.
+			 */
+			String previousParagraphId = null;
+			for (Paragraph paragraph
+					: JCasUtil.select(document, Paragraph.class))
+			{
+				String paragraphId = this.storeParagraph(
+						paragraph, documentId, previousParagraphId
+				);
+				previousParagraphId = paragraphId;
+
+				/*
+				 * Store each element of the document that was annotated as a
+				 * Sentence and is contained in the current paragraph.
+				 */
+				String previousSentenceId = null;
+				for (Sentence sentence : JCasUtil.selectCovered(
+						document,
+						Sentence.class, paragraph
+				))
+				{
+					String sentenceId = this.storeSentence(
+							sentence,
+							documentId,
+							paragraphId,
+							previousSentenceId
+					);
+					previousSentenceId = sentenceId;
+
+
+					/*
+					 * Store each element of the document that was annotated as
+					 * a Token and is contained in the current sentence.
+					 */
+					String previousTokenId = null;
+					for (Token token : JCasUtil.selectCovered(
+							document, Token.class, sentence
+					))
+					{
+						previousTokenId = this.storeToken(
+								token,
+								documentId,
+								paragraphId,
+								sentenceId,
+								previousTokenId
+						);
+					}
+				}
+			}
+		} catch (UnsupportedOperationException ignored)
+		{
+
+		}
+	}
+
 	/**
 	 * @param paragraph  The Paragraph.
 	 * @param documentId The id of the document in which the paragraph
+	 *                   occurs.
+	 * @return The Paragraph's id.
 	 */
 	@Override
-	public void storeParagraph(Paragraph paragraph, String documentId)
+	public String storeParagraph(Paragraph paragraph, String documentId)
 	{
-		this.storeParagraph(paragraph, documentId, null);
+		return this.storeParagraph(paragraph, documentId, null);
 	}
 
 	/**
@@ -37,15 +116,16 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 	 * @param documentId  The id of the document in which the paragraph
 	 *                    occurs.
 	 * @param paragraphId The id of the Paragraph in which the Sentence occurs.
+	 * @return The Sentence's id.
 	 */
 	@Override
-	public void storeSentence(
+	public String storeSentence(
 			Sentence sentence,
 			String documentId,
 			String paragraphId
 	)
 	{
-		this.storeSentence(
+		return this.storeSentence(
 				sentence, documentId, paragraphId, null
 		);
 	}
@@ -57,16 +137,17 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 	 * @param paragraphId The id of the Paragraph in which the Sentence
 	 *                    occurs.
 	 * @param sentenceId  The id of the Sentence in which the Token occurs.
+	 * @return The Token's id.
 	 */
 	@Override
-	public void storeToken(
+	public String storeToken(
 			Token token,
 			String documentId,
 			String paragraphId,
 			String sentenceId
 	)
 	{
-		storeToken(
+		return this.storeToken(
 				token, documentId, paragraphId, sentenceId, null
 		);
 	}
