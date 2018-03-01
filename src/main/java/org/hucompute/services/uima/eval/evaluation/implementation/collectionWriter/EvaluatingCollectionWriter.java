@@ -68,6 +68,11 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 					.submitRequest(request).get();
 			Connection connection = response
 					.getConnection(connectionClass);
+
+			// Set up Database before writing, since writing is always the first
+			// step when evaluating.
+			connection.getQueryHandler().setUpDatabase();
+
 			this.queryHandler = new BenchmarkQueryHandler(
 					connection.getQueryHandler()
 			);

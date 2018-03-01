@@ -48,17 +48,8 @@ public abstract class Connection
 					LOGGER.fine("Connection for " + this.getClass().getName()
 							+ " successful!");
 					this.createQueryHandler();
-					try
-					{
-						LOGGER.fine("Setting up database...");
-						this.getQueryHandler().setUpDatabase();
-						isEstablished = true;
-						return;
-					} catch (IOException e)
-					{
-						LOGGER.fine("Setting up database for "
-								+ this.getClass().getName() + " failed.");
-					}
+					isEstablished = true;
+					return;
 				} else
 				{
 					LOGGER.fine("Connection for " + this.getClass().getName()
