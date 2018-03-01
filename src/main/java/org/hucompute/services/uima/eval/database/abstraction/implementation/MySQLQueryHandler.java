@@ -897,6 +897,7 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 				"     JOIN tokenLemmaMap AS `tlm`" +
 				"         ON `lemma`.`id` = `tlm`.`lemmaId`" +
 				"         JOIN " + ElementType.Token + " AS `token`" +
+				"             ON `tlm`.`tokenId` = `token`.`id`" +
 				" WHERE `token`.`documentId` = ?" +
 				" GROUP BY `lemma`.`id`;";
 		try (PreparedStatement aStatement =
@@ -904,7 +905,7 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 		{
 			aStatement.setString(1, documentId);
 
-			ResultSet result = aStatement.executeQuery(query);
+			ResultSet result = aStatement.executeQuery();
 
 			while (result.next())
 			{
@@ -930,6 +931,7 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 				"     JOIN tokenLemmaMap AS `tlm`" +
 				"         ON `lemma`.`id` = `tlm`.`lemmaId`" +
 				"         JOIN " + ElementType.Token + " AS `token`" +
+				"             ON `tlm`.`tokenId` = `token`.`id`" +
 				" WHERE `token`.`documentId` = ? AND `lemma`.`value` = ?;";
 		try (PreparedStatement aStatement =
 				     this.connection.prepareStatement(query))
@@ -937,7 +939,7 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			aStatement.setString(1, documentId);
 			aStatement.setString(2, lemma);
 
-			ResultSet result = aStatement.executeQuery(query);
+			ResultSet result = aStatement.executeQuery();
 
 			result.next();
 			return result.getInt(1);
