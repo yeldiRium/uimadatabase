@@ -100,6 +100,22 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 	}
 
 	/**
+	 * Stores multiple Documents at once.
+	 * @param documents An iterable object of Documents.
+	 * @return The Documents' ids.
+	 */
+	@Override
+	public Iterable<String> storeJCasDocuments(Iterable<JCas> documents)
+	{
+		List<String> documentIds = new ArrayList<>();
+		for (JCas document : documents)
+		{
+			documentIds.add(this.storeJCasDocument(document));
+		}
+		return documentIds;
+	}
+
+	/**
 	 * @param paragraph  The Paragraph.
 	 * @param documentId The id of the document in which the paragraph
 	 *                   occurs.

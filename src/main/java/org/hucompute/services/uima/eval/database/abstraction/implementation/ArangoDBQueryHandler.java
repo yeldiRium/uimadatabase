@@ -192,17 +192,6 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public Iterable<String> storeJCasDocuments(Iterable<JCas> documents)
-	{
-		List<String> documentIds = new ArrayList<>();
-		for (JCas document : documents)
-		{
-			documentIds.add(this.storeJCasDocument(document));
-		}
-		return documentIds;
-	}
-
-	@Override
 	public String storeParagraph(
 			Paragraph paragraph, String documentId, String previousParagraphId
 	)

@@ -71,7 +71,7 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public void storeJCasDocument(JCas document) throws QHException
+	public String storeJCasDocument(JCas document) throws QHException
 	{
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
@@ -86,15 +86,8 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 		{
 			throw new QHException(e);
 		}
-	}
 
-	@Override
-	public void storeJCasDocuments(Iterable<JCas> documents) throws QHException
-	{
-		for (JCas document : documents)
-		{
-			this.storeJCasDocument(document);
-		}
+		return documentId;
 	}
 
 	@Override

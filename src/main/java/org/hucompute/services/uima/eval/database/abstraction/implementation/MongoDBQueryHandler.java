@@ -44,12 +44,6 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public void storeJCasDocuments(Iterable<JCas> documents)
-	{
-
-	}
-
-	@Override
 	public void storeParagraph(
 			Paragraph paragraph, JCas document, Paragraph previousParagraph
 	)

@@ -180,12 +180,6 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public void storeJCasDocuments(Iterable<JCas> documents)
-	{
-		documents.forEach(this::storeJCasDocument);
-	}
-
-	@Override
 	public void storeParagraph(
 			Paragraph paragraph, JCas document, Paragraph previousParagraph
 	)

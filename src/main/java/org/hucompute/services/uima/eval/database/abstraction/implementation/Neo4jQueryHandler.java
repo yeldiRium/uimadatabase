@@ -103,18 +103,6 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	}
 
 	/**
-	 * @param documents An iterable object of documents.
-	 */
-	@Override
-	public void storeJCasDocuments(Iterable<JCas> documents)
-	{
-		for (JCas document : documents)
-		{
-			this.storeJCasDocument(document);
-		}
-	}
-
-	/**
 	 * @param paragraph         The Paragraph.
 	 * @param document          The document in which the paragraph occurs.
 	 * @param previousParagraph The predecessing Paragraph.
