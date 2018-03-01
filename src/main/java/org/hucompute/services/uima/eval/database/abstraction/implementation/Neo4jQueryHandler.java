@@ -81,9 +81,10 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 
 	/**
 	 * @param document The JCas document.
+	 * @return The document's id.
 	 */
 	@Override
-	public void storeJCasDocument(JCas document)
+	public String storeJCasDocument(JCas document)
 	{
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
@@ -100,23 +101,28 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 				return 1;
 			});
 		}
+
+		return documentId;
 	}
 
 	/**
-	 * @param paragraph         The Paragraph.
-	 * @param document          The document in which the paragraph occurs.
-	 * @param previousParagraph The predecessing Paragraph.
+	 * @param paragraph           The Paragraph.
+	 * @param documentId          The id of the document in which the paragraph
+	 *                            occurs.
+	 * @param previousParagraphId The predecessing Paragraph's id.
+	 * @return The Paragraph's id.
 	 */
 	@Override
-	public void storeParagraph(
-			Paragraph paragraph, JCas document, Paragraph previousParagraph
+	public String storeParagraph(
+			Paragraph paragraph,
+			String documentId,
+			String previousParagraphId
 	)
 	{
-		final String documentId = DocumentMetaData.get(document)
-				.getDocumentId();
 		try (Session session = this.driver.session())
 		{
-			session.writeTransaction(tx -> {
+			return session.writeTransaction(tx -> {
+				String paragraphId = UUID.randomUUID().toString();
 				Map<String, Object> queryParams = new HashMap<>();
 
 				// Create paragraph (if not exists) and add relationship from
@@ -128,112 +134,115 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 				// exists) to current paragraph.
 				// Match has to be done before the first Merge, so this is split
 				// into two parts.
-				if (previousParagraph != null)
+				if (previousParagraphId != null)
 				{
-					paragraphQuery += "MATCH (p_prev:" + ElementType.Paragraph + " {id:{documentId}, begin:{prevParagraphBegin}, end:{prevParagraphEnd}}) ";
-					queryParams.put("prevParagraphBegin", previousParagraph.getBegin());
-					queryParams.put("prevParagraphEnd", previousParagraph.getEnd());
+					paragraphQuery += "MATCH (p_prev:" + ElementType.Paragraph + " {paragraphId:{previousParagraphId}) ";
+					queryParams.put("previousParagraphId", previousParagraphId);
 				}
 
-				paragraphQuery += "MERGE (p:" + ElementType.Paragraph + " {id:{documentId}, begin:{paragraphBegin}, end:{paragraphEnd}}) "
+				paragraphQuery += "MERGE (p:" + ElementType.Paragraph + " {paragraphId:{paragraphId}, id:{documentId}, begin:{paragraphBegin}, end:{paragraphEnd}}) "
 						+ "MERGE (d)-[:" + Relationship.DocumentHasParagraph + "]->(p)";
+				queryParams.put("paragraphId", paragraphId);
 				queryParams.put("paragraphBegin", paragraph.getBegin());
 				queryParams.put("paragraphEnd", paragraph.getEnd());
 
 				// Continue adding successor relationship.
-				if (previousParagraph != null)
+				if (previousParagraphId != null)
 				{
 					paragraphQuery += "MERGE (p_prev)-[:" + Relationship.NextParagraph + "]->(p)";
 				}
 
 				tx.run(paragraphQuery, queryParams);
 				tx.success();
-				return 1;
+				return paragraphId;
 			});
 		}
 	}
 
 	/**
-	 * @param sentence         The Sentence.
-	 * @param document         The Document in which the entence occurs.
-	 * @param paragraph        The Paragraph, in which the Sentence occurs.
-	 * @param previousSentence The predecessing Sentence.
+	 * @param sentence           The Sentence.
+	 * @param documentId         The id of the document in which the paragraph
+	 *                           occurs.
+	 * @param paragraphId        The id of the Paragraph in which the Sentence
+	 *                           occurs.
+	 * @param previousSentenceId The predecessing Sentence's id.
+	 * @return The Sentence's id.
 	 */
 	@Override
-	public void storeSentence(
+	public String storeSentence(
 			Sentence sentence,
-			JCas document,
-			Paragraph paragraph,
-			Sentence previousSentence
+			String documentId,
+			String paragraphId,
+			String previousSentenceId
 	)
 	{
-		final String documentId = DocumentMetaData.get(document)
-				.getDocumentId();
 		try (Session session = this.driver.session())
 		{
-			session.writeTransaction(tx -> {
+			return session.writeTransaction(tx -> {
+				String sentenceId = UUID.randomUUID().toString();
 				Map<String, Object> queryParams = new HashMap<>();
 
 				// Create sentence (if not exists) and add relationship from
 				// document and to paragraph.
 				String sentenceQuery = "MATCH (d:" + ElementType.Document + " {id:{documentId}}) "
-						+ "MATCH (p:" + ElementType.Paragraph + " {id:{documentId}, begin:{paragraphBegin}, end:{paragraphEnd}}) ";
+						+ "MATCH (p:" + ElementType.Paragraph + " {paragraphId:{paragraphId}}) ";
 				queryParams.put("documentId", documentId);
-				queryParams.put("paragraphBegin", paragraph.getBegin());
-				queryParams.put("paragraphEnd", paragraph.getEnd());
+				queryParams.put("paragraphId", paragraphId);
 
 
 				// Add successor relationship from previous sentence (if
 				// exists) to current sentence.
 				// Match has to be done before the first Merge, so this is split
 				// into two parts.
-				if (previousSentence != null)
+				if (previousSentenceId != null)
 				{
-					sentenceQuery += "MATCH (s_prev:" + ElementType.Sentence + " {id:{documentId}, begin:{prevSentenceBegin}, end:{prevSentenceEnd}}) ";
-					queryParams.put("prevSentenceBegin", previousSentence.getBegin());
-					queryParams.put("prevSentenceEnd", previousSentence.getEnd());
+					sentenceQuery += "MATCH (s_prev:" + ElementType.Sentence + " {sentenceId:{previousSentenceId}}) ";
+					queryParams.put("previousSentenceId", previousSentenceId);
 				}
 
-				sentenceQuery += "MERGE (s:" + ElementType.Sentence + " {id:{documentId}, begin:{sentenceBegin}, end:{sentenceEnd}}) "
+				sentenceQuery += "MERGE (s:" + ElementType.Sentence + " {sentenceId:{sentenceId}, id:{documentId}, begin:{sentenceBegin}, end:{sentenceEnd}}) "
 						+ "MERGE (d)-[:" + Relationship.DocumentHasSentence + "]->(s) "
 						+ "MERGE (s)-[:" + Relationship.SentenceInParagraph + "]->(p) ";
+				queryParams.put("sentenceId", sentenceId);
 				queryParams.put("sentenceBegin", sentence.getBegin());
 				queryParams.put("sentenceEnd", sentence.getEnd());
 
 				// Continue adding successor relationship.
-				if (previousSentence != null)
+				if (previousSentenceId != null)
 				{
 					sentenceQuery += "MERGE (s_prev)-[:" + Relationship.NextSentence + "]->(s)";
 				}
 
 				tx.run(sentenceQuery, queryParams);
 				tx.success();
-				return 1;
+				return sentenceId;
 			});
 		}
 	}
 
 	/**
-	 * @param token         The Token.
-	 * @param document      The id of the document in which the Token occurs.
-	 * @param paragraph     The paragraph, in which the Token occurs.
-	 * @param sentence      The sentence, in which the Token occurs.
-	 * @param previousToken The predecessing Token.
+	 * @param token           The Token.
+	 * @param documentId      The id of the document in which the paragraph
+	 *                        occurs.
+	 * @param paragraphId     The id of the Paragraph in which the Sentence
+	 *                        occurs.
+	 * @param sentenceId      The id of the Sentence in which the Token occurs.
+	 * @param previousTokenId The predecessing Token's id.
+	 * @return The Token's id.
 	 */
 	@Override
-	public void storeToken(
+	public String storeToken(
 			Token token,
-			JCas document,
-			Paragraph paragraph,
-			Sentence sentence,
-			Token previousToken
+			String documentId,
+			String paragraphId,
+			String sentenceId,
+			String previousTokenId
 	)
 	{
-		final String documentId = DocumentMetaData.get(document)
-				.getDocumentId();
 		try (Session session = this.driver.session())
 		{
-			session.writeTransaction(tx -> {
+			return session.writeTransaction(tx -> {
+				String tokenId = UUID.randomUUID().toString();
 				Map<String, Object> queryParams = new HashMap<>();
 
 				// Create token (if not exists) and add relationship
@@ -241,23 +250,19 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 				// Also create Lemma and Pos and add relationships from
 				// Token to them as well as from Document to Lemma.
 				String tokenQuery = "MATCH (d:" + ElementType.Document + " {id:{documentId}}) "
-						+ "MATCH (p:" + ElementType.Paragraph + " {id:{documentId}, begin:{paragraphBegin}, end:{paragraphEnd}}) "
-						+ "MATCH (s:" + ElementType.Sentence + " {id:{documentId}, begin:{sentenceBegin}, end:{sentenceEnd}}) ";
+						+ "MATCH (p:" + ElementType.Paragraph + " {paragraphId:{paragraphId}}) "
+						+ "MATCH (s:" + ElementType.Sentence + " {sentenceId:{sentenceId}}) ";
 				queryParams.put("documentId", documentId);
-				queryParams.put("paragraphBegin", paragraph.getBegin());
-				queryParams.put("paragraphEnd", paragraph.getEnd());
-				queryParams.put("sentenceBegin", sentence.getBegin());
-				queryParams.put("sentenceEnd", sentence.getEnd());
+				queryParams.put("paragraphId", paragraphId);
+				queryParams.put("sentenceId", sentenceId);
 
-				if (previousToken != null)
+				if (previousTokenId != null)
 				{
-					tokenQuery += "MATCH (t_prev:" + ElementType.Token + " {id:{documentId}, begin:{prevTokenBegin}, end:{prevTokenEnd}, value:{prevTokenValue}}) ";
-					queryParams.put("prevTokenBegin", previousToken.getBegin());
-					queryParams.put("prevTokenEnd", previousToken.getEnd());
-					queryParams.put("prevTokenValue", previousToken.getCoveredText());
+					tokenQuery += "MATCH (t_prev:" + ElementType.Token + " {tokenId:{previousTokenId}}) ";
+					queryParams.put("previousTokenId", previousTokenId);
 				}
 
-				tokenQuery += "MERGE (t:" + ElementType.Token + " {id:{documentId}, begin:{tokenBegin}, end:{tokenEnd}, value:{tokenValue}}) "
+				tokenQuery += "MERGE (t:" + ElementType.Token + " {tokenId:{tokenId}, id:{documentId}, begin:{tokenBegin}, end:{tokenEnd}, value:{tokenValue}}) "
 						+ "MERGE (pos:" + ElementType.Pos + " {value:{tokenPosValue}}) "
 						+ "MERGE (l:" + ElementType.Lemma + " {value:{tokenLemmaValue}}) "
 						+ "MERGE (d)-[:" + Relationship.DocumentHasToken + "]->(t) "
@@ -266,20 +271,21 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 						+ "MERGE (t)-[:" + Relationship.TokenHasLemma + "]->(l) "
 						+ "MERGE (t)-[:" + Relationship.TokenAtPos + "]->(pos) "
 						+ "MERGE (d)-[:" + Relationship.DocumentHasLemma + "]->(l)";
+				queryParams.put("tokenId", tokenId);
 				queryParams.put("tokenBegin", token.getBegin());
 				queryParams.put("tokenEnd", token.getEnd());
 				queryParams.put("tokenValue", token.getCoveredText());
 				queryParams.put("tokenPosValue", token.getPos().getPosValue());
 				queryParams.put("tokenLemmaValue", token.getLemma().getValue());
 
-				if (previousToken != null)
+				if (previousTokenId != null)
 				{
 					tokenQuery += "MERGE (t_prev)-[:" + Relationship.NextToken + "]->(t)";
 				}
 
 				tx.run(tokenQuery, queryParams);
 				tx.success();
-				return 1;
+				return tokenId;
 			});
 		}
 	}
@@ -760,7 +766,8 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			{
 			}
 		}
-		if (documentsFound == 0) {
+		if (documentsFound == 0)
+		{
 			throw new DocumentNotFoundException();
 		}
 
@@ -879,7 +886,8 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 			{
 			}
 		}
-		if (documentsFound == 0) {
+		if (documentsFound == 0)
+		{
 			throw new DocumentNotFoundException();
 		}
 
