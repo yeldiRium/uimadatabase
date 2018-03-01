@@ -136,7 +136,7 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 				// into two parts.
 				if (previousParagraphId != null)
 				{
-					paragraphQuery += "MATCH (p_prev:" + ElementType.Paragraph + " {paragraphId:{previousParagraphId}) ";
+					paragraphQuery += "MATCH (p_prev:" + ElementType.Paragraph + " {paragraphId:{previousParagraphId}}) ";
 					queryParams.put("previousParagraphId", previousParagraphId);
 				}
 
