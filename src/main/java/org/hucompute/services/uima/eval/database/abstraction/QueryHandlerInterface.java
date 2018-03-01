@@ -418,7 +418,7 @@ public interface QueryHandlerInterface
 	 * Computes the term frequency without norming for the given lemma in the
 	 * specified document.
 	 *
-	 * @param lemma      The lemma to search for.
+	 * @param lemma      The lemma's value to search for.
 	 * @param documentId The document to calculate frequencies for.
 	 * @return the lemma's term frequency
 	 */

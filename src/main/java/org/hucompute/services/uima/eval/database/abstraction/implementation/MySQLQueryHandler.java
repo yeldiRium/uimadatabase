@@ -6,6 +6,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import org.apache.commons.lang.StringUtils;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
@@ -764,10 +765,9 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 				"     JOIN tokenLemmaMap AS `tlm`" +
 				"         ON `lemma`.`id` = `tlm`.`lemmaId`" +
 				" GROUP BY `lemma`.`id`;";
-		try (PreparedStatement aStatement =
-				     this.connection.prepareStatement(query))
+		try (Statement aStatement = this.connection.createStatement())
 		{
-			ResultSet result = aStatement.executeQuery();
+			ResultSet result = aStatement.executeQuery(query);
 
 			while (result.next())
 			{
@@ -785,17 +785,58 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 		return lemmaOccurenceMap;
 	}
 
+	/**
+	 * For each Document join the Tokens and the tokenLemmaMap.
+	 * Then the amount of rows for each Document is the amount of Lemma
+	 * occurences. To get the amount of different Token values, they have to be
+	 * counted distinctly.
+	 *
+	 * @return Map(String DocumentId, Double TTR - value)
+	 */
 	@Override
 	public Map<String, Double> calculateTTRForAllDocuments()
 	{
-		return null;
+		Map<String, Double> ttrMap = new HashMap<>();
+		String query = "SELECT `document`.`id`," +
+				"     (COUNT(*)/COUNT(DISTINCT `token`.`value`))" +
+				" FROM " + ElementType.Document + " AS `document`" +
+				"     JOIN " + ElementType.Token + " AS `token`" +
+				"         ON `document`.`id` = `token`.`documentId`" +
+				"         JOIN tokenLemmaMap AS `tlm`" +
+				"             ON `token`.`id` = `tlm`.`tokenId`" +
+				" GROUP BY `document`.`id`;";
+		try (Statement aStatement = this.connection.createStatement())
+		{
+			ResultSet result = aStatement.executeQuery(query);
+
+			while (result.next())
+			{
+				ttrMap.put(result.getString(1), result.getDouble(2));
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return ttrMap;
 	}
 
+	/**
+	 * See #calculateTTRForAllDocuments for SQL explanation.
+	 *
+	 * @param documentId The id of the document to get the TTR from.
+	 * @return Map(String DocumentId, Double TTR - value)
+	 * @throws DocumentNotFoundException
+	 */
 	@Override
 	public Double calculateTTRForDocument(String documentId)
 			throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+		return this.calculateTTRForCollectionOfDocuments(
+				Arrays.asList(documentId)
+		).get(documentId);
 	}
 
 	@Override
@@ -803,19 +844,108 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	)
 	{
-		return null;
+		Map<String, Double> ttrMap = new HashMap<>();
+
+		// Since the java driver does not support preparing statements with
+		// arrays of values, we have to generate a fitting amount of prepared
+		// statement markers and iterate over the values.
+		String questionMarks = "(?" +
+				StringUtils.repeat(", ?", documentIds.size() - 1) +
+				")";
+		String query = "SELECT `document`.`id`," +
+				"     (COUNT(*)/COUNT(DISTINCT `token`.`value`))" +
+				" FROM " + ElementType.Document + " AS `document`" +
+				"     JOIN " + ElementType.Token + " AS `token`" +
+				"         ON `document`.`id` = `token`.`documentId`" +
+				"         JOIN tokenLemmaMap AS `tlm`" +
+				"             ON `token`.`id` = `tlm`.`tokenId`" +
+				" WHERE `document`.`id` IN " + questionMarks + "" +
+				" GROUP BY `document`.`id`;";
+
+		int counter = 1;
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(query))
+		{
+			// Loop over document ids and set each to a separate prepared value
+			// slot.
+			for (String documentId : documentIds) {
+				aStatement.setString(counter++, documentId);
+			}
+
+			ResultSet result = aStatement.executeQuery();
+
+			while (result.next()) {
+				ttrMap.put(result.getString(1), result.getDouble(2));
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return ttrMap;
 	}
 
 	@Override
-	public Map<String, Integer> calculateRawTermFrequenciesInDocument(String documentId) throws DocumentNotFoundException
+	public Map<String, Integer> calculateRawTermFrequenciesInDocument(
+			String documentId
+	) throws DocumentNotFoundException
 	{
-		return null;
+		Map<String, Integer> lemmaFrequencyMap = new HashMap<>();
+		String query = "SELECT `lemma`.`value`, COUNT(*)" +
+				" FROM " + ElementType.Lemma + " AS `lemma`" +
+				"     JOIN tokenLemmaMap AS `tlm`" +
+				"         ON `lemma`.`id` = `tlm`.`lemmaId`" +
+				"         JOIN " + ElementType.Token + " AS `token`" +
+				" WHERE `token`.`documentId` = ?" +
+				" GROUP BY `lemma`.`id`;";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(query))
+		{
+			aStatement.setString(1, documentId);
+
+			ResultSet result = aStatement.executeQuery(query);
+
+			while (result.next())
+			{
+				lemmaFrequencyMap.put(
+						result.getString(1),
+						result.getInt(2)
+				);
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return lemmaFrequencyMap;
 	}
 
 	@Override
 	public Integer calculateRawTermFrequencyForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		String query = "SELECT COUNT(*)" +
+				" FROM " + ElementType.Lemma + " AS `lemma`" +
+				"     JOIN tokenLemmaMap AS `tlm`" +
+				"         ON `lemma`.`id` = `tlm`.`lemmaId`" +
+				"         JOIN " + ElementType.Token + " AS `token`" +
+				" WHERE `token`.`documentId` = ? AND `lemma`.`value` = ?;";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(query))
+		{
+			aStatement.setString(1, documentId);
+			aStatement.setString(2, lemma);
+
+			ResultSet result = aStatement.executeQuery(query);
+
+			result.next();
+			return result.getInt(1);
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
