@@ -340,6 +340,12 @@ public interface QueryHandlerInterface
 			TypeHasNoValueException;
 
 	/**
+	 * Returns for each Lemma the amount of connections of the form
+	 * Document->Token->Lemma. Since usually there is always a maximum of one
+	 * connection from a Document to a Lemma (since Lemmata are Singletons and
+	 * connections treated as such), this needs to take the indirection via To-
+	 * kens.
+	 *
 	 * @return Map from lemma value to occurence count.
 	 */
 	Map<String, Integer> countOccurencesForEachLemmaInAllDocuments();

@@ -13,6 +13,7 @@ import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandle
 import org.hucompute.services.uima.eval.database.abstraction.ElementType;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 
 import java.sql.*;
 import java.util.*;
@@ -418,10 +419,10 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	public void checkIfDocumentExists(String documentId)
 			throws DocumentNotFoundException
 	{
-		String selectDocument = "SELECT * FROM " + ElementType.Document +
+		String query = "SELECT * FROM " + ElementType.Document +
 				" WHERE `id` = ?;";
 		try (PreparedStatement aStatement =
-				     this.connection.prepareStatement(selectDocument))
+				     this.connection.prepareStatement(query))
 		{
 			aStatement.setString(1, documentId);
 
@@ -441,13 +442,14 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	@Override
 	public Iterable<String> getDocumentIds()
 	{
-		String selectDocumentIdsQuery = "SELECT `id`" +
-				" FROM " + ElementType.Document + ";";
 		List<String> documentIds = new ArrayList<>();
+		String query = "SELECT `id`" +
+				" FROM " + ElementType.Document + ";";
 		try (Statement aStatement = this.connection.createStatement())
 		{
-			ResultSet result = aStatement.executeQuery(selectDocumentIdsQuery);
-			while (result.next()) {
+			ResultSet result = aStatement.executeQuery(query);
+			while (result.next())
+			{
 				documentIds.add(result.getString(1));
 			}
 		} catch (SQLException e)
@@ -461,7 +463,31 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
 	{
-		return null;
+		Set<String> lemmata = new TreeSet<>();
+		String query = "SELECT `lemma`.`value`" +
+				" FROM " + ElementType.Lemma + " AS `lemma`" +
+				"     JOIN documentLemmaMap AS `dlm`" +
+				"         ON `lemma`.`id` = `dlm`.`lemmaId`" +
+				" WHERE `dlm`.`documentId` = ?;";
+		try (PreparedStatement aStatement = this.connection.prepareStatement(
+				query
+		))
+		{
+			aStatement.setString(1, documentId);
+
+			ResultSet lemmataResult = aStatement.executeQuery();
+
+			while (lemmataResult.next())
+			{
+				lemmata.add(lemmataResult.getString(1));
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return lemmata;
 	}
 
 	@Override
@@ -478,7 +504,8 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 					this.connection.prepareStatement(selectDocumentQuery);
 			selectDocumentStatement.setString(1, documentId);
 			ResultSet documentResult = selectDocumentStatement.executeQuery();
-			if (!documentResult.next()) {
+			if (!documentResult.next())
+			{
 				throw new DocumentNotFoundException();
 			}
 
@@ -535,42 +562,227 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countDocumentsContainingLemma(String lemma)
 	{
-		return 0;
+		String query = "SELECT COUNT(*)" +
+				" FROM " + ElementType.Lemma + " AS `lemma`" +
+				"     JOIN documentLemmaMap AS `dlm`" +
+				"         ON `lemma`.`id` = `dlm`.`lemmaId`" +
+				" WHERE `lemma`.`value` = ?;";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(query))
+		{
+			aStatement.setString(1, lemma);
+
+			ResultSet result = aStatement.executeQuery();
+
+			// Always returns a row with one value.
+			result.next();
+			return result.getInt(1);
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
 	public int countElementsOfType(ElementType type)
 	{
-		return 0;
+		if (type == ElementType.Pos)
+		{
+			// Counting POSs is the same as counting Tokens, so count Tokens.
+			type = ElementType.Token;
+		}
+
+		String query = "SELECT COUNT(*) FROM " + type + ";";
+		try
+		{
+			Statement aStatement = this.connection.createStatement();
+
+			ResultSet result = aStatement.executeQuery(query);
+
+			// Always returns a row with one value.
+			result.next();
+			return result.getInt(1);
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
+	/**
+	 * Since all model tables (except Lemma and Document) have a column
+	 * "documentId", we can select the table dynamically based on type and count
+	 * all rows with the given DocumentId.
+	 * <p>
+	 * In the case of type Lemma, we can use the table "documentLemmaMap" for
+	 * this, since it also has a "documentId" column.
+	 *
+	 * @param documentId The id of the document from which elements are to be
+	 *                   counted.
+	 * @param type       Instance of ElementType, namely Token, Lemma, Pos,
+	 *                   Document, sentence or Paragraph.
+	 * @return An integer.
+	 * @throws DocumentNotFoundException If the document doesn't exist.
+	 */
 	@Override
 	public int countElementsInDocumentOfType(
 			String documentId, ElementType type
 	) throws DocumentNotFoundException
 	{
-		return 0;
+		this.checkIfDocumentExists(documentId);
+
+		if (type == ElementType.Document)
+		{
+			return 1;
+		}
+
+		String tableName = type.toString();
+		if (type == ElementType.Pos)
+		{
+			// Counting POSs is the same as counting Tokens, so count Tokens.
+			tableName = ElementType.Token.toString();
+		}
+		if (type == ElementType.Lemma)
+		{
+			tableName = "documentLemmaMap";
+		}
+
+		String query = "SELECT COUNT(*) FROM " + tableName +
+				" WHERE `documentId` = ?;";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(query))
+		{
+			aStatement.setString(1, documentId);
+
+			ResultSet result = aStatement.executeQuery();
+
+			// Always returns a row with one value.
+			result.next();
+			return result.getInt(1);
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
 	public int countElementsOfTypeWithValue(ElementType type, String value)
-			throws IllegalArgumentException
+			throws IllegalArgumentException, TypeHasNoValueException
 	{
-		return 0;
+		this.checkTypeHasValueField(type);
+		// => type is either Token, Lemma or POS.
+
+		if (type == ElementType.Pos)
+		{
+			// Pos are stored inside Tokens.
+			type = ElementType.Token;
+		}
+
+		String query = "SELECT COUNT(*)" +
+				" FROM " + type +
+				" WHERE `value` = ?;";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(query))
+		{
+			aStatement.setString(1, value);
+
+			ResultSet result = aStatement.executeQuery();
+
+			// Always returns a row with one value.
+			result.next();
+			return result.getInt(1);
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
 	public int countElementsInDocumentOfTypeWithValue(
 			String documentId, ElementType type, String value
-	) throws DocumentNotFoundException
+	) throws DocumentNotFoundException, TypeHasNoValueException
 	{
-		return 0;
+		this.checkTypeHasValueField(type);
+		this.checkIfDocumentExists(documentId);
+		// => type is either Token, Lemma or POS.
+
+		String query;
+		if (type == ElementType.Token || type == ElementType.Pos)
+		{
+			query = "SELECT COUNT(*)" +
+					" FROM " + ElementType.Token +
+					" WHERE `documentId` = ? AND `value` = ?;";
+		} else { // => type == ElementType.Lemma
+			query = "SELECT COUNT(*)" +
+					" FROM " + ElementType.Lemma + " as `lemma`" +
+					"      JOIN documentLemmaMap as `dlm`" +
+					"          ON `lemma`.`id` = `dlm`.`lemmaId`" +
+					" WHERE `dlm`.`documentId` = ? " +
+					"   AND `lemma`.`value` = ?;";
+		}
+
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(query))
+		{
+			aStatement.setString(1, documentId);
+			aStatement.setString(2, value);
+
+			ResultSet result = aStatement.executeQuery();
+
+			// Always returns a row with one value.
+			result.next();
+			return result.getInt(1);
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
+	/**
+	 * Since every Token is connected to exactly one Document (the one it is
+	 * contained in), we do not need to query the Documents and can instead
+	 * count in how many Tokens a Lemma occurs.
+	 * <p>
+	 * Since we have the connection table "tokenLemmaMap", we can count how
+	 * many connections each Lemma has.
+	 * <p>
+	 * This can only be a problem, if there are dangling Tokens (which do not
+	 * have a connection to a Document). However, this should never happen.
+	 *
+	 * @return The amount of occurences of each Lemma an all Documents.
+	 */
 	@Override
 	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
 	{
-		return null;
+		Map<String, Integer> lemmaOccurenceMap = new HashMap<>();
+		String query = "SELECT `lemma`.`value`, COUNT(*)" +
+				" FROM " + ElementType.Lemma + " AS `lemma`" +
+				"     JOIN tokenLemmaMap AS `tlm`" +
+				"         ON `lemma`.`id` = `tlm`.`lemmaId`" +
+				" GROUP BY `lemma`.`id`;";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(query))
+		{
+			ResultSet result = aStatement.executeQuery();
+
+			while (result.next())
+			{
+				lemmaOccurenceMap.put(
+						result.getString(1),
+						result.getInt(2)
+				);
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return lemmaOccurenceMap;
 	}
 
 	@Override

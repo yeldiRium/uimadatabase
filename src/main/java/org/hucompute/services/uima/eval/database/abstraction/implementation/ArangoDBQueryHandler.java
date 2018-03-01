@@ -692,7 +692,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	/**
 	 * Since every Token is connected to exactly one Document (the one it is
 	 * contained in), we do not need to query the Documents and can instead
-	 * count, in how many Tokens a Lemma occurs.
+	 * count in how many Tokens a Lemma occurs.
 	 * <p>
 	 * This can only be a problem, if there are dangling Tokens (which do not
 	 * have a connection to a Document). However, this should never happen.
