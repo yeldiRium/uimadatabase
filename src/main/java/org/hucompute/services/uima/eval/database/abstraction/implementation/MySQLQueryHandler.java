@@ -954,14 +954,62 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	public Iterable<String> getBiGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		List<String> biGramList = new ArrayList<>();
+		String query = "SELECT CONCAT(`a`.`value`, \"-\", `b`.`value`)" +
+				" FROM " + ElementType.Token + " AS `a`" +
+				"     LEFT JOIN " + ElementType.Token + " AS `b`" +
+				"         ON `a`.`id` = `b`.`previousTokenId`" +
+				" WHERE `a`.`documentId` = ?;";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(query))
+		{
+			aStatement.setString(1, documentId);
+
+			ResultSet result = aStatement.executeQuery();
+
+			while (result.next()) {
+				String nextValue = result.getString(1);
+				if (nextValue == null) {
+					continue;
+				}
+				biGramList.add(nextValue);
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return biGramList;
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return null;
+		List<String> biGramList = new ArrayList<>();
+		String query = "SELECT CONCAT(`a`.`value`, \"-\", `b`.`value`)" +
+				" FROM " + ElementType.Token + " AS `a`" +
+				"     LEFT JOIN " + ElementType.Token + " AS `b`" +
+				"         ON `a`.`id` = `b`.`previousTokenId`;";
+		try (Statement aStatement = this.connection.createStatement())
+		{
+			ResultSet result = aStatement.executeQuery(query);
+
+			while (result.next()) {
+				String nextValue = result.getString(1);
+				if (nextValue == null) {
+					continue;
+				}
+				biGramList.add(nextValue);
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return biGramList;
 	}
 
 	@Override
@@ -969,21 +1017,110 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		List<String> biGramList = new ArrayList<>();
+
+		// Since the java driver does not support preparing statements with
+		// arrays of values, we have to generate a fitting amount of prepared
+		// statement markers and iterate over the values.
+		String questionMarks = "(?" +
+				StringUtils.repeat(", ?", documentIds.size() - 1) +
+				")";
+		String query = "SELECT CONCAT(`a`.`value`, \"-\", `b`.`value`)" +
+				" FROM " + ElementType.Token + " AS `a`" +
+				"     LEFT JOIN " + ElementType.Token + " AS `b`" +
+				"         ON `a`.`id` = `b`.`previousTokenId`" +
+				" WHERE `a`.`documentId` IN " + questionMarks + ";";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(query))
+		{
+			int counter = 1;
+			for (String documentId : documentIds)
+			{
+				aStatement.setString(counter++, documentId);
+			}
+
+			ResultSet result = aStatement.executeQuery();
+
+			while (result.next()) {
+				String nextValue = result.getString(1);
+				if (nextValue == null) {
+					continue;
+				}
+				biGramList.add(nextValue);
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return biGramList;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		List<String> triGramList = new ArrayList<>();
+		String query = "SELECT CONCAT(`a`.`value`, \"-\", `b`.`value`, \"-\", `c`.`value`)" +
+				" FROM " + ElementType.Token + " AS `a`" +
+				"     LEFT JOIN " + ElementType.Token + " AS `b`" +
+				"         ON `a`.`id` = `b`.`previousTokenId`" +
+				"         LEFT JOIN " + ElementType.Token + " AS `c`" +
+				"             ON `b`.`id` = `c`.`previousTokenId`" +
+				" WHERE `a`.`documentId` = ?;";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(query))
+		{
+			aStatement.setString(1, documentId);
+
+			ResultSet result = aStatement.executeQuery();
+
+			while (result.next()) {
+				String nextValue = result.getString(1);
+				if (nextValue == null) {
+					continue;
+				}
+				triGramList.add(nextValue);
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return triGramList;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return null;
+		List<String> triGramList = new ArrayList<>();
+		String query = "SELECT CONCAT(`a`.`value`, \"-\", `b`.`value`, \"-\", `c`.`value`)" +
+				" FROM " + ElementType.Token + " AS `a`" +
+				"     LEFT JOIN " + ElementType.Token + " AS `b`" +
+				"         ON `a`.`id` = `b`.`previousTokenId`" +
+				"         LEFT JOIN " + ElementType.Token + " AS `c`" +
+				"             ON `b`.`id` = `c`.`previousTokenId`;";
+		try (Statement aStatement = this.connection.createStatement())
+		{
+			ResultSet result = aStatement.executeQuery(query);
+
+			while (result.next()) {
+				String nextValue = result.getString(1);
+				if (nextValue == null) {
+					continue;
+				}
+				triGramList.add(nextValue);
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return triGramList;
 	}
 
 	@Override
@@ -991,6 +1128,45 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		List<String> triGramList = new ArrayList<>();
+
+		// Since the java driver does not support preparing statements with
+		// arrays of values, we have to generate a fitting amount of prepared
+		// statement markers and iterate over the values.
+		String questionMarks = "(?" +
+				StringUtils.repeat(", ?", documentIds.size() - 1) +
+				")";
+		String query = "SELECT CONCAT(`a`.`value`, \"-\", `b`.`value`, \"-\", `c`.`value`)" +
+				" FROM " + ElementType.Token + " AS `a`" +
+				"     LEFT JOIN " + ElementType.Token + " AS `b`" +
+				"         ON `a`.`id` = `b`.`previousTokenId`" +
+				"         LEFT JOIN " + ElementType.Token + " AS `c`" +
+				"             ON `b`.`id` = `c`.`previousTokenId`" +
+				" WHERE `a`.`documentId` IN " + questionMarks + ";";
+		try (PreparedStatement aStatement =
+				     this.connection.prepareStatement(query))
+		{
+			int counter = 1;
+			for (String documentId : documentIds)
+			{
+				aStatement.setString(counter++, documentId);
+			}
+
+			ResultSet result = aStatement.executeQuery();
+
+			while (result.next()) {
+				String nextValue = result.getString(1);
+				if (nextValue == null) {
+					continue;
+				}
+				triGramList.add(nextValue);
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return triGramList;
 	}
 }
