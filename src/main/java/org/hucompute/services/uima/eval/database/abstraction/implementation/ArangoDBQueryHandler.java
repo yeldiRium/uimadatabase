@@ -175,7 +175,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	}
 
 	@Override
-	public void storeJCasDocument(JCas document)
+	public String storeJCasDocument(JCas document)
 	{
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
@@ -187,25 +187,26 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 
 		this.graph.vertexCollection(ElementType.Document.toString())
 				.insertVertex(docObject);
+
+		return documentId;
 	}
 
 	@Override
-	public void storeJCasDocuments(Iterable<JCas> documents)
+	public Iterable<String> storeJCasDocuments(Iterable<JCas> documents)
 	{
+		List<String> documentIds = new ArrayList<>();
 		for (JCas document : documents)
 		{
-			this.storeJCasDocument(document);
+			documentIds.add(this.storeJCasDocument(document));
 		}
+		return documentIds;
 	}
 
 	@Override
-	public void storeParagraph(
-			Paragraph paragraph, JCas document, Paragraph previousParagraph
+	public String storeParagraph(
+			Paragraph paragraph, String documentId, String previousParagraphId
 	)
 	{
-		final String documentId = DocumentMetaData.get(document)
-				.getDocumentId();
-
 		// Create Paragraph object for insertion
 		BaseDocument paragraphObject = new BaseDocument();
 		paragraphObject.addAttribute("documentId", documentId);
@@ -223,46 +224,31 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		this.graph.edgeCollection(Relationship.DocumentHasParagraph.toString())
 				.insertEdge(documentHasParagraphEdge);
 
-		if (previousParagraph != null)
+		// If a previous Paragraph was given, add an Edge from it to the current
+		// one.
+		if (previousParagraphId != null)
 		{
-			// Query Paragraph object for previous Paragraph
-			String query = "FOR p IN " + ElementType.Paragraph + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end RETURN p";
-
-			Map<String, Object> bindParams = new HashMap<>();
-			bindParams.put("documentId", documentId);
-			bindParams.put("begin", previousParagraph.getBegin());
-			bindParams.put("end", previousParagraph.getEnd());
-
-			ArangoCursor<BaseDocument> result = this.db.query(
-					query, bindParams, null, BaseDocument.class
+			// Create Edge object from previous Paragraph to current one
+			// and insert into graph
+			BaseEdgeDocument nextParagraphEdge = new BaseEdgeDocument(
+					previousParagraphId,
+					paragraphObject.getId()
 			);
-			if (result.hasNext())
-			{
-				BaseDocument previousParagraphObject = result.next();
-
-				// Create Edge object from previous Paragraph to current one
-				// and insert into graph
-				BaseEdgeDocument nextParagraphEdge = new BaseEdgeDocument(
-						paragraphObject.getId(),
-						previousParagraphObject.getId()
-				);
-				this.graph.edgeCollection(Relationship.NextParagraph.toString())
-						.insertEdge(nextParagraphEdge);
-			}
+			this.graph.edgeCollection(Relationship.NextParagraph.toString())
+					.insertEdge(nextParagraphEdge);
 		}
+
+		return paragraphObject.getId();
 	}
 
 	@Override
-	public void storeSentence(
+	public String storeSentence(
 			Sentence sentence,
-			JCas document,
-			Paragraph paragraph,
-			Sentence previousSentence
+			String documentId,
+			String paragraphId,
+			String previousSentenceId
 	)
 	{
-		final String documentId = DocumentMetaData.get(document)
-				.getDocumentId();
-
 		// Create Sentence object for insertion
 		BaseDocument sentenceObject = new BaseDocument();
 		sentenceObject.addAttribute("documentId", documentId);
@@ -280,60 +266,39 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		this.graph.edgeCollection(Relationship.DocumentHasSentence.toString())
 				.insertEdge(documentHasSentenceEdge);
 
-		// Query Paragraph Object to add an edge from the Sentence
-		String paragraphQuery = "FOR p IN " + ElementType.Paragraph + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end RETURN p";
-		Map<String, Object> paragraphParams = new HashMap<>();
-		paragraphParams.put("documentId", documentId);
-		paragraphParams.put("begin", paragraph.getBegin());
-		paragraphParams.put("end", paragraph.getEnd());
-		ArangoCursor<BaseDocument> paragraphResult = this.db.query(
-				paragraphQuery, paragraphParams, null, BaseDocument.class
-		);
-		BaseDocument paragraphObject = paragraphResult.next();
-
 		// Create Edge object from Sentence to Paragraph and insert
 		BaseEdgeDocument sentenceInParagraphEdge = new BaseEdgeDocument(
-				sentenceObject.getId(), paragraphObject.getId()
+				sentenceObject.getId(), paragraphId
 		);
 		this.graph.edgeCollection(Relationship.SentenceInParagraph.toString())
 				.insertEdge(sentenceInParagraphEdge);
 
-		if (previousSentence != null)
+		// If a previous Sentence was given, add an Edge from it to the current
+		// one.
+		if (previousSentenceId != null)
 		{
-			// Query Sentence object for previous Sentence
-			String sentenceQuery = "FOR p IN " + ElementType.Sentence + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end RETURN p";
-			Map<String, Object> bindParams = new HashMap<>();
-			bindParams.put("documentId", documentId);
-			bindParams.put("begin", previousSentence.getBegin());
-			bindParams.put("end", previousSentence.getEnd());
-			ArangoCursor<BaseDocument> sentenceResult = this.db.query(
-					sentenceQuery, bindParams, null, BaseDocument.class
-			);
-			BaseDocument previousSentenceObject = sentenceResult.next();
-
 			// Create Edge object from previous Sentence to current one
 			// and insert into graph
 			BaseEdgeDocument nextSentenceEdge = new BaseEdgeDocument(
-					sentenceObject.getId(),
-					previousSentenceObject.getId()
-			);
+					previousSentenceId,
+					sentenceObject.getId()
+					);
 			this.graph.edgeCollection(Relationship.NextSentence.toString())
 					.insertEdge(nextSentenceEdge);
 		}
+
+		return sentenceObject.getId();
 	}
 
 	@Override
-	public void storeToken(
+	public String storeToken(
 			Token token,
-			JCas document,
-			Paragraph paragraph,
-			Sentence sentence,
-			Token previousToken
+			String documentId,
+			String paragraphId,
+			String sentenceId,
+			String previousTokenId
 	)
 	{
-		final String documentId = DocumentMetaData.get(document)
-				.getDocumentId();
-
 		// Create Token object for insertion
 		BaseDocument tokenObject = new BaseDocument();
 		tokenObject.addAttribute("documentId", documentId);
@@ -352,65 +317,24 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		this.graph.edgeCollection(Relationship.DocumentHasToken.toString())
 				.insertEdge(documentHasTokenEdge);
 
-		// Query Paragraph Object to add an edge from the Token
-		String paragraphQuery = "FOR p IN " + ElementType.Paragraph + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end RETURN p";
-		Map<String, Object> paragraphParams = new HashMap<>();
-		paragraphParams.put("documentId", documentId);
-		paragraphParams.put("begin", paragraph.getBegin());
-		paragraphParams.put("end", paragraph.getEnd());
-		ArangoCursor<BaseDocument> paragraphResult = this.db.query(
-				paragraphQuery, paragraphParams, null, BaseDocument.class
-		);
-		BaseDocument paragraphObject = paragraphResult.next();
-
 		// Create Edge object from Token to Paragraph and insert
 		BaseEdgeDocument tokenInParagraphEdge = new BaseEdgeDocument(
-				tokenObject.getId(), paragraphObject.getId()
+				tokenObject.getId(), paragraphId
 		);
 		this.graph.edgeCollection(Relationship.TokenInParagraph.toString())
 				.insertEdge(tokenInParagraphEdge);
 
-		// Query Sentence Object to add an edge from the Token
-		String sentenceQuery = "FOR p IN " + ElementType.Sentence + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end RETURN p";
-		Map<String, Object> sentenceParams = new HashMap<>();
-		sentenceParams.put("documentId", documentId);
-		sentenceParams.put("begin", sentence.getBegin());
-		sentenceParams.put("end", sentence.getEnd());
-		ArangoCursor<BaseDocument> sentenceResult = this.db.query(
-				sentenceQuery, sentenceParams, null, BaseDocument.class
-		);
-		BaseDocument sentenceObject = sentenceResult.next();
-
 		// Create Edge object from Token to Sentence and insert
 		BaseEdgeDocument tokenInSentenceEdge = new BaseEdgeDocument(
-				tokenObject.getId(), sentenceObject.getId()
+				tokenObject.getId(), sentenceId
 		);
 		this.graph.edgeCollection(Relationship.TokenInSentence.toString())
 				.insertEdge(tokenInSentenceEdge);
 
-		// Check if a Lemma with this Token's value already exists since Lemmata
-		// should be reused.
-		String lemmaQuery = "FOR l in " + ElementType.Lemma + " FILTER l.value == @lemmaValue RETURN l";
-		Map<String, Object> lemmaParams = new HashMap<>();
-		lemmaParams.put("lemmaValue", token.getLemma().getValue());
-		ArangoCursor<BaseDocument> lemmaResult = this.db.query(
-				lemmaQuery, lemmaParams, null, BaseDocument.class
-		);
-		BaseDocument lemmaObject;
-		if (lemmaResult.hasNext())
-		{
-			// If a Lemma was found, reuse it.
-			lemmaObject = lemmaResult.next();
-		} else {
-			// If not, create a new Lemma object and insert into collection.
-			lemmaObject = new BaseDocument();
-			lemmaObject.addAttribute("value", token.getLemma().getValue());
-			this.graph.vertexCollection(ElementType.Lemma.toString())
-					.insertVertex(lemmaObject);
-		}
 		// Create edge from Token to Lemma and insert into graph
+		String lemmaId = this.getLemmaId(token.getLemma().getValue());
 		BaseEdgeDocument tokenHasLemmaEdge = new BaseEdgeDocument(
-				tokenObject.getId(), lemmaObject.getId()
+				tokenObject.getId(), lemmaId
 		);
 		this.graph.edgeCollection(Relationship.TokenHasLemma.toString())
 				.insertEdge(tokenHasLemmaEdge);
@@ -422,7 +346,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				"documentId", ElementType.Document + "/" + documentId
 		);
 		edgeParams.put(
-				"lemmaId", lemmaObject.getId()
+				"lemmaId", lemmaId
 		);
 		String edgeQuery = "FOR e IN " + Relationship.DocumentHasLemma + " " +
 				"FILTER e._from == @documentId && e._to == @lemmaId " +
@@ -434,7 +358,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		{
 			// Edge does not yet exist, so create it and insert into graph
 			BaseEdgeDocument documentHasLemmaEdge = new BaseEdgeDocument(
-					ElementType.Document + "/" + documentId, lemmaObject.getId()
+					ElementType.Document + "/" + documentId, lemmaId
 			);
 			this.graph.edgeCollection(Relationship.DocumentHasLemma.toString())
 					.insertEdge(documentHasLemmaEdge);
@@ -452,29 +376,52 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		this.graph.edgeCollection(Relationship.TokenAtPos.toString())
 				.insertEdge(tokenAtPosEdge);
 
-		if (previousToken != null)
+		// If a previous Token was given, add an Edge from it to the current
+		// one.
+		if (previousTokenId != null)
 		{
-			// Query Token object for previous Token
-			String tokenQuery = "FOR p IN " + ElementType.Token + " FILTER p.documentId == @documentId FILTER p.begin == @begin FILTER p.end == @end FILTER p.value == @value RETURN p";
-			Map<String, Object> bindParams = new HashMap<>();
-			bindParams.put("documentId", documentId);
-			bindParams.put("begin", previousToken.getBegin());
-			bindParams.put("end", previousToken.getEnd());
-			bindParams.put("value", previousToken.getCoveredText());
-			ArangoCursor<BaseDocument> tokenResult = this.db.query(
-					tokenQuery, bindParams, null, BaseDocument.class
-			);
-			BaseDocument previouseTokenObject = tokenResult.next();
-
 			// Create Edge object from previous Token to current one
 			// and insert into graph
 			BaseEdgeDocument nextTokenEdge = new BaseEdgeDocument(
-					tokenObject.getId(),
-					previouseTokenObject.getId()
+					previousTokenId,
+					tokenObject.getId()
 			);
 			this.graph.edgeCollection(Relationship.NextToken.toString())
 					.insertEdge(nextTokenEdge);
 		}
+
+		return tokenObject.getId();
+	}
+
+	/**
+	 * Creates a new Lemma if none with the given value exists.
+	 * Otherwise retrieves the existing one.
+	 * @param value The Lemma's value.
+	 * @return The Lemma's id.
+	 */
+	protected String getLemmaId(String value) {
+		// Check if a Lemma with given value already exists since Lemmata
+		// should be reused.
+		String lemmaQuery = "FOR l in " + ElementType.Lemma + " FILTER l.value == @lemmaValue RETURN l";
+		Map<String, Object> lemmaParams = new HashMap<>();
+		lemmaParams.put("lemmaValue", value);
+		ArangoCursor<BaseDocument> lemmaResult = this.db.query(
+				lemmaQuery, lemmaParams, null, BaseDocument.class
+		);
+		BaseDocument lemmaObject;
+		if (lemmaResult.hasNext())
+		{
+			// If a Lemma was found, reuse it.
+			lemmaObject = lemmaResult.next();
+		} else {
+			// If not, create a new Lemma object and insert into collection.
+			lemmaObject = new BaseDocument();
+			lemmaObject.addAttribute("value", value);
+			this.graph.vertexCollection(ElementType.Lemma.toString())
+					.insertVertex(lemmaObject);
+		}
+
+		return lemmaObject.getId();
 	}
 
 	@Override
