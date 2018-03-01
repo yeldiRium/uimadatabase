@@ -1,12 +1,5 @@
 package org.hucompute.services.uima.eval.database.abstraction;
 
-import org.hucompute.services.uima.eval.database.connection.Connection;
-import org.hucompute.services.uima.eval.database.connection.implementation.*;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
-import org.hucompute.services.uima.eval.database.abstraction.implementation.*;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -14,7 +7,11 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 import org.hucompute.services.uima.eval.database.abstraction.implementation.*;
+import org.hucompute.services.uima.eval.database.connection.Connection;
+import org.hucompute.services.uima.eval.database.connection.implementation.*;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.IOException;
@@ -135,59 +132,92 @@ public interface QueryHandlerInterface
 	/**
 	 * Stores a Paragraph in the database.
 	 *
-	 * @param paragraph         The Paragraph.
-	 * @param document          The document in which the paragraph occurs.
-	 * @param previousParagraph The predecessing Paragraph.
+	 * @param paragraph           The Paragraph.
+	 * @param documentId          The id of the document in which the paragraph
+	 *                            occurs.
+	 * @param previousParagraphId The predecessing Paragraph's id.
 	 */
-	void storeParagraph(Paragraph paragraph, JCas document, Paragraph previousParagraph);
+	void storeParagraph(
+			Paragraph paragraph,
+			String documentId,
+			String previousParagraphId
+	);
 
 	/**
 	 * Stores a Paragraph in the database.
 	 *
-	 * @param paragraph The Paragraph.
-	 * @param document  The document in which the paragraph occurs.
+	 * @param paragraph  The Paragraph.
+	 * @param documentId The id of the document in which the paragraph
+	 *                   occurs.
 	 */
-	void storeParagraph(Paragraph paragraph, JCas document);
+	void storeParagraph(Paragraph paragraph, String documentId);
 
 	/**
 	 * Stores a Sentence in the database.
 	 *
-	 * @param sentence         The Sentence.
-	 * @param document         The Document in which the entence occurs.
-	 * @param paragraph        The Paragraph, in which the Sentence occurs.
-	 * @param previousSentence The predecessing Sentence.
+	 * @param sentence           The Sentence.
+	 * @param documentId         The id of the document in which the paragraph
+	 *                           occurs.
+	 * @param paragraphId        The id of the Paragraph in which the Sentence
+	 *                           occurs.
+	 * @param previousSentenceId The predecessing Sentence's id.
 	 */
-	void storeSentence(Sentence sentence, JCas document, Paragraph paragraph, Sentence previousSentence);
+	void storeSentence(
+			Sentence sentence,
+			String documentId,
+			String paragraphId,
+			String previousSentenceId
+	);
 
 	/**
 	 * Stores a Sentence in the database.
 	 *
-	 * @param sentence  The Sentence.
-	 * @param document  The Document in which the entence occurs.
-	 * @param paragraph The Paragraph, in which the Sentence occurs.
+	 * @param sentence    The Sentence.
+	 * @param documentId  The id of the document in which the paragraph
+	 *                    occurs.
+	 * @param paragraphId The id of the Paragraph in which the Sentence occurs.
 	 */
-	void storeSentence(Sentence sentence, JCas document, Paragraph paragraph);
+	void storeSentence(
+			Sentence sentence,
+			String documentId,
+			String paragraphId
+	);
 
 	/**
 	 * Stores a Token in the database.
 	 *
-	 * @param token         The Token.
-	 * @param document      The Document in which the Token occurs.
-	 * @param paragraph     The Paragraph, in which the Token occurs.
-	 * @param sentence      The Sentence, in which the Token occurs.
-	 * @param previousToken The predecessing Token.
+	 * @param token           The Token.
+	 * @param documentId      The id of the document in which the paragraph
+	 *                        occurs.
+	 * @param paragraphId     The id of the Paragraph in which the Sentence
+	 *                        occurs.
+	 * @param sentenceId      The id of the Sentence in which the Token occurs.
+	 * @param previousTokenId The predecessing Token's id.
 	 */
-	void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence, Token previousToken);
+	void storeToken(
+			Token token,
+			String documentId,
+			String paragraphId,
+			String sentenceId,
+			String previousTokenId
+	);
 
 	/**
 	 * Stores a Token in the database.
 	 *
-	 * @param token     The Token.
-	 * @param document  The Document in which the Token occurs.
-	 * @param paragraph The Paragraph, in which the Token occurs.
-	 * @param sentence  The Sentence, in which the Token occurs.
+	 * @param token       The Token.
+	 * @param documentId  The id of the document in which the paragraph
+	 *                    occurs.
+	 * @param paragraphId The id of the Paragraph in which the Sentence
+	 *                    occurs.
+	 * @param sentenceId  The id of the Sentence in which the Token occurs.
 	 */
-	void storeToken(Token token, JCas document, Paragraph paragraph, Sentence sentence);
+	void storeToken(
+			Token token,
+			String documentId,
+			String paragraphId,
+			String sentenceId
+	);
 
 	/**
 	 * @throws DocumentNotFoundException If the given documentId was not found

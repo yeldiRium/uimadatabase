@@ -1,12 +1,11 @@
 package org.hucompute.services.uima.eval.database.abstraction;
 
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
-import org.apache.uima.jcas.JCas;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.Collections;
@@ -24,50 +23,58 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 			Logger.getLogger(AbstractQueryHandler.class.getName());
 
 	/**
-	 * @param paragraph The Paragraph.
-	 * @param document  The document in which the paragraph occurs.
+	 * @param paragraph  The Paragraph.
+	 * @param documentId The id of the document in which the paragraph
 	 */
 	@Override
-	public void storeParagraph(Paragraph paragraph, JCas document)
+	public void storeParagraph(Paragraph paragraph, String documentId)
 	{
-		this.storeParagraph(paragraph, document, null);
+		this.storeParagraph(paragraph, documentId, null);
 	}
 
 	/**
-	 * @param sentence  The Sentence.
-	 * @param document  The Document in which the entence occurs.
-	 * @param paragraph The Paragraph, in which the Sentence occurs.
+	 * @param sentence    The Sentence.
+	 * @param documentId  The id of the document in which the paragraph
+	 *                    occurs.
+	 * @param paragraphId The id of the Paragraph in which the Sentence occurs.
 	 */
 	@Override
 	public void storeSentence(
 			Sentence sentence,
-			JCas document,
-			Paragraph paragraph
+			String documentId,
+			String paragraphId
 	)
 	{
-		this.storeSentence(sentence, document, paragraph, null);
+		this.storeSentence(
+				sentence, documentId, paragraphId, null
+		);
 	}
 
 	/**
-	 * @param token     The Token.
-	 * @param document  The id of the document in which the Token occurs.
-	 * @param paragraph The paragraph, in which the Token occurs.
-	 * @param sentence  The sentence, in which the Token occurs.
+	 * @param token       The Token.
+	 * @param documentId  The id of the document in which the paragraph
+	 *                    occurs.
+	 * @param paragraphId The id of the Paragraph in which the Sentence
+	 *                    occurs.
+	 * @param sentenceId  The id of the Sentence in which the Token occurs.
 	 */
 	@Override
 	public void storeToken(
 			Token token,
-			JCas document,
-			Paragraph paragraph,
-			Sentence sentence
+			String documentId,
+			String paragraphId,
+			String sentenceId
 	)
 	{
-		storeToken(token, document, paragraph, sentence, null);
+		storeToken(
+				token, documentId, paragraphId, sentenceId, null
+		);
 	}
 
 	/**
 	 * Throws an TypeHasNoValueException, if the given type has no value field.
 	 * I.e. documents don't have a value, but lemmata do.
+	 *
 	 * @param type
 	 */
 	protected void checkTypeHasValueField(ElementType type)
@@ -91,7 +98,8 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 			if (result == 0 || isNaN(result))
 			{
 				return 0;
-			} else {
+			} else
+			{
 				return Math.log(result);
 			}
 		} catch (TypeNotCountableException e)
@@ -177,7 +185,7 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 			throws OperationNotSupportedException
 	{
 		HashMap<String, Map<String, Double>> tfidfs = new HashMap<>();
-		for(String documentId : this.getDocumentIds())
+		for (String documentId : this.getDocumentIds())
 		{
 			try
 			{
@@ -192,7 +200,8 @@ public abstract class AbstractQueryHandler implements QueryHandlerInterface
 						"there just a moment ago. Please check for " +
 						"concurrent access.");
 			}
-		};
+		}
+		;
 		return tfidfs;
 	}
 
