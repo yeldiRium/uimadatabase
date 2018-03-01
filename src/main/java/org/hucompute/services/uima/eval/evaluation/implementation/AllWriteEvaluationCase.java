@@ -54,10 +54,10 @@ public class AllWriteEvaluationCase implements EvaluationCase
 		try
 		{
 			for (Connections.DBName dbName : new Connections.DBName[]{
-//					Connections.DBName.ArangoDB,
-//					Connections.DBName.BaseX,
+					Connections.DBName.ArangoDB,
+					Connections.DBName.BaseX,
 					Connections.DBName.MySQL,
-//					Connections.DBName.Neo4j
+					Connections.DBName.Neo4j
 			})
 			{
 				logger.info("Starting AllWriteEvaluationCase for Database \""
