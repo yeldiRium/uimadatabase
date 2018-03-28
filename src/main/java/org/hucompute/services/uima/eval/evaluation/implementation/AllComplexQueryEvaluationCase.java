@@ -9,7 +9,6 @@ import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
 import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
 import org.hucompute.services.uima.eval.utility.Collections;
 import org.hucompute.services.uima.eval.utility.Formatting;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -149,16 +148,11 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 				howManyDocuments
 		);
 
-		JSONObject results = new JSONObject();
-
 		for (String documentId : randomDocumentIds)
 		{
 			try
 			{
-				results.put(
-						documentId,
-						queryHandler.getBiGramsFromDocument(documentId)
-				);
+				queryHandler.getBiGramsFromDocument(documentId);
 			} catch (DocumentNotFoundException e)
 			{
 				logger.warning("DocumentId \"" + documentId + "\" could "
@@ -177,9 +171,6 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 				"Called for " + randomDocumentIds.size() + " different "
 						+ "documents. See \"results\" for more details."
 		);
-		biGramStats.getJSONObject("more").put(
-				"results", results
-		);
 		return biGramStats;
 	}
 
@@ -192,16 +183,12 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
-		Iterable<String> result = queryHandler.getBiGramsFromAllDocuments();
+		queryHandler.getBiGramsFromAllDocuments();
 
-		JSONObject biGramStats = Formatting.createOutputForMethod(
+		return Formatting.createOutputForMethod(
 				"getBiGramsFromAllDocuments",
 				queryHandler
 		);
-		biGramStats.getJSONObject("more").put(
-				"results", result
-		);
-		return biGramStats;
 	}
 
 	/**
@@ -219,8 +206,6 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 		int howManySubsets = 20;
 		int howManyDocuments = 20;
 
-		JSONArray results = new JSONArray();
-
 		for (int i = 0; i < howManySubsets; i++)
 		{
 			Set<String> randomDocumentIds = Collections.chooseSubset(
@@ -229,10 +214,8 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			);
 			try
 			{
-				results.put(
-						queryHandler.getBiGramsFromDocumentsInCollection(
-								randomDocumentIds
-						)
+				queryHandler.getBiGramsFromDocumentsInCollection(
+						randomDocumentIds
 				);
 			} catch (DocumentNotFoundException e)
 			{
@@ -252,9 +235,6 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 				"Called for " + howManySubsets + " different random subsets of"
 						+ " at most " + howManyDocuments + "documents. See "
 						+ "\"results\" for more details."
-		);
-		biGramStats.getJSONObject("more").put(
-				"results", results
 		);
 		return biGramStats;
 	}
@@ -276,16 +256,11 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 				howManyDocuments
 		);
 
-		JSONObject results = new JSONObject();
-
 		for (String documentId : randomDocumentIds)
 		{
 			try
 			{
-				results.put(
-						documentId,
-						queryHandler.getTriGramsFromDocument(documentId)
-				);
+				queryHandler.getTriGramsFromDocument(documentId);
 			} catch (DocumentNotFoundException e)
 			{
 				logger.warning("DocumentId \"" + documentId + "\" could "
@@ -304,9 +279,6 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 				"Called for " + randomDocumentIds.size() + " different "
 						+ "documents. See \"results\" for more details."
 		);
-		triGramStats.getJSONObject("more").put(
-				"results", results
-		);
 		return triGramStats;
 	}
 
@@ -319,16 +291,10 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
-		Iterable<String> result = queryHandler.getTriGramsFromAllDocuments();
-
-		JSONObject triGramStats = Formatting.createOutputForMethod(
+		return Formatting.createOutputForMethod(
 				"getTriGramsFromAllDocuments",
 				queryHandler
 		);
-		triGramStats.getJSONObject("more").put(
-				"results", result
-		);
-		return triGramStats;
 	}
 
 	/**
@@ -346,8 +312,6 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 		int howManySubsets = 20;
 		int howManyDocuments = 20;
 
-		JSONArray results = new JSONArray();
-
 		for (int i = 0; i < howManySubsets; i++)
 		{
 			Set<String> randomDocumentIds = Collections.chooseSubset(
@@ -356,10 +320,8 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			);
 			try
 			{
-				results.put(
-						queryHandler.getTriGramsFromDocumentsInCollection(
-								randomDocumentIds
-						)
+				queryHandler.getTriGramsFromDocumentsInCollection(
+						randomDocumentIds
 				);
 			} catch (DocumentNotFoundException e)
 			{
@@ -379,9 +341,6 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 				"Called for " + howManySubsets + " different random subsets of"
 						+ " at most " + howManyDocuments + "documents. See "
 						+ "\"results\" for more details."
-		);
-		triGramStats.getJSONObject("more").put(
-				"results", results
 		);
 		return triGramStats;
 	}
