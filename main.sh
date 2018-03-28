@@ -26,12 +26,6 @@ java -jar target.jar evaluate -e query -d BaseX
 java -jar target.jar evaluate -e calculate -d BaseX
 java -jar target.jar evaluate -e complex-query -d BaseX
 
-java -jar target.jar evaluate -e write -d MongoDB
-java -jar target.jar evaluate -e read -d MongoDB
-java -jar target.jar evaluate -e query -d MongoDB
-java -jar target.jar evaluate -e calculate -d MongoDB
-java -jar target.jar evaluate -e complex-query -d MongoDB
-
 java -jar target.jar evaluate -e write -d MySQL
 java -jar target.jar evaluate -e read -d MySQL
 java -jar target.jar evaluate -e query -d MySQL
