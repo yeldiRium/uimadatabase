@@ -38,7 +38,9 @@ docker-compose build
 docker-compose up
 ```
 This will compile and package the application, build and start up the docker 
-containers and run the evaluation script at `/evaluation.sh`.
+containers and run the script at `/main.sh`.
+
+Configure said script to change the evaluation process.
 
 Input Files:
 ------------
