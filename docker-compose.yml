@@ -43,7 +43,6 @@ services:
     environment:
       - INPUT_DIR=/code/input
       - OUTPUT_DIR=/code/output
-      - CONFIG_PATH=/code/src/main/resources/config.yml
       # See README.txt in dbs/arangodb for details on:
       - ARANGODB_HOST=arangodb
       - ARANGODB_PORT=8529

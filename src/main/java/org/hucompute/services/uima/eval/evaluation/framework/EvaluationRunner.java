@@ -9,6 +9,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -17,33 +18,18 @@ public class EvaluationRunner implements Runnable
 	protected static Logger logger = Logger.getLogger(EvaluationRunner.class.getName());
 
 	protected OutputProvider outputProvider;
-	protected Configuration configuration;
+	protected List<EvaluationCase> evaluations;
 	protected ConnectionManager connectionManager;
 
 	public EvaluationRunner(
-			InputStream configFile,
+			List<EvaluationCase> evaluations,
 			ConnectionManager connectionManager,
 			OutputProvider outputProvider
-	) throws IOException
+	)
 	{
-		this.loadConfig(configFile);
+		this.evaluations = evaluations;
 		this.connectionManager = connectionManager;
-
 		this.outputProvider = outputProvider;
-	}
-
-	/**
-	 * Loads the yaml config.
-	 * This instantiates all EvaluationCases and the OutputProvider automatical-
-	 * ly.
-	 *
-	 * @param configFile
-	 */
-	protected void loadConfig(InputStream configFile) throws IOException
-	{
-		Constructor constructor = new Constructor(Configuration.class);
-		Yaml yaml = new Yaml(constructor);
-		this.configuration = yaml.load(configFile);
 	}
 
 	/**
@@ -55,7 +41,7 @@ public class EvaluationRunner implements Runnable
 	public void run()
 	{
 		for (EvaluationCase evaluationCase
-				: this.configuration.getEvaluations())
+				: this.evaluations)
 		{
 			ConnectionRequest connectionRequest =
 					evaluationCase.requestConnection();

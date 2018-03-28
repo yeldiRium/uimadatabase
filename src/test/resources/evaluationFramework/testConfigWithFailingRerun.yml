@@ -1,2 +1,0 @@
-evaluations:
-  - !!org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestEvaluationFailingRerun {}
