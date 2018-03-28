@@ -1,9 +1,5 @@
 FROM java:8
 
-# For the visualization of generated statistics
-RUN apt-get -q update
-RUN apt-get -qy install texlive-latex-extra texlive-fonts-recommended
-
 WORKDIR /code
 
 # Adding .jar file and dependencies
