@@ -48,7 +48,7 @@ public class EvaluationRunnerTestCase
 	}
 
 	@Test
-	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCaseObjectsAreRun()
+	void Given_TestEvaluations_When_RunningEvaluationRunner_Then_EvaluationCaseObjectsAreRun()
 	{
 		List<EvaluationCase> evaluations = new ArrayList<>();
 		evaluations.add(new TestEvaluationA());
@@ -64,7 +64,7 @@ public class EvaluationRunnerTestCase
 	}
 
 	@Test
-	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_ConnectionManagerReceivesRequests()
+	void Given_TestEvaluations_When_RunningEvaluationRunner_Then_ConnectionManagerReceivesRequests()
 	{
 		List<EvaluationCase> evaluations = new ArrayList<>();
 		evaluations.add(new TestEvaluationA());
@@ -81,7 +81,7 @@ public class EvaluationRunnerTestCase
 	}
 
 	@Test
-	void Given_TestConfigFile_When_RunningEvaluationRunner_Then_EvaluationCasesAreRunWithCorrectConnectionResponse()
+	void Given_TestEvaluations_When_RunningEvaluationRunner_Then_EvaluationCasesAreRunWithCorrectConnectionResponse()
 	{
 		List<EvaluationCase> evaluations = new ArrayList<>();
 		evaluations.add(new TestEvaluationA());
@@ -98,7 +98,7 @@ public class EvaluationRunnerTestCase
 	}
 
 	@Test
-	void Given_TestConfigFileWithFailingEvaluation_When_RunngEvaluationRunnerAndEvaluationFailsWithRerunException_Then_EvaluationIsRerun()
+	void Given_TestEvaluationsWithFailingEvaluation_When_RunngEvaluationRunnerAndEvaluationFailsWithRerunException_Then_EvaluationIsRerun()
 	{
 		List<EvaluationCase> evaluations = new ArrayList<>();
 		evaluations.add(new TestEvaluationFailingRerun());
