@@ -131,59 +131,18 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 		logger.info("Collection process complete. Statistics:");
 
 		LongSummaryStatistics documentInsertStatistic = this.queryHandler
-				.getMethodBenchmarks().get("storeJCasDocument")
+				.getMethodBenchmarks().get("storeDocumentHierarchy")
 				.getCallTimes()
 				.stream()
 				.collect(
 						Collectors.summarizingLong(Long::longValue)
 				);
-
-		LongSummaryStatistics paragraphInsertStatistic = this.queryHandler
-				.getMethodBenchmarks().get("storeParagraph")
-				.getCallTimes()
-				.stream()
-				.collect(
-						Collectors.summarizingLong(Long::longValue)
-				);
-
-		LongSummaryStatistics sentenceInsertStatistic = this.queryHandler
-				.getMethodBenchmarks().get("storeSentence")
-				.getCallTimes()
-				.stream()
-				.collect(
-						Collectors.summarizingLong(Long::longValue)
-				);
-
-		LongSummaryStatistics tokenInsertStatistic = this.queryHandler
-				.getMethodBenchmarks().get("storeToken")
-				.getCallTimes()
-				.stream()
-				.collect(
-						Collectors.summarizingLong(Long::longValue)
-				);
-
-		int averageDocumentStructureInsertTime = (int)
-				(documentInsertStatistic.getSum()
-						+ paragraphInsertStatistic.getSum()
-						+ sentenceInsertStatistic.getSum()
-						+ tokenInsertStatistic.getSum()
-						/ (double) documentInsertStatistic.getCount());
 
 		// Format statistics as strings for logging and user readable output.
 		String statistics = "Inserted " + documentInsertStatistic.getCount() + " documents.\n" +
-				"  Inserting a complete document structure took " + averageDocumentStructureInsertTime + "ms on average.\n" +
-				"Inserted " + paragraphInsertStatistic.getCount() + " paragraphs.\n" +
-				"  Inserting a paragraph took " + (int) paragraphInsertStatistic.getAverage() + "ms on average.\n" +
-				"  Inserting a paragraph took at most " + paragraphInsertStatistic.getMax() + "ms.\n" +
-				"  Spent " + paragraphInsertStatistic.getSum() + "ms overall on inserting paragraphs.\n" +
-				"Inserted " + sentenceInsertStatistic.getCount() + " sentences.\n" +
-				"  Inserting a sentence took " + (int) sentenceInsertStatistic.getAverage() + "ms on average.\n" +
-				"  Inserting a sentence took at most " + sentenceInsertStatistic.getMax() + "ms.\n" +
-				"  Spent " + sentenceInsertStatistic.getSum() + "ms overall on inserting sentences.\n" +
-				"Inserted " + tokenInsertStatistic.getCount() + " tokens.\n" +
-				"  Inserting a token took " + (int) tokenInsertStatistic.getAverage() + "ms on average.\n" +
-				"  Inserting a token took at most " + tokenInsertStatistic.getMax() + "ms.\n" +
-				"  Spent " + tokenInsertStatistic.getSum() + "ms overall on inserting tokens.";
+				"  Inserting a complete document structure took " + Math.floor(documentInsertStatistic.getAverage()) + "ms on average.\n" +
+				"  Inserting a document took at most " + documentInsertStatistic.getMax() + "ms.\n" +
+				"  Spent " + documentInsertStatistic.getSum() + "ms overall on inserting documents.\n";
 
 		logger.info(statistics);
 
@@ -194,30 +153,6 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 				"hierarchy",
 				Formatting.createOutputForMethod(
 						"storeDocumentHierarchy", queryHandler
-				)
-		);
-		statisticsJSON.put(
-				"document",
-				Formatting.createOutputForMethod(
-						"storeJCasDocument", queryHandler
-				)
-		);
-		statisticsJSON.put(
-				"paragraph",
-				Formatting.createOutputForMethod(
-						"storeParagraph", queryHandler
-				)
-		);
-		statisticsJSON.put(
-				"sentence",
-				Formatting.createOutputForMethod(
-						"storeSentence", queryHandler
-				)
-		);
-		statisticsJSON.put(
-				"token",
-				Formatting.createOutputForMethod(
-						"storeToken", queryHandler
 				)
 		);
 
