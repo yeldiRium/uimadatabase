@@ -4,11 +4,8 @@ import org.hucompute.services.uima.eval.database.connection.ConnectionManager;
 import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
 import org.hucompute.services.uima.eval.database.connection.ConnectionResponse;
 import org.hucompute.services.uima.eval.evaluation.framework.exceptions.EvaluationFailedRerunnableException;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
