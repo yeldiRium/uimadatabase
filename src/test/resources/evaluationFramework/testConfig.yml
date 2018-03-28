@@ -1,4 +1,3 @@
 evaluations:
   - !!org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestEvaluationA {}
   - !!org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestEvaluationB {}
-outputProvider: !!org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestOutputProvider {}

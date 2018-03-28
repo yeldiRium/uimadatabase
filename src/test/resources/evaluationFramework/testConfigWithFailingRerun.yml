@@ -1,3 +1,2 @@
 evaluations:
   - !!org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestEvaluationFailingRerun {}
-outputProvider: !!org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestOutputProvider {}

@@ -1,7 +1,9 @@
 package org.hucompute.services.uima.eval.main;
 
 import org.hucompute.services.uima.eval.database.connection.ConnectionManager;
+import org.hucompute.services.uima.eval.evaluation.framework.BaseOutputProvider;
 import org.hucompute.services.uima.eval.evaluation.framework.EvaluationRunner;
+import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
 import org.hucompute.services.uima.eval.utility.logging.PlainFormatter;
 
 import java.io.FileInputStream;
@@ -31,9 +33,13 @@ public class EvaluationPipeline
 		ConnectionManager connectionManager = ConnectionManager.getInstance();
 		try
 		{
+			OutputProvider outputProvider = new BaseOutputProvider(
+					System.getenv("OUTPUT_DIR")
+			);
 			EvaluationRunner evaluationRunner = new EvaluationRunner(
 					new FileInputStream(System.getenv("CONFIG_PATH")),
-					connectionManager
+					connectionManager,
+					outputProvider
 			);
 			logger.info("Running Evaluations...");
 			evaluationRunner.run();

@@ -6,6 +6,7 @@ import org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestE
 import org.hucompute.services.uima.eval.database.connection.ConnectionManager;
 import org.hucompute.services.uima.eval.database.connection.ConnectionResponse;
 import org.hucompute.services.uima.eval.evaluation.framework.EvaluationRunner;
+import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,9 +30,10 @@ public class EvaluationRunnerTestCase
 	protected ConnectionManager mockConnectionManager;
 	protected Future<ConnectionResponse> futureMockConnectionResponse;
 	protected ConnectionResponse mockConnectionResponse;
+	private OutputProvider mockOutputProvider;
 
 	@BeforeEach
-	void setUpMockConnectionManager()
+	void setUpMocks()
 	{
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		this.mockConnectionManager = Mockito.mock(ConnectionManager.class);
@@ -40,6 +43,8 @@ public class EvaluationRunnerTestCase
 		when(mockConnectionManager.submitRequest(any())).thenReturn(
 				this.futureMockConnectionResponse
 		);
+
+		this.mockOutputProvider = Mockito.mock(OutputProvider.class);
 	}
 
 	@Test
@@ -48,7 +53,11 @@ public class EvaluationRunnerTestCase
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
-			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
+			EvaluationRunner evaluationRunner = new EvaluationRunner(
+					configFile,
+					this.mockConnectionManager,
+					this.mockOutputProvider
+			);
 			Assertions.assertTrue(TestEvaluationA.wasInstantiated);
 			Assertions.assertTrue(TestEvaluationB.wasInstantiated);
 		} catch (IOException e)
@@ -63,7 +72,11 @@ public class EvaluationRunnerTestCase
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
-			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
+			EvaluationRunner evaluationRunner = new EvaluationRunner(
+					configFile,
+					this.mockConnectionManager,
+					this.mockOutputProvider
+			);
 			evaluationRunner.run();
 			assertTrue(TestEvaluationA.wasRun);
 			assertTrue(TestEvaluationB.wasRun);
@@ -79,7 +92,11 @@ public class EvaluationRunnerTestCase
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
-			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
+			EvaluationRunner evaluationRunner = new EvaluationRunner(
+					configFile,
+					this.mockConnectionManager,
+					this.mockOutputProvider
+			);
 			evaluationRunner.run();
 
 			verify(mockConnectionManager).submitRequest(TestEvaluationA.connectionRequest);
@@ -96,7 +113,11 @@ public class EvaluationRunnerTestCase
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfig.yml");
-			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
+			EvaluationRunner evaluationRunner = new EvaluationRunner(
+					configFile,
+					this.mockConnectionManager,
+					this.mockOutputProvider
+			);
 			evaluationRunner.run();
 
 			assertSame(this.mockConnectionResponse, TestEvaluationA.connectionResponse);
@@ -113,7 +134,11 @@ public class EvaluationRunnerTestCase
 		try
 		{
 			InputStream configFile = new FileInputStream("src/test/resources/evaluationFramework/testConfigWithFailingRerun.yml");
-			EvaluationRunner evaluationRunner = new EvaluationRunner(configFile, this.mockConnectionManager);
+			EvaluationRunner evaluationRunner = new EvaluationRunner(
+					configFile,
+					this.mockConnectionManager,
+					this.mockOutputProvider
+			);
 			evaluationRunner.run();
 
 			// See TestEvaluationFailingRerun

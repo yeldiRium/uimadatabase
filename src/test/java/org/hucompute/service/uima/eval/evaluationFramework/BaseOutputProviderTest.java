@@ -52,7 +52,7 @@ public class BaseOutputProviderTest
 			throws IOException
 	{
 		String path = "src/test/resources/outputDirectory";
-		OutputProvider provider = new BaseOutputProvider();
+		OutputProvider provider = new BaseOutputProvider(path);
 		provider.configurePath(path);
 		File testFile = null;
 		testFile = provider.createFile(this.getClass().getName(), "testFile");
@@ -72,7 +72,7 @@ public class BaseOutputProviderTest
 			throws IOException
 	{
 		String path = "src/test/resources/outputDirectory";
-		OutputProvider provider = new BaseOutputProvider();
+		OutputProvider provider = new BaseOutputProvider(path);
 		provider.configurePath(path);
 		File testFileFirst = provider.createFile(this.getClass().getName(), "testFile");
 		File testFileSecond = provider.createFile(this.getClass().getName(), "testFile", true);
@@ -96,7 +96,7 @@ public class BaseOutputProviderTest
 			throws IOException
 	{
 		String path = "src/test/resources/outputDirectory";
-		OutputProvider provider = new BaseOutputProvider();
+		OutputProvider provider = new BaseOutputProvider(path);
 		provider.configurePath(path);
 		File testFileFirst = provider.createFile(this.getClass().getName(), "testFile");
 		File testFileSecond = provider.createFile(this.getClass().getName(), "testFile");
@@ -113,7 +113,7 @@ public class BaseOutputProviderTest
 			throws IOException
 	{
 		String path = FileSystems.getDefault().getPath("src/test/resources/outputDirectory").toAbsolutePath().toString();
-		OutputProvider provider = new BaseOutputProvider();
+		OutputProvider provider = new BaseOutputProvider(path);
 		provider.configurePath(path);
 
 		File testFile = provider.createFile(this.getClass().getName(), "testFile");
@@ -133,7 +133,7 @@ public class BaseOutputProviderTest
 			throws IOException
 	{
 		String path = "src/test/resources/outputDirectory";
-		OutputProvider provider = new BaseOutputProvider();
+		OutputProvider provider = new BaseOutputProvider(path);
 		provider.configurePath(path);
 
 		Path expectedPath = FileSystems.getDefault().getPath(
@@ -151,7 +151,7 @@ public class BaseOutputProviderTest
 			throws IOException
 	{
 		String path = "src/test/resources/outputDirectory";
-		OutputProvider provider = new BaseOutputProvider();
+		OutputProvider provider = new BaseOutputProvider(path);
 		provider.configurePath(path);
 		provider.writeJSON(this.getClass().getName(), "testJSON", new JSONObject());
 		provider.writeJSON(this.getClass().getName(), "testJSON", new JSONObject(), true);
@@ -175,7 +175,7 @@ public class BaseOutputProviderTest
 			throws IOException
 	{
 		String path = "src/test/resources/outputDirectory";
-		OutputProvider provider = new BaseOutputProvider();
+		OutputProvider provider = new BaseOutputProvider(path);
 		provider.configurePath(path);
 
 		Path expectedPath = FileSystems.getDefault().getPath(

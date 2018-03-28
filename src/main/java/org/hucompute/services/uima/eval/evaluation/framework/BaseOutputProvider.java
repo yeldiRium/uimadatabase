@@ -17,7 +17,25 @@ public class BaseOutputProvider implements OutputProvider
 	Path outputDirectory;
 
 	/**
+	 * Initializes the BaseOutputProvider with a given path as the output direc-
+	 * tory.
 	 * Creates the outputDirectory if necessary.
+	 *
+	 * @param path The directory where output files will be created in.
+	 * @throws IOException if the directory doesn't exist and can't be created.
+	 */
+	public BaseOutputProvider(String path) throws IOException
+	{
+		this.outputDirectory = FileSystems.getDefault().getPath(path);
+		if (!Files.exists(this.outputDirectory))
+		{
+			Files.createDirectory(this.outputDirectory);
+		}
+	}
+
+	/**
+	 * Overwrites the configured output directory.
+	 * Creates one at the given path, if necessary.
 	 *
 	 * @param path The directory where output files will be created in.
 	 * @throws IOException if the directory doesn't exist and can't be created.

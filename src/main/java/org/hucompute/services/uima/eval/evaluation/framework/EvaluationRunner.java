@@ -4,7 +4,6 @@ import org.hucompute.services.uima.eval.database.connection.ConnectionManager;
 import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
 import org.hucompute.services.uima.eval.database.connection.ConnectionResponse;
 import org.hucompute.services.uima.eval.evaluation.framework.exceptions.EvaluationFailedRerunnableException;
-import org.hucompute.services.uima.eval.evaluation.framework.exceptions.EvaluationFailedRerunnableException;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -17,16 +16,20 @@ public class EvaluationRunner implements Runnable
 {
 	protected static Logger logger = Logger.getLogger(EvaluationRunner.class.getName());
 
+	protected OutputProvider outputProvider;
 	protected Configuration configuration;
 	protected ConnectionManager connectionManager;
 
 	public EvaluationRunner(
 			InputStream configFile,
-			ConnectionManager connectionManager
+			ConnectionManager connectionManager,
+			OutputProvider outputProvider
 	) throws IOException
 	{
 		this.loadConfig(configFile);
 		this.connectionManager = connectionManager;
+
+		this.outputProvider = outputProvider;
 	}
 
 	/**
@@ -41,9 +44,6 @@ public class EvaluationRunner implements Runnable
 		Constructor constructor = new Constructor(Configuration.class);
 		Yaml yaml = new Yaml(constructor);
 		this.configuration = yaml.load(configFile);
-		this.configuration.getOutputProvider().configurePath(
-				System.getenv("OUTPUT_DIR")
-		);
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class EvaluationRunner implements Runnable
 				{
 					evaluationCase.run(
 							connectionResponse,
-							this.configuration.getOutputProvider()
+							this.outputProvider
 					);
 					success = true;
 				} catch (EvaluationFailedRerunnableException e)
