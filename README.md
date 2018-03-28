@@ -37,7 +37,8 @@ mvn clean package
 docker-compose build
 docker-compose up
 ```
-This will compile and package the application, build and start up the docker containers and run the Main class.
+This will compile and package the application, build and start up the docker 
+containers and run the evaluation script at `/evaluation.sh`.
 
 Input Files:
 ------------

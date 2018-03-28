@@ -6,5 +6,6 @@ WORKDIR /code
 ADD target/libs /code/libs
 ADD target/target.jar /code/target.jar
 ADD src/main/resources /code/src/main/resources
+ADD evaluation.sh /code/evaluation.sh
 
-CMD ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "/code/target.jar"]
+CMD ["./evaluation.sh"]

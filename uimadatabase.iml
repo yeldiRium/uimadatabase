@@ -78,6 +78,7 @@
     <orderEntry type="library" name="Maven: org.eclipse.jetty.websocket:websocket-servlet:9.3.6.v20151106" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty.websocket:websocket-api:9.3.6.v20151106" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.0" level="project" />
+    <orderEntry type="library" name="Maven: com.beust:jcommander:1.72" level="project" />
     <orderEntry type="library" name="Maven: com.arangodb:arangodb-java-driver:4.3.2" level="project" />
     <orderEntry type="library" name="Maven: com.arangodb:velocypack:1.0.14" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
