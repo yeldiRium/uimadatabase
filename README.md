@@ -37,6 +37,7 @@ How to use:
 mvn clean package
 docker-compose build
 docker-compose up
+./visualize.sh
 ```
 This will compile and package the application, build and start up the docker 
 containers and run the script at `/main.sh`.

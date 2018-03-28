@@ -39,21 +39,3 @@ java -jar target.jar evaluate -e calculate -d Neo4j
 java -jar target.jar evaluate -e complex-query -d Neo4j
 
 java -jar target.jar visualize
-
-if [ -d /code/output/pdfs ]
-then
-	rm -r /code/output/pdfs
-fi
-mkdir /code/output/pdfs
-
-cd $(mktemp -d)
-for filename in /code/output/graphs/*.tex
-do
-	pdflatex -interaction batchmode $filename >/dev/null
-	echo "$filename converted"
-done
-
-mv *.pdf /code/output/pdfs
-rm *.log
-rm *.aux
-cd -
