@@ -52,6 +52,12 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	public ArangoDBQueryHandler(ArangoDB arangodb)
 	{
 		this.arangodb = arangodb;
+
+		if (this.arangodb.getDatabases().contains(dbName))
+		{
+			this.db = this.arangodb.db(dbName);
+			this.graph = this.db.graph(graphName);
+		}
 	}
 
 	@Override
