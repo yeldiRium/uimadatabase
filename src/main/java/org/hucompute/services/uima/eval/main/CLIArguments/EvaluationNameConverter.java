@@ -4,7 +4,7 @@ import com.beust.jcommander.IStringConverter;
 import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
 import org.hucompute.services.uima.eval.evaluation.implementation.*;
 
-public class EvaluationConverter implements IStringConverter<EvaluationCase>
+public class EvaluationNameConverter implements IStringConverter<EvaluationCase>
 {
 	/**
 	 * Very basic switch to identify Evaluations.
@@ -16,20 +16,7 @@ public class EvaluationConverter implements IStringConverter<EvaluationCase>
 	@Override
 	public EvaluationCase convert(String s)
 	{
-		switch (s)
-		{
-			case "read":
-				return new AllReadEvaluationCase();
-			case "write":
-				return new AllWriteEvaluationCase();
-			case "query":
-				return new AllQueryEvaluationCase();
-			case "calculate":
-				return new AllCalculateEvaluationCase();
-			case "complex-query":
-				return new AllComplexQueryEvaluationCase();
-			default:
-				return null;
-		}
+		// No error checking necessary, since validators are run beforehand.
+		return Evaluations.create(s);
 	}
 }

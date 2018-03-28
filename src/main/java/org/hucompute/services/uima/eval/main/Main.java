@@ -37,6 +37,9 @@ public class Main
 			System.exit(1);
 		}
 
+		System.out.println(this.evaluateCommand.evaluations);
+		System.out.println(this.evaluateCommand.dbs);
+
 		if (this.jCommander.getParsedCommand() == null
 				|| this.evaluateCommand.help
 				|| this.visualizeCommand.help)

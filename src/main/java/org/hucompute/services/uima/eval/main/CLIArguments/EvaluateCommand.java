@@ -23,7 +23,7 @@ public class EvaluateCommand
 			names = {"-e", "--evaluations"},
 			description = "Comma-separated list of evaluations to be run.",
 			validateWith = EvaluationNameValidator.class,
-			converter = EvaluationConverter.class
+			converter = EvaluationNameConverter.class
 	)
 	public List<EvaluationCase> evaluations = new ArrayList<>();
 

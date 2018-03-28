@@ -2,6 +2,10 @@ package org.hucompute.services.uima.eval.database.connection;
 
 import org.hucompute.services.uima.eval.database.connection.implementation.*;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class Connections
 {
 	public enum DBName
@@ -34,7 +38,7 @@ public class Connections
 
 	public static DBName getIdentifierForConnectionClass(
 			Class<? extends Connection> connectionClass
-			)
+	)
 	{
 		DBName identifier = null;
 		if (connectionClass == ArangoDBConnection.class)
@@ -69,5 +73,15 @@ public class Connections
 	{
 		DBName actualDBName = DBName.valueOf(dbName);
 		return getConnectionClassForDB(actualDBName);
+	}
+
+	/**
+	 * @return a set of all valid and retrievable database names.
+	 */
+	public static Set<String> names()
+	{
+		return Arrays.stream(Connections.DBName.values())
+				.map(Enum::name)
+				.collect(Collectors.toSet());
 	}
 }

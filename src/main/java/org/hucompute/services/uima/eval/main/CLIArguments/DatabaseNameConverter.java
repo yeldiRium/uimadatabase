@@ -2,7 +2,7 @@ package org.hucompute.services.uima.eval.main.CLIArguments;
 
 import com.beust.jcommander.IStringConverter;
 import org.hucompute.services.uima.eval.database.connection.Connection;
-import org.hucompute.services.uima.eval.database.connection.implementation.ImplementationMap;
+import org.hucompute.services.uima.eval.database.connection.Connections;
 
 public class DatabaseNameConverter
 		implements IStringConverter<Class<? extends Connection>>
@@ -10,6 +10,7 @@ public class DatabaseNameConverter
 	@Override
 	public Class<? extends Connection> convert(String s)
 	{
-		return ImplementationMap.implementationMap.getOrDefault(s, null);
+		// No error checking necessary, since validators are run beforehand.
+		return Connections.getConnectionClassForName(s);
 	}
 }
