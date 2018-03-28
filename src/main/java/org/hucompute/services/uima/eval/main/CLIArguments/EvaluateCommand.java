@@ -1,11 +1,13 @@
 package org.hucompute.services.uima.eval.main.CLIArguments;
 
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CLIArguments
+@Parameters(commandDescription = "Run evaluations on databases.")
+public class EvaluateCommand
 {
 	@Parameter(
 			names = {"-h", "--help"},
