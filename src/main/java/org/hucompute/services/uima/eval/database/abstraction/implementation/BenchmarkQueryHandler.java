@@ -11,6 +11,7 @@ import org.hucompute.services.uima.eval.database.abstraction.exceptions.Document
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
+import org.hucompute.services.uima.eval.database.connection.Connections;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.IOException;
@@ -84,6 +85,13 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	public Map<String, MethodBenchmark> getMethodBenchmarks()
 	{
 		return this.methodBenchmarks;
+	}
+
+	@Override
+	public Connections.DBName forConnection()
+	{
+		// Does not use an "official" Connection.
+		return null;
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.hucompute.services.uima.eval.database.connection.Connections;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,6 +52,12 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	public ArangoDBQueryHandler(ArangoDB arangodb)
 	{
 		this.arangodb = arangodb;
+	}
+
+	@Override
+	public Connections.DBName forConnection()
+	{
+		return Connections.DBName.ArangoDB;
 	}
 
 	/**

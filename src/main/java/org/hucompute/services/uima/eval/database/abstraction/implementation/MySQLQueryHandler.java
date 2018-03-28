@@ -15,6 +15,7 @@ import org.hucompute.services.uima.eval.database.abstraction.ElementType;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
+import org.hucompute.services.uima.eval.database.connection.Connections;
 
 import java.sql.*;
 import java.util.*;
@@ -26,6 +27,12 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	public MySQLQueryHandler(Connection connection)
 	{
 		this.connection = connection;
+	}
+
+	@Override
+	public Connections.DBName forConnection()
+	{
+		return Connections.DBName.MySQL;
 	}
 
 	@Override

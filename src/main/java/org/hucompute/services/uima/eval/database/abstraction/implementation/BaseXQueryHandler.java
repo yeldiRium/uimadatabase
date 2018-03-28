@@ -21,6 +21,7 @@ import org.basex.core.cmd.CreateDB;
 import org.basex.core.cmd.Delete;
 import org.basex.core.cmd.Open;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.hucompute.services.uima.eval.database.connection.Connections;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
@@ -52,6 +53,12 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	protected String getUriFromDocumentId(String documentId)
 	{
 		return this.dbName + "/" + documentId;
+	}
+
+	@Override
+	public Connections.DBName forConnection()
+	{
+		return Connections.DBName.BaseX;
 	}
 
 	/**

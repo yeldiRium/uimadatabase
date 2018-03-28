@@ -14,6 +14,7 @@ import org.hucompute.services.uima.eval.database.abstraction.ElementType;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
+import org.hucompute.services.uima.eval.database.connection.Connections;
 import org.neo4j.driver.v1.*;
 
 import java.util.*;
@@ -35,6 +36,12 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	public Neo4jQueryHandler(Driver driver)
 	{
 		this.driver = driver;
+	}
+
+	@Override
+	public Connections.DBName forConnection()
+	{
+		return Connections.DBName.Neo4j;
 	}
 
 	/**

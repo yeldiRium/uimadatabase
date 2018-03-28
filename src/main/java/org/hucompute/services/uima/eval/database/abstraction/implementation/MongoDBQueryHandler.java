@@ -11,6 +11,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.hucompute.services.uima.eval.database.connection.Connections;
 
 import java.util.Collection;
 import java.util.Map;
@@ -23,6 +24,12 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 	public MongoDBQueryHandler(MongoClient mongoClient)
 	{
 		this.mongoClient = mongoClient;
+	}
+
+	@Override
+	public Connections.DBName forConnection()
+	{
+		return Connections.DBName.MongoDB;
 	}
 
 	@Override

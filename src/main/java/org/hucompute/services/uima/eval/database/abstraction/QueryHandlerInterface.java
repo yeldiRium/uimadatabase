@@ -11,6 +11,7 @@ import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasN
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 import org.hucompute.services.uima.eval.database.abstraction.implementation.*;
 import org.hucompute.services.uima.eval.database.connection.Connection;
+import org.hucompute.services.uima.eval.database.connection.Connections;
 import org.hucompute.services.uima.eval.database.connection.implementation.*;
 
 import javax.naming.OperationNotSupportedException;
@@ -86,6 +87,15 @@ public interface QueryHandlerInterface
 
 		return queryhandler;
 	}
+
+	//--------------------------------------------------------------------------
+	// Meta
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @return the DBName which the QueryHandler handles.
+	 */
+	Connections.DBName forConnection ();
 
 	//--------------------------------------------------------------------------
 	// Setup
