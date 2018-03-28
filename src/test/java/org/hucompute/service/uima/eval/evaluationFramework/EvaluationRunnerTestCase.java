@@ -1,10 +1,15 @@
 package org.hucompute.service.uima.eval.evaluationFramework;
 
+import com.arangodb.ArangoDB;
 import org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestEvaluationA;
 import org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestEvaluationB;
 import org.hucompute.service.uima.eval.evaluationFramework.testEvaluations.TestEvaluationFailingRerun;
+import org.hucompute.services.uima.eval.database.connection.Connection;
 import org.hucompute.services.uima.eval.database.connection.ConnectionManager;
+import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
 import org.hucompute.services.uima.eval.database.connection.ConnectionResponse;
+import org.hucompute.services.uima.eval.database.connection.implementation.ArangoDBConnection;
+import org.hucompute.services.uima.eval.database.connection.implementation.MySQLConnection;
 import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
 import org.hucompute.services.uima.eval.evaluation.framework.EvaluationRunner;
 import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
@@ -53,8 +58,12 @@ public class EvaluationRunnerTestCase
 		List<EvaluationCase> evaluations = new ArrayList<>();
 		evaluations.add(new TestEvaluationA());
 		evaluations.add(new TestEvaluationB());
+		List<Class<? extends Connection>> connections = new ArrayList<>();
+		connections.add(ArangoDBConnection.class);
+		connections.add(MySQLConnection.class);
 		EvaluationRunner evaluationRunner = new EvaluationRunner(
 				evaluations,
+				connections,
 				this.mockConnectionManager,
 				this.mockOutputProvider
 		);
@@ -64,46 +73,18 @@ public class EvaluationRunnerTestCase
 	}
 
 	@Test
-	void Given_TestEvaluations_When_RunningEvaluationRunner_Then_ConnectionManagerReceivesRequests()
-	{
-		List<EvaluationCase> evaluations = new ArrayList<>();
-		evaluations.add(new TestEvaluationA());
-		evaluations.add(new TestEvaluationB());
-		EvaluationRunner evaluationRunner = new EvaluationRunner(
-				evaluations,
-				this.mockConnectionManager,
-				this.mockOutputProvider
-		);
-		evaluationRunner.run();
-
-		verify(mockConnectionManager).submitRequest(TestEvaluationA.connectionRequest);
-		verify(mockConnectionManager).submitRequest(TestEvaluationB.connectionRequest);
-	}
-
-	@Test
-	void Given_TestEvaluations_When_RunningEvaluationRunner_Then_EvaluationCasesAreRunWithCorrectConnectionResponse()
-	{
-		List<EvaluationCase> evaluations = new ArrayList<>();
-		evaluations.add(new TestEvaluationA());
-		evaluations.add(new TestEvaluationB());
-		EvaluationRunner evaluationRunner = new EvaluationRunner(
-				evaluations,
-				this.mockConnectionManager,
-				this.mockOutputProvider
-		);
-		evaluationRunner.run();
-
-		assertSame(this.mockConnectionResponse, TestEvaluationA.connectionResponse);
-		assertSame(this.mockConnectionResponse, TestEvaluationB.connectionResponse);
-	}
-
-	@Test
 	void Given_TestEvaluationsWithFailingEvaluation_When_RunngEvaluationRunnerAndEvaluationFailsWithRerunException_Then_EvaluationIsRerun()
 	{
 		List<EvaluationCase> evaluations = new ArrayList<>();
 		evaluations.add(new TestEvaluationFailingRerun());
+
+		List<Class<? extends Connection>> connections = new ArrayList<>();
+		connections.add(ArangoDBConnection.class);
+		connections.add(MySQLConnection.class);
+
 		EvaluationRunner evaluationRunner = new EvaluationRunner(
 				evaluations,
+				connections,
 				this.mockConnectionManager,
 				this.mockOutputProvider
 		);

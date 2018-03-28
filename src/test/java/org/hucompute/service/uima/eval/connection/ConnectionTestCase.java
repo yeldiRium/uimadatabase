@@ -28,12 +28,6 @@ public class ConnectionTestCase
 		{
 
 		}
-
-		@Override
-		protected void createQueryHandler()
-		{
-			this.queryHandler = this.injectedQueryHandler;
-		}
 	}
 
 	@Test
@@ -42,24 +36,12 @@ public class ConnectionTestCase
 		TestConnection connection = Mockito.mock(TestConnection.class);
 		doCallRealMethod().when(connection).establish();
 		doCallRealMethod().when(connection).isEstablished();
-		doCallRealMethod().when(connection).createQueryHandler();
 		// Test that tryToConnect is called four times, the fourth time succeeding.
 		when(connection.tryToConnect()).thenReturn(false, false, false, true);
-		when(connection.getQueryHandler()).thenReturn(Mockito.mock(QueryHandlerInterface.class));
 
 		connection.establish();
 
 		verify(connection, times(4)).tryToConnect();
 		assertEquals(true, connection.isEstablished());
-	}
-
-	@Test
-	void Given_Connection_When_Established_Then_QueryHandlerShouldBeGettable()
-	{
-		TestConnection connection = new TestConnection();
-		connection.injectedQueryHandler = Mockito.mock(QueryHandlerInterface.class);
-		connection.establish();
-
-		assertNotNull(connection.getQueryHandler());
 	}
 }

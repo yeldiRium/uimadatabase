@@ -2,18 +2,12 @@ package org.hucompute.services.uima.eval.evaluation.implementation;
 
 import com.google.common.collect.Sets;
 import org.hucompute.services.uima.eval.database.abstraction.ElementType;
+import org.hucompute.services.uima.eval.database.abstraction.QueryHandlerInterface;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 import org.hucompute.services.uima.eval.database.abstraction.implementation.BenchmarkQueryHandler;
-import org.hucompute.services.uima.eval.database.connection.Connection;
-import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
-import org.hucompute.services.uima.eval.database.connection.ConnectionResponse;
 import org.hucompute.services.uima.eval.database.connection.Connections;
-import org.hucompute.services.uima.eval.database.connection.implementation.ArangoDBConnection;
-import org.hucompute.services.uima.eval.database.connection.implementation.BaseXConnection;
-import org.hucompute.services.uima.eval.database.connection.implementation.MySQLConnection;
-import org.hucompute.services.uima.eval.database.connection.implementation.Neo4jConnection;
 import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
 import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
 import org.hucompute.services.uima.eval.utility.Collections;
@@ -23,9 +17,7 @@ import org.neo4j.helpers.collection.Iterators;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -48,19 +40,6 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	protected Iterable<String> documentIds;
 	protected Set<String> lemmata;
 
-	@Override
-	public ConnectionRequest requestConnection()
-	{
-		ConnectionRequest connectionRequest = new ConnectionRequest();
-		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
-		connectionRequest.addRequestedConnection(BaseXConnection.class);
-//		connectionRequest.addRequestedConnection(CassandraConnection.class);
-//		connectionRequest.addRequestedConnection(MongoDBConnection.class);
-		connectionRequest.addRequestedConnection(MySQLConnection.class);
-		connectionRequest.addRequestedConnection(Neo4jConnection.class);
-		return connectionRequest;
-	}
-
 	/**
 	 * Executes and benchmarks all purely query-related methods on
 	 * QueryHandlers for each Connection supplied.
@@ -69,22 +48,20 @@ public class AllQueryEvaluationCase implements EvaluationCase
 	 *
 	 * @param connectionResponse Contains all Connections requested in
 	 *                           #requestConnection().
+	 * @param queryHandlers
 	 * @param outputProvider     The provider for outputting results.
 	 * @throws IOException If an outputfile can not be created or written to.
 	 */
 	@Override
 	public void run(
-			ConnectionResponse connectionResponse,
+			Collection<QueryHandlerInterface> queryHandlers,
 			OutputProvider outputProvider
 	) throws IOException
 	{
 		int inputFiles = new File(System.getenv("INPUT_DIR")).list().length;
-		for (Connection connection : connectionResponse.getConnections())
+		for (QueryHandlerInterface currentQueryHandler : queryHandlers)
 		{
-			this.dbName =
-					Connections.getIdentifierForConnectionClass(
-							connection.getClass()
-					);
+			this.dbName = currentQueryHandler.forConnection();
 
 			logger.info("Starting AllQueryEvaluationCase for Database \""
 					+ this.dbName + "\".");
@@ -92,7 +69,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			JSONObject stats = new JSONObject();
 
 			BenchmarkQueryHandler queryHandler = new BenchmarkQueryHandler(
-					connection.getQueryHandler()
+					currentQueryHandler
 			);
 
 			int step = 1;

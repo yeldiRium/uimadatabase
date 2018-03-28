@@ -1,16 +1,10 @@
 package org.hucompute.services.uima.eval.evaluation.implementation;
 
 import com.google.common.collect.Sets;
+import org.hucompute.services.uima.eval.database.abstraction.QueryHandlerInterface;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.implementation.BenchmarkQueryHandler;
-import org.hucompute.services.uima.eval.database.connection.Connection;
-import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
-import org.hucompute.services.uima.eval.database.connection.ConnectionResponse;
 import org.hucompute.services.uima.eval.database.connection.Connections;
-import org.hucompute.services.uima.eval.database.connection.implementation.ArangoDBConnection;
-import org.hucompute.services.uima.eval.database.connection.implementation.BaseXConnection;
-import org.hucompute.services.uima.eval.database.connection.implementation.MySQLConnection;
-import org.hucompute.services.uima.eval.database.connection.implementation.Neo4jConnection;
 import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
 import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
 import org.hucompute.services.uima.eval.utility.Collections;
@@ -20,6 +14,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -40,36 +35,21 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 	protected Set<String> documentIds;
 
 	@Override
-	public ConnectionRequest requestConnection()
-	{
-		ConnectionRequest connectionRequest = new ConnectionRequest();
-		connectionRequest.addRequestedConnection(ArangoDBConnection.class);
-		connectionRequest.addRequestedConnection(BaseXConnection.class);
-//		connectionRequest.addRequestedConnection(CassandraConnection.class);
-//		connectionRequest.addRequestedConnection(MongoDBConnection.class);
-		connectionRequest.addRequestedConnection(MySQLConnection.class);
-		connectionRequest.addRequestedConnection(Neo4jConnection.class);
-		return connectionRequest;
-	}
-
-	@Override
 	public void run(
-			ConnectionResponse connectionResponse, OutputProvider outputProvider
+			Collection<QueryHandlerInterface> queryHandlers,
+			OutputProvider outputProvider
 	) throws IOException
 	{
 		int inputFiles = new File(System.getenv("INPUT_DIR")).list().length;
-		for (Connection connection : connectionResponse.getConnections())
+		for (QueryHandlerInterface currentQueryHandler : queryHandlers)
 		{
-			this.dbName =
-					Connections.getIdentifierForConnectionClass(
-							connection.getClass()
-					);
+			this.dbName = currentQueryHandler.forConnection();
 
 			logger.info("Starting AllComplexQueryEvaluationCase for Database \""
 					+ this.dbName + "\".");
 
 			BenchmarkQueryHandler queryHandler = new BenchmarkQueryHandler(
-					connection.getQueryHandler()
+					currentQueryHandler
 			);
 
 			// We'll need the documentIds from the database later on for the

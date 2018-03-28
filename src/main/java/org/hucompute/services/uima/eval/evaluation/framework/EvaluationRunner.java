@@ -1,11 +1,15 @@
 package org.hucompute.services.uima.eval.evaluation.framework;
 
+import org.hucompute.services.uima.eval.database.abstraction.QueryHandlerInterface;
+import org.hucompute.services.uima.eval.database.connection.Connection;
 import org.hucompute.services.uima.eval.database.connection.ConnectionManager;
 import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
 import org.hucompute.services.uima.eval.database.connection.ConnectionResponse;
 import org.hucompute.services.uima.eval.evaluation.framework.exceptions.EvaluationFailedRerunnableException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
@@ -16,15 +20,18 @@ public class EvaluationRunner implements Runnable
 
 	protected OutputProvider outputProvider;
 	protected List<EvaluationCase> evaluations;
+	protected List<Class<? extends Connection>> connections;
 	protected ConnectionManager connectionManager;
 
 	public EvaluationRunner(
 			List<EvaluationCase> evaluations,
+			List<Class<? extends Connection>> connections,
 			ConnectionManager connectionManager,
 			OutputProvider outputProvider
 	)
 	{
 		this.evaluations = evaluations;
+		this.connections = connections;
 		this.connectionManager = connectionManager;
 		this.outputProvider = outputProvider;
 	}
@@ -37,20 +44,31 @@ public class EvaluationRunner implements Runnable
 	@Override
 	public void run()
 	{
+		ConnectionRequest connectionRequest = new ConnectionRequest(
+				this.connections
+		);
+		ConnectionResponse connectionResponse = null;
+		try
+		{
+			connectionResponse = this.connectionManager
+					.submitRequest(connectionRequest).get();
+		} catch (InterruptedException | ExecutionException e)
+		{
+			Thread.currentThread().interrupt();
+		}
+
+		Collection<QueryHandlerInterface> queryHandlers = new ArrayList<>();
+		for (Connection connection : connectionResponse.getConnections())
+		{
+			queryHandlers.add(
+					QueryHandlerInterface
+							.createQueryHandlerForConnection(connection)
+			);
+		}
+
 		for (EvaluationCase evaluationCase
 				: this.evaluations)
 		{
-			ConnectionRequest connectionRequest =
-					evaluationCase.requestConnection();
-			ConnectionResponse connectionResponse = null;
-			try
-			{
-				connectionResponse = this.connectionManager
-						.submitRequest(connectionRequest).get();
-			} catch (InterruptedException | ExecutionException e)
-			{
-				Thread.currentThread().interrupt();
-			}
 			logger.info("Running EvaluationCase "
 					+ evaluationCase.getClass().getName());
 			boolean success = false;
@@ -59,7 +77,7 @@ public class EvaluationRunner implements Runnable
 				try
 				{
 					evaluationCase.run(
-							connectionResponse,
+							queryHandlers,
 							this.outputProvider
 					);
 					success = true;

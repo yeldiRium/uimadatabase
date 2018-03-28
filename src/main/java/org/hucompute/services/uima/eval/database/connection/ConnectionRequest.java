@@ -2,6 +2,7 @@ package org.hucompute.services.uima.eval.database.connection;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,6 +21,14 @@ public class ConnectionRequest
 	public ConnectionRequest()
 	{
 		this.connections = new HashSet<>();
+	}
+
+	/**
+	 * Constructs the ConnectionRequest from a list of ConnectionClasses
+	 */
+	public ConnectionRequest(List<Class<? extends Connection>> connections) {
+		this.connections = new HashSet<>();
+		this.connections.addAll(connections);
 	}
 
 	/**

@@ -48,12 +48,6 @@ public class ConnectionManagerTestCase
 		}
 
 		@Override
-		protected void createQueryHandler()
-		{
-
-		}
-
-		@Override
 		protected boolean tryToConnect()
 		{
 			return false;
@@ -78,12 +72,6 @@ public class ConnectionManagerTestCase
 
 		@Override
 		public void close()
-		{
-
-		}
-
-		@Override
-		protected void createQueryHandler()
 		{
 
 		}

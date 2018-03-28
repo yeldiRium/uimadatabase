@@ -15,10 +15,4 @@ public class TestConnection extends Connection
 	{
 
 	}
-
-	@Override
-	protected void createQueryHandler()
-	{
-
-	}
 }

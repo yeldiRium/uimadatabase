@@ -26,12 +26,6 @@ public class ConnectionRequestTestCase
 		{
 
 		}
-
-		@Override
-		protected void createQueryHandler()
-		{
-
-		}
 	}
 
 	protected class TestConnectionB extends Connection
@@ -48,12 +42,6 @@ public class ConnectionRequestTestCase
 		{
 
 		}
-
-		@Override
-		protected void createQueryHandler()
-		{
-
-		}
 	}
 
 	protected class TestConnectionC extends Connection
@@ -67,12 +55,6 @@ public class ConnectionRequestTestCase
 
 		@Override
 		public void close()
-		{
-
-		}
-
-		@Override
-		protected void createQueryHandler()
 		{
 
 		}

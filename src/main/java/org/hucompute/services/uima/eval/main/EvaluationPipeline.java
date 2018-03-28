@@ -23,7 +23,7 @@ public class EvaluationPipeline
 
 	public static void run(
 			List<EvaluationCase> evaluations,
-			List<Class<? extends Connection>> databases
+			List<Class<? extends Connection>> connections
 	)
 	{
 		// Clean up logging to stdout
@@ -44,6 +44,7 @@ public class EvaluationPipeline
 			);
 			EvaluationRunner evaluationRunner = new EvaluationRunner(
 					evaluations,
+					connections,
 					connectionManager,
 					outputProvider
 			);

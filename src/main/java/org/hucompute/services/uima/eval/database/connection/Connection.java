@@ -47,7 +47,6 @@ public abstract class Connection
 				{
 					LOGGER.fine("Connection for " + this.getClass().getName()
 							+ " successful!");
-					this.createQueryHandler();
 					isEstablished = true;
 					return;
 				} else
@@ -82,23 +81,5 @@ public abstract class Connection
 	public boolean isEstablished()
 	{
 		return this.isEstablished;
-	}
-
-	/**
-	 * Instantiates a QueryHandler subclass via the factory method on the Query-
-	 * HandlerInterface.
-	 */
-	protected void createQueryHandler()
-	{
-		this.queryHandler =
-				QueryHandlerInterface.createQueryHandlerForConnection(this);
-	};
-
-	/**
-	 * @return A QueryHandlerInterface instance for this Connection's database.
-	 */
-	public QueryHandlerInterface getQueryHandler()
-	{
-		return this.queryHandler;
 	}
 }

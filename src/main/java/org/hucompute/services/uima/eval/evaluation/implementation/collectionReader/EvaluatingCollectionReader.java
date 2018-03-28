@@ -9,6 +9,7 @@ import org.apache.uima.fit.component.CasCollectionReader_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Progress;
+import org.hucompute.services.uima.eval.database.abstraction.QueryHandlerInterface;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
 import org.hucompute.services.uima.eval.database.abstraction.implementation.BenchmarkQueryHandler;
@@ -70,7 +71,9 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 			Connection connection = response
 					.getConnection(connectionClass);
 			this.queryHandler = new BenchmarkQueryHandler(
-					connection.getQueryHandler()
+					QueryHandlerInterface.createQueryHandlerForConnection(
+							connection
+					)
 			);
 		} catch (InterruptedException | ExecutionException e)
 		{

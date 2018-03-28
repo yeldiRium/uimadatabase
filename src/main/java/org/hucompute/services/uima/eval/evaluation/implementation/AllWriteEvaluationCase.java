@@ -7,8 +7,7 @@ import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.hucompute.services.uima.eval.database.connection.ConnectionRequest;
-import org.hucompute.services.uima.eval.database.connection.ConnectionResponse;
+import org.hucompute.services.uima.eval.database.abstraction.QueryHandlerInterface;
 import org.hucompute.services.uima.eval.database.connection.Connections;
 import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
 import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
@@ -16,6 +15,7 @@ import org.hucompute.services.uima.eval.evaluation.implementation.collectionWrit
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 import static org.apache.uima.fit.pipeline.SimplePipeline.runPipeline;
@@ -35,31 +35,17 @@ public class AllWriteEvaluationCase implements EvaluationCase
 			Logger.getLogger(AllWriteEvaluationCase.class.getName());
 
 	@Override
-	public ConnectionRequest requestConnection()
-	{
-		// Since it is impossible to inject non-primitive objects into Analysis-
-		// Engines, we don't need any connections here.
-		// Instead we'll use the Singleton ConnectionManager in each Writer
-		// and retrieve the Connections there.
-		return new ConnectionRequest();
-	}
-
-	@Override
 	public void run(
-			ConnectionResponse connectionResponse,
+			Collection<QueryHandlerInterface> queryHandlers,
 			OutputProvider outputProvider
 	)
 	{
 		int inputFiles = new File(System.getenv("INPUT_DIR")).list().length;
 		try
 		{
-			for (Connections.DBName dbName : new Connections.DBName[]{
-					Connections.DBName.ArangoDB,
-					Connections.DBName.BaseX,
-					Connections.DBName.MySQL,
-					Connections.DBName.Neo4j
-			})
+			for (QueryHandlerInterface currentQueryHandler : queryHandlers)
 			{
+				Connections.DBName dbName = currentQueryHandler.forConnection();
 				logger.info("Starting AllWriteEvaluationCase for Database \""
 						+ dbName + "\".");
 

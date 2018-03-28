@@ -1,17 +1,13 @@
 package org.hucompute.services.uima.eval.evaluation.implementation.collectionWriter;
 
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasConsumer_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
-import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.hucompute.services.uima.eval.database.abstraction.QueryHandlerInterface;
 import org.hucompute.services.uima.eval.database.abstraction.implementation.BenchmarkQueryHandler;
 import org.hucompute.services.uima.eval.database.connection.*;
 import org.hucompute.services.uima.eval.utility.Formatting;
@@ -71,11 +67,11 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 
 			// Set up Database before writing, since writing is always the first
 			// step when evaluating.
-			connection.getQueryHandler().setUpDatabase();
+			QueryHandlerInterface queryHandler = QueryHandlerInterface
+					.createQueryHandlerForConnection(connection);
+			queryHandler.setUpDatabase();
 
-			this.queryHandler = new BenchmarkQueryHandler(
-					connection.getQueryHandler()
-			);
+			this.queryHandler = new BenchmarkQueryHandler(queryHandler);
 			logger.info("Clearing database for " + this.dbName + ".");
 			this.queryHandler.clearDatabase();
 		} catch (InterruptedException | ExecutionException e)
