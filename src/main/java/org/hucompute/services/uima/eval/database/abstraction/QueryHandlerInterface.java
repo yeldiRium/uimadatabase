@@ -110,6 +110,14 @@ public interface QueryHandlerInterface
 	void setUpDatabase() throws IOException;
 
 	/**
+	 * Any operations that have to be executed to actually connect to the data
+	 * store. This should *not* change any data on tha database.
+	 *
+	 * @throws IOException
+	 */
+	void openDatabase() throws IOException;
+
+	/**
 	 * Clears the database from any content. However, it leaves any necessary
 	 * structures intact.
 	 */

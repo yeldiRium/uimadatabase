@@ -71,11 +71,13 @@ public class EvaluatingCollectionReader extends CasCollectionReader_ImplBase
 			Connection connection = response
 					.getConnection(connectionClass);
 			this.queryHandler = new BenchmarkQueryHandler(
-					QueryHandlerInterface.createQueryHandlerForConnection(
-							connection
-					)
+					QueryHandlerInterface
+							.createQueryHandlerForConnection(
+									connection
+							)
 			);
-		} catch (InterruptedException | ExecutionException e)
+			this.queryHandler.openDatabase();
+		} catch (IOException | InterruptedException | ExecutionException e)
 		{
 			logger.severe("Initialization for CollectionReader failed. " +
 					"Interrupted when requesting connection for "

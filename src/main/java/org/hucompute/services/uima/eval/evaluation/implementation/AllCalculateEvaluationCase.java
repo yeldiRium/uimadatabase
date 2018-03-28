@@ -51,6 +51,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler = new BenchmarkQueryHandler(
 					currentQueryHandler
 			);
+			queryHandler.openDatabase();
 
 			// We'll need the documentIds and lemmata from the database later on
 			// for the evaluations.

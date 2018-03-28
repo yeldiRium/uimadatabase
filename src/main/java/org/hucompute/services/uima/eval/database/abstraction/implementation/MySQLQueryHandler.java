@@ -17,6 +17,7 @@ import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHExcept
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import org.hucompute.services.uima.eval.database.connection.Connections;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
@@ -120,6 +121,12 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 		{
 			throw new QHException(e);
 		}
+	}
+
+	@Override
+	public void openDatabase() throws IOException
+	{
+
 	}
 
 	/**
@@ -723,7 +730,8 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 			query = "SELECT COUNT(*)" +
 					" FROM " + ElementType.Token +
 					" WHERE `documentId` = ? AND `value` = ?;";
-		} else { // => type == ElementType.Lemma
+		} else
+		{ // => type == ElementType.Lemma
 			query = "SELECT COUNT(*)" +
 					" FROM " + ElementType.Lemma + " as `lemma`" +
 					"      JOIN documentLemmaMap as `dlm`" +
@@ -875,13 +883,15 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 		{
 			// Loop over document ids and set each to a separate prepared value
 			// slot.
-			for (String documentId : documentIds) {
+			for (String documentId : documentIds)
+			{
 				aStatement.setString(counter++, documentId);
 			}
 
 			ResultSet result = aStatement.executeQuery();
 
-			while (result.next()) {
+			while (result.next())
+			{
 				ttrMap.put(result.getString(1), result.getDouble(2));
 			}
 		} catch (SQLException e)
@@ -974,9 +984,11 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 
 			ResultSet result = aStatement.executeQuery();
 
-			while (result.next()) {
+			while (result.next())
+			{
 				String nextValue = result.getString(1);
-				if (nextValue == null) {
+				if (nextValue == null)
+				{
 					continue;
 				}
 				biGramList.add(nextValue);
@@ -1003,9 +1015,11 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 		{
 			ResultSet result = aStatement.executeQuery(query);
 
-			while (result.next()) {
+			while (result.next())
+			{
 				String nextValue = result.getString(1);
-				if (nextValue == null) {
+				if (nextValue == null)
+				{
 					continue;
 				}
 				biGramList.add(nextValue);
@@ -1048,9 +1062,11 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 
 			ResultSet result = aStatement.executeQuery();
 
-			while (result.next()) {
+			while (result.next())
+			{
 				String nextValue = result.getString(1);
-				if (nextValue == null) {
+				if (nextValue == null)
+				{
 					continue;
 				}
 				biGramList.add(nextValue);
@@ -1083,9 +1099,11 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 
 			ResultSet result = aStatement.executeQuery();
 
-			while (result.next()) {
+			while (result.next())
+			{
 				String nextValue = result.getString(1);
-				if (nextValue == null) {
+				if (nextValue == null)
+				{
 					continue;
 				}
 				triGramList.add(nextValue);
@@ -1114,9 +1132,11 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 		{
 			ResultSet result = aStatement.executeQuery(query);
 
-			while (result.next()) {
+			while (result.next())
+			{
 				String nextValue = result.getString(1);
-				if (nextValue == null) {
+				if (nextValue == null)
+				{
 					continue;
 				}
 				triGramList.add(nextValue);
@@ -1161,9 +1181,11 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 
 			ResultSet result = aStatement.executeQuery();
 
-			while (result.next()) {
+			while (result.next())
+			{
 				String nextValue = result.getString(1);
-				if (nextValue == null) {
+				if (nextValue == null)
+				{
 					continue;
 				}
 				triGramList.add(nextValue);

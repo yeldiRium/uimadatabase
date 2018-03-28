@@ -68,6 +68,11 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 	public void setUpDatabase() throws IOException
 	{
 		this.clientSession.execute(new CreateDB(this.dbName));
+	}
+
+	@Override
+	public void openDatabase() throws IOException
+	{
 		this.clientSession.execute(new Open(this.dbName));
 	}
 

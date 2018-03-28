@@ -1,18 +1,18 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
 import com.datastax.driver.core.Session;
-import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
-import org.hucompute.services.uima.eval.database.abstraction.ElementType;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
+import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
+import org.hucompute.services.uima.eval.database.abstraction.ElementType;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
 import org.hucompute.services.uima.eval.database.connection.Connections;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +34,12 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 
 	@Override
 	public void setUpDatabase()
+	{
+
+	}
+
+	@Override
+	public void openDatabase() throws IOException
 	{
 
 	}

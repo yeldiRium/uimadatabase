@@ -67,11 +67,11 @@ public class EvaluatingCollectionWriter extends JCasConsumer_ImplBase
 
 			// Set up Database before writing, since writing is always the first
 			// step when evaluating.
-			QueryHandlerInterface queryHandler = QueryHandlerInterface
-					.createQueryHandlerForConnection(connection);
-			queryHandler.setUpDatabase();
+			this.queryHandler = new BenchmarkQueryHandler(QueryHandlerInterface
+					.createQueryHandlerForConnection(connection));
+			this.queryHandler.setUpDatabase();
+			this.queryHandler.openDatabase();
 
-			this.queryHandler = new BenchmarkQueryHandler(queryHandler);
 			logger.info("Clearing database for " + this.dbName + ".");
 			this.queryHandler.clearDatabase();
 		} catch (InterruptedException | ExecutionException e)

@@ -51,6 +51,7 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler = new BenchmarkQueryHandler(
 					currentQueryHandler
 			);
+			queryHandler.openDatabase();
 
 			// We'll need the documentIds from the database later on for the
 			// evaluations.

@@ -25,6 +25,7 @@ import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
 import org.hucompute.services.uima.eval.database.connection.Connections;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -52,12 +53,6 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	public ArangoDBQueryHandler(ArangoDB arangodb)
 	{
 		this.arangodb = arangodb;
-
-		if (this.arangodb.getDatabases().contains(dbName))
-		{
-			this.db = this.arangodb.db(dbName);
-			this.graph = this.db.graph(graphName);
-		}
 	}
 
 	@Override
@@ -173,6 +168,16 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 				graphName, edgeDefinitions
 		);
 		this.graph = this.db.graph(graphName);
+	}
+
+	@Override
+	public void openDatabase() throws IOException
+	{
+		if (this.arangodb.getDatabases().contains(dbName))
+		{
+			this.db = this.arangodb.db(dbName);
+			this.graph = this.db.graph(graphName);
+		}
 	}
 
 	/**

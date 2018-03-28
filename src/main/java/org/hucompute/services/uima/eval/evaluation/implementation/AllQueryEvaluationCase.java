@@ -71,6 +71,7 @@ public class AllQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler = new BenchmarkQueryHandler(
 					currentQueryHandler
 			);
+			queryHandler.openDatabase();
 
 			int step = 1;
 			// getDocumentIds

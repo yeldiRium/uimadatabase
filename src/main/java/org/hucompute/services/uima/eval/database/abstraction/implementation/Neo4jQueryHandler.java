@@ -17,6 +17,7 @@ import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasN
 import org.hucompute.services.uima.eval.database.connection.Connections;
 import org.neo4j.driver.v1.*;
 
+import java.io.IOException;
 import java.util.*;
 
 public class Neo4jQueryHandler extends AbstractQueryHandler
@@ -50,6 +51,12 @@ public class Neo4jQueryHandler extends AbstractQueryHandler
 	@Override
 	public void setUpDatabase()
 	{
+	}
+
+	@Override
+	public void openDatabase() throws IOException
+	{
+
 	}
 
 	/**

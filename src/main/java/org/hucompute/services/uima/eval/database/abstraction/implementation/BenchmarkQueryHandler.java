@@ -106,6 +106,12 @@ public class BenchmarkQueryHandler implements QueryHandlerInterface
 	}
 
 	@Override
+	public void openDatabase() throws IOException
+	{
+		this.subjectQueryHandler.openDatabase();
+	}
+
+	@Override
 	public void clearDatabase() throws IOException
 	{
 		long start = System.currentTimeMillis();
