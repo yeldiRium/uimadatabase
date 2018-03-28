@@ -8,7 +8,9 @@ import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
 import java.util.ArrayList;
 import java.util.List;
 
-@Parameters(commandDescription = "Run evaluations on databases.")
+@Parameters(commandDescription = "Run evaluations on databases. Note that the" +
+		" ReadEvaluation has to be run before anything else, so that content " +
+		"exists in the database.")
 public class EvaluateCommand
 {
 	@Parameter(
