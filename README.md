@@ -28,6 +28,7 @@ java
 maven
 docker
 docker-compose
+pdflatex
 ```
 
 How to use:
