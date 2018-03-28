@@ -6,11 +6,9 @@ import org.hucompute.services.uima.eval.evaluation.framework.BaseOutputProvider;
 import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
 import org.hucompute.services.uima.eval.evaluation.framework.EvaluationRunner;
 import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
-import org.hucompute.services.uima.eval.utility.logging.PlainFormatter;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.*;
+import java.util.logging.Logger;
 
 /**
  * EvaluationPipeline entrance point for the evaluation system.
@@ -26,16 +24,6 @@ public class EvaluationPipeline
 			List<Class<? extends Connection>> connections
 	)
 	{
-		// Clean up logging to stdout
-		Logger rootLogger = LogManager.getLogManager().getLogger("");
-		rootLogger.setLevel(Level.ALL);
-		Formatter plainFormatter = new PlainFormatter();
-		for (Handler h : rootLogger.getHandlers())
-		{
-			h.setFormatter(plainFormatter);
-			h.setLevel(Level.ALL);
-		}
-
 		ConnectionManager connectionManager = ConnectionManager.getInstance();
 		try
 		{
