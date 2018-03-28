@@ -5,13 +5,15 @@ import com.beust.jcommander.ParameterException;
 import org.hucompute.services.uima.eval.main.CLIArguments.EvaluateCommand;
 import org.hucompute.services.uima.eval.main.CLIArguments.VisualizeCommand;
 
+import java.io.IOException;
+
 public class Main
 {
 	private final EvaluateCommand evaluateCommand = new EvaluateCommand();
 	private final VisualizeCommand visualizeCommand = new VisualizeCommand();
 	private JCommander jCommander;
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
 		Main main = new Main();
 		main.handleInputArguments(args);
@@ -44,18 +46,19 @@ public class Main
 		}
 	}
 
-	private void run()
+	private void run() throws IOException
 	{
 		if (this.jCommander.getParsedCommand().equals("evaluate"))
 		{
-			System.out.println("Evaluating stuff...");
-			System.exit(0);
+			EvaluationPipeline.run(
+					this.evaluateCommand.evaluations,
+					this.evaluateCommand.dbs
+			);
 		}
 
 		if (this.jCommander.getParsedCommand().equals("visualize"))
 		{
-			System.out.println("Visualizing stuff...");
-			System.exit(0);
+			VisualizationPipeline.main(new String[]{});
 		}
 	}
 }

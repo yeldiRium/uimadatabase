@@ -2,6 +2,8 @@ package org.hucompute.services.uima.eval.main.CLIArguments;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import org.hucompute.services.uima.eval.database.connection.Connection;
+import org.hucompute.services.uima.eval.evaluation.framework.EvaluationCase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ public class EvaluateCommand
 			validateWith = EvaluationNameValidator.class,
 			converter = EvaluationConverter.class
 	)
-	public List<String> evaluations = new ArrayList<>();
+	public List<EvaluationCase> evaluations = new ArrayList<>();
 
 	@Parameter(
 			required = true,
@@ -32,5 +34,5 @@ public class EvaluateCommand
 			validateWith = DatabaseNameValidator.class,
 			converter = DatabaseNameConverter.class
 	)
-	public List<String> dbs = new ArrayList<>();
+	public List<Class<? extends Connection>> dbs = new ArrayList<>();
 }
