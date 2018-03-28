@@ -1,5 +1,6 @@
 package org.hucompute.services.uima.eval.main.CLIArguments;
 
+import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
 @Parameters(
@@ -7,4 +8,10 @@ import com.beust.jcommander.Parameters;
 )
 public class VisualizeCommand
 {
+	@Parameter(
+			names = {"-h", "--help"},
+			help = true,
+			description = "Show help text."
+	)
+	public boolean help = false;
 }

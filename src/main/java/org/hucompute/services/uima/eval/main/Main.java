@@ -15,7 +15,7 @@ public class Main
 	{
 		Main main = new Main();
 		main.handleInputArguments(args);
-		//main.run();
+		main.run();
 	}
 
 	void handleInputArguments(String[] args)
@@ -27,22 +27,35 @@ public class Main
 
 		try
 		{
-			jCommander.parse(args);
+			this.jCommander.parse(args);
 		} catch (ParameterException e)
 		{
 			System.out.println(e.getMessage());
-			this.showUsage();
+			this.jCommander.usage();
+			System.exit(1);
 		}
 
-		if (this.evaluateCommand.help)
+		if (this.jCommander.getParsedCommand() == null
+				|| this.evaluateCommand.help
+				|| this.visualizeCommand.help)
 		{
-			this.showUsage();
+			this.jCommander.usage();
+			System.exit(0);
 		}
 	}
 
-	void showUsage()
+	private void run()
 	{
-		this.jCommander.usage();
-		System.exit(0);
+		if (this.jCommander.getParsedCommand().equals("evaluate"))
+		{
+			System.out.println("Evaluating stuff...");
+			System.exit(0);
+		}
+
+		if (this.jCommander.getParsedCommand().equals("visualize"))
+		{
+			System.out.println("Visualizing stuff...");
+			System.exit(0);
+		}
 	}
 }
