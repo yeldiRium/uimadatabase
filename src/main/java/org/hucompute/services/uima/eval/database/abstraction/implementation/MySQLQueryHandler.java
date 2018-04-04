@@ -273,11 +273,11 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	)
 	{
 		String tokenId = UUID.randomUUID().toString();
-		String insertSentence = "INSERT INTO " + ElementType.Token +
+		String insertToken = "INSERT INTO " + ElementType.Token +
 				" (`id`, `documentId`, `paragraphId`, `sentenceId`, `previousTokenId`, `value`, `begin`, `end`)" +
 				" VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 		try (PreparedStatement aStatement =
-				     this.connection.prepareStatement(insertSentence))
+				     this.connection.prepareStatement(insertToken))
 		{
 			aStatement.setString(1, tokenId);
 			aStatement.setString(2, documentId);
