@@ -1,6 +1,9 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
-import com.datastax.driver.core.*;
+import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Session;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
@@ -14,18 +17,97 @@ import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHExcept
 import org.hucompute.services.uima.eval.database.connection.Connections;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class CassandraQueryHandler extends AbstractQueryHandler
 {
 	protected Session session;
+	protected boolean statementsPrepared = false;
+	protected Map<String, PreparedStatement> preparedStatementMap;
 
 	public CassandraQueryHandler(Session session)
 	{
 		this.session = session;
+
+		this.preparedStatementMap = new HashMap<>();
+	}
+
+	/**
+	 * Prepares often use statements, so they are only defined once.
+	 *
+	 * Has to be executed after a keyspace was selected via a "USE" command AND
+	 * the database is completely set up.
+	 */
+	protected void prepareStatements() {
+		if (this.statementsPrepared) {
+			return;
+		}
+
+		this.preparedStatementMap.put(
+				"createDocument",
+				this.session.prepare(
+						"INSERT INTO \"" + ElementType.Document + "\"" +
+								" (\"uid\", \"text\", \"language\")" +
+								" VALUES (?, ?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertParagraph",
+				this.session.prepare(
+						"INSERT INTO \"" + ElementType.Paragraph + "\"" +
+								" (\"uid\", \"documentId\", \"previousParagraphId\", \"begin\", \"end\")" +
+								" VALUES (?, ?, ?, ?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertSentence",
+				this.session.prepare(
+						"INSERT INTO \"" + ElementType.Sentence + "\"" +
+								" (\"uid\", \"documentId\", \"paragraphId\", \"previousSentenceId\", \"begin\", \"end\")" +
+								" VALUES (?, ?, ?, ?, ?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertToken",
+				this.session.prepare(
+						"INSERT INTO \"" + ElementType.Token + "\"" +
+								" (\"uid\", \"documentId\", \"paragraphId\", \"sentenceId\", \"previousTokenId\", \"value\", \"begin\", \"end\")" +
+								" VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertLemma",
+				this.session.prepare(
+						"INSERT INTO \"" + ElementType.Lemma + "\"" +
+								" (\"value\")" +
+								" VALUES (?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertTokenLemmaConnection",
+				this.session.prepare(
+						"INSERT INTO \"tokenLemmaMap\"" +
+								" (\"tokenId\", \"lemmaId\")" +
+								" VALUES (?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertDocumentLemmaConnection",
+				this.session.prepare(
+						"INSERT INTO \"documentLemmaMap\"" +
+								" (\"documentId\", \"lemmaId\")" +
+								" VALUES (?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"findDocumentById",
+				this.session.prepare(
+						"SELECT * FROM \"" + ElementType.Document + "\"" +
+								" WHERE \"uid\" = ?;"
+				)
+		);
+
+		this.statementsPrepared = true;
 	}
 
 	@Override
@@ -34,60 +116,60 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		return Connections.DBName.Cassandra;
 	}
 
+	/**
+	 * Primary keys are automatically indexed with a primary index.
+	 * Secondary indexes are created manually for all fields that are queried at
+	 * some point. If there were no secondary indexes, cassandra would complain
+	 * that the queries have unpredictable performance.
+	 */
 	@Override
 	public void setUpDatabase()
 	{
-		String query = "CREATE KEYSPACE IF NOT EXISTS " +
+		session.execute("CREATE KEYSPACE IF NOT EXISTS " +
 				System.getenv("CASSANDRA_DB") + " WITH replication = {" +
 				"'class':'SimpleStrategy'," +
 				"'replication_factor':1" +
-				"};";
-		session.execute(query);
+				"};");
 
 		session.execute("USE " + System.getenv("CASSANDRA_DB"));
 
-		query = "DROP TABLE IF EXISTS \"" + ElementType.Document + "\"";
-		session.execute(query);
-		query = "DROP TABLE IF EXISTS \"" + ElementType.Paragraph + "\"";
-		session.execute(query);
-		query = "DROP TABLE IF EXISTS \"" + ElementType.Sentence + "\"";
-		session.execute(query);
-		query = "DROP TABLE IF EXISTS \"" + ElementType.Token + "\"";
-		session.execute(query);
-		query = "DROP TABLE IF EXISTS \"" + ElementType.Lemma + "\"";
-		session.execute(query);
-		query = "DROP TABLE IF EXISTS \"tokenLemmaMap\"";
-		session.execute(query);
-		query = "DROP TABLE IF EXISTS \"documentLemmaMap\"";
-		session.execute(query);
+		session.execute("DROP TABLE IF EXISTS \"" + ElementType.Document + "\"");
+		session.execute("DROP TABLE IF EXISTS \"" + ElementType.Paragraph + "\"");
+		session.execute("DROP TABLE IF EXISTS \"" + ElementType.Sentence + "\"");
+		session.execute("DROP TABLE IF EXISTS \"" + ElementType.Token + "\"");
+		session.execute("DROP TABLE IF EXISTS \"" + ElementType.Lemma + "\"");
+		session.execute("DROP TABLE IF EXISTS \"tokenLemmaMap\"");
+		session.execute("DROP TABLE IF EXISTS \"documentLemmaMap\"");
 
-		query = "CREATE TABLE \"" + ElementType.Document + "\" ( " +
+		session.execute("CREATE TABLE \"" + ElementType.Document + "\" ( " +
 				"  \"uid\" VARCHAR primary key, " +
 				"  \"text\" VARCHAR, " +
 				"  \"language\" VARCHAR, " +
-				")";
-		session.execute(query);
+				")");
 
-		query = "CREATE TABLE \"" + ElementType.Paragraph + "\" ( " +
+		session.execute("CREATE TABLE \"" + ElementType.Paragraph + "\" ( " +
 				"  \"uid\" VARCHAR primary key, " +
 				"  \"documentId\" VARCHAR, " +
 				"  \"previousParagraphId\" VARCHAR, " +
 				"  \"begin\" INT, " +
 				"  \"end\" INT, " +
-				")";
-		session.execute(query);
+				")");
+		session.execute("CREATE INDEX ON \"" + ElementType.Paragraph + "\" (\"documentId\")");
+		session.execute("CREATE INDEX ON \"" + ElementType.Paragraph + "\" (\"previousParagraphId\");");
 
-		query = "CREATE TABLE \"" + ElementType.Sentence + "\" ( " +
+		session.execute("CREATE TABLE \"" + ElementType.Sentence + "\" ( " +
 				"  \"uid\" VARCHAR primary key, " +
 				"  \"paragraphId\" VARCHAR, " +
 				"  \"documentId\" VARCHAR, " +
 				"  \"previousSentenceId\" VARCHAR, " +
 				"  \"begin\" INT, " +
 				"  \"end\" INT, " +
-				")";
-		session.execute(query);
+				")");
+		session.execute("CREATE INDEX ON \"" + ElementType.Sentence + "\" (\"paragraphId\")");
+		session.execute("CREATE INDEX ON \"" + ElementType.Sentence + "\" (\"documentId\")");
+		session.execute("CREATE INDEX ON \"" + ElementType.Sentence + "\" (\"previousSentenceId\");");
 
-		query = "CREATE TABLE \"" + ElementType.Token + "\" ( " +
+		session.execute("CREATE TABLE \"" + ElementType.Token + "\" ( " +
 				"  \"uid\" VARCHAR primary key, " +
 				"  \"sentenceId\" VARCHAR, " +
 				"  \"paragraphId\" VARCHAR, " +
@@ -96,35 +178,37 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				"  \"value\" VARCHAR, " +
 				"  \"begin\" INT, " +
 				"  \"end\" INT, " +
-				")";
-		session.execute(query);
+				")");
+		session.execute("CREATE INDEX ON \"" + ElementType.Token + "\" (\"sentenceId\")");
+		session.execute("CREATE INDEX ON \"" + ElementType.Token + "\" (\"paragraphId\")");
+		session.execute("CREATE INDEX ON \"" + ElementType.Token + "\" (\"documentId\")");
+		session.execute("CREATE INDEX ON \"" + ElementType.Token + "\" (\"previousTokenId\")");
+		session.execute("CREATE INDEX ON \"" + ElementType.Token + "\" (\"value\");");
 
-		query = "CREATE TABLE \"" + ElementType.Lemma + "\" ( " +
-				"  \"uid\" VARCHAR primary key, " +
-				"  \"value\" VARCHAR, " +
-				")";
-		session.execute(query);
+		session.execute("CREATE TABLE \"" + ElementType.Lemma + "\" ( " +
+				"  \"value\" VARCHAR primary key " +
+				")");
 
-
-		query = "CREATE TABLE \"tokenLemmaMap\" ( " +
-				"  \"uid\" uuid primary key, " +
+		session.execute("CREATE TABLE \"tokenLemmaMap\" ( " +
 				"  \"tokenId\" VARCHAR, " +
-				"  \"lemmaId\" VARCHAR " +
-				")";
-		session.execute(query);
+				"  \"lemmaId\" VARCHAR, " +
+				"  PRIMARY KEY (\"tokenId\", \"lemmaId\") " +
+				")");
 
-		query = "CREATE TABLE \"documentLemmaMap\" ( " +
-				"  \"uid\" uuid primary key, " +
+		session.execute("CREATE TABLE \"documentLemmaMap\" ( " +
 				"  \"documentId\" VARCHAR, " +
-				"  \"lemmaId\" VARCHAR " +
-				")";
-		session.execute(query);
+				"  \"lemmaId\" VARCHAR, " +
+				"  PRIMARY KEY (\"documentId\", \"lemmaId\") " +
+				")");
+
+		this.prepareStatements();
 	}
 
 	@Override
 	public void openDatabase() throws IOException
 	{
 		session.execute("USE " + System.getenv("CASSANDRA_DB"));
+		this.prepareStatements();
 	}
 
 	@Override
@@ -138,10 +222,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	{
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
-		String createDocument = "INSERT INTO \"" + ElementType.Document + "\"" +
-				" (\"uid\", \"text\", \"language\")" +
-				" VALUES (?, ?, ?);";
-		PreparedStatement aStatement = this.session.prepare(createDocument);
+
+		PreparedStatement aStatement = this.preparedStatementMap.get("createDocument");
 		BoundStatement boundStatement = aStatement.bind()
 				.setString(0, documentId)
 				.setString(1, document.getDocumentText())
@@ -161,10 +243,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	{
 		String paragraphId = UUID.randomUUID().toString();
 
-		String insertParagraph = "INSERT INTO \"" + ElementType.Paragraph + "\"" +
-				" (\"uid\", \"documentId\", \"previousParagraphId\", \"begin\", \"end\")" +
-				" VALUES (?, ?, ?, ?, ?);";
-		PreparedStatement aStatement = this.session.prepare(insertParagraph);
+		PreparedStatement aStatement = this.preparedStatementMap.get("insertParagraph");
 		BoundStatement boundStatement = aStatement.bind()
 				.setString(0, paragraphId)
 				.setString(1, documentId);
@@ -194,10 +273,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	)
 	{
 		String sentenceId = UUID.randomUUID().toString();
-		String insertSentence = "INSERT INTO \"" + ElementType.Sentence + "\"" +
-				" (\"uid\", \"documentId\", \"paragraphId\", \"previousSentenceId\", \"begin\", \"end\")" +
-				" VALUES (?, ?, ?, ?, ?, ?);";
-		PreparedStatement aStatement = this.session.prepare(insertSentence);
+		PreparedStatement aStatement = this.preparedStatementMap.get("insertSentence");
 		BoundStatement boundStatement = aStatement.bind()
 				.setString(0, sentenceId)
 				.setString(1, documentId)
@@ -229,10 +305,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	)
 	{
 		String tokenId = UUID.randomUUID().toString();
-		String insertSentence = "INSERT INTO \"" + ElementType.Token + "\"" +
-				" (\"uid\", \"documentId\", \"paragraphId\", \"sentenceId\", \"previousTokenId\", \"value\", \"begin\", \"end\")" +
-				" VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-		PreparedStatement aStatement = this.session.prepare(insertSentence);
+		PreparedStatement aStatement = this.preparedStatementMap.get("insertToken");
 		BoundStatement boundStatement = aStatement.bind()
 				.setString(0, tokenId)
 				.setString(1, documentId)
@@ -256,10 +329,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		// Get Lemma ID (and insert, if necessary)
 		String lemmaId = this.getLemmaId(token.getLemma().getValue());
 		// Insert connection from Token to Lemma.
-		String insertTokenLemmaConnection = "INSERT INTO \"tokenLemmaMap\"" +
-				" (\"tokenId\", \"lemmaId\")" +
-				" VALUES (?, ?);";
-		aStatement = this.session.prepare(insertTokenLemmaConnection);
+		aStatement = this.preparedStatementMap.get("insertTokenLemmaConnection");
 		boundStatement = aStatement.bind()
 				.setString(0, tokenId)
 				.setString(1, lemmaId);
@@ -281,75 +351,37 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	 */
 	protected String getLemmaId(String value)
 	{
-		String selectLemma = "SELECT \"uid\" FROM \"" + ElementType.Lemma + "\"" +
-				" WHERE \"value\" = ?";
-		PreparedStatement aStatement = this.session.prepare(selectLemma);
+		PreparedStatement aStatement = this.preparedStatementMap.get("insertLemma");
 		BoundStatement boundStatement = aStatement.bind(value);
-		ResultSet result = session.execute(boundStatement);
-
-		Row lemma = result.one();
-		if (lemma != null)
-		{
-			return lemma.getString(1);
-		}
-
-		// If no Lemma was found, a new one has to be created.
-		String lemmaId = UUID.randomUUID().toString();
-		String insertLemma = "INSERT INTO \"" + ElementType.Lemma + "\"" +
-				" (\"uid\", \"value\")" +
-				" VALUES (?, ?);";
-		aStatement = this.session.prepare(insertLemma);
-		boundStatement = aStatement.bind(lemmaId, value);
 
 		session.execute(boundStatement);
 
-		return lemmaId;
+		return value;
 	}
 
 	/**
 	 * Inserts a connection from Document to Lemma into the table
 	 * documentLemmaMap.
+	 * Since Cassandra is more efficient on write, the existence of the connec-
+	 * tion is not checked first. This operation is idempotent anyway.
 	 *
 	 * @param documentId
 	 * @param lemmaId
-	 * @return False, if the connection already existed. True otherwise.
 	 */
-	protected boolean insertDocumentLemmaConnection(
+	protected void insertDocumentLemmaConnection(
 			String documentId, String lemmaId
 	)
 	{
-		String selectConnection = "SELECT `documentId`, `lemmaId` " +
-				" FROM documentLemmaMap" +
-				" WHERE `documentId` = ? AND `lemmaId` = ?;";
-		PreparedStatement aStatement = this.session.prepare(selectConnection);
+		PreparedStatement aStatement = this.preparedStatementMap.get("insertDocumentLemmaConnection");
 		BoundStatement boundStatement = aStatement.bind(documentId, lemmaId);
 
-		ResultSet result = session.execute(boundStatement);
-
-		Row documentLemmaConnection = result.one();
-		if (documentLemmaConnection != null)
-		{
-			// A Connection exists, nothing to be done here.
-			return false;
-		}
-
-		String insertConnection = "INSERT INTO documentLemmaMap" +
-				" (\"documentId\", \"lemmaId\")" +
-				" VALUES (?, ?);";
-		aStatement = this.session.prepare(insertConnection);
-		boundStatement = aStatement.bind(documentId, lemmaId);
-
 		session.execute(boundStatement);
-
-		return true;
 	}
 
 	@Override
 	public void checkIfDocumentExists(String documentId) throws DocumentNotFoundException
 	{
-		String query = "SELECT * FROM " + ElementType.Document +
-				" WHERE \"id\" = ?;";
-		PreparedStatement aStatement = this.session.prepare(query);
+		PreparedStatement aStatement = this.preparedStatementMap.get("findDocumentById");
 		BoundStatement boundStatement = aStatement.bind(documentId);
 
 		ResultSet result = session.execute(boundStatement);
