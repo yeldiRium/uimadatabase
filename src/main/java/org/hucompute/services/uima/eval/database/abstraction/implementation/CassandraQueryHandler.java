@@ -1,6 +1,7 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
-import com.datastax.driver.core.Session;
+import com.datastax.driver.core.*;
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class CassandraQueryHandler extends AbstractQueryHandler
 {
@@ -134,7 +136,20 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	@Override
 	public String storeJCasDocument(JCas document)
 	{
-		return null;
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
+		String createDocument = "INSERT INTO \"" + ElementType.Document + "\"" +
+				" (\"uid\", \"text\", \"language\")" +
+				" VALUES (?, ?, ?);";
+		PreparedStatement aStatement = this.session.prepare(createDocument);
+		BoundStatement boundStatement = aStatement.bind()
+				.setString(0, documentId)
+				.setString(1, document.getDocumentText())
+				.setString(2, document.getDocumentLanguage());
+
+		session.execute(boundStatement);
+
+		return documentId;
 	}
 
 	@Override
@@ -144,7 +159,30 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			String previousParagraphId
 	)
 	{
-		return null;
+		String paragraphId = UUID.randomUUID().toString();
+
+		String insertParagraph = "INSERT INTO \"" + ElementType.Paragraph + "\"" +
+				" (\"uid\", \"documentId\", \"previousParagraphId\", \"begin\", \"end\")" +
+				" VALUES (?, ?, ?, ?, ?);";
+		PreparedStatement aStatement = this.session.prepare(insertParagraph);
+		BoundStatement boundStatement = aStatement.bind()
+				.setString(0, paragraphId)
+				.setString(1, documentId);
+
+		if (previousParagraphId == null)
+		{
+			boundStatement.setToNull(2);
+		} else
+		{
+			boundStatement.setString(2, previousParagraphId);
+		}
+
+		boundStatement.setInt(3, paragraph.getBegin())
+				.setInt(4, paragraph.getEnd());
+
+		session.execute(boundStatement);
+
+		return paragraphId;
 	}
 
 	@Override
@@ -155,7 +193,30 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			String previousSentenceId
 	)
 	{
-		return null;
+		String sentenceId = UUID.randomUUID().toString();
+		String insertSentence = "INSERT INTO \"" + ElementType.Sentence + "\"" +
+				" (\"uid\", \"documentId\", \"paragraphId\", \"previousSentenceId\", \"begin\", \"end\")" +
+				" VALUES (?, ?, ?, ?, ?, ?);";
+		PreparedStatement aStatement = this.session.prepare(insertSentence);
+		BoundStatement boundStatement = aStatement.bind()
+				.setString(0, sentenceId)
+				.setString(1, documentId)
+				.setString(2, paragraphId);
+
+		if (previousSentenceId == null)
+		{
+			boundStatement.setToNull(3);
+		} else
+		{
+			boundStatement.setString(3, previousSentenceId);
+		}
+
+		boundStatement.setInt(4, sentence.getBegin());
+		boundStatement.setInt(5, sentence.getEnd());
+
+		session.execute(boundStatement);
+
+		return sentenceId;
 	}
 
 	@Override
@@ -167,13 +228,136 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			String previousTokenId
 	)
 	{
-		return null;
+		String tokenId = UUID.randomUUID().toString();
+		String insertSentence = "INSERT INTO \"" + ElementType.Token + "\"" +
+				" (\"uid\", \"documentId\", \"paragraphId\", \"sentenceId\", \"previousTokenId\", \"value\", \"begin\", \"end\")" +
+				" VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+		PreparedStatement aStatement = this.session.prepare(insertSentence);
+		BoundStatement boundStatement = aStatement.bind()
+				.setString(0, tokenId)
+				.setString(1, documentId)
+				.setString(2, paragraphId)
+				.setString(3, sentenceId);
+
+		if (previousTokenId == null)
+		{
+			boundStatement.setToNull(4);
+		} else
+		{
+			boundStatement.setString(4, previousTokenId);
+		}
+
+		boundStatement.setString(5, token.getCoveredText());
+		boundStatement.setInt(6, token.getBegin());
+		boundStatement.setInt(7, token.getEnd());
+
+		session.execute(boundStatement);
+
+		// Get Lemma ID (and insert, if necessary)
+		String lemmaId = this.getLemmaId(token.getLemma().getValue());
+		// Insert connection from Token to Lemma.
+		String insertTokenLemmaConnection = "INSERT INTO \"tokenLemmaMap\"" +
+				" (\"tokenId\", \"lemmaId\")" +
+				" VALUES (?, ?);";
+		aStatement = this.session.prepare(insertTokenLemmaConnection);
+		boundStatement = aStatement.bind()
+				.setString(0, tokenId)
+				.setString(1, lemmaId);
+
+		session.execute(boundStatement);
+
+		// Insert connection between Document and Lemma, if non exists yet.
+		this.insertDocumentLemmaConnection(documentId, lemmaId);
+
+		return tokenId;
+	}
+
+	/**
+	 * Creates a new Lemma if none with the given value exists.
+	 * Otherwise retrieves the existing one.
+	 *
+	 * @param value The Lemma's value.
+	 * @return The Lemma's id.
+	 */
+	protected String getLemmaId(String value)
+	{
+		String selectLemma = "SELECT \"uid\" FROM \"" + ElementType.Lemma + "\"" +
+				" WHERE \"value\" = ?";
+		PreparedStatement aStatement = this.session.prepare(selectLemma);
+		BoundStatement boundStatement = aStatement.bind(value);
+		ResultSet result = session.execute(boundStatement);
+
+		Row lemma = result.one();
+		if (lemma != null)
+		{
+			return lemma.getString(1);
+		}
+
+		// If no Lemma was found, a new one has to be created.
+		String lemmaId = UUID.randomUUID().toString();
+		String insertLemma = "INSERT INTO \"" + ElementType.Lemma + "\"" +
+				" (\"uid\", \"value\")" +
+				" VALUES (?, ?);";
+		aStatement = this.session.prepare(insertLemma);
+		boundStatement = aStatement.bind(lemmaId, value);
+
+		session.execute(boundStatement);
+
+		return lemmaId;
+	}
+
+	/**
+	 * Inserts a connection from Document to Lemma into the table
+	 * documentLemmaMap.
+	 *
+	 * @param documentId
+	 * @param lemmaId
+	 * @return False, if the connection already existed. True otherwise.
+	 */
+	protected boolean insertDocumentLemmaConnection(
+			String documentId, String lemmaId
+	)
+	{
+		String selectConnection = "SELECT `documentId`, `lemmaId` " +
+				" FROM documentLemmaMap" +
+				" WHERE `documentId` = ? AND `lemmaId` = ?;";
+		PreparedStatement aStatement = this.session.prepare(selectConnection);
+		BoundStatement boundStatement = aStatement.bind(documentId, lemmaId);
+
+		ResultSet result = session.execute(boundStatement);
+
+		Row documentLemmaConnection = result.one();
+		if (documentLemmaConnection != null)
+		{
+			// A Connection exists, nothing to be done here.
+			return false;
+		}
+
+		String insertConnection = "INSERT INTO documentLemmaMap" +
+				" (\"documentId\", \"lemmaId\")" +
+				" VALUES (?, ?);";
+		aStatement = this.session.prepare(insertConnection);
+		boundStatement = aStatement.bind(documentId, lemmaId);
+
+		session.execute(boundStatement);
+
+		return true;
 	}
 
 	@Override
 	public void checkIfDocumentExists(String documentId) throws DocumentNotFoundException
 	{
+		String query = "SELECT * FROM " + ElementType.Document +
+				" WHERE \"id\" = ?;";
+		PreparedStatement aStatement = this.session.prepare(query);
+		BoundStatement boundStatement = aStatement.bind(documentId);
 
+		ResultSet result = session.execute(boundStatement);
+
+		if (result.one() == null)
+		{
+			throw new DocumentNotFoundException();
+		}
 	}
 
 	@Override
