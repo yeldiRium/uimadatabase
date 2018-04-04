@@ -60,6 +60,7 @@ services:
       - CASSANDRA_PORT=9042
       - CASSANDRA_USER=cassandra
       - CASSANDRA_PASS=cassandra
+      - CASSANDRA_DB=uimadatabase
       # See README.txt in dbs/mongodb for details on:
       - MONGODB_HOST=mongodb
       - MONGODB_PORT=27017

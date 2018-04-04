@@ -35,19 +35,100 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	@Override
 	public void setUpDatabase()
 	{
+		String query = "CREATE KEYSPACE IF NOT EXISTS " +
+				System.getenv("CASSANDRA_DB") + " WITH replication = {" +
+				"'class':'SimpleStrategy'," +
+				"'replication_factor':1" +
+				"};";
+		session.execute(query);
 
+		session.execute("USE " + System.getenv("CASSANDRA_DB"));
+
+		query = "DROP TABLE IF EXISTS \"" + ElementType.Document + "\"";
+		session.execute(query);
+		query = "DROP TABLE IF EXISTS \"" + ElementType.Paragraph + "\"";
+		session.execute(query);
+		query = "DROP TABLE IF EXISTS \"" + ElementType.Sentence + "\"";
+		session.execute(query);
+		query = "DROP TABLE IF EXISTS \"" + ElementType.Token + "\"";
+		session.execute(query);
+		query = "DROP TABLE IF EXISTS \"" + ElementType.Lemma + "\"";
+		session.execute(query);
+		query = "DROP TABLE IF EXISTS \"tokenLemmaMap\"";
+		session.execute(query);
+		query = "DROP TABLE IF EXISTS \"documentLemmaMap\"";
+		session.execute(query);
+
+		query = "CREATE TABLE \"" + ElementType.Document + "\" ( " +
+				"  \"uid\" VARCHAR primary key, " +
+				"  \"text\" VARCHAR, " +
+				"  \"language\" VARCHAR, " +
+				")";
+		session.execute(query);
+
+		query = "CREATE TABLE \"" + ElementType.Paragraph + "\" ( " +
+				"  \"uid\" VARCHAR primary key, " +
+				"  \"documentId\" VARCHAR, " +
+				"  \"previousParagraphId\" VARCHAR, " +
+				"  \"begin\" INT, " +
+				"  \"end\" INT, " +
+				")";
+		session.execute(query);
+
+		query = "CREATE TABLE \"" + ElementType.Sentence + "\" ( " +
+				"  \"uid\" VARCHAR primary key, " +
+				"  \"paragraphId\" VARCHAR, " +
+				"  \"documentId\" VARCHAR, " +
+				"  \"previousSentenceId\" VARCHAR, " +
+				"  \"begin\" INT, " +
+				"  \"end\" INT, " +
+				")";
+		session.execute(query);
+
+		query = "CREATE TABLE \"" + ElementType.Token + "\" ( " +
+				"  \"uid\" VARCHAR primary key, " +
+				"  \"sentenceId\" VARCHAR, " +
+				"  \"paragraphId\" VARCHAR, " +
+				"  \"documentId\" VARCHAR, " +
+				"  \"previousTokenId\" VARCHAR, " +
+				"  \"value\" VARCHAR, " +
+				"  \"begin\" INT, " +
+				"  \"end\" INT, " +
+				")";
+		session.execute(query);
+
+		query = "CREATE TABLE \"" + ElementType.Lemma + "\" ( " +
+				"  \"uid\" VARCHAR primary key, " +
+				"  \"value\" VARCHAR, " +
+				")";
+		session.execute(query);
+
+
+		query = "CREATE TABLE \"tokenLemmaMap\" ( " +
+				"  \"uid\" uuid primary key, " +
+				"  \"tokenId\" VARCHAR, " +
+				"  \"lemmaId\" VARCHAR " +
+				")";
+		session.execute(query);
+
+		query = "CREATE TABLE \"documentLemmaMap\" ( " +
+				"  \"uid\" uuid primary key, " +
+				"  \"documentId\" VARCHAR, " +
+				"  \"lemmaId\" VARCHAR " +
+				")";
+		session.execute(query);
 	}
 
 	@Override
 	public void openDatabase() throws IOException
 	{
-
+		session.execute("USE " + System.getenv("CASSANDRA_DB"));
 	}
 
 	@Override
 	public void clearDatabase()
 	{
-
+		this.setUpDatabase();
 	}
 
 	@Override
