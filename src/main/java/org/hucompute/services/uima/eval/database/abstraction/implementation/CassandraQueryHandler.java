@@ -1,14 +1,14 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
-import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Session;
+import com.datastax.driver.core.*;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
 import org.hucompute.services.uima.eval.database.abstraction.ElementType;
@@ -34,12 +34,14 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 
 	/**
 	 * Prepares often use statements, so they are only defined once.
-	 *
+	 * <p>
 	 * Has to be executed after a keyspace was selected via a "USE" command AND
 	 * the database is completely set up.
 	 */
-	protected void prepareStatements() {
-		if (this.statementsPrepared) {
+	protected void prepareStatements()
+	{
+		if (this.statementsPrepared)
+		{
 			return;
 		}
 
@@ -104,6 +106,36 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				this.session.prepare(
 						"SELECT * FROM \"" + ElementType.Document + "\"" +
 								" WHERE \"uid\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getDocumentIds",
+				this.session.prepare(
+						"SELECT \"uid\" FROM \"" + ElementType.Document + "\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getLemmataForDocument",
+				this.session.prepare(
+						"SELECT \"lemmaId\"" +
+								" FROM \"documentLemmaMap\"" +
+								" WHERE \"documentId\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"selectDocument",
+				this.session.prepare(
+						"SELECT \"language\", \"text\"" +
+								" FROM \"" + ElementType.Document + "\"" +
+								" WHERE \"uid\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"selectToken",
+				this.session.prepare(
+						"SELECT \"begin\", \"end\", \"value\"" +
+								" FROM \"" + ElementType.Token + "\"" +
+								" WHERE \"documentId\" = ?;"
 				)
 		);
 
@@ -344,7 +376,6 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 
 	/**
 	 * Creates a new Lemma if none with the given value exists.
-	 * Otherwise retrieves the existing one.
 	 *
 	 * @param value The Lemma's value.
 	 * @return The Lemma's id.
@@ -395,13 +426,37 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	@Override
 	public Iterable<String> getDocumentIds()
 	{
-		return null;
+		List<String> documentIds = new ArrayList<>();
+
+		PreparedStatement aStatement = this.preparedStatementMap.get("getDocumentIds");
+		BoundStatement boundStatement = aStatement.bind();
+
+		ResultSet result = this.session.execute(boundStatement);
+
+		for (Row row : result)
+		{
+			documentIds.add(row.getString(0));
+		}
+
+		return documentIds;
 	}
 
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
 	{
-		return null;
+		Set<String> lemmata = new TreeSet<>();
+		PreparedStatement aStatement = this.preparedStatementMap.get("getLemmataForDocument");
+		BoundStatement boundStatement = aStatement.bind()
+				.setString(0, documentId);
+
+		ResultSet result = session.execute(boundStatement);
+
+		for (Row row : result)
+		{
+			lemmata.add(row.getString(0));
+		}
+
+		return lemmata;
 	}
 
 	@Override
@@ -409,6 +464,66 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			throws DocumentNotFoundException, QHException
 	{
 
+		try
+		{
+			// Retrieve Document
+			BoundStatement boundSelectDocumentStatement = this
+					.preparedStatementMap.get("selectDocument").bind()
+					.setString(0, documentId);
+			ResultSet documentResult = session
+					.execute(boundSelectDocumentStatement);
+
+			Row document = documentResult.one();
+			if (document == null)
+			{
+				throw new DocumentNotFoundException();
+			}
+
+			// Create Document CAS
+			DocumentMetaData meta = DocumentMetaData.create(aCAS);
+			meta.setDocumentId(documentId);
+			aCAS.setDocumentLanguage(document.getString(0));
+			aCAS.setDocumentText(document.getString(1));
+
+			// Retrieve connected Token
+			BoundStatement selectTokenStatement = this
+					.preparedStatementMap.get("selectToken").bind();
+			selectTokenStatement.setString(0, documentId);
+			ResultSet tokenResult = session.execute(selectTokenStatement);
+
+			for (Row row : tokenResult)
+			{
+				Token xmiToken = new Token(
+						aCAS.getJCas(),
+						row.getInt(0),
+						row.getInt(1)
+				);
+
+				Lemma lemma = new Lemma(
+						aCAS.getJCas(),
+						xmiToken.getBegin(),
+						xmiToken.getEnd()
+				);
+				lemma.setValue(row.getString(2));
+				lemma.addToIndexes();
+				xmiToken.setLemma(lemma);
+
+				POS pos = new POS(
+						aCAS.getJCas(),
+						xmiToken.getBegin(),
+						xmiToken.getEnd()
+				);
+				pos.setPosValue(row.getString(2));
+				pos.addToIndexes();
+				xmiToken.setPos(pos);
+
+				xmiToken.addToIndexes();
+			}
+		} catch (CASException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
 	}
 
 	@Override
