@@ -14,11 +14,17 @@ import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandle
 import org.hucompute.services.uima.eval.database.abstraction.ElementType;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import org.hucompute.services.uima.eval.database.connection.Connections;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
+/**
+ * Most of the queries here use the same concept as in the MySQLQueryHandler.
+ * For more information on certains methods, look there.
+ */
 public class CassandraQueryHandler extends AbstractQueryHandler
 {
 	protected Session session;
@@ -138,9 +144,40 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 								" WHERE \"documentId\" = ?;"
 				)
 		);
+		this.preparedStatementMap.put(
+				"countDocumentsContainingLemma",
+				this.session.prepare(
+						"SELECT COUNT(*)" +
+								" FROM \"documentLemmaMap\"" +
+								" WHERE \"lemmaId\" = ? ALLOW FILTERING;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"selectLemmaDocumentConnections",
+				this.session.prepare(
+						"SELECT \"lemmaId\", \"documentId\"" +
+								" FROM \"documentLemmaMap\";"
+				)
+		);
 
 		this.statementsPrepared = true;
 	}
+
+	protected PreparedStatement getOrPrepare(String name, String query)
+	{
+		if (this.preparedStatementMap.containsKey(name))
+		{
+			return this.preparedStatementMap.get(name);
+		}
+		PreparedStatement preparedStatement = this.session.prepare(query);
+		this.preparedStatementMap.put(
+				name,
+				preparedStatement
+		);
+		return preparedStatement;
+	}
+
+	;
 
 	@Override
 	public Connections.DBName forConnection()
@@ -529,13 +566,31 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countDocumentsContainingLemma(String lemma)
 	{
-		return 0;
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("countDocumentsContainingLemma").bind()
+				.setString(0, lemma);
+
+		ResultSet result = session.execute(aStatement);
+
+		// Always returns a row with one value.
+		return (int) result.one().getLong(0);
 	}
 
 	@Override
 	public int countElementsOfType(ElementType type)
 	{
-		return 0;
+		if (type == ElementType.Pos)
+		{
+			// Counting POSs is the same as counting Tokens, so count Tokens.
+			type = ElementType.Token;
+		}
+
+		String query = "SELECT COUNT(*) FROM \"" + type + "\";";
+
+		ResultSet result = this.session.execute(query);
+
+		// Always returns a row with one value.
+		return (int) result.one().getLong(0);
 	}
 
 	@Override
@@ -543,28 +598,132 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			String documentId, ElementType type
 	) throws DocumentNotFoundException
 	{
-		return 0;
+		this.checkIfDocumentExists(documentId);
+
+		if (type == ElementType.Document)
+		{
+			return 1;
+		}
+
+		String tableName = type.toString();
+		if (type == ElementType.Pos)
+		{
+			// Counting POSs is the same as counting Tokens, so count Tokens.
+			tableName = ElementType.Token.toString();
+		}
+		if (type == ElementType.Lemma)
+		{
+			tableName = "documentLemmaMap";
+		}
+
+		// I don't cant to prepare the statement for each tableName beforehand,
+		// so they are prepared and stored when needed.
+		BoundStatement aStatement = this.getOrPrepare(
+				"countElementsInDocumentOfType" + tableName,
+				"SELECT COUNT(*) FROM \"" + tableName + "\"" +
+						" WHERE \"documentId\" = ?;"
+		).bind()
+				.setString(0, documentId);
+
+		ResultSet result = session.execute(aStatement);
+
+		// Always returns a row with one value.
+		return (int) result.one().getLong(0);
 	}
 
 	@Override
 	public int countElementsOfTypeWithValue(ElementType type, String value)
-			throws IllegalArgumentException
+			throws IllegalArgumentException, TypeHasNoValueException
 	{
-		return 0;
+		this.checkTypeHasValueField(type);
+		// => type is either Token, Lemma or POS.
+
+		if (type == ElementType.Pos)
+		{
+			// Pos are stored inside Tokens.
+			type = ElementType.Token;
+		}
+
+		BoundStatement aStatement = this.getOrPrepare(
+				"countElementOfType" + type + "WithValue",
+				"SELECT COUNT(*)" +
+						" FROM \"" + type + "\"" +
+						" WHERE \"value\" = ?;"
+		).bind()
+				.setString(0, value);
+
+		ResultSet result = this.session.execute(aStatement);
+
+		// Always returns a row with one value.
+		return (int) result.one().getLong(0);
 	}
 
 	@Override
 	public int countElementsInDocumentOfTypeWithValue(
 			String documentId, ElementType type, String value
-	) throws DocumentNotFoundException
+	) throws DocumentNotFoundException, TypeHasNoValueException
 	{
-		return 0;
+		this.checkTypeHasValueField(type);
+		this.checkIfDocumentExists(documentId);
+		// => type is either Token, Lemma or POS.
+
+		String query;
+		if (type == ElementType.Token || type == ElementType.Pos)
+		{
+			query = "SELECT COUNT(*)" +
+					" FROM \"" + ElementType.Token + "\"" +
+					" WHERE \"documentId\" = ? AND \"value\" = ? ALLOW FILTERING;";
+		} else
+		{ // => type == ElementType.Lemma
+			query = "SELECT COUNT(*)" +
+					" FROM \"documentLemmaMap\"" +
+					" WHERE \"documentId\" = ? " +
+					"   AND \"lemmaId\" = ?;";
+		}
+
+		BoundStatement aStatement = this.getOrPrepare(
+				"countElementsInDocumentOfType" + type.toString() + "WithValue",
+				query
+		).bind()
+				.setString(0, documentId)
+				.setString(1, value);
+
+		ResultSet result = this.session.execute(aStatement);
+
+		// Always returns a row with one value.
+		return (int) result.one().getLong(0);
 	}
 
 	@Override
 	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
 	{
-		return null;
+		Map<String, String> lemmaDocumentMap = new HashMap<>();
+		Map<String, Integer> lemmaOccurenceMap = new HashMap<>();
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("selectLemmaDocumentConnections")
+				.bind();
+		ResultSet result = this.session.execute(aStatement);
+
+		for (Row row : result)
+		{
+			lemmaDocumentMap.put(
+					row.getString(0), // LemmaId
+					row.getString(1) // DocumntId
+			);
+		}
+
+		// Cassandra doesn't support group by, so we'll have to do it ourselves.
+		lemmaDocumentMap.entrySet()
+				.parallelStream()
+				.collect(Collectors.groupingByConcurrent(Map.Entry::getKey))
+				.entrySet()
+				.parallelStream()
+				.forEach(entry -> lemmaOccurenceMap.put(
+						entry.getKey(),
+						entry.getValue().size()
+				));
+
+		return lemmaOccurenceMap;
 	}
 
 	@Override
