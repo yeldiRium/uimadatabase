@@ -1,6 +1,7 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
 import com.datastax.driver.core.*;
+import com.google.common.collect.Lists;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
@@ -19,6 +20,7 @@ import org.hucompute.services.uima.eval.database.connection.Connections;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -157,6 +159,46 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				this.session.prepare(
 						"SELECT \"lemmaId\", \"documentId\"" +
 								" FROM \"documentLemmaMap\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"selectDocumentTokenLemmaTuples",
+				this.session.prepare("SELECT \"" + ElementType.Document + "\".\"uid\", \"" + ElementType.Token + "\".\"value\", \"tokenLemmaMap\".\"lemmaId\"" +
+						" FROM \"" + ElementType.Document + "\"" +
+						"     JOIN \"" + ElementType.Token + "\"" +
+						"         ON \"" + ElementType.Document + "\".\"uid\" = \"" + ElementType.Token + "\".\"documentId\"" +
+						"         JOIN \"tokenLemmaMap\"" +
+						"             ON \"" + ElementType.Token + "\".\"uid\" = \"tokenLemmaMap\".\"tokenId\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"selectDocumentTokenLemmaTuplesForDocuments",
+				this.session.prepare("SELECT \"" + ElementType.Document + "\".\"uid\", \"" + ElementType.Token + "\".\"value\", \"tokenLemmaMap\".\"lemmaId\"" +
+						" FROM \"" + ElementType.Document + "\"" +
+						"     JOIN \"" + ElementType.Token + "\"" +
+						"         ON \"" + ElementType.Document + "\".\"uid\" = \"" + ElementType.Token + "\".\"documentId\"" +
+						"         JOIN \"tokenLemmaMap\"" +
+						"             ON \"" + ElementType.Token + "\".\"uid\" = \"tokenLemmaMap\".\"tokenId\"" +
+						" WHERE \"" + ElementType.Document + "\".\"uid\" IN ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"selectLemmataInDocument",
+				this.session.prepare(
+						"SELECT \"tokenLemmaMap\".\"lemmaId\"" +
+								" FROM \"tokenLemmaMap\"" +
+								"     JOIN \"" + ElementType.Token + "\"" +
+								"         ON \"tokenLemmaMap\".\"tokenId\" = \"" + ElementType.Token + "\".\"id\"" +
+								" WHERE \"" + ElementType.Token + "\".\"documentId\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"calculateRawTermFrequencyForLemmaInDocument",
+				this.session.prepare("SELECT COUNT(*)" +
+						" FROM \"tokenLemmaMap\"" +
+						"     JOIN \"" + ElementType.Token + "\"" +
+						"         ON \"tokenLemmaMap\".\"tokenId\" = \"" + ElementType.Token + "\".\"uid\"" +
+						" WHERE \"" + ElementType.Token + "\".\"documentId\" = ? AND \"tokenLemmaMap\".\"lemmaId\" = ?;"
 				)
 		);
 
@@ -726,17 +768,98 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		return lemmaOccurenceMap;
 	}
 
+	protected class DocumentTokenLemma
+	{
+		public String document;
+		public String token;
+		public String lemma;
+
+		public DocumentTokenLemma(
+				String document,
+				String token,
+				String lemma
+		)
+		{
+			this.document = document;
+			this.token = token;
+			this.lemma = lemma;
+		}
+
+		public String getDocument()
+		{
+			return this.document;
+		}
+
+		public String getLemma()
+		{
+			return this.lemma;
+		}
+	}
+
+	protected Map<String, Double> calculateTTRForDocumentTokenLemmaMap(
+			Map<String, DocumentTokenLemma> dttMap
+	)
+	{
+		Map<String, Double> ttrMap = new HashMap<>();
+
+		dttMap.entrySet()
+				.parallelStream()
+				.collect(
+						Collectors.groupingByConcurrent(Map.Entry::getKey,
+								Collectors.mapping(
+										Map.Entry::getValue,
+										Collectors.toSet()
+								)
+						)
+				)
+				.forEach((document, list) -> {
+					int tokenCount = list.size();
+					int lemmaCount = (int) list.parallelStream()
+							.map(DocumentTokenLemma::getLemma)
+							.distinct()
+							.count();
+
+					ttrMap.put(
+							document,
+							(double) tokenCount / (double) lemmaCount
+					);
+				});
+
+		return ttrMap;
+	}
+
 	@Override
 	public Map<String, Double> calculateTTRForAllDocuments()
 	{
-		return null;
+		Map<String, DocumentTokenLemma> dttMap = new HashMap<>();
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("selectDocumentTokenLemmaTuples")
+				.bind();
+		ResultSet result = session.execute(aStatement);
+
+		for (Row row : result)
+		{
+			dttMap.put(
+					row.getString(0),
+					new DocumentTokenLemma(
+							row.getString(0),
+							row.getString(1),
+							row.getString(2)
+					)
+			);
+		}
+
+		return this.calculateTTRForDocumentTokenLemmaMap(dttMap);
 	}
 
 	@Override
 	public Double calculateTTRForDocument(String documentId)
 			throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+		return this.calculateTTRForCollectionOfDocuments(
+				Arrays.asList(documentId)
+		).get(documentId);
 	}
 
 	@Override
@@ -744,19 +867,70 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	)
 	{
-		return null;
+		Map<String, DocumentTokenLemma> dttMap = new HashMap<>();
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("selectDocumentTokenLemmaTuplesForDocuments")
+				.bind()
+				.setList(0, Lists.newArrayList(documentIds));
+		ResultSet result = session.execute(aStatement);
+
+		for (Row row : result)
+		{
+			dttMap.put(
+					row.getString(0),
+					new DocumentTokenLemma(
+							row.getString(0),
+							row.getString(1),
+							row.getString(2)
+					)
+			);
+		}
+
+		return this.calculateTTRForDocumentTokenLemmaMap(dttMap);
 	}
 
 	@Override
 	public Map<String, Integer> calculateRawTermFrequenciesInDocument(String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		Map<String, Integer> lemmaFrequencyMap = new HashMap<>();
+		List<String> lemmata = new ArrayList<>();
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("selectLemmataInDocument").bind()
+				.setString(0, documentId);
+
+		ResultSet result = this.session.execute(aStatement);
+
+		for (Row row : result)
+		{
+			lemmata.add(row.getString(0));
+		}
+
+		lemmata.parallelStream()
+				.collect(Collectors.groupingByConcurrent(Function.identity()))
+				.entrySet()
+				.parallelStream()
+				.forEach(entry -> {
+					lemmaFrequencyMap.put(
+							entry.getKey(),
+							entry.getValue().size()
+					);
+				});
+
+		return lemmaFrequencyMap;
 	}
 
 	@Override
 	public Integer calculateRawTermFrequencyForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+		BoundStatement aStatement = this.preparedStatementMap
+				.get("calculateRawTermFrequencyForLemmaInDocument").bind()
+				.setString(0, documentId)
+				.setString(1, lemma);
+
+		ResultSet result = this.session.execute(aStatement);
+
+		return result.one().getInt(0);
 	}
 
 	@Override
