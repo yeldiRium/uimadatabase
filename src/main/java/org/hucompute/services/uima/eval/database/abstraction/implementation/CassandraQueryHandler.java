@@ -1,15 +1,11 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
-import com.datastax.driver.core.*;
-import com.google.common.collect.Lists;
-import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
-import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
-import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
+import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.Session;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
 import org.hucompute.services.uima.eval.database.abstraction.ElementType;
@@ -19,8 +15,10 @@ import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasN
 import org.hucompute.services.uima.eval.database.connection.Connections;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.function.Function;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -52,155 +50,6 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		{
 			return;
 		}
-
-		this.preparedStatementMap.put(
-				"createDocument",
-				this.session.prepare(
-						"INSERT INTO \"" + ElementType.Document + "\"" +
-								" (\"uid\", \"text\", \"language\")" +
-								" VALUES (?, ?, ?);"
-				)
-		);
-		this.preparedStatementMap.put(
-				"insertParagraph",
-				this.session.prepare(
-						"INSERT INTO \"" + ElementType.Paragraph + "\"" +
-								" (\"uid\", \"documentId\", \"previousParagraphId\", \"begin\", \"end\")" +
-								" VALUES (?, ?, ?, ?, ?);"
-				)
-		);
-		this.preparedStatementMap.put(
-				"insertSentence",
-				this.session.prepare(
-						"INSERT INTO \"" + ElementType.Sentence + "\"" +
-								" (\"uid\", \"documentId\", \"paragraphId\", \"previousSentenceId\", \"begin\", \"end\")" +
-								" VALUES (?, ?, ?, ?, ?, ?);"
-				)
-		);
-		this.preparedStatementMap.put(
-				"insertToken",
-				this.session.prepare(
-						"INSERT INTO \"" + ElementType.Token + "\"" +
-								" (\"uid\", \"documentId\", \"paragraphId\", \"sentenceId\", \"previousTokenId\", \"value\", \"begin\", \"end\")" +
-								" VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-				)
-		);
-		this.preparedStatementMap.put(
-				"insertLemma",
-				this.session.prepare(
-						"INSERT INTO \"" + ElementType.Lemma + "\"" +
-								" (\"value\")" +
-								" VALUES (?);"
-				)
-		);
-		this.preparedStatementMap.put(
-				"insertTokenLemmaConnection",
-				this.session.prepare(
-						"INSERT INTO \"tokenLemmaMap\"" +
-								" (\"tokenId\", \"lemmaId\")" +
-								" VALUES (?, ?);"
-				)
-		);
-		this.preparedStatementMap.put(
-				"insertDocumentLemmaConnection",
-				this.session.prepare(
-						"INSERT INTO \"documentLemmaMap\"" +
-								" (\"documentId\", \"lemmaId\")" +
-								" VALUES (?, ?);"
-				)
-		);
-		this.preparedStatementMap.put(
-				"findDocumentById",
-				this.session.prepare(
-						"SELECT * FROM \"" + ElementType.Document + "\"" +
-								" WHERE \"uid\" = ?;"
-				)
-		);
-		this.preparedStatementMap.put(
-				"getDocumentIds",
-				this.session.prepare(
-						"SELECT \"uid\" FROM \"" + ElementType.Document + "\";"
-				)
-		);
-		this.preparedStatementMap.put(
-				"getLemmataForDocument",
-				this.session.prepare(
-						"SELECT \"lemmaId\"" +
-								" FROM \"documentLemmaMap\"" +
-								" WHERE \"documentId\" = ?;"
-				)
-		);
-		this.preparedStatementMap.put(
-				"selectDocument",
-				this.session.prepare(
-						"SELECT \"language\", \"text\"" +
-								" FROM \"" + ElementType.Document + "\"" +
-								" WHERE \"uid\" = ?;"
-				)
-		);
-		this.preparedStatementMap.put(
-				"selectToken",
-				this.session.prepare(
-						"SELECT \"begin\", \"end\", \"value\"" +
-								" FROM \"" + ElementType.Token + "\"" +
-								" WHERE \"documentId\" = ?;"
-				)
-		);
-		this.preparedStatementMap.put(
-				"countDocumentsContainingLemma",
-				this.session.prepare(
-						"SELECT COUNT(*)" +
-								" FROM \"documentLemmaMap\"" +
-								" WHERE \"lemmaId\" = ? ALLOW FILTERING;"
-				)
-		);
-		this.preparedStatementMap.put(
-				"selectLemmaDocumentConnections",
-				this.session.prepare(
-						"SELECT \"lemmaId\", \"documentId\"" +
-								" FROM \"documentLemmaMap\";"
-				)
-		);
-		this.preparedStatementMap.put(
-				"selectDocumentTokenLemmaTuples",
-				this.session.prepare("SELECT \"" + ElementType.Document + "\".\"uid\", \"" + ElementType.Token + "\".\"value\", \"tokenLemmaMap\".\"lemmaId\"" +
-						" FROM \"" + ElementType.Document + "\"" +
-						"     JOIN \"" + ElementType.Token + "\"" +
-						"         ON \"" + ElementType.Document + "\".\"uid\" = \"" + ElementType.Token + "\".\"documentId\"" +
-						"         JOIN \"tokenLemmaMap\"" +
-						"             ON \"" + ElementType.Token + "\".\"uid\" = \"tokenLemmaMap\".\"tokenId\";"
-				)
-		);
-		this.preparedStatementMap.put(
-				"selectDocumentTokenLemmaTuplesForDocuments",
-				this.session.prepare("SELECT \"" + ElementType.Document + "\".\"uid\", \"" + ElementType.Token + "\".\"value\", \"tokenLemmaMap\".\"lemmaId\"" +
-						" FROM \"" + ElementType.Document + "\"" +
-						"     JOIN \"" + ElementType.Token + "\"" +
-						"         ON \"" + ElementType.Document + "\".\"uid\" = \"" + ElementType.Token + "\".\"documentId\"" +
-						"         JOIN \"tokenLemmaMap\"" +
-						"             ON \"" + ElementType.Token + "\".\"uid\" = \"tokenLemmaMap\".\"tokenId\"" +
-						" WHERE \"" + ElementType.Document + "\".\"uid\" IN ?;"
-				)
-		);
-		this.preparedStatementMap.put(
-				"selectLemmataInDocument",
-				this.session.prepare(
-						"SELECT \"tokenLemmaMap\".\"lemmaId\"" +
-								" FROM \"tokenLemmaMap\"" +
-								"     JOIN \"" + ElementType.Token + "\"" +
-								"         ON \"tokenLemmaMap\".\"tokenId\" = \"" + ElementType.Token + "\".\"id\"" +
-								" WHERE \"" + ElementType.Token + "\".\"documentId\" = ?;"
-				)
-		);
-		this.preparedStatementMap.put(
-				"calculateRawTermFrequencyForLemmaInDocument",
-				this.session.prepare("SELECT COUNT(*)" +
-						" FROM \"tokenLemmaMap\"" +
-						"     JOIN \"" + ElementType.Token + "\"" +
-						"         ON \"tokenLemmaMap\".\"tokenId\" = \"" + ElementType.Token + "\".\"uid\"" +
-						" WHERE \"" + ElementType.Token + "\".\"documentId\" = ? AND \"tokenLemmaMap\".\"lemmaId\" = ?;"
-				)
-		);
 
 		this.statementsPrepared = true;
 	}
@@ -244,72 +93,112 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 
 		session.execute("USE " + System.getenv("CASSANDRA_DB"));
 
-		session.execute("DROP TABLE IF EXISTS \"" + ElementType.Document + "\"");
-		session.execute("DROP TABLE IF EXISTS \"" + ElementType.Paragraph + "\"");
-		session.execute("DROP TABLE IF EXISTS \"" + ElementType.Sentence + "\"");
-		session.execute("DROP TABLE IF EXISTS \"" + ElementType.Token + "\"");
-		session.execute("DROP TABLE IF EXISTS \"" + ElementType.Lemma + "\"");
-		session.execute("DROP TABLE IF EXISTS \"tokenLemmaMap\"");
-		session.execute("DROP TABLE IF EXISTS \"documentLemmaMap\"");
+		session.execute("DROP TABLE IF EXISTS \"document\"");
+		session.execute("DROP TABLE IF EXISTS \"paragraph\"");
+		session.execute("DROP TABLE IF EXISTS \"sentence\"");
+		session.execute("DROP TABLE IF EXISTS \"token\"");
+		session.execute("DROP TABLE IF EXISTS \"lemma\"");
+		session.execute("DROP TABLE IF EXISTS \"pos\"");
+		session.execute("DROP TABLE IF EXISTS \"lemmaByDocument\"");
+		session.execute("DROP TABLE IF EXISTS \"documentByLemma\"");
+		session.execute("DROP TABLE IF EXISTS \"tokenByValue\"");
+		session.execute("DROP TABLE IF EXISTS \"posByDocument\"");
+		session.execute("DROP TABLE IF EXISTS \"bigram\"");
+		session.execute("DROP TABLE IF EXISTS \"trigram\"");
 
-		session.execute("CREATE TABLE \"" + ElementType.Document + "\" ( " +
-				"  \"uid\" VARCHAR primary key, " +
+		session.execute("CREATE TABLE \"document\" ( " +
+				"  \"uid\" VARCHAR primary key, " + // documentId
 				"  \"text\" VARCHAR, " +
 				"  \"language\" VARCHAR, " +
+				"  \"paragraphCount\" INT, " +
+				"  \"sentenceCount\" INT, " +
+				"  \"tokenCount\" INT, " +
+				"  \"lemmaCount\" INT, " +
+				"  \"posCount\" INT " +
 				")");
 
-		session.execute("CREATE TABLE \"" + ElementType.Paragraph + "\" ( " +
-				"  \"uid\" VARCHAR primary key, " +
+		session.execute("CREATE TABLE \"paragraph\" ( " +
+				"  \"uid\" VARCHAR, " +
 				"  \"documentId\" VARCHAR, " +
+				"  \"begin\" INT, " +
+				"  \"end\" INT, " +
 				"  \"previousParagraphId\" VARCHAR, " +
+				"  PRIMARY KEY (\"documentId\", \"uid\") " +
+				")");
+
+		session.execute("CREATE TABLE \"sentence\" ( " +
+				"  \"documentId\" VARCHAR, " +
+				"  \"uid\" VARCHAR, " +
 				"  \"begin\" INT, " +
 				"  \"end\" INT, " +
-				")");
-		session.execute("CREATE INDEX ON \"" + ElementType.Paragraph + "\" (\"documentId\")");
-		session.execute("CREATE INDEX ON \"" + ElementType.Paragraph + "\" (\"previousParagraphId\");");
-
-		session.execute("CREATE TABLE \"" + ElementType.Sentence + "\" ( " +
-				"  \"uid\" VARCHAR primary key, " +
-				"  \"paragraphId\" VARCHAR, " +
-				"  \"documentId\" VARCHAR, " +
 				"  \"previousSentenceId\" VARCHAR, " +
-				"  \"begin\" INT, " +
-				"  \"end\" INT, " +
-				")");
-		session.execute("CREATE INDEX ON \"" + ElementType.Sentence + "\" (\"paragraphId\")");
-		session.execute("CREATE INDEX ON \"" + ElementType.Sentence + "\" (\"documentId\")");
-		session.execute("CREATE INDEX ON \"" + ElementType.Sentence + "\" (\"previousSentenceId\");");
-
-		session.execute("CREATE TABLE \"" + ElementType.Token + "\" ( " +
-				"  \"uid\" VARCHAR primary key, " +
-				"  \"sentenceId\" VARCHAR, " +
 				"  \"paragraphId\" VARCHAR, " +
+				"  PRIMARY KEY (\"documentId\", \"uid\") " +
+				")");
+
+		session.execute("CREATE TABLE \"token\" ( " +
 				"  \"documentId\" VARCHAR, " +
-				"  \"previousTokenId\" VARCHAR, " +
-				"  \"value\" VARCHAR, " +
+				"  \"uid\" VARCHAR, " +
+				"  \"lemmaValue\" VARCHAR, " +
+				"  \"posValue\" VARCHAR, " +
 				"  \"begin\" INT, " +
 				"  \"end\" INT, " +
-				")");
-		session.execute("CREATE INDEX ON \"" + ElementType.Token + "\" (\"sentenceId\")");
-		session.execute("CREATE INDEX ON \"" + ElementType.Token + "\" (\"paragraphId\")");
-		session.execute("CREATE INDEX ON \"" + ElementType.Token + "\" (\"documentId\")");
-		session.execute("CREATE INDEX ON \"" + ElementType.Token + "\" (\"previousTokenId\")");
-		session.execute("CREATE INDEX ON \"" + ElementType.Token + "\" (\"value\");");
-
-		session.execute("CREATE TABLE \"" + ElementType.Lemma + "\" ( " +
-				"  \"value\" VARCHAR primary key " +
+				"  \"previousTokenId\" VARCHAR, " +
+				"  \"paragraphId\" VARCHAR, " +
+				"  \"sentenceId\" VARCHAR, " +
+				"  PRIMARY KEY (\"documentId\", \"uid\") " +
 				")");
 
-		session.execute("CREATE TABLE \"tokenLemmaMap\" ( " +
-				"  \"tokenId\" VARCHAR, " +
-				"  \"lemmaId\" VARCHAR, " +
-				"  PRIMARY KEY (\"tokenId\", \"lemmaId\") " +
+		session.execute("CREATE TABLE \"lemma\" ( " +
+				"  \"value\" VARCHAR primary key, " +
+				"  \"count\" INT " + // overall occurence count in all documents
 				")");
 
-		session.execute("CREATE TABLE \"documentLemmaMap\" ( " +
+		session.execute("CREATE TABLE \"pos\" ( " +
+				"  \"value\" VARCHAR primary key, " +
+				"  \"count\" VARCHAR " + // overall occurence count in all documents
+				")");
+
+		session.execute("CREATE TABLE \"lemmaByDocument\" ( " +
 				"  \"documentId\" VARCHAR, " +
-				"  \"lemmaId\" VARCHAR, " +
-				"  PRIMARY KEY (\"documentId\", \"lemmaId\") " +
+				"  \"value\" VARCHAR, " +
+				"  \"count\" INT, " + // occurence count in said document
+				"  PRIMARY KEY (\"documentId\", \"value\") " +
+				")");
+
+		session.execute("CREATE TABLE \"documentByLemma\" ( " +
+				"  \"value\" VARCHAR, " +
+				"  \"documentId\" VARCHAR, " +
+				"  PRIMARY KEY (\"value\", \"documentId\") " +
+				")");
+
+		session.execute("CREATE TABLE \"tokenByValue\" ( " +
+				"  \"lemmaValue\" VARCHAR, " +
+				"  \"tokenId\" VARCHAR, " +
+				"  \"documentId\" VARCHAR, " +
+				"  PRIMARY KEY (\"lemmaValue\", \"tokenId\", \"documentId\") " +
+				")");
+
+		session.execute("CREATE TABLE \"posByDocument\" ( " +
+				"  \"documentId\" VARCHAR, " +
+				"  \"posValue\" VARCHAR, " +
+				"  \"count\" INT, " +
+				"  PRIMARY KEY (\"documentId\", \"posValue\") " +
+				")");
+
+		/*
+		 * Primary key is documentId and secondValue so that bigrams can be
+		 * looked up by second value.
+		 * This is important while inserting trigrams: when checking if two
+		 * values are part of a trigram, the first of those values can be looked
+		 * up here. If a bigram with the first value on second position exists,
+		 * the found bigram plus the second value is a new trigram.
+		 */
+		session.execute("CREATE TABLE \"bigram\" ( " +
+				"  \"documentId\" VARCHAR, " +
+				"  \"firstValue\" VARCHAR, " +
+				"  \"secondValue\" VARCHAR, " +
+				"  PRIMARY KEY ((\"documentId\", \"secondValue\"), \"firstValue\") " +
 				")");
 
 		this.prepareStatements();
@@ -331,18 +220,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	@Override
 	public String storeJCasDocument(JCas document)
 	{
-		final String documentId = DocumentMetaData.get(document)
-				.getDocumentId();
-
-		PreparedStatement aStatement = this.preparedStatementMap.get("createDocument");
-		BoundStatement boundStatement = aStatement.bind()
-				.setString(0, documentId)
-				.setString(1, document.getDocumentText())
-				.setString(2, document.getDocumentLanguage());
-
-		session.execute(boundStatement);
-
-		return documentId;
+		return null;
 	}
 
 	@Override
@@ -352,27 +230,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			String previousParagraphId
 	)
 	{
-		String paragraphId = UUID.randomUUID().toString();
-
-		PreparedStatement aStatement = this.preparedStatementMap.get("insertParagraph");
-		BoundStatement boundStatement = aStatement.bind()
-				.setString(0, paragraphId)
-				.setString(1, documentId);
-
-		if (previousParagraphId == null)
-		{
-			boundStatement.setToNull(2);
-		} else
-		{
-			boundStatement.setString(2, previousParagraphId);
-		}
-
-		boundStatement.setInt(3, paragraph.getBegin())
-				.setInt(4, paragraph.getEnd());
-
-		session.execute(boundStatement);
-
-		return paragraphId;
+		return null;
 	}
 
 	@Override
@@ -383,27 +241,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			String previousSentenceId
 	)
 	{
-		String sentenceId = UUID.randomUUID().toString();
-		PreparedStatement aStatement = this.preparedStatementMap.get("insertSentence");
-		BoundStatement boundStatement = aStatement.bind()
-				.setString(0, sentenceId)
-				.setString(1, documentId)
-				.setString(2, paragraphId);
-
-		if (previousSentenceId == null)
-		{
-			boundStatement.setToNull(3);
-		} else
-		{
-			boundStatement.setString(3, previousSentenceId);
-		}
-
-		boundStatement.setInt(4, sentence.getBegin());
-		boundStatement.setInt(5, sentence.getEnd());
-
-		session.execute(boundStatement);
-
-		return sentenceId;
+		return null;
 	}
 
 	@Override
@@ -415,42 +253,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			String previousTokenId
 	)
 	{
-		String tokenId = UUID.randomUUID().toString();
-		PreparedStatement aStatement = this.preparedStatementMap.get("insertToken");
-		BoundStatement boundStatement = aStatement.bind()
-				.setString(0, tokenId)
-				.setString(1, documentId)
-				.setString(2, paragraphId)
-				.setString(3, sentenceId);
-
-		if (previousTokenId == null)
-		{
-			boundStatement.setToNull(4);
-		} else
-		{
-			boundStatement.setString(4, previousTokenId);
-		}
-
-		boundStatement.setString(5, token.getCoveredText());
-		boundStatement.setInt(6, token.getBegin());
-		boundStatement.setInt(7, token.getEnd());
-
-		session.execute(boundStatement);
-
-		// Get Lemma ID (and insert, if necessary)
-		String lemmaId = this.getLemmaId(token.getLemma().getValue());
-		// Insert connection from Token to Lemma.
-		aStatement = this.preparedStatementMap.get("insertTokenLemmaConnection");
-		boundStatement = aStatement.bind()
-				.setString(0, tokenId)
-				.setString(1, lemmaId);
-
-		session.execute(boundStatement);
-
-		// Insert connection between Document and Lemma, if non exists yet.
-		this.insertDocumentLemmaConnection(documentId, lemmaId);
-
-		return tokenId;
+		return null;
 	}
 
 	/**
@@ -461,12 +264,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	 */
 	protected String getLemmaId(String value)
 	{
-		PreparedStatement aStatement = this.preparedStatementMap.get("insertLemma");
-		BoundStatement boundStatement = aStatement.bind(value);
-
-		session.execute(boundStatement);
-
-		return value;
+		return null;
 	}
 
 	/**
@@ -482,157 +280,47 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			String documentId, String lemmaId
 	)
 	{
-		PreparedStatement aStatement = this.preparedStatementMap.get("insertDocumentLemmaConnection");
-		BoundStatement boundStatement = aStatement.bind(documentId, lemmaId);
 
-		session.execute(boundStatement);
 	}
 
 	@Override
 	public void checkIfDocumentExists(String documentId) throws DocumentNotFoundException
 	{
-		PreparedStatement aStatement = this.preparedStatementMap.get("findDocumentById");
-		BoundStatement boundStatement = aStatement.bind(documentId);
 
-		ResultSet result = session.execute(boundStatement);
-
-		if (result.one() == null)
-		{
-			throw new DocumentNotFoundException();
-		}
 	}
 
 	@Override
 	public Iterable<String> getDocumentIds()
 	{
-		List<String> documentIds = new ArrayList<>();
-
-		PreparedStatement aStatement = this.preparedStatementMap.get("getDocumentIds");
-		BoundStatement boundStatement = aStatement.bind();
-
-		ResultSet result = this.session.execute(boundStatement);
-
-		for (Row row : result)
-		{
-			documentIds.add(row.getString(0));
-		}
-
-		return documentIds;
+		return null;
 	}
 
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
+			throws DocumentNotFoundException
 	{
-		Set<String> lemmata = new TreeSet<>();
-		PreparedStatement aStatement = this.preparedStatementMap.get("getLemmataForDocument");
-		BoundStatement boundStatement = aStatement.bind()
-				.setString(0, documentId);
+		this.checkIfDocumentExists(documentId);
 
-		ResultSet result = session.execute(boundStatement);
-
-		for (Row row : result)
-		{
-			lemmata.add(row.getString(0));
-		}
-
-		return lemmata;
+		return null;
 	}
 
 	@Override
 	public void populateCasWithDocument(CAS aCAS, String documentId)
 			throws DocumentNotFoundException, QHException
 	{
-
-		try
-		{
-			// Retrieve Document
-			BoundStatement boundSelectDocumentStatement = this
-					.preparedStatementMap.get("selectDocument").bind()
-					.setString(0, documentId);
-			ResultSet documentResult = session
-					.execute(boundSelectDocumentStatement);
-
-			Row document = documentResult.one();
-			if (document == null)
-			{
-				throw new DocumentNotFoundException();
-			}
-
-			// Create Document CAS
-			DocumentMetaData meta = DocumentMetaData.create(aCAS);
-			meta.setDocumentId(documentId);
-			aCAS.setDocumentLanguage(document.getString(0));
-			aCAS.setDocumentText(document.getString(1));
-
-			// Retrieve connected Token
-			BoundStatement selectTokenStatement = this
-					.preparedStatementMap.get("selectToken").bind();
-			selectTokenStatement.setString(0, documentId);
-			ResultSet tokenResult = session.execute(selectTokenStatement);
-
-			for (Row row : tokenResult)
-			{
-				Token xmiToken = new Token(
-						aCAS.getJCas(),
-						row.getInt(0),
-						row.getInt(1)
-				);
-
-				Lemma lemma = new Lemma(
-						aCAS.getJCas(),
-						xmiToken.getBegin(),
-						xmiToken.getEnd()
-				);
-				lemma.setValue(row.getString(2));
-				lemma.addToIndexes();
-				xmiToken.setLemma(lemma);
-
-				POS pos = new POS(
-						aCAS.getJCas(),
-						xmiToken.getBegin(),
-						xmiToken.getEnd()
-				);
-				pos.setPosValue(row.getString(2));
-				pos.addToIndexes();
-				xmiToken.setPos(pos);
-
-				xmiToken.addToIndexes();
-			}
-		} catch (CASException e)
-		{
-			e.printStackTrace();
-			throw new QHException(e);
-		}
+		this.checkIfDocumentExists(documentId);
 	}
 
 	@Override
 	public int countDocumentsContainingLemma(String lemma)
 	{
-		BoundStatement aStatement = this
-				.preparedStatementMap.get("countDocumentsContainingLemma").bind()
-				.setString(0, lemma);
-
-		ResultSet result = session.execute(aStatement);
-
-		// Always returns a row with one value.
-		return (int) result.one().getLong(0);
+		return 0;
 	}
 
 	@Override
 	public int countElementsOfType(ElementType type)
 	{
-		if (type == ElementType.Pos)
-		{
-			// Counting POSs is the same as counting Tokens, so count Tokens.
-			type = ElementType.Token;
-		}
-
-		String query = "SELECT COUNT(*) FROM \"" + type + "\";";
-
-		ResultSet result = this.session.execute(query);
-
-		// Always returns a row with one value.
-		return (int) result.one().getLong(0);
+		return 0;
 	}
 
 	@Override
@@ -642,35 +330,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	{
 		this.checkIfDocumentExists(documentId);
 
-		if (type == ElementType.Document)
-		{
-			return 1;
-		}
-
-		String tableName = type.toString();
-		if (type == ElementType.Pos)
-		{
-			// Counting POSs is the same as counting Tokens, so count Tokens.
-			tableName = ElementType.Token.toString();
-		}
-		if (type == ElementType.Lemma)
-		{
-			tableName = "documentLemmaMap";
-		}
-
-		// I don't cant to prepare the statement for each tableName beforehand,
-		// so they are prepared and stored when needed.
-		BoundStatement aStatement = this.getOrPrepare(
-				"countElementsInDocumentOfType" + tableName,
-				"SELECT COUNT(*) FROM \"" + tableName + "\"" +
-						" WHERE \"documentId\" = ?;"
-		).bind()
-				.setString(0, documentId);
-
-		ResultSet result = session.execute(aStatement);
-
-		// Always returns a row with one value.
-		return (int) result.one().getLong(0);
+		return 0;
 	}
 
 	@Override
@@ -680,24 +340,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		this.checkTypeHasValueField(type);
 		// => type is either Token, Lemma or POS.
 
-		if (type == ElementType.Pos)
-		{
-			// Pos are stored inside Tokens.
-			type = ElementType.Token;
-		}
-
-		BoundStatement aStatement = this.getOrPrepare(
-				"countElementOfType" + type + "WithValue",
-				"SELECT COUNT(*)" +
-						" FROM \"" + type + "\"" +
-						" WHERE \"value\" = ?;"
-		).bind()
-				.setString(0, value);
-
-		ResultSet result = this.session.execute(aStatement);
-
-		// Always returns a row with one value.
-		return (int) result.one().getLong(0);
+		return 0;
 	}
 
 	@Override
@@ -709,63 +352,13 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		this.checkIfDocumentExists(documentId);
 		// => type is either Token, Lemma or POS.
 
-		String query;
-		if (type == ElementType.Token || type == ElementType.Pos)
-		{
-			query = "SELECT COUNT(*)" +
-					" FROM \"" + ElementType.Token + "\"" +
-					" WHERE \"documentId\" = ? AND \"value\" = ? ALLOW FILTERING;";
-		} else
-		{ // => type == ElementType.Lemma
-			query = "SELECT COUNT(*)" +
-					" FROM \"documentLemmaMap\"" +
-					" WHERE \"documentId\" = ? " +
-					"   AND \"lemmaId\" = ?;";
-		}
-
-		BoundStatement aStatement = this.getOrPrepare(
-				"countElementsInDocumentOfType" + type.toString() + "WithValue",
-				query
-		).bind()
-				.setString(0, documentId)
-				.setString(1, value);
-
-		ResultSet result = this.session.execute(aStatement);
-
-		// Always returns a row with one value.
-		return (int) result.one().getLong(0);
+		return 0;
 	}
 
 	@Override
 	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
 	{
-		Map<String, String> lemmaDocumentMap = new HashMap<>();
-		Map<String, Integer> lemmaOccurenceMap = new HashMap<>();
-		BoundStatement aStatement = this
-				.preparedStatementMap.get("selectLemmaDocumentConnections")
-				.bind();
-		ResultSet result = this.session.execute(aStatement);
-
-		for (Row row : result)
-		{
-			lemmaDocumentMap.put(
-					row.getString(0), // LemmaId
-					row.getString(1) // DocumntId
-			);
-		}
-
-		// Cassandra doesn't support group by, so we'll have to do it ourselves.
-		lemmaDocumentMap.entrySet()
-				.parallelStream()
-				.collect(Collectors.groupingByConcurrent(Map.Entry::getKey))
-				.entrySet()
-				.parallelStream()
-				.forEach(entry -> lemmaOccurenceMap.put(
-						entry.getKey(),
-						entry.getValue().size()
-				));
-
-		return lemmaOccurenceMap;
+		return null;
 	}
 
 	protected class DocumentTokenLemma
@@ -831,35 +424,14 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	@Override
 	public Map<String, Double> calculateTTRForAllDocuments()
 	{
-		Map<String, DocumentTokenLemma> dttMap = new HashMap<>();
-		BoundStatement aStatement = this
-				.preparedStatementMap.get("selectDocumentTokenLemmaTuples")
-				.bind();
-		ResultSet result = session.execute(aStatement);
-
-		for (Row row : result)
-		{
-			dttMap.put(
-					row.getString(0),
-					new DocumentTokenLemma(
-							row.getString(0),
-							row.getString(1),
-							row.getString(2)
-					)
-			);
-		}
-
-		return this.calculateTTRForDocumentTokenLemmaMap(dttMap);
+		return null;
 	}
 
 	@Override
 	public Double calculateTTRForDocument(String documentId)
 			throws DocumentNotFoundException
 	{
-		this.checkIfDocumentExists(documentId);
-		return this.calculateTTRForCollectionOfDocuments(
-				Arrays.asList(documentId)
-		).get(documentId);
+		return null;
 	}
 
 	@Override
@@ -867,70 +439,23 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	)
 	{
-		Map<String, DocumentTokenLemma> dttMap = new HashMap<>();
-		BoundStatement aStatement = this
-				.preparedStatementMap.get("selectDocumentTokenLemmaTuplesForDocuments")
-				.bind()
-				.setList(0, Lists.newArrayList(documentIds));
-		ResultSet result = session.execute(aStatement);
-
-		for (Row row : result)
-		{
-			dttMap.put(
-					row.getString(0),
-					new DocumentTokenLemma(
-							row.getString(0),
-							row.getString(1),
-							row.getString(2)
-					)
-			);
-		}
-
-		return this.calculateTTRForDocumentTokenLemmaMap(dttMap);
+		return null;
 	}
 
 	@Override
 	public Map<String, Integer> calculateRawTermFrequenciesInDocument(String documentId) throws DocumentNotFoundException
 	{
-		Map<String, Integer> lemmaFrequencyMap = new HashMap<>();
-		List<String> lemmata = new ArrayList<>();
-		BoundStatement aStatement = this
-				.preparedStatementMap.get("selectLemmataInDocument").bind()
-				.setString(0, documentId);
+		this.checkIfDocumentExists(documentId);
 
-		ResultSet result = this.session.execute(aStatement);
-
-		for (Row row : result)
-		{
-			lemmata.add(row.getString(0));
-		}
-
-		lemmata.parallelStream()
-				.collect(Collectors.groupingByConcurrent(Function.identity()))
-				.entrySet()
-				.parallelStream()
-				.forEach(entry -> {
-					lemmaFrequencyMap.put(
-							entry.getKey(),
-							entry.getValue().size()
-					);
-				});
-
-		return lemmaFrequencyMap;
+		return null;
 	}
 
 	@Override
 	public Integer calculateRawTermFrequencyForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
 	{
 		this.checkIfDocumentExists(documentId);
-		BoundStatement aStatement = this.preparedStatementMap
-				.get("calculateRawTermFrequencyForLemmaInDocument").bind()
-				.setString(0, documentId)
-				.setString(1, lemma);
 
-		ResultSet result = this.session.execute(aStatement);
-
-		return result.one().getInt(0);
+		return 0;
 	}
 
 	@Override
