@@ -1,8 +1,6 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
-import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.Session;
+import com.datastax.driver.core.*;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
@@ -139,6 +137,41 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 								"WHERE \"documentId\" = ? AND \"posValue\" = ?;"
 				)
 		);
+		this.preparedStatementMap.put(
+				"getTokenValue",
+				this.session.prepare(
+						"SELECT \"lemmaValue\" FROM \"token\" " +
+								"WHERE \"documentId\" = ? AND \"uid\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertBiGram",
+				this.session.prepare(
+						"INSERT INTO \"bigram\" " +
+								"(\"documentId\", \"firstValue\", " +
+								"\"secondValue\") " +
+								"VALUES (?, ?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getBiGramBySecondValue",
+				this.session.prepare(
+						"SELECT \"documentId\", \"firstValue\", " +
+								"\"secondValue\" " +
+								"FROM \"bigram\" " +
+								"WHERE \"documentId\" = ? " +
+								"AND \"secondValue\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertTriGram",
+				this.session.prepare(
+						"INSERT INTO \"trigram\" " +
+								"(\"documentId\", \"firstValue\", " +
+								"\"secondValue\", \"thirdValue\") " +
+								"VALUES (?, ?, ?, ?);"
+				)
+		);
 
 		this.statementsPrepared = true;
 	}
@@ -156,8 +189,6 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		);
 		return preparedStatement;
 	}
-
-	;
 
 	@Override
 	public Connections.DBName forConnection()
@@ -288,6 +319,13 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				"  \"firstValue\" VARCHAR, " +
 				"  \"secondValue\" VARCHAR, " +
 				"  PRIMARY KEY ((\"documentId\", \"secondValue\"), \"firstValue\") " +
+				")");
+		session.execute("CREATE TABLE \"trigram\" ( " +
+				"  \"documentId\" VARCHAR, " +
+				"  \"firstValue\" VARCHAR, " +
+				"  \"secondValue\" VARCHAR, " +
+				"  \"thirdValue\" VARCHAR, " +
+				"  PRIMARY KEY (\"documentId\", \"firstValue\", \"secondValue\", \"thirdValue\") " +
 				")");
 
 		this.prepareStatements();
@@ -477,9 +515,42 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				.setString(1, posValue);
 		this.session.execute(aStatement);
 
-		// TODO: Insert BiGram
+		if (previousTokenId != null) {
+			// Get value of previous Token for insertion into bigram.
+			aStatement = this.preparedStatementMap.get("getTokenValue").bind()
+					.setString(0, documentId)
+					.setString(1, previousTokenId);
+			ResultSet result = this.session.execute(aStatement);
+			String previousTokenValue = result.one().getString(0);
 
-		// TODO: Insert TriGram
+			// Insert bigram with previous and current Token.
+			aStatement = this.preparedStatementMap.get("insertBiGram").bind()
+					.setString(0, documentId)
+					.setString(1, previousTokenValue)
+					.setString(2, lemmaValue);
+			this.session.execute(aStatement);
+
+			// Check if previous Token was already second value in a bigram.
+			aStatement = this
+					.preparedStatementMap.get("getBiGramBySecondValue").bind()
+					.setString(0, documentId)
+					.setString(1, previousTokenValue);
+			result = this.session.execute(aStatement);
+			Row row = result.one();
+			if (row != null) {
+				// If the previous Token was the second value in a trigram, it
+				// and its previous Token can be used in a new trigram.
+				String prevPreviousTokenValue = row.getString(1);
+
+				aStatement = this
+						.preparedStatementMap.get("insertTriGram").bind()
+						.setString(0, documentId)
+						.setString(1, prevPreviousTokenValue)
+						.setString(2, previousTokenValue)
+						.setString(3, lemmaValue);
+				this.session.execute(aStatement);
+			}
+		}
 
 		return tokenId;
 	}
