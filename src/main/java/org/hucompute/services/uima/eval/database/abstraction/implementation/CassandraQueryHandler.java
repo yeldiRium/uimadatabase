@@ -205,6 +205,119 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 								"WHERE \"documentId\" = ?;"
 				)
 		);
+		this.preparedStatementMap.put(
+				"countDocumentsContainingLemma",
+				this.session.prepare(
+						"SELECT COUNT(*) " +
+								"FROM \"documentByLemma\" " +
+								"WHERE \"value\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"countDocuments",
+				this.session.prepare(
+						"SELECT COUNT(*) FROM \"document\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"countParagraphs",
+				this.session.prepare(
+						"SELECT COUNT(*) FROM \"paragraph\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"countSentences",
+				this.session.prepare(
+						"SELECT COUNT(*) FROM \"sentence\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"countTokens",
+				this.session.prepare(
+						"SELECT COUNT(*) FROM \"token\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"countLemmata",
+				this.session.prepare(
+						"SELECT COUNT(*) FROM \"lemma\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"countPOSs",
+				this.session.prepare(
+						"SELECT COUNT(*) FROM \"pos\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getFullDocument",
+				this.session.prepare(
+						"SELECT \"text\", \"language\", " +
+								"\"paragraphCount\", \"sentenceCount\", " +
+								"\"tokenCount\", \"lemmaCount\", " +
+								"\"posCount\" " +
+								"FROM \"document\" " +
+								"WHERE uid = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"countTokensWithValue",
+				this.session.prepare(
+						"SELECT COUNT(*) " +
+								"FROM \"tokenByValue\" " +
+								"WHERE \"lemmaValue\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"countLemmataWithValue",
+				this.session.prepare(
+						"SELECT COUNT(*) " +
+								"FROM \"lemma\" " +
+								"WHERE \"value\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"countPOSsWithValue",
+				this.session.prepare(
+						"SELECT COUNT(*) " +
+								"FROM \"pos\" " +
+								"WHERE \"value\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"countTokensWithValueInDocument",
+				this.session.prepare(
+						"SELECT COUNT(*) " +
+								"FROM \"tokenByValue\" " +
+								"WHERE \"lemmaValue\" = ? " +
+								"AND \"documentId\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"countLemmataWithValueInDocument",
+				this.session.prepare(
+						"SELECT COUNT(*) " +
+								"FROM \"lemmaByDocument\" " +
+								"WHERE \"value\" = ? " +
+								"AND \"documentId\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"countPOSsWithValueInDocument",
+				this.session.prepare(
+						"SELECT COUNT(*) " +
+								"FROM \"posByDocument\" " +
+								"WHERE \"posValue\" = ? " +
+								"AND \"documentId\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getOccurencesForEachLemma",
+				this.session.prepare(
+						"SELECT \"value\", \"count\" " +
+								"FROM \"lemma\";"
+				)
+		);
 
 		this.statementsPrepared = true;
 	}
@@ -329,7 +442,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				"  \"lemmaValue\" VARCHAR, " +
 				"  \"tokenId\" VARCHAR, " +
 				"  \"documentId\" VARCHAR, " +
-				"  PRIMARY KEY (\"lemmaValue\", \"tokenId\", \"documentId\") " +
+				"  PRIMARY KEY (\"lemmaValue\", \"documentId\", \"tokenId\") " +
 				")");
 
 		session.execute("CREATE TABLE \"posByDocument\" ( " +
@@ -711,13 +824,55 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countDocumentsContainingLemma(String lemma)
 	{
-		return 0;
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("countDocumentsContainingLemma")
+				.bind()
+				.setString(0, lemma);
+
+		ResultSet result = this.session.execute(aStatement);
+		Row row = result.one();
+
+		// Count operations on cassandra returns longs.
+		return (int) row.getLong(0);
 	}
 
 	@Override
 	public int countElementsOfType(ElementType type)
 	{
-		return 0;
+		BoundStatement aStatement;
+
+		switch (type)
+		{
+			case Document:
+				aStatement = this
+						.preparedStatementMap.get("countDocuments").bind();
+				break;
+			case Paragraph:
+				aStatement = this
+						.preparedStatementMap.get("countParagraphs").bind();
+				break;
+			case Sentence:
+				aStatement = this
+						.preparedStatementMap.get("countSentences").bind();
+				break;
+			case Token:
+				aStatement = this
+						.preparedStatementMap.get("countTokens").bind();
+				break;
+			case Lemma:
+				aStatement = this
+						.preparedStatementMap.get("countLemmata").bind();
+				break;
+			case Pos:
+				aStatement = this
+						.preparedStatementMap.get("countPOSs").bind();
+				break;
+			default:
+				throw new IllegalArgumentException();
+		}
+
+		ResultSet result = this.session.execute(aStatement);
+		return (int) result.one().getLong(0);
 	}
 
 	@Override
@@ -727,7 +882,32 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	{
 		this.checkIfDocumentExists(documentId);
 
-		return 0;
+		if (type == ElementType.Document)
+		{
+			// There is obviously always one Document in a Document.
+			return 1;
+		}
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getFullDocument").bind()
+				.setString(0, documentId);
+		Row document = this.session.execute(aStatement).one();
+
+		switch (type)
+		{
+			case Paragraph:
+				return document.getInt(2);
+			case Sentence:
+				return document.getInt(3);
+			case Token:
+				return document.getInt(4);
+			case Lemma:
+				return document.getInt(5);
+			case Pos:
+				return document.getInt(6);
+			default:
+				throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
@@ -737,7 +917,33 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		this.checkTypeHasValueField(type);
 		// => type is either Token, Lemma or POS.
 
-		return 0;
+		BoundStatement aStatement;
+		switch (type)
+		{
+			case Token:
+				aStatement = this
+						.preparedStatementMap.get("countTokensWithValue").bind()
+						.setString(0, value);
+				break;
+			case Lemma:
+				// Will return 0 or 1, since Lemmata values are unique.
+				aStatement = this
+						.preparedStatementMap.get("countLemmataWithValue")
+						.bind()
+						.setString(0, value);
+				break;
+			case Pos:
+				// Will return 0 or 1, since POS values are unique.
+				aStatement = this
+						.preparedStatementMap.get("countPOSsWithValue").bind()
+						.setString(0, value);
+				break;
+			default:
+				throw new IllegalArgumentException();
+		}
+
+		ResultSet result = this.session.execute(aStatement);
+		return (int) result.one().getLong(0);
 	}
 
 	@Override
@@ -749,13 +955,57 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		this.checkIfDocumentExists(documentId);
 		// => type is either Token, Lemma or POS.
 
-		return 0;
+		BoundStatement aStatement;
+		switch(type) {
+			case Token:
+				aStatement = this
+						.preparedStatementMap
+						.get("countTokensWithValueInDocument")
+						.bind()
+						.setString(0, value)
+						.setString(1, documentId);
+				break;
+			case Lemma:
+				aStatement = this
+						.preparedStatementMap
+						.get("countLemmataWithValueInDocument")
+						.bind()
+						.setString(0, value)
+						.setString(1, documentId);
+				break;
+			case Pos:
+				aStatement = this
+						.preparedStatementMap
+						.get("countPOSsWithValueInDocument")
+						.bind()
+						.setString(0, value)
+						.setString(1, documentId);
+				break;
+			default:
+				throw new IllegalArgumentException();
+		}
+
+		ResultSet result = this.session.execute(aStatement);
+		return (int) result.one().getLong(0);
 	}
 
 	@Override
 	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
 	{
-		return null;
+		Map<String, Integer> occurenceMap = new HashMap<>();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getOccurencesForEachLemma").bind();
+		ResultSet result = this.session.execute(aStatement);
+
+		for (Row row : result) {
+			occurenceMap.put(
+					row.getString(0),
+					(int)row.getLong(1)
+			);
+		}
+
+		return occurenceMap;
 	}
 
 	protected class DocumentTokenLemma
