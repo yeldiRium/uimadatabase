@@ -1,11 +1,14 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
+import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
 import org.hucompute.services.uima.eval.database.abstraction.ElementType;
@@ -15,10 +18,7 @@ import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasN
 import org.hucompute.services.uima.eval.database.connection.Connections;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +50,95 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		{
 			return;
 		}
+
+		this.preparedStatementMap.put(
+				"insertDocument",
+				this.session.prepare(
+						"INSERT INTO \"document\" " +
+								"(\"uid\", \"text\", \"language\", " +
+								"\"paragraphCount\", \"sentenceCount\", " +
+								"\"tokenCount\", \"lemmaCount\", " +
+								"\"posCount\") " +
+								"VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertParagraph",
+				this.session.prepare(
+						"INSERT INTO \"paragraph\" " +
+								"(\"uid\", \"documentId\", \"begin\", " +
+								"\"end\", \"previousParagraphId\") " +
+								"VALUES (?, ?, ?, ?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertSentence",
+				this.session.prepare(
+						"INSERT INTO \"sentence\" " +
+								"(\"uid\", \"documentId\", \"begin\", " +
+								"\"end\", \"previousSentenceId\", " +
+								"\"paragraphId\") " +
+								"VALUES (?, ?, ?, ?, ?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertToken",
+				this.session.prepare(
+						"INSERT INTO \"token\" " +
+								"(\"documentId\", \"uid\", \"begin\", " +
+								"\"end\", \"lemmaValue\", \"posValue\", " +
+								"\"previousTokenId\", \"paragraphId\", " +
+								"\"sentenceId\") " +
+								"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"incrementLemmaCounter",
+				this.session.prepare(
+						"UPDATE \"lemma\" SET \"count\" = \"count\" + 1 " +
+								"WHERE \"value\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"incrementPosCounter",
+				this.session.prepare(
+						"UPDATE \"pos\" SET \"count\" = \"count\" + 1 " +
+								"WHERE \"value\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"incrementLemmaByDocumentCounter",
+				this.session.prepare(
+						"UPDATE \"lemmaByDocument\" " +
+								"SET \"count\" = \"count\" + 1 " +
+								"WHERE \"documentId\" = ? AND \"value\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertDocumentByLemma",
+				this.session.prepare(
+						"INSERT INTO \"documentByLemma\" " +
+								"(\"value\", \"documentId\") " +
+								"VALUES (?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"insertTokenByValue",
+				this.session.prepare(
+						"INSERT INTO \"tokenByValue\" " +
+								"(\"lemmaValue\", \"tokenId\", " +
+								"\"documentId\") " +
+								"VALUES (?, ?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"incrementPosByDocumentcounter",
+				this.session.prepare(
+						"UPDATE \"posByDocument\" " +
+								"SET \"count\" = \"count\" + 1 " +
+								"WHERE \"documentId\" = ? AND \"posValue\" = ?;"
+				)
+		);
 
 		this.statementsPrepared = true;
 	}
@@ -139,10 +228,10 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		session.execute("CREATE TABLE \"token\" ( " +
 				"  \"documentId\" VARCHAR, " +
 				"  \"uid\" VARCHAR, " +
-				"  \"lemmaValue\" VARCHAR, " +
-				"  \"posValue\" VARCHAR, " +
 				"  \"begin\" INT, " +
 				"  \"end\" INT, " +
+				"  \"lemmaValue\" VARCHAR, " +
+				"  \"posValue\" VARCHAR, " +
 				"  \"previousTokenId\" VARCHAR, " +
 				"  \"paragraphId\" VARCHAR, " +
 				"  \"sentenceId\" VARCHAR, " +
@@ -151,18 +240,18 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 
 		session.execute("CREATE TABLE \"lemma\" ( " +
 				"  \"value\" VARCHAR primary key, " +
-				"  \"count\" INT " + // overall occurence count in all documents
+				"  \"count\" counter " + // overall occurence count in all documents
 				")");
 
 		session.execute("CREATE TABLE \"pos\" ( " +
 				"  \"value\" VARCHAR primary key, " +
-				"  \"count\" VARCHAR " + // overall occurence count in all documents
+				"  \"count\" counter " + // overall occurence count in all documents
 				")");
 
 		session.execute("CREATE TABLE \"lemmaByDocument\" ( " +
 				"  \"documentId\" VARCHAR, " +
 				"  \"value\" VARCHAR, " +
-				"  \"count\" INT, " + // occurence count in said document
+				"  \"count\" counter, " + // occurence count in said document
 				"  PRIMARY KEY (\"documentId\", \"value\") " +
 				")");
 
@@ -182,7 +271,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		session.execute("CREATE TABLE \"posByDocument\" ( " +
 				"  \"documentId\" VARCHAR, " +
 				"  \"posValue\" VARCHAR, " +
-				"  \"count\" INT, " +
+				"  \"count\" counter, " +
 				"  PRIMARY KEY (\"documentId\", \"posValue\") " +
 				")");
 
@@ -220,7 +309,51 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	@Override
 	public String storeJCasDocument(JCas document)
 	{
-		return null;
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
+
+		Set<String> posValues = new HashSet<>();
+		Set<String> lemmaValues = new HashSet<>();
+
+		// Count all the elements in the document
+		int paragraphCount = 0;
+		int sentenceCount = 0;
+		int tokenCount = 0;
+		for (Paragraph paragraph
+				: JCasUtil.select(document, Paragraph.class))
+		{
+			paragraphCount++;
+			for (Sentence sentence : JCasUtil.selectCovered(
+					document,
+					Sentence.class, paragraph
+			))
+			{
+				sentenceCount++;
+				for (Token token : JCasUtil.selectCovered(
+						document, Token.class, sentence
+				))
+				{
+					tokenCount++;
+					lemmaValues.add(token.getLemma().getValue());
+					posValues.add(token.getPos().getPosValue());
+				}
+			}
+		}
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("insertDocument").bind()
+				.setString(0, documentId)
+				.setString(1, document.getDocumentText())
+				.setString(2, document.getDocumentLanguage())
+				.setInt(3, paragraphCount)
+				.setInt(4, sentenceCount)
+				.setInt(5, tokenCount)
+				.setInt(6, lemmaValues.size())
+				.setInt(7, posValues.size());
+
+		this.session.execute(aStatement);
+
+		return documentId;
 	}
 
 	@Override
@@ -230,7 +363,19 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			String previousParagraphId
 	)
 	{
-		return null;
+		String paragraphId = UUID.randomUUID().toString();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("insertParagraph").bind()
+				.setString(0, paragraphId)
+				.setString(1, documentId)
+				.setInt(2, paragraph.getBegin())
+				.setInt(3, paragraph.getEnd())
+				.setString(4, previousParagraphId);
+
+		this.session.execute(aStatement);
+
+		return paragraphId;
 	}
 
 	@Override
@@ -241,7 +386,20 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			String previousSentenceId
 	)
 	{
-		return null;
+		String sentenceId = UUID.randomUUID().toString();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("insertSentence").bind()
+				.setString(0, sentenceId)
+				.setString(1, documentId)
+				.setInt(2, sentence.getBegin())
+				.setInt(3, sentence.getEnd())
+				.setString(4, previousSentenceId)
+				.setString(5, paragraphId);
+
+		this.session.execute(aStatement);
+
+		return sentenceId;
 	}
 
 	@Override
@@ -253,7 +411,77 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			String previousTokenId
 	)
 	{
-		return null;
+		String tokenId = UUID.randomUUID().toString();
+
+		String lemmaValue = token.getLemma().getValue();
+		String posValue = token.getPos().getPosValue();
+
+		// Insert Token.
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("insertToken").bind()
+				.setString(0, documentId)
+				.setString(1, tokenId)
+				.setInt(2, token.getBegin())
+				.setInt(3, token.getEnd())
+				.setString(4, lemmaValue)
+				.setString(5, posValue)
+				.setString(6, previousTokenId)
+				.setString(7, paragraphId)
+				.setString(8, sentenceId);
+		this.session.execute(aStatement);
+
+		// Increment occurence counter for Lemma. (Inserts it, if it doesn't
+		// exist yet.)
+		aStatement = this
+				.preparedStatementMap.get("incrementLemmaCounter").bind()
+				.setString(0, lemmaValue);
+		this.session.execute(aStatement);
+
+		// Increment occurence counter for POS. (Inserts it, if it doesn't exist
+		// yet.)
+		aStatement = this
+				.preparedStatementMap.get("incrementPosCounter").bind()
+				.setString(0, posValue);
+		this.session.execute(aStatement);
+
+		// Increment occurence counter for Lemma in current Document. (Inserts
+		// it, if it doesn't exist yet.)
+		aStatement = this
+				.preparedStatementMap.get("incrementLemmaByDocumentCounter")
+				.bind()
+				.setString(0, documentId)
+				.setString(1, lemmaValue);
+		this.session.execute(aStatement);
+
+		// Insert DocumentByLemma reference.
+		aStatement = this
+				.preparedStatementMap.get("insertDocumentByLemma").bind()
+				.setString(0, lemmaValue)
+				.setString(1, documentId);
+		this.session.execute(aStatement);
+
+		// Insert TokenByValue reference.
+		aStatement = this
+				.preparedStatementMap.get("insertTokenByValue").bind()
+				.setString(0, lemmaValue)
+				.setString(1, tokenId)
+				.setString(2, documentId);
+		this.session.execute(aStatement);
+
+		// Increment PosByDocument counter. (Inserts it, if it doesn't exist
+		// yet.)
+		aStatement = this
+				.preparedStatementMap.get("incrementPosByDocumentcounter")
+				.bind()
+				.setString(0, documentId)
+				.setString(1, posValue);
+		this.session.execute(aStatement);
+
+		// TODO: Insert BiGram
+
+		// TODO: Insert TriGram
+
+		return tokenId;
 	}
 
 	/**
