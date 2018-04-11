@@ -1,11 +1,14 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
 import com.datastax.driver.core.*;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
@@ -170,6 +173,36 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 								"(\"documentId\", \"firstValue\", " +
 								"\"secondValue\", \"thirdValue\") " +
 								"VALUES (?, ?, ?, ?);"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getDocument",
+				this.session.prepare(
+						"SELECT \"uid\", \"text\", \"language\" " +
+								"FROM \"document\" " +
+								"WHERE \"uid\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getDocumentIds",
+				this.session.prepare(
+						"SELECT \"uid\" FROM \"document\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getLemmataInDocument",
+				this.session.prepare(
+						"SELECT \"value\" FROM \"lemmaByDocument\" " +
+								"WHERE \"documentId\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getTokensInDocumentForCAS",
+				this.session.prepare(
+						"SELECT \"begin\", \"end\", \"lemmaValue\", " +
+								"\"posValue\" " +
+								"FROM \"token\" " +
+								"WHERE \"documentId\" = ?;"
 				)
 		);
 
@@ -515,7 +548,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				.setString(1, posValue);
 		this.session.execute(aStatement);
 
-		if (previousTokenId != null) {
+		if (previousTokenId != null)
+		{
 			// Get value of previous Token for insertion into bigram.
 			aStatement = this.preparedStatementMap.get("getTokenValue").bind()
 					.setString(0, documentId)
@@ -537,7 +571,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 					.setString(1, previousTokenValue);
 			result = this.session.execute(aStatement);
 			Row row = result.one();
-			if (row != null) {
+			if (row != null)
+			{
 				// If the previous Token was the second value in a trigram, it
 				// and its previous Token can be used in a new trigram.
 				String prevPreviousTokenValue = row.getString(1);
@@ -555,43 +590,34 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		return tokenId;
 	}
 
-	/**
-	 * Creates a new Lemma if none with the given value exists.
-	 *
-	 * @param value The Lemma's value.
-	 * @return The Lemma's id.
-	 */
-	protected String getLemmaId(String value)
-	{
-		return null;
-	}
-
-	/**
-	 * Inserts a connection from Document to Lemma into the table
-	 * documentLemmaMap.
-	 * Since Cassandra is more efficient on write, the existence of the connec-
-	 * tion is not checked first. This operation is idempotent anyway.
-	 *
-	 * @param documentId
-	 * @param lemmaId
-	 */
-	protected void insertDocumentLemmaConnection(
-			String documentId, String lemmaId
-	)
-	{
-
-	}
-
 	@Override
 	public void checkIfDocumentExists(String documentId) throws DocumentNotFoundException
 	{
-
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getDocument").bind()
+				.setString(0, documentId);
+		ResultSet result = this.session.execute(aStatement);
+		if (result.one() == null)
+		{
+			throw new DocumentNotFoundException();
+		}
 	}
 
 	@Override
 	public Iterable<String> getDocumentIds()
 	{
-		return null;
+		List<String> documentIds = new ArrayList<>();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getDocumentIds").bind();
+		ResultSet result = this.session.execute(aStatement);
+
+		for (Row row : result)
+		{
+			documentIds.add(row.getString(0));
+		}
+
+		return documentIds;
 	}
 
 	@Override
@@ -600,14 +626,86 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 	{
 		this.checkIfDocumentExists(documentId);
 
-		return null;
+		Set<String> lemmata = new TreeSet<>();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getLemmataInDocument").bind()
+				.setString(0, documentId);
+		ResultSet result = this.session.execute(aStatement);
+
+		for (Row row : result)
+		{
+			lemmata.add(row.getString(0));
+		}
+
+		return lemmata;
 	}
 
 	@Override
 	public void populateCasWithDocument(CAS aCAS, String documentId)
 			throws DocumentNotFoundException, QHException
 	{
-		this.checkIfDocumentExists(documentId);
+		// No check for existance at the start, since a select is executed
+		// anyway.
+		try
+		{
+			// Retrieve Document
+			BoundStatement aStatement = this
+					.preparedStatementMap.get("getDocument").bind()
+					.setString(0, documentId);
+			ResultSet documentResult = this.session.execute(aStatement);
+			Row document = documentResult.one();
+
+			if (document == null)
+			{
+				throw new DocumentNotFoundException();
+			}
+
+			// Create Document CAS
+			DocumentMetaData meta = DocumentMetaData.create(aCAS);
+			meta.setDocumentId(documentId);
+			aCAS.setDocumentText(document.getString(1));
+			aCAS.setDocumentLanguage(document.getString(2));
+
+			// Retrieve connected Tokens
+			aStatement = this
+					.preparedStatementMap.get("getTokensInDocumentForCAS")
+					.bind()
+					.setString(0, documentId);
+			ResultSet tokens = this.session.execute(aStatement);
+
+			for (Row row : tokens)
+			{
+				Token xmiToken = new Token(
+						aCAS.getJCas(),
+						row.getInt(0),
+						row.getInt(1)
+				);
+
+				Lemma lemma = new Lemma(
+						aCAS.getJCas(),
+						xmiToken.getBegin(),
+						xmiToken.getEnd()
+				);
+				lemma.setValue(row.getString(2));
+				lemma.addToIndexes();
+				xmiToken.setLemma(lemma);
+
+				POS pos = new POS(
+						aCAS.getJCas(),
+						xmiToken.getBegin(),
+						xmiToken.getEnd()
+				);
+				pos.setPosValue(row.getString(3));
+				pos.addToIndexes();
+				xmiToken.setPos(pos);
+
+				xmiToken.addToIndexes();
+			}
+		} catch (CASException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@Override
