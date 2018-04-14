@@ -26,6 +26,12 @@ java -jar target.jar evaluate -e query -d BaseX
 java -jar target.jar evaluate -e calculate -d BaseX
 java -jar target.jar evaluate -e complex-query -d BaseX
 
+java -jar target.jar evaluate -e write -d Cassandra
+java -jar target.jar evaluate -e read -d Cassandra
+java -jar target.jar evaluate -e query -d Cassandra
+java -jar target.jar evaluate -e calculate -d Cassandra
+java -jar target.jar evaluate -e complex-query -d Cassandra
+
 java -jar target.jar evaluate -e write -d MySQL
 java -jar target.jar evaluate -e read -d MySQL
 java -jar target.jar evaluate -e query -d MySQL
@@ -37,5 +43,11 @@ java -jar target.jar evaluate -e read -d Neo4j
 java -jar target.jar evaluate -e query -d Neo4j
 java -jar target.jar evaluate -e calculate -d Neo4j
 java -jar target.jar evaluate -e complex-query -d Neo4j
+
+java -jar target.jar evaluate -e write -d Cassandra
+java -jar target.jar evaluate -e read -d Cassandra
+java -jar target.jar evaluate -e query -d Cassandra
+java -jar target.jar evaluate -e calculate -d Cassandra
+java -jar target.jar evaluate -e complex-query -d Cassandra
 
 java -jar target.jar visualize

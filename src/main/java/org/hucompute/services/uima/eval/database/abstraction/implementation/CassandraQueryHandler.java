@@ -1,6 +1,7 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
 import com.datastax.driver.core.*;
+import com.google.common.collect.Lists;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
@@ -20,7 +21,6 @@ import org.hucompute.services.uima.eval.database.connection.Connections;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Most of the queries here use the same concept as in the MySQLQueryHandler.
@@ -318,6 +318,95 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 								"FROM \"lemma\";"
 				)
 		);
+		this.preparedStatementMap.put(
+				"getDocuments",
+				this.session.prepare(
+						"SELECT \"uid\", \"text\", \"language\", " +
+								"\"paragraphCount\", \"sentenceCount\", " +
+								"\"tokenCount\", \"lemmaCount\", " +
+								"\"posCount\" " +
+								"FROM \"document\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getDocumentsIn",
+				this.session.prepare(
+						"SELECT \"uid\", \"text\", \"language\", " +
+								"\"paragraphCount\", \"sentenceCount\", " +
+								"\"tokenCount\", \"lemmaCount\", " +
+								"\"posCount\" " +
+								"FROM \"document\" " +
+								"WHERE \"uid\" IN ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getLemmataCountsInDocument",
+				this.session.prepare(
+						"SELECT \"value\", \"count\" " +
+								"FROM \"lemmaByDocument\" " +
+								"WHERE \"documentId\" = ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getLemmaCountInDocument",
+				this.session.prepare(
+						"SELECT \"count\" " +
+								"FROM \"lemmaByDocument\" " +
+								"WHERE \"documentId\" = ? " +
+								"AND \"value\" = ?;"
+				)
+		);
+
+		this.preparedStatementMap.put(
+				"getBiGrams",
+				this.session.prepare(
+						"SELECT \"firstValue\", \"secondValue\" " +
+								"FROM \"bigram\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getBiGramsInDocumentsIn",
+				this.session.prepare(
+						"SELECT \"firstValue\", \"secondValue\" " +
+								"FROM \"bigram\" " +
+								"WHERE \"documentId\" IN ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getBiGramsInDocument",
+				this.session.prepare(
+						"SELECT \"firstValue\", \"secondValue\" " +
+								"FROM \"bigram\" " +
+								"WHERE \"documentId\" = ?;"
+				)
+		);
+
+		this.preparedStatementMap.put(
+				"getTriGrams",
+				this.session.prepare(
+						"SELECT \"firstValue\", \"secondValue\", " +
+								"\"thirdValue\" " +
+								"FROM \"trigram\";"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getTriGramsInDocumentsIn",
+				this.session.prepare(
+						"SELECT \"firstValue\", \"secondValue\", " +
+								"\"thirdValue\" " +
+								"FROM \"trigram\" " +
+								"WHERE \"documentId\" IN ?;"
+				)
+		);
+		this.preparedStatementMap.put(
+				"getTriGramsInDocument",
+				this.session.prepare(
+						"SELECT \"firstValue\", \"secondValue\", " +
+								"\"thirdValue\" " +
+								"FROM \"trigram\" " +
+								"WHERE \"documentId\" = ?;"
+				)
+		);
 
 		this.statementsPrepared = true;
 	}
@@ -464,7 +553,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				"  \"documentId\" VARCHAR, " +
 				"  \"firstValue\" VARCHAR, " +
 				"  \"secondValue\" VARCHAR, " +
-				"  PRIMARY KEY ((\"documentId\", \"secondValue\"), \"firstValue\") " +
+				"  PRIMARY KEY (\"documentId\", \"secondValue\", \"firstValue\") " +
 				")");
 		session.execute("CREATE TABLE \"trigram\" ( " +
 				"  \"documentId\" VARCHAR, " +
@@ -956,7 +1045,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		// => type is either Token, Lemma or POS.
 
 		BoundStatement aStatement;
-		switch(type) {
+		switch (type)
+		{
 			case Token:
 				aStatement = this
 						.preparedStatementMap
@@ -998,87 +1088,45 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				.preparedStatementMap.get("getOccurencesForEachLemma").bind();
 		ResultSet result = this.session.execute(aStatement);
 
-		for (Row row : result) {
+		for (Row row : result)
+		{
 			occurenceMap.put(
 					row.getString(0),
-					(int)row.getLong(1)
+					(int) row.getLong(1)
 			);
 		}
 
 		return occurenceMap;
 	}
 
-	protected class DocumentTokenLemma
-	{
-		public String document;
-		public String token;
-		public String lemma;
-
-		public DocumentTokenLemma(
-				String document,
-				String token,
-				String lemma
-		)
-		{
-			this.document = document;
-			this.token = token;
-			this.lemma = lemma;
-		}
-
-		public String getDocument()
-		{
-			return this.document;
-		}
-
-		public String getLemma()
-		{
-			return this.lemma;
-		}
-	}
-
-	protected Map<String, Double> calculateTTRForDocumentTokenLemmaMap(
-			Map<String, DocumentTokenLemma> dttMap
-	)
-	{
-		Map<String, Double> ttrMap = new HashMap<>();
-
-		dttMap.entrySet()
-				.parallelStream()
-				.collect(
-						Collectors.groupingByConcurrent(Map.Entry::getKey,
-								Collectors.mapping(
-										Map.Entry::getValue,
-										Collectors.toSet()
-								)
-						)
-				)
-				.forEach((document, list) -> {
-					int tokenCount = list.size();
-					int lemmaCount = (int) list.parallelStream()
-							.map(DocumentTokenLemma::getLemma)
-							.distinct()
-							.count();
-
-					ttrMap.put(
-							document,
-							(double) tokenCount / (double) lemmaCount
-					);
-				});
-
-		return ttrMap;
-	}
-
 	@Override
 	public Map<String, Double> calculateTTRForAllDocuments()
 	{
-		return null;
+		Map<String, Double> ttrMap = new HashMap<>();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getDocuments").bind();
+		ResultSet results = this.session.execute(aStatement);
+
+		for (Row row : results) {
+			ttrMap.put(
+					row.getString(0),
+					(double) row.getInt(5) / (double) row.getInt(6)
+			);
+		}
+
+		return ttrMap;
 	}
 
 	@Override
 	public Double calculateTTRForDocument(String documentId)
 			throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+
+		return this.calculateTTRForCollectionOfDocuments(
+				Arrays.asList(documentId)
+		).get(documentId);
 	}
 
 	@Override
@@ -1086,66 +1134,215 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	)
 	{
-		return null;
+		Map<String, Double> ttrMap = new HashMap<>();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getDocumentsIn").bind()
+				.setList(0, Lists.newArrayList(documentIds));
+
+		ResultSet results = this.session.execute(aStatement);
+
+		for (Row row : results) {
+			ttrMap.put(
+					row.getString(0),
+					(double) row.getInt(5) / (double) row.getInt(6)
+			);
+		}
+
+		return ttrMap;
 	}
 
 	@Override
-	public Map<String, Integer> calculateRawTermFrequenciesInDocument(String documentId) throws DocumentNotFoundException
+	public Map<String, Integer> calculateRawTermFrequenciesInDocument(
+			String documentId
+	) throws DocumentNotFoundException
 	{
 		this.checkIfDocumentExists(documentId);
 
-		return null;
+		Map<String, Integer> termFrequencyMap = new HashMap<>();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getLemmataCountsInDocument").bind()
+				.setString(0, documentId);
+
+		ResultSet result = this.session.execute(aStatement);
+
+		for (Row row : result) {
+			termFrequencyMap.put(row.getString(0), row.getInt(1));
+		}
+
+		return termFrequencyMap;
 	}
 
 	@Override
-	public Integer calculateRawTermFrequencyForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
+	public Integer calculateRawTermFrequencyForLemmaInDocument(
+			String lemma, String documentId
+	) throws DocumentNotFoundException
 	{
 		this.checkIfDocumentExists(documentId);
 
-		return 0;
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getLemmataCountsInDocument").bind()
+				.setString(0, documentId);
+
+		ResultSet result = this.session.execute(aStatement);
+		Row row = result.one();
+
+		if (row == null) {
+			return 0;
+		} else {
+			return row.getInt(0);
+		}
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+
+		ArrayList<String> biGramList = new ArrayList<>();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getBiGramsInDocument").bind()
+				.setString(0, documentId);
+		ResultSet result = this.session.execute(aStatement);
+
+		for (Row row : result) {
+			biGramList.add(
+					String.format(
+							"%s-%s",
+							row.getString(0),
+							row.getString(1)
+					)
+			);
+		}
+
+		return biGramList;
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return null;
+		ArrayList<String> biGramList = new ArrayList<>();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getBiGrams").bind();
+		ResultSet result = this.session.execute(aStatement);
+
+		for (Row row : result) {
+			biGramList.add(
+					String.format(
+							"%s-%s",
+							row.getString(0),
+							row.getString(1)
+					)
+			);
+		}
+
+		return biGramList;
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromDocumentsInCollection(
 			Collection<String> documentIds
-	) throws UnsupportedOperationException, DocumentNotFoundException
+	) throws UnsupportedOperationException
 	{
-		return null;
+		ArrayList<String> biGramList = new ArrayList<>();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getBiGramsInDocumentsIn").bind()
+				.setList(0, Lists.newArrayList(documentIds));
+		ResultSet result = this.session.execute(aStatement);
+
+		for (Row row : result) {
+			biGramList.add(
+					String.format(
+							"%s-%s",
+							row.getString(0),
+							row.getString(1)
+					)
+			);
+		}
+
+		return biGramList;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+
+		ArrayList<String> triGramList = new ArrayList<>();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getTriGramsInDocument").bind()
+				.setString(0, documentId);
+		ResultSet result = this.session.execute(aStatement);
+
+		for (Row row : result) {
+			triGramList.add(
+					String.format(
+							"%s-%s",
+							row.getString(0),
+							row.getString(1),
+							row.getString(2)
+					)
+			);
+		}
+
+		return triGramList;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return null;
+		ArrayList<String> triGramList = new ArrayList<>();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getTriGrams").bind();
+		ResultSet result = this.session.execute(aStatement);
+
+		for (Row row : result) {
+			triGramList.add(
+					String.format(
+							"%s-%s",
+							row.getString(0),
+							row.getString(1),
+							row.getString(2)
+					)
+			);
+		}
+
+		return triGramList;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromDocumentsInCollection(
 			Collection<String> documentIds
-	) throws UnsupportedOperationException, DocumentNotFoundException
+	) throws UnsupportedOperationException
 	{
-		return null;
+		ArrayList<String> triGramList = new ArrayList<>();
+
+		BoundStatement aStatement = this
+				.preparedStatementMap.get("getTriGramsInDocumentsIn").bind()
+				.setList(0, Lists.newArrayList(documentIds));
+		ResultSet result = this.session.execute(aStatement);
+
+		for (Row row : result) {
+			triGramList.add(
+					String.format(
+							"%s-%s",
+							row.getString(0),
+							row.getString(1),
+							row.getString(2)
+					)
+			);
+		}
+
+		return triGramList;
 	}
 }
