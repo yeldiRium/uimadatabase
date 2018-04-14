@@ -89,6 +89,14 @@
         <repository>
             <id>snapshots-hucompute</id>
             <url>http://service.hucompute.org/artifactory/libs-snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
         </repository>
     </repositories>
     <dependencies>
