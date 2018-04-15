@@ -574,14 +574,37 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public Map<String, Double> calculateTTRForAllDocuments()
 	{
-		return null;
+		Map<String, Double> ttrMap = new HashMap<>();
+
+		try (MongoCursor<Document> cursor = this.database
+				.getCollection("document").find().iterator())
+		{
+			while (cursor.hasNext())
+			{
+				Document document = cursor.next();
+				Integer lemmaCount = ((List<Document>) document.get("lemmata"))
+						.size();
+
+				ttrMap.put(
+						document.getString("_id"),
+						(double) document.getInteger("tokenCount") /
+								(double) lemmaCount
+				);
+			}
+		}
+
+		return ttrMap;
 	}
 
 	@Override
 	public Double calculateTTRForDocument(String documentId)
 			throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+
+		return this.calculateTTRForCollectionOfDocuments(
+				Arrays.asList(documentId)
+		).get(documentId);
 	}
 
 	@Override
@@ -589,65 +612,268 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 			Collection<String> documentIds
 	)
 	{
-		return null;
+		Map<String, Double> ttrMap = new HashMap<>();
+
+		try (MongoCursor<Document> cursor = this.database
+				.getCollection("document").find(
+						Filters.in("_id", documentIds)
+				).iterator())
+		{
+			while (cursor.hasNext())
+			{
+				Document document = cursor.next();
+				Integer lemmaCount = ((List<Document>) document.get("lemmata"))
+						.size();
+
+				ttrMap.put(
+						document.getString("_id"),
+						(double) document.getInteger("tokenCount") /
+								(double) lemmaCount
+				);
+			}
+		}
+
+		return ttrMap;
 	}
 
 	@Override
 	public Map<String, Integer> calculateRawTermFrequenciesInDocument(String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		Map<String, Integer> frequencyMap = new HashMap<>();
+
+		Document document = this.database.getCollection("document").find(
+				Filters.eq("_id", documentId)
+		).first();
+
+		if (document == null)
+		{
+			throw new DocumentNotFoundException();
+		}
+
+		List<Document> lemmaDocuments = (List<Document>) document
+				.get("lemmata");
+
+		for (Document lemmaDocument : lemmaDocuments)
+		{
+			frequencyMap.put(
+					lemmaDocument.getString("value"),
+					lemmaDocument.getInteger("count")
+			);
+		}
+
+		return frequencyMap;
 	}
 
 	@Override
 	public Integer calculateRawTermFrequencyForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+
+		Document document = this.database.getCollection("document").find(
+				Filters.and(
+						Filters.eq("_id", documentId),
+						Filters.elemMatch(
+								"lemmata",
+								Filters.eq("value", lemma)
+						)
+				)
+		).first();
+
+		if (document == null)
+		{
+			// If there was no exception thrown in the existence check above,
+			// and our query returned no document, then the lemma did not occur
+			// in the document.
+			return 0;
+		}
+
+		List<Document> lemmaDocuments = (List<Document>) document
+				.get("lemmata");
+
+		for (Document lemmaDocument : lemmaDocuments)
+		{
+			if (lemmaDocument.getString("value").equals(lemma))
+			{
+				return lemmaDocument.getInteger("count");
+			}
+		}
+
+		// This should not happen, but if it does, it is accurate.
+		return 0;
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+
+		List<String> biGrams = new ArrayList<>();
+
+		try (MongoCursor<Document> cursor = this.database
+				.getCollection("biGram").find(
+						Filters.eq("documentId", documentId)
+				).iterator())
+		{
+			while (cursor.hasNext())
+			{
+				Document biGram = cursor.next();
+				biGrams.add(
+						String.format(
+								"%s-%s",
+								biGram.getString("firstValue"),
+								biGram.getString("secondValue")
+						)
+				);
+			}
+		}
+
+		return biGrams;
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return null;
+		List<String> biGrams = new ArrayList<>();
+
+		try (MongoCursor<Document> cursor = this.database
+				.getCollection("biGram").find().iterator())
+		{
+			while (cursor.hasNext())
+			{
+				Document biGram = cursor.next();
+				biGrams.add(
+						String.format(
+								"%s-%s",
+								biGram.getString("firstValue"),
+								biGram.getString("secondValue")
+						)
+				);
+			}
+		}
+
+		return biGrams;
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromDocumentsInCollection(
 			Collection<String> documentIds
-	) throws UnsupportedOperationException, DocumentNotFoundException
+	) throws UnsupportedOperationException
 	{
-		return null;
+		List<String> biGrams = new ArrayList<>();
+
+		try (MongoCursor<Document> cursor = this.database
+				.getCollection("biGram").find(
+						Filters.in("documentId", documentIds)
+				).iterator())
+		{
+			while (cursor.hasNext())
+			{
+				Document biGram = cursor.next();
+				biGrams.add(
+						String.format(
+								"%s-%s",
+								biGram.getString("firstValue"),
+								biGram.getString("secondValue")
+						)
+				);
+			}
+		}
+
+		return biGrams;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromDocument(String documentId)
 			throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+
+		List<String> triGrams = new ArrayList<>();
+
+		try (MongoCursor<Document> cursor = this.database
+				.getCollection("triGram").find(
+						Filters.eq("documentId", documentId)
+				).iterator())
+		{
+			while (cursor.hasNext())
+			{
+				Document triGram = cursor.next();
+				triGrams.add(
+						String.format(
+								"%s-%s-%s",
+								triGram.getString("firstValue"),
+								triGram.getString("secondValue"),
+								triGram.getString("thirdValue")
+						)
+				);
+			}
+		}
+
+		return triGrams;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromAllDocuments()
 			throws UnsupportedOperationException
 	{
-		return null;
+		List<String> triGrams = new ArrayList<>();
+
+		try (MongoCursor<Document> cursor = this.database
+				.getCollection("triGram").find().iterator())
+		{
+			while (cursor.hasNext())
+			{
+				Document triGram = cursor.next();
+				triGrams.add(
+						String.format(
+								"%s-%s-%s",
+								triGram.getString("firstValue"),
+								triGram.getString("secondValue"),
+								triGram.getString("thirdValue")
+						)
+				);
+			}
+		}
+
+		return triGrams;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromDocumentsInCollection(
 			Collection<String> documentIds
-	) throws UnsupportedOperationException, DocumentNotFoundException
+	) throws UnsupportedOperationException
 	{
-		return null;
+		List<String> triGrams = new ArrayList<>();
+
+		try (MongoCursor<Document> cursor = this.database
+				.getCollection("triGram").find(
+						Filters.in("documentId", documentIds)
+				).iterator())
+		{
+			while (cursor.hasNext())
+			{
+				Document triGram = cursor.next();
+				triGrams.add(
+						String.format(
+								"%s-%s-%s",
+								triGram.getString("firstValue"),
+								triGram.getString("secondValue"),
+								triGram.getString("thirdValue")
+						)
+				);
+			}
+		}
+
+		return triGrams;
 	}
 
+	/**
+	 * @param hexString
+	 * @return an ObjectId instance, if the given hexString is valid. Otherwise
+	 * returns null.
+	 */
 	protected static ObjectId objectIdOrNull(String hexString)
 	{
 		try
