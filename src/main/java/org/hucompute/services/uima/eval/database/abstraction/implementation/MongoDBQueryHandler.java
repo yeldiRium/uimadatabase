@@ -1,15 +1,19 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.bson.Document;
@@ -257,7 +261,8 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 							)
 					).first();
 
-			if (previousBigram != null) {
+			if (previousBigram != null)
+			{
 				// If the previous Token was the second value in a trigram, it
 				// and its previous Token can be used in a new trigram.
 				Document triGram = new Document("documentId", documentId)
@@ -274,26 +279,120 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public void checkIfDocumentExists(String documentId) throws DocumentNotFoundException
 	{
+		Document document = this.database.getCollection("document").find(
+				Filters.eq("_id", documentId)
+		).first();
 
+		if (document == null)
+		{
+			throw new DocumentNotFoundException();
+		}
 	}
 
 	@Override
 	public Iterable<String> getDocumentIds()
 	{
-		return null;
+		List<String> documentIds = new ArrayList<>();
+
+		try (MongoCursor<Document> cursor = this.database
+				.getCollection("document").find().iterator())
+		{
+			while (cursor.hasNext())
+			{
+				Document document = cursor.next();
+				documentIds.add((String) document.get("_id"));
+			}
+		}
+
+		return documentIds;
 	}
 
 	@Override
 	public Set<String> getLemmataForDocument(String documentId)
+			throws DocumentNotFoundException
 	{
-		return null;
+		Set<String> lemmata = new HashSet<>();
+
+		Document document = this.database.getCollection("document")
+				.find(
+						Filters.eq("_id", documentId)
+				).first();
+
+		if (document == null) {
+			throw new DocumentNotFoundException();
+		}
+
+		List<Document> lemmaDocuments =
+				(List<Document>) document.get("lemmata");
+		for (Document lemmaDocument : lemmaDocuments)
+		{
+			lemmata.add(lemmaDocument.getString("value"));
+		}
+
+		return lemmata;
 	}
 
 	@Override
 	public void populateCasWithDocument(CAS aCAS, String documentId)
 			throws DocumentNotFoundException, QHException
 	{
+		Document document = this.database.getCollection("document")
+				.find(
+						Filters.eq("_id", documentId)
+				).first();
 
+		if (document == null) {
+			throw new DocumentNotFoundException();
+		}
+
+		try
+		{
+			// Create Document CAS
+			DocumentMetaData meta = DocumentMetaData.create(aCAS);
+			meta.setDocumentId(documentId);
+			aCAS.setDocumentText(document.getString("text"));
+			aCAS.setDocumentLanguage(document.getString("language"));
+
+			try (MongoCursor<Document> cursor = this.database
+					.getCollection("token").find(
+							Filters.eq("documentId", documentId)
+					).iterator())
+			{
+				while (cursor.hasNext())
+				{
+					Document token = cursor.next();
+
+					Token xmiToken = new Token(
+							aCAS.getJCas(),
+							token.getInteger("begin"),
+							token.getInteger("end")
+					);
+
+					Lemma lemma = new Lemma(
+							aCAS.getJCas(),
+							xmiToken.getBegin(),
+							xmiToken.getEnd()
+					);
+					lemma.setValue(token.getString("lemmaValue"));
+					lemma.addToIndexes();
+					xmiToken.setLemma(lemma);
+
+					POS pos = new POS(
+							aCAS.getJCas(),
+							xmiToken.getBegin(),
+							xmiToken.getEnd()
+					);
+					pos.setPosValue(token.getString("posValue"));
+					pos.addToIndexes();
+					xmiToken.setPos(pos);
+
+					xmiToken.addToIndexes();
+				}
+			}
+		} catch (CASException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@Override
