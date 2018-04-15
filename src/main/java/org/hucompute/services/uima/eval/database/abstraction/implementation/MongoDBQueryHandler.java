@@ -1,6 +1,7 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -20,6 +21,7 @@ import java.util.Set;
 public class MongoDBQueryHandler extends AbstractQueryHandler
 {
 	protected MongoClient mongoClient;
+	protected MongoDatabase mongoDatabase;
 
 	public MongoDBQueryHandler(MongoClient mongoClient)
 	{
@@ -32,6 +34,10 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 		return Connections.DBName.MongoDB;
 	}
 
+	/**
+	 * MongoDB creates databases and collections automatically once data is
+	 * stored in them. Thus there is no need to set up the database explicitly.
+	 */
 	@Override
 	public void setUpDatabase()
 	{
@@ -41,7 +47,9 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public void openDatabase() throws IOException
 	{
-
+		this.mongoDatabase = this.mongoClient.getDatabase(
+				System.getenv("MONGODB_DB")
+		);
 	}
 
 	@Override

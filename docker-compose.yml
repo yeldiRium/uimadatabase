@@ -66,6 +66,7 @@ services:
       - MONGODB_PORT=27017
       - MONGODB_USER=
       - MONGODB_PASS=
+      - MONGODB_DB=uimadatabase
       # See README.txt in dbs/mysql for details on:
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
