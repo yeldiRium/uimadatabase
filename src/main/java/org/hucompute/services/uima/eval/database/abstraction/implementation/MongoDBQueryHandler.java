@@ -22,6 +22,7 @@ import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandle
 import org.hucompute.services.uima.eval.database.abstraction.ElementType;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import org.hucompute.services.uima.eval.database.connection.Connections;
 
 import java.io.IOException;
@@ -318,7 +319,8 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 						Filters.eq("_id", documentId)
 				).first();
 
-		if (document == null) {
+		if (document == null)
+		{
 			throw new DocumentNotFoundException();
 		}
 
@@ -341,7 +343,8 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 						Filters.eq("_id", documentId)
 				).first();
 
-		if (document == null) {
+		if (document == null)
+		{
 			throw new DocumentNotFoundException();
 		}
 
@@ -398,13 +401,42 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countDocumentsContainingLemma(String lemma)
 	{
-		return 0;
+		return (int) this.database.getCollection("document").count(
+				Filters.elemMatch(
+						"lemmata",
+						Filters.eq("value", lemma)
+				)
+		);
 	}
 
 	@Override
 	public int countElementsOfType(ElementType type)
 	{
-		return 0;
+		String collectionName;
+		switch (type)
+		{
+			case Document:
+				collectionName = "document";
+				break;
+			case Paragraph:
+				collectionName = "paragraph";
+				break;
+			case Sentence:
+				collectionName = "sentence";
+				break;
+			case Token:
+				collectionName = "token";
+				break;
+			case Lemma:
+				collectionName = "lemma";
+				break;
+			case Pos:
+				collectionName = "pos";
+				break;
+			default:
+				throw new IllegalArgumentException();
+		}
+		return (int) this.database.getCollection(collectionName).count();
 	}
 
 	@Override
@@ -412,28 +444,131 @@ public class MongoDBQueryHandler extends AbstractQueryHandler
 			String documentId, ElementType type
 	) throws DocumentNotFoundException
 	{
-		return 0;
+		this.checkIfDocumentExists(documentId);
+
+		if (type == ElementType.Document)
+		{
+			// There is obviously always one Document in a Document.
+			return 1;
+		}
+
+		Document document = this.database.getCollection("document").find(
+				Filters.eq("_id", documentId)
+		).first();
+
+		switch (type)
+		{
+			case Paragraph:
+				return document.getInteger("paragraphCount");
+			case Sentence:
+				return document.getInteger("sentenceCount");
+			case Token:
+				return document.getInteger("tokenCount");
+			case Lemma:
+				return ((List<Document>) document.get("lemmata")).size();
+			case Pos:
+				return ((List<Document>) document.get("pos")).size();
+			default:
+				throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
 	public int countElementsOfTypeWithValue(ElementType type, String value)
-			throws IllegalArgumentException
+			throws IllegalArgumentException, TypeHasNoValueException
 	{
-		return 0;
+		this.checkTypeHasValueField(type);
+		// => type is either Token, Lemma or POS.
+
+		switch (type)
+		{
+			case Token:
+				return (int) this.database.getCollection("token").count(
+						Filters.eq("lemmaValue", value)
+				);
+			case Lemma:
+				// Will return 0 or 1, since Lemmata values are unique.
+				return (int) this.database.getCollection("lemma").count(
+						Filters.eq("value", value)
+				);
+			case Pos:
+				// Will return 0 or 1, since POS values are unique.
+				return (int) this.database.getCollection("pos").count(
+						Filters.eq("value", value)
+				);
+			default:
+				throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
 	public int countElementsInDocumentOfTypeWithValue(
 			String documentId, ElementType type, String value
-	) throws DocumentNotFoundException
+	) throws DocumentNotFoundException, TypeHasNoValueException
 	{
-		return 0;
+		this.checkIfDocumentExists(documentId);
+		this.checkTypeHasValueField(type);
+		// => type is either Token, Lemma or POS.
+
+		switch (type)
+		{
+			case Token:
+				return (int) this.database.getCollection("token").count(
+						Filters.and(
+								Filters.eq("lemmaValue", value),
+								Filters.eq("documentId", documentId)
+						)
+				);
+			case Lemma:
+				// Will return 0 or 1, since Lemmata values are unique.
+				// Checks, if there is any document with the given ID that
+				// has a lemma with the given value.
+				return (int) this.database.getCollection("document").count(
+						Filters.and(
+								Filters.eq("_id", documentId),
+								Filters.elemMatch(
+										"lemmata",
+										Filters.eq("value", value)
+								)
+						)
+				);
+			case Pos:
+				// Will return 0 or 1, since POS values are unique.
+				// Checks, if there is any document with the given ID that
+				// has a POS with the given value.
+				return (int) this.database.getCollection("document").count(
+						Filters.and(
+								Filters.eq("_id", documentId),
+								Filters.elemMatch(
+										"pos",
+										Filters.eq("value", value)
+								)
+						)
+				);
+			default:
+				throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
 	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
 	{
-		return null;
+		Map<String, Integer> occurrenceMap = new HashMap<>();
+
+		try (MongoCursor<Document> cursor = this.database
+				.getCollection("lemma").find().iterator())
+		{
+			while (cursor.hasNext())
+			{
+				Document lemma = cursor.next();
+				occurrenceMap.put(
+						lemma.getString("value"),
+						lemma.getInteger("count")
+				);
+			}
+		}
+
+		return occurrenceMap;
 	}
 
 	@Override
