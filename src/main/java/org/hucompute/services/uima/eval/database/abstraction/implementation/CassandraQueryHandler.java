@@ -1191,7 +1191,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		if (row == null) {
 			return 0;
 		} else {
-			return row.getInt(1);
+			return (int) row.getLong(1);
 		}
 	}
 
