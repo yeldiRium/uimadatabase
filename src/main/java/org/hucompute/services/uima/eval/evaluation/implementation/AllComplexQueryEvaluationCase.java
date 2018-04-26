@@ -291,6 +291,7 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
+		// TODO: hier sollte kram passieren
 		return Formatting.createOutputForMethod(
 				"getTriGramsFromAllDocuments",
 				queryHandler
