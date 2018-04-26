@@ -1168,7 +1168,7 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		ResultSet result = this.session.execute(aStatement);
 
 		for (Row row : result) {
-			termFrequencyMap.put(row.getString(0), row.getInt(1));
+			termFrequencyMap.put(row.getString(0), (int) row.getLong(1));
 		}
 
 		return termFrequencyMap;
