@@ -7,12 +7,6 @@ import com.arangodb.ArangoGraph;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.BaseEdgeDocument;
 import com.arangodb.entity.EdgeDefinition;
-import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
-import org.hucompute.services.uima.eval.database.abstraction.ElementType;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
@@ -22,7 +16,12 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
+import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
+import org.hucompute.services.uima.eval.database.abstraction.ElementType;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 import org.hucompute.services.uima.eval.database.connection.Connections;
 
 import java.io.IOException;
@@ -289,7 +288,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			BaseEdgeDocument nextSentenceEdge = new BaseEdgeDocument(
 					previousSentenceId,
 					sentenceObject.getId()
-					);
+			);
 			this.graph.edgeCollection(Relationship.NextSentence.toString())
 					.insertEdge(nextSentenceEdge);
 		}
@@ -403,10 +402,12 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 	/**
 	 * Creates a new Lemma if none with the given value exists.
 	 * Otherwise retrieves the existing one.
+	 *
 	 * @param value The Lemma's value.
 	 * @return The Lemma's id.
 	 */
-	protected String getLemmaId(String value) {
+	protected String getLemmaId(String value)
+	{
 		// Check if a Lemma with given value already exists since Lemmata
 		// should be reused.
 		String lemmaQuery = "FOR l in " + ElementType.Lemma + " FILTER l.value == @lemmaValue RETURN l";
@@ -420,7 +421,8 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		{
 			// If a Lemma was found, reuse it.
 			lemmaObject = lemmaResult.next();
-		} else {
+		} else
+		{
 			// If not, create a new Lemma object and insert into collection.
 			lemmaObject = new BaseDocument();
 			lemmaObject.addAttribute("value", value);
@@ -436,7 +438,7 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 			throws DocumentNotFoundException
 	{
 		if (!this.db.collection(ElementType.Document.toString())
-			.documentExists(documentId))
+				.documentExists(documentId))
 		{
 			throw new DocumentNotFoundException();
 		}
@@ -819,12 +821,14 @@ public class ArangoDBQueryHandler extends AbstractQueryHandler
 		while (result.hasNext())
 		{
 			BaseDocument ttr = result.next();
-			if (ttr.getAttribute("ttr") == null) {
+			if (ttr.getAttribute("ttr") == null)
+			{
 				documentTTRMap.put(
 						ttr.getAttribute("document").toString(),
 						0.0d
 				);
-			} else {
+			} else
+			{
 				documentTTRMap.put(
 						ttr.getAttribute("document").toString(),
 						Double.parseDouble(ttr.getAttribute("ttr").toString())

@@ -9,6 +9,11 @@ services:
   basex:
     build: ./dbs/basex
 
+  blazegraph:
+    build: ./dbs/blazegraph
+    ports:
+     - "9999:8080"
+
   cassandra:
     build: ./dbs/cassandra
 
@@ -55,6 +60,11 @@ services:
       - BASEX_USER=admin
       - BASEX_PASS=admin
       - BASEX_DBNAME=uimadatabase
+      # See README.txt in dbs/blazegraph for details on:
+      - BLAZEGRAPH_HOST=blazegraph
+      - BLAZEGRAPH_PORT=8080
+      - BLAZEGRAPH_USER=
+      - BLAZEGRAPH_PASS=
       # See README.txt in dbs/cassandra for details on:
       - CASSANDRA_HOST=cassandra
       - CASSANDRA_PORT=9042

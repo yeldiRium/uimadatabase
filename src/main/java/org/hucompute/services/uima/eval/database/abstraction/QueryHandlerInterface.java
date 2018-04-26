@@ -63,6 +63,11 @@ public interface QueryHandlerInterface
 			queryhandler = new BaseXQueryHandler(
 					((BaseXConnection) aConnection).getSession()
 			);
+		} else if (aConnection.getClass() == BlazegraphConnection.class)
+		{
+			queryhandler = new BlazegraphQueryHandler(
+					((BlazegraphConnection) aConnection).getEndpoint()
+			);
 		} else if (aConnection.getClass() == CassandraConnection.class)
 		{
 			queryhandler = new CassandraQueryHandler(

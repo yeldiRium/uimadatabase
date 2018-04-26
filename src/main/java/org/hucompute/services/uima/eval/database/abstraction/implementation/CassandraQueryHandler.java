@@ -1108,7 +1108,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				.preparedStatementMap.get("getDocuments").bind();
 		ResultSet results = this.session.execute(aStatement);
 
-		for (Row row : results) {
+		for (Row row : results)
+		{
 			ttrMap.put(
 					row.getString(0),
 					(double) row.getInt(5) / (double) row.getInt(6)
@@ -1142,7 +1143,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 
 		ResultSet results = this.session.execute(aStatement);
 
-		for (Row row : results) {
+		for (Row row : results)
+		{
 			ttrMap.put(
 					row.getString(0),
 					(double) row.getInt(5) / (double) row.getInt(6)
@@ -1167,7 +1169,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 
 		ResultSet result = this.session.execute(aStatement);
 
-		for (Row row : result) {
+		for (Row row : result)
+		{
 			termFrequencyMap.put(row.getString(0), (int) row.getLong(1));
 		}
 
@@ -1188,9 +1191,11 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 		ResultSet result = this.session.execute(aStatement);
 		Row row = result.one();
 
-		if (row == null) {
+		if (row == null)
+		{
 			return 0;
-		} else {
+		} else
+		{
 			return (int) row.getLong(1);
 		}
 	}
@@ -1208,7 +1213,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				.setString(0, documentId);
 		ResultSet result = this.session.execute(aStatement);
 
-		for (Row row : result) {
+		for (Row row : result)
+		{
 			biGramList.add(
 					String.format(
 							"%s-%s",
@@ -1231,7 +1237,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				.preparedStatementMap.get("getBiGrams").bind();
 		ResultSet result = this.session.execute(aStatement);
 
-		for (Row row : result) {
+		for (Row row : result)
+		{
 			biGramList.add(
 					String.format(
 							"%s-%s",
@@ -1256,7 +1263,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				.setList(0, Lists.newArrayList(documentIds));
 		ResultSet result = this.session.execute(aStatement);
 
-		for (Row row : result) {
+		for (Row row : result)
+		{
 			biGramList.add(
 					String.format(
 							"%s-%s",
@@ -1282,7 +1290,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				.setString(0, documentId);
 		ResultSet result = this.session.execute(aStatement);
 
-		for (Row row : result) {
+		for (Row row : result)
+		{
 			triGramList.add(
 					String.format(
 							"%s-%s",
@@ -1306,7 +1315,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				.preparedStatementMap.get("getTriGrams").bind();
 		ResultSet result = this.session.execute(aStatement);
 
-		for (Row row : result) {
+		for (Row row : result)
+		{
 			triGramList.add(
 					String.format(
 							"%s-%s",
@@ -1332,7 +1342,8 @@ public class CassandraQueryHandler extends AbstractQueryHandler
 				.setList(0, Lists.newArrayList(documentIds));
 		ResultSet result = this.session.execute(aStatement);
 
-		for (Row row : result) {
+		for (Row row : result)
+		{
 			triGramList.add(
 					String.format(
 							"%s-%s",

@@ -2,11 +2,6 @@ package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
-import org.hucompute.services.uima.eval.database.abstraction.ElementType;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
-import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
@@ -20,7 +15,11 @@ import org.basex.api.client.ClientSession;
 import org.basex.core.cmd.CreateDB;
 import org.basex.core.cmd.Delete;
 import org.basex.core.cmd.Open;
+import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
+import org.hucompute.services.uima.eval.database.abstraction.ElementType;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHException;
+import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import org.hucompute.services.uima.eval.database.connection.Connections;
 import org.xml.sax.SAXException;
 
@@ -528,7 +527,8 @@ public class BaseXQueryHandler extends AbstractQueryHandler
 		Map<String, Double> ttrMap = new HashMap<>();
 		for (String documentId : documentIds)
 		{
-			try {
+			try
+			{
 				ttrMap.put(
 						documentId, this.calculateTTRForDocument(documentId)
 				);

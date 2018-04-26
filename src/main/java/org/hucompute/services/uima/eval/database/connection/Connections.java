@@ -10,7 +10,7 @@ public class Connections
 {
 	public enum DBName
 	{
-		ArangoDB, BaseX, Cassandra, MongoDB, MySQL, Neo4j
+		ArangoDB, BaseX, Blazegraph, Cassandra, MongoDB, MySQL, Neo4j
 	}
 
 	public static Class<? extends Connection> getConnectionClassForDB(
@@ -23,6 +23,8 @@ public class Connections
 				return ArangoDBConnection.class;
 			case BaseX:
 				return BaseXConnection.class;
+			case Blazegraph:
+				return BlazegraphConnection.class;
 			case Cassandra:
 				return CassandraConnection.class;
 			case MongoDB:
@@ -47,6 +49,9 @@ public class Connections
 		} else if (connectionClass == BaseXConnection.class)
 		{
 			identifier = DBName.BaseX;
+		} else if (connectionClass == BlazegraphConnection.class)
+		{
+			identifier = DBName.Blazegraph;
 		} else if (connectionClass == CassandraConnection.class)
 		{
 			identifier = DBName.Cassandra;
