@@ -19,12 +19,12 @@ public class Main
 	{
 		// Clean up logging to stdout
 		Logger rootLogger = LogManager.getLogManager().getLogger("");
-		rootLogger.setLevel(Level.INFO);
+		rootLogger.setLevel(Level.ALL);
 		Formatter plainFormatter = new PlainFormatter();
 		for (Handler h : rootLogger.getHandlers())
 		{
 			h.setFormatter(plainFormatter);
-			h.setLevel(Level.INFO);
+			h.setLevel(Level.ALL);
 		}
 
 		Main main = new Main();

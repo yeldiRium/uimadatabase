@@ -38,6 +38,7 @@ services:
     links:
       - arangodb
       - basex
+      - blazegraph
       - cassandra
       - mongodb
       - mysql

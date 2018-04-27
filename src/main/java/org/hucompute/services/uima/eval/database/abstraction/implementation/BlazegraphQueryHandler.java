@@ -1,5 +1,6 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
+import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
@@ -12,8 +13,14 @@ import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHExcept
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 import org.hucompute.services.uima.eval.database.connection.Connections;
+import org.json.JSONObject;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -22,9 +29,78 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 {
 	protected String rootEndpoint;
 
+	protected enum Prefix
+	{
+		Document("http://hucompute.org/TextImager/Document#"),
+		Paragraph("http://hucompute.org/TextImager/Paragraph#"),
+		Sentence("http://hucompute.org/TextImager/Sentence#"),
+		Token("http://hucompute.org/TextImager/Token#"),
+		Lemma("http://hucompute.org/TextImager/Lemma#"),
+		Pos("http://hucompute.org/TextImager/Pos#");
+
+		protected String url;
+
+		Prefix(String url)
+		{
+			this.url = url;
+		}
+
+		public String url()
+		{
+			return this.url;
+		}
+	}
+
 	public BlazegraphQueryHandler(String rootEndpoint)
 	{
 		this.rootEndpoint = rootEndpoint;
+	}
+
+	/**
+	 * @param query The query to send to the server.
+	 * @return a Connection to the SparQL API.
+	 */
+	protected Connection queryConnection(String query)
+	{
+		try
+		{
+			String encodedQuery = URLEncoder.encode(query, "UTF-8");
+			String url = this.rootEndpoint + "/bigdata/sparql"
+					+ "?query=" + encodedQuery
+					+ "&format=json";
+
+			return Jsoup.connect(url)
+					.timeout(0)
+					.maxBodySize(0);
+
+		// UTF-8 is supported. Exception will not occur.
+		} catch (UnsupportedEncodingException ignored)
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Creates a connection with a body.
+	 * This only has an effect, if post() or put() are used on the connection.
+	 *
+	 * @param body The request body.
+	 * @return a Connection to the SparQL API.
+	 */
+	protected Connection postConnection(String body)
+	{
+		String url = this.rootEndpoint + "/bigdata/sparql?format=json";
+
+		return Jsoup.connect(url)
+				.requestBody(body)
+				.header("Content-Type", "application/sparql-update")
+				.timeout(0)
+				.maxBodySize(0);
+	}
+
+	protected JSONObject getResult(Document document)
+	{
+		return new JSONObject(document.body()).getJSONObject("results");
 	}
 
 	@Override
@@ -48,13 +124,32 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 	@Override
 	public void clearDatabase() throws IOException
 	{
-
+		this.postConnection("CLEAR ALL").post();
 	}
 
 	@Override
 	public String storeJCasDocument(JCas document) throws QHException
 	{
-		return null;
+		final String documentId = DocumentMetaData.get(document)
+				.getDocumentId();
+
+		final String turtle = "PREFIX document: <" + Prefix.Document.url() + ">\n"
+				+ "INSERT DATA {\n"
+				+ "document:" + documentId + " document:documentId \"" + documentId + "\" ;\n"
+				+ "                            document:text \"\"\"" + document.getDocumentText() + "\"\"\" ;\n"
+				+ "                            document:language \"" + document.getDocumentLanguage() + "\" .\n"
+				+ "}";
+
+		try
+		{
+			this.postConnection(turtle).post();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return documentId;
 	}
 
 	@Override
