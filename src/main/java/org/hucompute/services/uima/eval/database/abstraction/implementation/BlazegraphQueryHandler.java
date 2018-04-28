@@ -1,9 +1,11 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
+import com.google.common.collect.Maps;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
+import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
@@ -21,33 +23,289 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Level;
 
 public class BlazegraphQueryHandler extends AbstractQueryHandler
 {
 	protected String rootEndpoint;
 
-	protected enum Prefix
+	protected enum Model
 	{
-		Document("http://hucompute.org/TextImager/Document#"),
-		Paragraph("http://hucompute.org/TextImager/Paragraph#"),
-		Sentence("http://hucompute.org/TextImager/Sentence#"),
-		Token("http://hucompute.org/TextImager/Token#"),
-		Lemma("http://hucompute.org/TextImager/Lemma#"),
-		Pos("http://hucompute.org/TextImager/Pos#");
+		Document(
+				"document", "http://hucompute.org/TextImager/Model/Document#"
+		),
+		Paragraph(
+				"paragraph", "http://hucompute.org/TextImager/Model/Paragraph#"
+		),
+		Sentence(
+				"sentence", "http://hucompute.org/TextImager/Model/Sentence#"
+		),
+		Token(
+				"token", "http://hucompute.org/TextImager/Model/Token#"
+		),
+		Lemma(
+				"lemma", "http://hucompute.org/TextImager/Model/Lemma#"
+		),
+		Pos(
+				"pos", "http://hucompute.org/TextImager/Model/Pos#"
+		);
 
+		protected String name;
 		protected String url;
 
-		Prefix(String url)
+		Model(String name, String url)
 		{
+			this.name = name;
 			this.url = url;
 		}
 
-		public String url()
+		public String prefix()
 		{
-			return this.url;
+			return "PREFIX " + this.name + ": <" + this.url + ">";
+		}
+
+		@Override
+		public String toString()
+		{
+			return this.name;
+		}
+	}
+
+	public enum Relationship
+	{
+		DocumentHasParagraph(
+				"documentHasParagraph", "http://hucompute.org/TextImager/Relationship/DocumentHasParagraph"
+		),
+		DocumentHasSentence(
+				"documentHasSentence", "http://hucompute.org/TextImager/Relationship/DocumentHasSentence"
+		),
+		DocumentHasToken(
+				"documentHasToken", "http://hucompute.org/TextImager/Relationship/DocumentHasToken"
+		),
+		DocumentHasLemma(
+				"documentHasLemma", "http://hucompute.org/TextImager/Relationship/DocumentHasLemma"
+		),
+		SentenceInParagraph(
+				"sentenceInParagraph", "http://hucompute.org/TextImager/Relationship/SentenceInParagraph"
+		),
+		TokenInParagraph(
+				"tokenInParagraph", "http://hucompute.org/TextImager/Relationship/TokenInParagraph"
+		),
+		TokenInSentence(
+				"tokenInSentence", "http://hucompute.org/TextImager/Relationship/TokenInSentence"
+		),
+		TokenHasLemma(
+				"tokenHasLemma", "http://hucompute.org/TextImager/Relationship/TokenHasLemma"
+		),
+		TokenAtPos(
+				"tokenAtPos", "http://hucompute.org/TextImager/Relationship/TokenAtPos"
+		),
+		NextParagraph(
+				"nextParagraph", "http://hucompute.org/TextImager/Relationship/NextParagraph"
+		),
+		NextSentence(
+				"nextSentence", "http://hucompute.org/TextImager/Relationship/NextSentence"
+		),
+		NextToken(
+				"nextToken", "http://hucompute.org/TextImager/Relationship/NextToken"
+		);
+
+		protected String name;
+		protected String url;
+
+		Relationship(String name, String url)
+		{
+			this.name = name;
+			this.url = url;
+		}
+
+		public String prefix()
+		{
+			return "PREFIX " + this.name + ": <" + this.url + ">";
+		}
+
+		@Override
+		public String toString()
+		{
+			return this.name;
+		}
+	}
+
+	// Prepare static inserts for all queries.
+	protected static Map<String, String> staticValueMap;
+
+	static
+	{
+		staticValueMap = new HashMap<>();
+
+		// Models
+		staticValueMap.put(
+				"DocumentPrefix",
+				Model.Document.prefix()
+		);
+		staticValueMap.put(
+				"Document",
+				Model.Document.toString()
+		);
+		staticValueMap.put(
+				"ParagraphPrefix",
+				Model.Paragraph.prefix()
+		);
+		staticValueMap.put(
+				"Paragraph",
+				Model.Paragraph.toString()
+		);
+		staticValueMap.put(
+				"SentencePrefix",
+				Model.Sentence.prefix()
+		);
+		staticValueMap.put(
+				"Sentence",
+				Model.Sentence.toString()
+		);
+		staticValueMap.put(
+				"TokenPrefix",
+				Model.Token.prefix()
+		);
+		staticValueMap.put(
+				"Token",
+				Model.Token.toString()
+		);
+		staticValueMap.put(
+				"LemmaPrefix",
+				Model.Lemma.prefix()
+		);
+		staticValueMap.put(
+				"Lemma",
+				Model.Lemma.toString()
+		);
+		staticValueMap.put(
+				"PosPrefix",
+				Model.Pos.prefix()
+		);
+		staticValueMap.put(
+				"Pos",
+				Model.Pos.toString()
+		);
+
+		// Relationships
+		staticValueMap.put(
+				"DocumentHasParagraphPrefix",
+				Relationship.DocumentHasParagraph.prefix()
+		);
+		staticValueMap.put(
+				"DocumentHasParagraph",
+				Relationship.DocumentHasParagraph.toString()
+		);
+		staticValueMap.put(
+				"DocumentHasSentencePrefix",
+				Relationship.DocumentHasSentence.prefix()
+		);
+		staticValueMap.put(
+				"DocumentHasSentence",
+				Relationship.DocumentHasSentence.toString()
+		);
+		staticValueMap.put(
+				"DocumentHasTokenPrefix",
+				Relationship.DocumentHasToken.prefix()
+		);
+		staticValueMap.put(
+				"DocumentHasToken",
+				Relationship.DocumentHasToken.toString()
+		);
+		staticValueMap.put(
+				"DocumentHasLemmaPrefix",
+				Relationship.DocumentHasLemma.prefix()
+		);
+		staticValueMap.put(
+				"DocumentHasLemma",
+				Relationship.DocumentHasLemma.toString()
+		);
+		staticValueMap.put(
+				"SentenceInParagraphPrefix",
+				Relationship.SentenceInParagraph.prefix()
+		);
+		staticValueMap.put(
+				"SentenceInParagraph",
+				Relationship.SentenceInParagraph.toString()
+		);
+		staticValueMap.put(
+				"TokenInParagraphPrefix",
+				Relationship.TokenInParagraph.prefix()
+		);
+		staticValueMap.put(
+				"TokenInParagraph",
+				Relationship.TokenInParagraph.toString()
+		);
+		staticValueMap.put(
+				"TokenInSentencePrefix",
+				Relationship.TokenInSentence.prefix()
+		);
+		staticValueMap.put(
+				"TokenInSentence",
+				Relationship.TokenInSentence.toString()
+		);
+		staticValueMap.put(
+				"TokenHasLemmaPrefix",
+				Relationship.TokenHasLemma.prefix()
+		);
+		staticValueMap.put(
+				"TokenHasLemma",
+				Relationship.TokenHasLemma.toString()
+		);
+		staticValueMap.put(
+				"TokenAtPosPrefix",
+				Relationship.TokenAtPos.prefix()
+		);
+		staticValueMap.put(
+				"TokenAtPos",
+				Relationship.TokenAtPos.toString()
+		);
+		staticValueMap.put(
+				"NextParagraphPrefix",
+				Relationship.NextParagraph.prefix()
+		);
+		staticValueMap.put(
+				"NextParagraph",
+				Relationship.NextParagraph.toString()
+		);
+		staticValueMap.put(
+				"NextSentencePrefix",
+				Relationship.NextSentence.prefix()
+		);
+		staticValueMap.put(
+				"NextSentence",
+				Relationship.NextSentence.toString()
+		);
+		staticValueMap.put(
+				"NextTokenPrefix",
+				Relationship.NextToken.prefix()
+		);
+		staticValueMap.put(
+				"NextToken",
+				Relationship.NextToken.toString()
+		);
+	}
+
+	/**
+	 * Small utility for parsing values to fit in url schemes.
+	 * Use this whenever a value is used as part of an identifier.
+	 * Escapes ".", because Blazegraph can't handle dots in identifiers.
+	 * E.g. documentPrefix:parseValue(documentId)
+	 * or   posPrefix:parseValue(posValue).
+	 */
+	protected static String parseValue(String value)
+	{
+		try
+		{
+			return URLEncoder.encode(value, "UTF-8")
+					.replace(".", "\\.");
+
+			// UTF-8 is supported. Exception will not occur.
+		} catch (UnsupportedEncodingException e)
+		{
+			return null;
 		}
 	}
 
@@ -69,11 +327,13 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 					+ "?query=" + encodedQuery
 					+ "&format=json";
 
+			logger.log(Level.FINE, url);
+
 			return Jsoup.connect(url)
 					.timeout(0)
 					.maxBodySize(0);
 
-		// UTF-8 is supported. Exception will not occur.
+			// UTF-8 is supported. Exception will not occur.
 		} catch (UnsupportedEncodingException ignored)
 		{
 			return null;
@@ -93,7 +353,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 
 		return Jsoup.connect(url)
 				.requestBody(body)
-				.header("Content-Type", "application/sparql-update")
+				.header("Content-Type", "application/sparql-update;charset=UTF-8")
 				.timeout(0)
 				.maxBodySize(0);
 	}
@@ -133,16 +393,23 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		final String documentId = DocumentMetaData.get(document)
 				.getDocumentId();
 
-		final String turtle = "PREFIX document: <" + Prefix.Document.url() + ">\n"
+		final String queryTemplate = "${DocumentPrefix}\n"
 				+ "INSERT DATA {\n"
-				+ "document:" + documentId + " document:documentId \"" + documentId + "\" ;\n"
-				+ "                            document:text \"\"\"" + document.getDocumentText() + "\"\"\" ;\n"
-				+ "                            document:language \"" + document.getDocumentLanguage() + "\" .\n"
+				+ "${Document}:${DocumentId} ${Document}:text     \"\"\"${DocumentText}\"\"\" ;\n"
+				+ "                          ${Document}:language \"${DocumentLanguage}\" .\n"
 				+ "}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", parseValue(documentId));
+		valueMap.put("DocumentText", document.getDocumentText());
+		valueMap.put("DocumentLanguage", document.getDocumentLanguage());
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		logger.log(Level.FINE, query);
 
 		try
 		{
-			this.postConnection(turtle).post();
+			this.postConnection(query).post();
 		} catch (IOException e)
 		{
 			e.printStackTrace();
@@ -155,19 +422,148 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 	@Override
 	public String storeParagraph(Paragraph paragraph, String documentId, String previousParagraphId)
 	{
-		return null;
+		final String paragraphId = UUID.randomUUID().toString();
+
+		final String queryTemplate = "${DocumentPrefix}\n"
+				+ "${ParagraphPrefix}\n"
+				+ "${DocumentHasParagraphPrefix}\n"
+				+ "${NextParagraphPrefix}\n"
+				+ "INSERT DATA {\n"
+				+ "  ${Paragraph}:${ParagraphId} ${Paragraph}:begin       ${Begin} ;\n"
+				+ "                              ${Paragraph}:end         ${End} .\n"
+				+ "  ${Document}:${DocumentId}   ${DocumentHasParagraph}: ${Paragraph}:${ParagraphId} .\n"
+				+ ((previousParagraphId == null) ? "" : "  ${Paragraph}:${PreviousParagraphId}   ${NextParagraph}: ${Paragraph}:${ParagraphId} .\n")
+				+ "}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", parseValue(documentId));
+		valueMap.put("ParagraphId", parseValue(paragraphId));
+		if (previousParagraphId != null)
+		{
+			valueMap.put("PreviousParagraphId", parseValue(previousParagraphId));
+		}
+		valueMap.put("Begin", String.valueOf(paragraph.getBegin()));
+		valueMap.put("End", String.valueOf(paragraph.getEnd()));
+		final StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		logger.log(Level.FINE, query);
+
+		try
+		{
+			this.postConnection(query).post();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return paragraphId;
 	}
 
 	@Override
 	public String storeSentence(Sentence sentence, String documentId, String paragraphId, String previousSentenceId)
 	{
-		return null;
+		final String sentenceId = UUID.randomUUID().toString();
+
+		final String queryTemplate = "${DocumentPrefix}\n"
+				+ "${ParagraphPrefix}\n"
+				+ "${SentencePrefix}\n"
+				+ "${DocumentHasSentencePrefix}\n"
+				+ "${SentenceInParagraphPrefix}\n"
+				+ "${NextSentencePrefix}\n"
+				+ "INSERT DATA {\n"
+				+ "  ${Sentence}:${SentenceId}   ${Sentence}:begin       ${Begin} ;\n"
+				+ "                              ${Sentence}:end         ${End} .\n"
+				+ "  ${Document}:${DocumentId}   ${DocumentHasSentence}: ${Sentence}:${SentenceId} .\n"
+				+ "  ${Sentence}:${SentenceId}   ${SentenceInParagraph}: ${Paragraph}:${ParagraphId} .\n"
+				+ ((previousSentenceId == null) ? "" : "  ${Sentence}:${PreviousSentenceId}   ${NextSentence}: ${Sentence}:${SentenceId} .\n")
+				+ "}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", parseValue(documentId));
+		valueMap.put("ParagraphId", parseValue(paragraphId));
+		valueMap.put("SentenceId", parseValue(sentenceId));
+		if (previousSentenceId != null)
+		{
+			valueMap.put("PreviousSentenceId", parseValue(previousSentenceId));
+		}
+		valueMap.put("Begin", String.valueOf(sentence.getBegin()));
+		valueMap.put("End", String.valueOf(sentence.getEnd()));
+		final StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		logger.log(Level.FINE, query);
+
+		try
+		{
+			this.postConnection(query).post();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return sentenceId;
 	}
 
 	@Override
 	public String storeToken(Token token, String documentId, String paragraphId, String sentenceId, String previousTokenId)
 	{
-		return null;
+		final String tokenId = UUID.randomUUID().toString();
+
+		final String queryTemplate = "${DocumentPrefix}\n"
+				+ "${ParagraphPrefix}\n"
+				+ "${SentencePrefix}\n"
+				+ "${TokenPrefix}\n"
+				+ "${LemmaPrefix}\n"
+				+ "${PosPrefix}\n"
+				+ "${TokenInParagraphPrefix}\n"
+				+ "${TokenInSentencePrefix}\n"
+				+ "${NextTokenPrefix}\n"
+				+ "${DocumentHasTokenPrefix}\n"
+				+ "${DocumentHasLemmaPrefix}\n"
+				+ "${TokenHasLemmaPrefix}\n"
+				+ "${TokenAtPosPrefix}\n"
+				+ "INSERT DATA {\n"
+				+ "  ${Token}:${TokenId}       ${Token}:begin       ${Begin} ;\n"
+				+ "                            ${Token}:end         ${End} ;\n"
+				+ "                            ${Token}:value       \"${TokenValue}\" ;\n"
+				+ "                            ${TokenHasLemma}:    ${Lemma}:${LemmaValue} ;\n"
+				+ "                            ${TokenAtPos}:       ${Pos}:${PosValue} ;\n"
+				+ "                            ${TokenInParagraph}: ${Paragraph}:${ParagraphId} ;\n"
+				+ "                            ${TokenInSentence}:  ${Sentence}:${SentenceId} .\n"
+				+ ((previousTokenId == null) ? "" : "  ${Token}:${PreviousTokenId} ${NextToken}: ${Token}:${TokenId} .\n")
+				+ "  ${Document}:${DocumentId} ${DocumentHasToken}: ${Token}:${TokenId} ;\n"
+				+ "                            ${DocumentHasLemma}: ${Lemma}:${LemmaValue} .\n"
+				+ "}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", parseValue(documentId));
+		valueMap.put("ParagraphId", parseValue(paragraphId));
+		valueMap.put("SentenceId", parseValue(sentenceId));
+		valueMap.put("TokenId", parseValue(tokenId));
+		if (previousTokenId != null)
+		{
+			valueMap.put("PreviousTokenId", parseValue(previousTokenId));
+		}
+		valueMap.put("Begin", String.valueOf(token.getBegin()));
+		valueMap.put("End", String.valueOf(token.getEnd()));
+		valueMap.put("TokenValue", token.getLemma().getValue());
+		valueMap.put("LemmaValue", parseValue(token.getLemma().getValue()));
+		valueMap.put("PosValue", parseValue(token.getPos().getPosValue()));
+		final StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		logger.log(Level.FINE, query);
+
+		try
+		{
+			this.postConnection(query).post();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		return tokenId;
 	}
 
 	@Override
