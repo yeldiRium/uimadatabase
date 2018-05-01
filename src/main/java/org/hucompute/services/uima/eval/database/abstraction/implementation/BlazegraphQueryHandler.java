@@ -13,6 +13,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
+import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
 import org.hucompute.services.uima.eval.database.abstraction.ElementType;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.DocumentNotFoundException;
@@ -22,11 +23,14 @@ import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotC
 import org.hucompute.services.uima.eval.database.connection.Connections;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.neo4j.driver.internal.util.Iterables;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -399,19 +403,50 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 	}
 
 	/**
+	 * Escapes dots per default.
+	 */
+	protected static String encodeValue(String value)
+	{
+		return encodeValue(value, true);
+	}
+
+	/**
 	 * Small utility for parsing values to fit in url schemes.
 	 * Use this whenever a value is used as part of an identifier.
-	 * E.g. documentPrefix:parseValue(documentId)
-	 * or   posPrefix:parseValue(posValue).
+	 * E.g. documentPrefix:encodeValue(documentId)
+	 * or   posPrefix:encodeValue(posValue).
 	 * <p>
-	 * Escapes ".", because Blazegraph can't handle dots in identifiers.
+	 * Escapes "." if told to, because Blazegraph can't handle dots in identifi-
+	 * ers.
 	 */
-	protected static String parseValue(String value)
+	protected static String encodeValue(String value, Boolean escapeDot)
 	{
 		try
 		{
-			return URLEncoder.encode(value, "UTF-8")
-					.replace(".", "\\.");
+			String encoded = URLEncoder.encode(value, "UTF-8");
+			if (escapeDot)
+			{
+				return encoded.replace(".", "\\.");
+			} else
+			{
+				return encoded;
+			}
+
+			// UTF-8 is supported. Exception will not occur.
+		} catch (UnsupportedEncodingException e)
+		{
+			return null;
+		}
+	}
+
+	protected static String decodeValue(String value)
+	{
+		try
+		{
+			return URLDecoder.decode(
+					value.replace("\\.", "."),
+					"UTF-8"
+			);
 
 			// UTF-8 is supported. Exception will not occur.
 		} catch (UnsupportedEncodingException e)
@@ -549,7 +584,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				+ "                          ${Language}: \"${DocumentLanguage}\" .\n"
 				+ "}";
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
-		valueMap.put("DocumentId", parseValue(documentId));
+		valueMap.put("DocumentId", encodeValue(documentId));
 		valueMap.put("DocumentText", document.getDocumentText());
 		valueMap.put("DocumentLanguage", document.getDocumentLanguage());
 		StrSubstitutor sub = new StrSubstitutor(valueMap);
@@ -577,11 +612,11 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				+ ((previousParagraphId == null) ? "" : "  ${Paragraph}:${PreviousParagraphId}   ${NextParagraph}: ${Paragraph}:${ParagraphId} .\n")
 				+ "}";
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
-		valueMap.put("DocumentId", parseValue(documentId));
-		valueMap.put("ParagraphId", parseValue(paragraphId));
+		valueMap.put("DocumentId", encodeValue(documentId));
+		valueMap.put("ParagraphId", encodeValue(paragraphId));
 		if (previousParagraphId != null)
 		{
-			valueMap.put("PreviousParagraphId", parseValue(previousParagraphId));
+			valueMap.put("PreviousParagraphId", encodeValue(previousParagraphId));
 		}
 		valueMap.put("BeginValue", String.valueOf(paragraph.getBegin()));
 		valueMap.put("EndValue", String.valueOf(paragraph.getEnd()));
@@ -613,12 +648,12 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				+ ((previousSentenceId == null) ? "" : "  ${Sentence}:${PreviousSentenceId}   ${NextSentence}: ${Sentence}:${SentenceId} .\n")
 				+ "}";
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
-		valueMap.put("DocumentId", parseValue(documentId));
-		valueMap.put("ParagraphId", parseValue(paragraphId));
-		valueMap.put("SentenceId", parseValue(sentenceId));
+		valueMap.put("DocumentId", encodeValue(documentId));
+		valueMap.put("ParagraphId", encodeValue(paragraphId));
+		valueMap.put("SentenceId", encodeValue(sentenceId));
 		if (previousSentenceId != null)
 		{
-			valueMap.put("PreviousSentenceId", parseValue(previousSentenceId));
+			valueMap.put("PreviousSentenceId", encodeValue(previousSentenceId));
 		}
 		valueMap.put("BeginValue", String.valueOf(sentence.getBegin()));
 		valueMap.put("EndValue", String.valueOf(sentence.getEnd()));
@@ -665,20 +700,20 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				+ "                            ${DocumentHasLemma}: ${Lemma}:${LemmaValue} .\n"
 				+ "}";
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
-		valueMap.put("DocumentId", parseValue(documentId));
-		valueMap.put("ParagraphId", parseValue(paragraphId));
-		valueMap.put("SentenceId", parseValue(sentenceId));
-		valueMap.put("TokenId", parseValue(tokenId));
+		valueMap.put("DocumentId", encodeValue(documentId));
+		valueMap.put("ParagraphId", encodeValue(paragraphId));
+		valueMap.put("SentenceId", encodeValue(sentenceId));
+		valueMap.put("TokenId", encodeValue(tokenId));
 		if (previousTokenId != null)
 		{
-			valueMap.put("PreviousTokenId", parseValue(previousTokenId));
+			valueMap.put("PreviousTokenId", encodeValue(previousTokenId));
 		}
 		valueMap.put("BeginValue", String.valueOf(token.getBegin()));
 		valueMap.put("EndValue", String.valueOf(token.getEnd()));
 		valueMap.put("TokenValue", token.getLemma().getValue());
-		valueMap.put("LemmaValue", parseValue(token.getLemma().getValue()));
+		valueMap.put("LemmaValue", encodeValue(token.getLemma().getValue()));
 		valueMap.put("TokenPosValue", token.getPos().getPosValue());
-		valueMap.put("PosId", parseValue(token.getPos().getPosValue()));
+		valueMap.put("PosId", encodeValue(token.getPos().getPosValue()));
 		final StrSubstitutor sub = new StrSubstitutor(valueMap);
 		final String query = sub.replace(queryTemplate);
 
@@ -747,7 +782,37 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 	@Override
 	public Set<String> getLemmataForDocument(String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+
+		Set<String> lemmata = new ConcurrentHashSet<>();
+
+		final String queryTemplate = "${DocumentPrefix}\n"
+				+ "${DocumentHasLemmaPrefix}\n"
+				+ "SELECT ?lemma\n"
+				+ "WHERE {\n"
+				+ "  ${Document}:${DocumentId} ${DocumentHasLemma}: ?lemma\n"
+				+ "}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", documentId);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		StreamSupport.stream(result.spliterator(), true)
+				.forEach(elem -> {
+					String lemmaUrl = ((JSONObject) elem)
+							.getJSONObject("lemma")
+							.getString("value");
+
+					lemmata.add(
+							decodeValue(getIdFromUrl(lemmaUrl))
+					);
+				});
+
+		return lemmata;
 	}
 
 	@Override
@@ -755,27 +820,27 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 	{
 		this.checkIfDocumentExists(documentId);
 
-		final String queryTemplate = "${DocumentPrefix}\n" +
-				"${ParagraphPrefix}\n" +
-				"${SentencePrefix}\n" +
-				"${BeginPrefix}\n" +
-				"${EndPrefix}\n" +
-				"${ValuePrefix}\n" +
-				"${PosValuePrefix}\n" +
-				"${TextPrefix}\n" +
-				"${LanguagePrefix}\n" +
-				"SELECT *\n" +
-				"WHERE {\n" +
-				"  ${Document}:${DocumentId} ?type ?target .\n" +
-				"  OPTIONAL {\n" +
-				"    ?target ${Begin}: ?begin .\n" +
-				"    ?target ${End}: ?end\n" +
-				"  } OPTIONAL {\n" +
-				"    ?target ${Value}: ?value\n" +
-				"  } OPTIONAL {\n" +
-				"    ?target ${PosValue}: ?posValue\n" +
-				"  }\n" +
-				"}";
+		final String queryTemplate = "${DocumentPrefix}\n"
+				+ "${ParagraphPrefix}\n"
+				+ "${SentencePrefix}\n"
+				+ "${BeginPrefix}\n"
+				+ "${EndPrefix}\n"
+				+ "${ValuePrefix}\n"
+				+ "${PosValuePrefix}\n"
+				+ "${TextPrefix}\n"
+				+ "${LanguagePrefix}\n"
+				+ "SELECT *\n"
+				+ "WHERE {\n"
+				+ "  ${Document}:${DocumentId} ?type ?target .\n"
+				+ "  OPTIONAL {\n"
+				+ "    ?target ${Begin}: ?begin .\n"
+				+ "    ?target ${End}: ?end\n"
+				+ "  } OPTIONAL {\n"
+				+ "    ?target ${Value}: ?value\n"
+				+ "  } OPTIONAL {\n"
+				+ "    ?target ${PosValue}: ?posValue\n"
+				+ "  }\n"
+				+ "}";
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
 		valueMap.put("DocumentId", documentId);
 		StrSubstitutor sub = new StrSubstitutor(valueMap);
@@ -853,37 +918,319 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countDocumentsContainingLemma(String lemma)
 	{
-		return 0;
+		final String queryTemplate = "${LemmaPrefix}\n" +
+				"${DocumentHasLemmaPrefix}\n" +
+				"SELECT (count(distinct ?document) as ?count)\n" +
+				"WHERE {\n" +
+				" ?document ${DocumentHasLemma}: ${Lemma}:${LemmaValue}\n" +
+				"}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("LemmaValue", encodeValue(lemma));
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		return Integer.valueOf(
+				result.getJSONObject(0).getJSONObject("count").getString("value")
+		);
 	}
 
 	@Override
-	public int countElementsOfType(ElementType type) throws TypeNotCountableException
+	public int countElementsOfType(ElementType type)
 	{
-		return 0;
+		String queryTemplate = null;
+		switch (type)
+		{
+			case Document:
+				return Iterables.count(this.getDocumentIds());
+			case Paragraph:
+				queryTemplate = "${ParagraphPrefix}\n"
+						+ "${DocumentHasParagraphPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ?x ${DocumentHasParagraph}: ?elem\n"
+						+ "  FILTER (strstarts(str(?elem), str(${Paragraph}:)))\n"
+						+ "}";
+				break;
+			case Sentence:
+				queryTemplate = "${SentencePrefix}\n"
+						+ "${DocumentHasSentencePrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ?x ${DocumentHasSentence}: ?elem\n"
+						+ "}";
+				break;
+			case Token:
+				queryTemplate = "${TokenPrefix}\n"
+						+ "${DocumentHasTokenPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ?x ${DocumentHasToken}: ?elem\n"
+						+ "}";
+				break;
+			case Lemma:
+				queryTemplate = "${LemmaPrefix}\n"
+						+ "${DocumentHasLemmaPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ?x ${DocumentHasLemma}: ?elem\n"
+						+ "}";
+				break;
+			case Pos:
+				queryTemplate = "${PosPrefix}\n"
+						+ "${TokenAtPosPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ?x ${TokenAtPos}: ?elem\n"
+						+ "}";
+				break;
+		}
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		return Integer.valueOf(
+				result.getJSONObject(0)
+						.getJSONObject("count")
+						.getString("value")
+		);
 	}
 
 	@Override
 	public int countElementsInDocumentOfType(String documentId, ElementType type) throws DocumentNotFoundException, TypeNotCountableException
 	{
-		return 0;
+		this.checkIfDocumentExists(documentId);
+
+		String queryTemplate = null;
+		switch (type)
+		{
+			case Document:
+				return Iterables.count(this.getDocumentIds());
+			case Paragraph:
+				queryTemplate = "${DocumentPrefix}\n"
+						+ "${ParagraphPrefix}\n"
+						+ "${DocumentHasParagraphPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ${Document}:${DocumentId} ${DocumentHasParagraph}: ?elem\n"
+						+ "}";
+				break;
+			case Sentence:
+				queryTemplate = "${DocumentPrefix}\n"
+						+ "${SentencePrefix}\n"
+						+ "${DocumentHasSentencePrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ${Document}:${DocumentId} ${DocumentHasSentence}: ?elem\n"
+						+ "}";
+				break;
+			case Token:
+				queryTemplate = "${DocumentPrefix}\n"
+						+ "${TokenPrefix}\n"
+						+ "${DocumentHasTokenPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ${Document}:${DocumentId} ${DocumentHasToken}: ?elem\n"
+						+ "}";
+				break;
+			case Lemma:
+				queryTemplate = "${DocumentPrefix}\n"
+						+ "${LemmaPrefix}\n"
+						+ "${DocumentHasLemmaPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ${Document}:${DocumentId} ${DocumentHasLemma}: ?elem\n"
+						+ "}";
+				break;
+			case Pos:
+				queryTemplate = "${DocumentPrefix}\n"
+						+ "${PosPrefix}\n"
+						+ "${TokenAtPosPrefix}\n"
+						+ "${DocumentHasTokenPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ${Document}:${DocumentId} ${DocumentHasToken} ?token ."
+						+ "  ?token ${TokenAtPos}: ?elem\n"
+						+ "}";
+				break;
+		}
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", documentId);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		return Integer.valueOf(
+				result.getJSONObject(0)
+						.getJSONObject("count")
+						.getString("value")
+		);
 	}
 
 	@Override
 	public int countElementsOfTypeWithValue(ElementType type, String value) throws TypeNotCountableException, TypeHasNoValueException
 	{
-		return 0;
+		this.checkTypeHasValueField(type);
+		String queryTemplate;
+		switch (type)
+		{
+			case Token:
+				queryTemplate = "${TokenPrefix}\n"
+						+ "${ValuePrefix}\n"
+						+ "${DocumentHasTokenPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ?x ${DocumentHasToken}: ?elem .\n"
+						+ "  ?elem ${Value}: \"${ValueString}\""
+						+ "}";
+				break;
+			case Lemma:
+				queryTemplate = "${LemmaPrefix}\n"
+						+ "${ValuePrefix}\n"
+						+ "${DocumentHasLemmaPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ?x ${DocumentHasLemma}: ?elem\n"
+						+ "  FILTER strends(str(?elem), \"${EncodedValueString}\")\n"
+						+ "}";
+				break;
+			case Pos:
+				queryTemplate = "${PosPrefix}\n"
+						+ "${ValuePrefix}\n"
+						+ "${TokenAtPosPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ?x ${TokenAtPos}: ?elem\n"
+						+ "  FILTER strends(str(?elem), \"${EncodedValueString}\")\n"
+						+ "}";
+				break;
+			// cases without value
+			default:
+				return 0;
+		}
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("ValueString", value);
+		valueMap.put("EncodedValueString", encodeValue(value, false));
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		return Integer.valueOf(
+				result.getJSONObject(0)
+						.getJSONObject("count")
+						.getString("value")
+		);
 	}
 
 	@Override
 	public int countElementsInDocumentOfTypeWithValue(String documentId, ElementType type, String value) throws DocumentNotFoundException, TypeNotCountableException, TypeHasNoValueException
 	{
-		return 0;
+		this.checkIfDocumentExists(documentId);
+		this.checkTypeHasValueField(type);
+
+		String queryTemplate;
+		switch (type)
+		{
+			case Token:
+				queryTemplate = "${DocumentPrefix}\n"
+						+ "${ValuePrefix}\n"
+						+ "${DocumentHasTokenPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ${Document}:${DocumentId} ${DocumentHasToken}: ?elem .\n"
+						+ "  ?elem ${Value}: \"${ValueString}\""
+						+ "}";
+				break;
+			case Lemma:
+				queryTemplate = "${DocumentPrefix}\n"
+						+ "${ValuePrefix}\n"
+						+ "${DocumentHasLemmaPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ${Document}:${DocumentId} ${DocumentHasLemma}: ?elem\n"
+						+ "  FILTER strends(str(?elem), \"${EncodedValueString}\")\n"
+						+ "}";
+				break;
+			case Pos:
+				queryTemplate = "${DocumentPrefix}\n"
+						+ "${ValuePrefix}\n"
+						+ "${TokenAtPosPrefix}\n"
+						+ "SELECT (count(distinct ?elem) as ?count)\n"
+						+ "WHERE {\n"
+						+ "  ${Document}:${DocumentId} ${DocumentHasToken} ?token ."
+						+ "  ?token ${TokenAtPos}: ?elem\n"
+						+ "  FILTER strends(str(?elem), \"${EncodedValueString}\")\n"
+						+ "}";
+				break;
+			// cases without value
+			default:
+				return 0;
+		}
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", documentId);
+		valueMap.put("ValueString", value);
+		valueMap.put("EncodedValueString", encodeValue(value, false));
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		return Integer.valueOf(
+				result.getJSONObject(0)
+						.getJSONObject("count")
+						.getString("value")
+		);
 	}
 
 	@Override
 	public Map<String, Integer> countOccurencesForEachLemmaInAllDocuments()
 	{
-		return null;
+		Map<String, Integer> occurenceMap = new ConcurrentHashMap<>();
+
+		final String queryTemplate = "${TokenHasLemmaPrefix}\n"
+				+ "${DocumentHasTokenPrefix}\n"
+				+ "SELECT ?lemma (count(*) as ?count)\n"
+				+ "WHERE {\n"
+				+ "  ?document ${DocumentHasToken}: ?token .\n"
+				+ "  ?token ${TokenHasLemma}: ?lemma\n"
+				+ "}\n"
+				+ "GROUP BY ?lemma";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		StreamSupport.stream(result.spliterator(), true)
+				.forEach(row -> {
+					occurenceMap.put(
+							decodeValue(
+									getIdFromUrl(
+											((JSONObject) row).getJSONObject("lemma").getString("value")
+									)
+							),
+							Integer.valueOf(((JSONObject) row).getJSONObject("count").getString("value"))
+					);
+				});
+
+		return occurenceMap;
 	}
 
 	@Override
