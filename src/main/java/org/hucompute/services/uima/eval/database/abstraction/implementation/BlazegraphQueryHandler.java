@@ -918,14 +918,16 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 	@Override
 	public int countDocumentsContainingLemma(String lemma)
 	{
-		final String queryTemplate = "${LemmaPrefix}\n" +
-				"${DocumentHasLemmaPrefix}\n" +
+		final String queryTemplate = "${DocumentHasLemmaPrefix}\n" +
 				"SELECT (count(distinct ?document) as ?count)\n" +
 				"WHERE {\n" +
-				" ?document ${DocumentHasLemma}: ${Lemma}:${LemmaValue}\n" +
+				" ?document ${DocumentHasLemma}: <${LemmaUrl}${LemmaValue}>\n" +
 				"}";
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
-		valueMap.put("LemmaValue", encodeValue(lemma));
+		// Somehow can't find Lemmata when using prefix. Probably because of the
+		// URL encoding.
+		valueMap.put("LemmaUrl", Model.Lemma.url());
+		valueMap.put("LemmaValue", encodeValue(lemma, false));
 		StrSubstitutor sub = new StrSubstitutor(valueMap);
 		final String query = sub.replace(queryTemplate);
 
@@ -1221,11 +1223,9 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		StreamSupport.stream(result.spliterator(), true)
 				.forEach(row -> {
 					occurenceMap.put(
-							decodeValue(
-									getIdFromUrl(
-											((JSONObject) row).getJSONObject("lemma").getString("value")
-									)
-							),
+							decodeValue(getIdFromUrl(
+									((JSONObject) row).getJSONObject("lemma").getString("value")
+							)),
 							Integer.valueOf(((JSONObject) row).getJSONObject("count").getString("value"))
 					);
 				});
@@ -1236,66 +1236,450 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 	@Override
 	public Map<String, Double> calculateTTRForAllDocuments()
 	{
-		return null;
+		Map<String, Double> ttrMap = new ConcurrentHashMap<>();
+
+		final String queryTemplate = "${DocumentHasLemmaPrefix}\n"
+				+ "${DocumentHasTokenPrefix}\n"
+				+ "SELECT ?document ((count(?lemma)/(count(?token))) as ?ttr)\n"
+				+ "WHERE {\n"
+				+ "  { ?document documentHasToken: ?token }\n"
+				+ "  UNION\n"
+				+ "  { ?document documentHasLemma: ?lemma }\n"
+				+ "}\n"
+				+ "GROUP BY ?document";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		StreamSupport.stream(result.spliterator(), true)
+				.forEach(obj -> {
+					JSONObject row = (JSONObject) obj;
+					ttrMap.put(
+							getIdFromUrl(
+									row.getJSONObject("document").getString("value")
+							),
+							Double.valueOf(row.getJSONObject("ttr").getString("value"))
+					);
+				});
+
+		return ttrMap;
 	}
 
 	@Override
 	public Double calculateTTRForDocument(String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+
+		final String queryTemplate = "${DocumentPrefix}\n"
+				+ "${DocumentHasLemmaPrefix}\n"
+				+ "${DocumentHasTokenPrefix}\n"
+				+ "SELECT ((count(?lemma)/(count(?token))) as ?ttr)\n"
+				+ "WHERE {\n"
+				+ "  { ${Document}:${DocumentId} documentHasToken: ?token }\n"
+				+ "  UNION\n"
+				+ "  { ${Document}:${DocumentId} documentHasLemma: ?lemma }\n"
+				+ "}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", documentId);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		return Double.valueOf(
+				result.getJSONObject(0)
+						.getJSONObject("ttr")
+						.getString("value")
+		);
 	}
 
 	@Override
 	public Map<String, Double> calculateTTRForCollectionOfDocuments(Collection<String> documentIds)
 	{
-		return null;
+		Map<String, Double> ttrMap = new ConcurrentHashMap<>();
+
+		final StringBuilder builder = new StringBuilder();
+		builder.append(
+				"${DocumentPrefix}\n"
+						+ "${DocumentHasLemmaPrefix}\n"
+						+ "${DocumentHasTokenPrefix}\n"
+						+ "SELECT ?document ((count(?lemma)/(count(?token))) as ?ttr)\n"
+						+ "WHERE {\n"
+		);
+		for (String documentId : documentIds)
+		{
+			builder.append("  { \n" +
+					"    document:" + documentId + " documentHasToken: ?token .\n" +
+					"    ?document documentHasToken: ?token\n" +
+					"  }\n" +
+					"  UNION\n" +
+					"  { \n" +
+					"    document:" + documentId + " documentHasLemma: ?lemma .\n" +
+					"    ?document documentHasLemma: ?lemma\n" +
+					"  }");
+		}
+		builder.append(
+				"}\n"
+						+ "GROUP BY ?document\n"
+						+ "HAVING (?ttr > 0)"
+		);
+
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(builder.toString());
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		StreamSupport.stream(result.spliterator(), true)
+				.forEach(obj -> {
+					JSONObject row = (JSONObject) obj;
+					ttrMap.put(
+							getIdFromUrl(
+									row.getJSONObject("document").getString("value")
+							),
+							Double.valueOf(row.getJSONObject("ttr").getString("value"))
+					);
+				});
+
+		return ttrMap;
 	}
 
 	@Override
 	public Map<String, Integer> calculateRawTermFrequenciesInDocument(String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+
+		Map<String, Integer> frequencyMap = new ConcurrentHashMap<>();
+
+		final String queryTemplate = "${DocumentPrefix}\n"
+				+ "${DocumentHasTokenPrefix}\n"
+				+ "${TokenHasLemmaPrefix}\n"
+				+ "SELECT ?lemma (count(*) as ?occurences)\n"
+				+ "WHERE {\n"
+				+ "  ${Document}:${DocumentId} ${DocumentHasToken}: ?token .\n"
+				+ "  ?token ${TokenHasLemma}: ?lemma\n"
+				+ "}\n"
+				+ "GROUP BY ?lemma";
+
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", documentId);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		StreamSupport.stream(result.spliterator(), true)
+				.forEach(obj -> {
+					JSONObject row = (JSONObject) obj;
+					frequencyMap.put(
+							decodeValue(getIdFromUrl(
+									row.getJSONObject("lemma").getString("value")
+							)),
+							Integer.valueOf(row.getJSONObject("occurences").getString("value"))
+					);
+				});
+
+		return frequencyMap;
 	}
 
 	@Override
 	public Integer calculateRawTermFrequencyForLemmaInDocument(String lemma, String documentId) throws DocumentNotFoundException
 	{
-		return null;
+		this.checkIfDocumentExists(documentId);
+
+		final String queryTemplate = "${DocumentPrefix}\n"
+				+ "${LemmaPrefix}\n"
+				+ "${DocumentHasTokenPrefix}\n"
+				+ "${TokenHasLemmaPrefix}\n"
+				+ "SELECT (count(*) as ?count)\n"
+				+ "WHERE {\n"
+				+ "  ${Document}:${DocumentId} ${DocumentHasToken}: ?token .\n"
+				+ "  ?token ${TokenHasLemma}: ${Lemma}:${LemmaValue}\n"
+				+ "}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", documentId);
+		valueMap.put("LemmaValue", encodeValue(lemma));
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		return Integer.valueOf(
+				result.getJSONObject(0)
+						.getJSONObject("count")
+						.getString("value")
+		);
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromDocument(String documentId) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		List<String> biGrams = new ArrayList<>();
+
+		final String queryTemplate = "${DocumentPrefix}\n"
+				+ "${DocumentHasTokenPrefix}\n"
+				+ "${NextTokenPrefix}\n"
+				+ "${ValuePrefix}\n"
+				+ "SELECT ?v1 ?v2\n"
+				+ "WHERE {\n"
+				+ "  ${Document}:${DocumentId} ${DocumentHasToken}: ?t1 ."
+				+ "  ?t1 ${NextToken}: ?t2 .\n"
+				+ "  ?t1 ${Value}: ?v1 .\n"
+				+ "  ?t2 ${Value}: ?v2 .\n"
+				+ "}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", documentId);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		StreamSupport.stream(result.spliterator(), false)
+				.forEach(obj -> {
+					JSONObject row = (JSONObject) obj;
+					biGrams.add(
+							row.getJSONObject("v1").getString("value")
+							+ "-"
+							+ row.getJSONObject("v2").getString("value")
+					);
+				});
+
+		return biGrams;
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromAllDocuments() throws UnsupportedOperationException
 	{
-		return null;
+		List<String> biGrams = new ArrayList<>();
+
+		final String queryTemplate = "${NextTokenPrefix}\n"
+				+ "${ValuePrefix}\n"
+				+ "SELECT ?v1 ?v2\n"
+				+ "WHERE {\n"
+				+ "  ?t1 ${NextToken}: ?t2 .\n"
+				+ "  ?t1 ${Value}: ?v1 .\n"
+				+ "  ?t2 ${Value}: ?v2 .\n"
+				+ "}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		StreamSupport.stream(result.spliterator(), false)
+				.forEach(obj -> {
+					JSONObject row = (JSONObject) obj;
+					biGrams.add(
+							row.getJSONObject("v1").getString("value")
+							+ "-"
+							+ row.getJSONObject("v2").getString("value")
+					);
+				});
+
+		return biGrams;
 	}
 
 	@Override
 	public Iterable<String> getBiGramsFromDocumentsInCollection(Collection<String> documentIds) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		List<String> biGrams = new ArrayList<>();
+
+		final StringBuilder builder = new StringBuilder();
+		builder.append("${DocumentPrefix}\n"
+				+ "${DocumentHasTokenPrefix}\n"
+				+ "${NextTokenPrefix}\n"
+				+ "${ValuePrefix}\n"
+				+ "SELECT ?v1 ?v2\n"
+				+ "WHERE {\n");
+
+		for (Iterator<String> iterator = documentIds.iterator(); iterator.hasNext(); )
+		{
+			String documentId = iterator.next();
+			if (iterator.hasNext())
+			{
+				builder.append("  {"
+						+ "    ${Document}:" + documentId + " ${DocumentHasToken}: ?t1"
+						+ "  } UNION");
+			} else {
+				builder.append("  {"
+						+ "    ${Document}:" + documentId + " ${DocumentHasToken}: ?t1"
+						+ "  }");
+			}
+		}
+		builder.append("  ?t1 ${NextToken}: ?t2 .\n"
+				+ "  ?t1 ${Value}: ?v1 .\n"
+				+ "  ?t2 ${Value}: ?v2 .\n"
+				+ "}");
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(builder.toString());
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		StreamSupport.stream(result.spliterator(), false)
+				.forEach(obj -> {
+					JSONObject row = (JSONObject) obj;
+					biGrams.add(
+							row.getJSONObject("v1").getString("value")
+							+ "-"
+							+ row.getJSONObject("v2").getString("value")
+					);
+				});
+
+		return biGrams;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromDocument(String documentId) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		List<String> triGrams = new ArrayList<>();
+
+		final String queryTemplate = "${DocumentPrefix}\n"
+				+ "${DocumentHasTokenPrefix}\n"
+				+ "${NextTokenPrefix}\n"
+				+ "${ValuePrefix}\n"
+				+ "SELECT ?v1 ?v2 ?v3\n"
+				+ "WHERE {\n"
+				+ "  ${Document}:${DocumentId} ${DocumentHasToken}: ?t1 ."
+				+ "  ?t1 ${NextToken}: ?t2 .\n"
+				+ "  ?t2 ${NextToken}: ?t3 .\n"
+				+ "  ?t1 ${Value}: ?v1 .\n"
+				+ "  ?t2 ${Value}: ?v2 .\n"
+				+ "  ?t3 ${Value}: ?v3 .\n"
+				+ "}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", documentId);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		StreamSupport.stream(result.spliterator(), false)
+				.forEach(obj -> {
+					JSONObject row = (JSONObject) obj;
+					triGrams.add(
+							row.getJSONObject("v1").getString("value")
+							+ "-"
+							+ row.getJSONObject("v2").getString("value")
+							+ "-"
+							+ row.getJSONObject("v3").getString("value")
+					);
+				});
+
+		return triGrams;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromAllDocuments() throws UnsupportedOperationException
 	{
-		return null;
+		List<String> triGrams = new ArrayList<>();
+
+		final String queryTemplate = "${NextTokenPrefix}\n"
+				+ "${ValuePrefix}\n"
+				+ "SELECT ?v1 ?v2 ?v3\n"
+				+ "WHERE {\n"
+				+ "  ?t1 ${NextToken}: ?t2 .\n"
+				+ "  ?t2 ${NextToken}: ?t3 .\n"
+				+ "  ?t1 ${Value}: ?v1 .\n"
+				+ "  ?t2 ${Value}: ?v2 .\n"
+				+ "  ?t3 ${Value}: ?v3 .\n"
+				+ "}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		StreamSupport.stream(result.spliterator(), false)
+				.forEach(obj -> {
+					JSONObject row = (JSONObject) obj;
+					triGrams.add(
+							row.getJSONObject("v1").getString("value")
+							+ "-"
+							+ row.getJSONObject("v2").getString("value")
+							+ "-"
+							+ row.getJSONObject("v3").getString("value")
+					);
+				});
+
+		return triGrams;
 	}
 
 	@Override
 	public Iterable<String> getTriGramsFromDocumentsInCollection(Collection<String> documentIds) throws UnsupportedOperationException, DocumentNotFoundException
 	{
-		return null;
+		List<String> triGrams = new ArrayList<>();
+
+		final StringBuilder builder = new StringBuilder();
+		builder.append("${DocumentPrefix}\n"
+				+ "${DocumentHasTokenPrefix}\n"
+				+ "${NextTokenPrefix}\n"
+				+ "${ValuePrefix}\n"
+				+ "SELECT ?v1 ?v2 ?v3\n"
+				+ "WHERE {\n");
+
+		for (Iterator<String> iterator = documentIds.iterator(); iterator.hasNext(); )
+		{
+			String documentId = iterator.next();
+			if (iterator.hasNext())
+			{
+				builder.append("  {"
+						+ "    ${Document}:" + documentId + " ${DocumentHasToken}: ?t1"
+						+ "  } UNION");
+			} else {
+				builder.append("  {"
+						+ "    ${Document}:" + documentId + " ${DocumentHasToken}: ?t1"
+						+ "  }");
+			}
+		}
+		builder.append("  ?t1 ${NextToken}: ?t2 .\n"
+				+ "  ?t2 ${NextToken}: ?t3 .\n"
+				+ "  ?t1 ${Value}: ?v1 .\n"
+				+ "  ?t2 ${Value}: ?v2 .\n"
+				+ "  ?t3 ${Value}: ?v3 .\n"
+				+ "}");
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(builder.toString());
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		StreamSupport.stream(result.spliterator(), false)
+				.forEach(obj -> {
+					JSONObject row = (JSONObject) obj;
+					triGrams.add(
+							row.getJSONObject("v1").getString("value")
+							+ "-"
+							+ row.getJSONObject("v2").getString("value")
+							+ "-"
+							+ row.getJSONObject("v3").getString("value")
+					);
+				});
+
+		return triGrams;
 	}
 }
