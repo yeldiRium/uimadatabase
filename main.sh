@@ -15,7 +15,7 @@ then
 fi
 
 java -jar target.jar evaluate -e write -d Blazegraph
-#java -jar target.jar evaluate -e read -d Blazegraph
+java -jar target.jar evaluate -e read -d Blazegraph
 #java -jar target.jar evaluate -e query -d Blazegraph
 #java -jar target.jar evaluate -e calculate -d Blazegraph
 #java -jar target.jar evaluate -e complex-query -d Blazegraph

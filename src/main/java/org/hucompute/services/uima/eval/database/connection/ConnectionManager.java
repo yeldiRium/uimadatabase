@@ -89,7 +89,7 @@ public class ConnectionManager
 					connections.put(cls, connectionFuture);
 				}
 			}
-			// get the Futures' responses in a second loop, so all of them are started before
+			// sendGetRequest the Futures' responses in a second loop, so all of them are started before
 			// the first blocking execution.
 			for (Class<? extends Connection> cls : connectionRequest.getRequestedConnections())
 			{

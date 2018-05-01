@@ -803,7 +803,7 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	/**
 	 * For each Document join the Tokens and the tokenLemmaMap.
 	 * Then the amount of rows for each Document is the amount of Lemma
-	 * occurences. To get the amount of different Token values, they have to be
+	 * occurences. To sendGetRequest the amount of different Token values, they have to be
 	 * counted distinctly.
 	 *
 	 * @return Map(String DocumentId, Double TTR - value)
@@ -840,7 +840,7 @@ public class MySQLQueryHandler extends AbstractQueryHandler
 	/**
 	 * See #calculateTTRForAllDocuments for SQL explanation.
 	 *
-	 * @param documentId The id of the document to get the TTR from.
+	 * @param documentId The id of the document to sendGetRequest the TTR from.
 	 * @return Map(String DocumentId, Double TTR - value)
 	 * @throws DocumentNotFoundException
 	 */

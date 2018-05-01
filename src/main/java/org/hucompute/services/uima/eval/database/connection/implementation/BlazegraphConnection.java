@@ -1,7 +1,7 @@
 package org.hucompute.services.uima.eval.database.connection.implementation;
 
+import org.apache.http.client.fluent.Request;
 import org.hucompute.services.uima.eval.database.connection.Connection;
-import org.jsoup.Jsoup;
 
 import java.io.IOException;
 
@@ -21,7 +21,11 @@ public class BlazegraphConnection extends Connection
 		try
 		{
 			// Just to test, if the server responds.
-			Jsoup.connect(this.rootEndpoint + "/bigdata/sparql").get();
+			Request.Get(this.rootEndpoint + "/bigdata/sparql")
+					.addHeader("Accept", "application/sparql-results+json")
+					.execute()
+					.returnContent()
+					.asString();
 			return true;
 		} catch (IOException e)
 		{

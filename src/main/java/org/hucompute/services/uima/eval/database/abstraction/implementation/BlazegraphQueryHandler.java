@@ -1,12 +1,17 @@
 package org.hucompute.services.uima.eval.database.abstraction.implementation;
 
 import com.google.common.collect.Maps;
+import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.metadata.type.DocumentMetaData;
+import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Lemma;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.entity.ContentType;
 import org.apache.uima.cas.CAS;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.hucompute.services.uima.eval.database.abstraction.AbstractQueryHandler;
 import org.hucompute.services.uima.eval.database.abstraction.ElementType;
@@ -15,16 +20,15 @@ import org.hucompute.services.uima.eval.database.abstraction.exceptions.QHExcept
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasNoValueException;
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 import org.hucompute.services.uima.eval.database.connection.Connections;
+import org.json.JSONArray;
 import org.json.JSONObject;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class BlazegraphQueryHandler extends AbstractQueryHandler
 {
@@ -69,6 +73,11 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		public String toString()
 		{
 			return this.name;
+		}
+
+		public String url()
+		{
+			return this.url;
 		}
 	}
 
@@ -129,6 +138,58 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		public String toString()
 		{
 			return this.name;
+		}
+
+		public String url()
+		{
+			return this.url;
+		}
+	}
+
+	public enum Property
+	{
+		Begin(
+				"begin", "http://hucompute.org/TextImager/Property/Begin"
+		),
+		End(
+				"end", "http://hucompute.org/TextImager/Property/End"
+		),
+		Value(
+				"value", "http://hucompute.org/TextImager/Property/Value"
+		),
+		PosValue(
+				"posValue", "http://hucompute.org/TextImager/Property/PosValue"
+		),
+		Text(
+				"text", "http://hucompute.org/TextImager/Property/Text"
+		),
+		Language(
+				"language", "http://hucompute.org/TextImager/Property/Language"
+		);
+
+		protected String name;
+		protected String url;
+
+		Property(String name, String url)
+		{
+			this.name = name;
+			this.url = url;
+		}
+
+		public String prefix()
+		{
+			return "PREFIX " + this.name + ": <" + this.url + ">";
+		}
+
+		@Override
+		public String toString()
+		{
+			return this.name;
+		}
+
+		public String url()
+		{
+			return this.url;
 		}
 	}
 
@@ -286,14 +347,64 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				"NextToken",
 				Relationship.NextToken.toString()
 		);
+
+		staticValueMap.put(
+				"BeginPrefix",
+				Property.Begin.prefix()
+		);
+		staticValueMap.put(
+				"Begin",
+				Property.Begin.toString()
+		);
+		staticValueMap.put(
+				"EndPrefix",
+				Property.End.prefix()
+		);
+		staticValueMap.put(
+				"End",
+				Property.End.toString()
+		);
+		staticValueMap.put(
+				"ValuePrefix",
+				Property.Value.prefix()
+		);
+		staticValueMap.put(
+				"Value",
+				Property.Value.toString()
+		);
+		staticValueMap.put(
+				"PosValuePrefix",
+				Property.PosValue.prefix()
+		);
+		staticValueMap.put(
+				"PosValue",
+				Property.PosValue.toString()
+		);
+		staticValueMap.put(
+				"TextPrefix",
+				Property.Text.prefix()
+		);
+		staticValueMap.put(
+				"Text",
+				Property.Text.toString()
+		);
+		staticValueMap.put(
+				"LanguagePrefix",
+				Property.Language.prefix()
+		);
+		staticValueMap.put(
+				"Language",
+				Property.Language.toString()
+		);
 	}
 
 	/**
 	 * Small utility for parsing values to fit in url schemes.
 	 * Use this whenever a value is used as part of an identifier.
-	 * Escapes ".", because Blazegraph can't handle dots in identifiers.
 	 * E.g. documentPrefix:parseValue(documentId)
 	 * or   posPrefix:parseValue(posValue).
+	 * <p>
+	 * Escapes ".", because Blazegraph can't handle dots in identifiers.
 	 */
 	protected static String parseValue(String value)
 	{
@@ -316,9 +427,9 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 
 	/**
 	 * @param query The query to send to the server.
-	 * @return a Connection to the SparQL API.
+	 * @return the server's response.
 	 */
-	protected Connection queryConnection(String query)
+	protected JSONObject sendGetRequest(String query)
 	{
 		try
 		{
@@ -327,40 +438,77 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 					+ "?query=" + encodedQuery
 					+ "&format=json";
 
-			logger.log(Level.FINE, url);
-
-			return Jsoup.connect(url)
-					.timeout(0)
-					.maxBodySize(0);
-
-			// UTF-8 is supported. Exception will not occur.
-		} catch (UnsupportedEncodingException ignored)
+			return new JSONObject(
+					Request.Get(url)
+							.addHeader("Accept", "application/sparql-results+json")
+							.execute()
+							.returnContent()
+							.asString()
+			);
+		} catch (IOException e)
 		{
+			e.printStackTrace();
 			return null;
 		}
 	}
 
 	/**
 	 * Creates a connection with a body.
-	 * This only has an effect, if post() or put() are used on the connection.
+	 * This usually does not return relevant info. Also the result is seemingly
+	 * always html and can't be parsed into json.
 	 *
 	 * @param body The request body.
-	 * @return a Connection to the SparQL API.
+	 * @return the server's response.
 	 */
-	protected Connection postConnection(String body)
+	protected String sendPostRequest(String body)
 	{
 		String url = this.rootEndpoint + "/bigdata/sparql?format=json";
 
-		return Jsoup.connect(url)
-				.requestBody(body)
-				.header("Content-Type", "application/sparql-update;charset=UTF-8")
-				.timeout(0)
-				.maxBodySize(0);
+		try
+		{
+			return Request.Post(url)
+					.bodyString(body, ContentType.create("application/sparql-update", "UTF-8"))
+					.addHeader("Accept", "application/sparql-results+json")
+					.execute()
+					.returnContent()
+					.asString();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 
-	protected JSONObject getResult(Document document)
+	/**
+	 * Extracts the actual response content from a blazegraph rest response ob-
+	 * ject.
+	 *
+	 * @param response
+	 * @return
+	 */
+	protected JSONArray extractResults(JSONObject response)
 	{
-		return new JSONObject(document.body()).getJSONObject("results");
+		return response
+				.getJSONObject("results")
+				.getJSONArray("bindings");
+	}
+
+	/**
+	 * Extracts the id of an object from its uri.
+	 *
+	 * @param uri
+	 * @return
+	 */
+	protected static String getIdFromUrl(String uri)
+	{
+		String[] parts = uri.split("#");
+		if (parts.length > 1)
+		{
+			return parts[1];
+		} else
+		{
+			return "";
+		}
 	}
 
 	@Override
@@ -384,7 +532,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 	@Override
 	public void clearDatabase() throws IOException
 	{
-		this.postConnection("CLEAR ALL").post();
+		this.sendPostRequest("CLEAR ALL");
 	}
 
 	@Override
@@ -394,9 +542,11 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				.getDocumentId();
 
 		final String queryTemplate = "${DocumentPrefix}\n"
+				+ "${TextPrefix}\n"
+				+ "${LanguagePrefix}\n"
 				+ "INSERT DATA {\n"
-				+ "${Document}:${DocumentId} ${Document}:text     \"\"\"${DocumentText}\"\"\" ;\n"
-				+ "                          ${Document}:language \"${DocumentLanguage}\" .\n"
+				+ "${Document}:${DocumentId} ${Text}:     \"\"\"${DocumentText}\"\"\" ;\n"
+				+ "                          ${Language}: \"${DocumentLanguage}\" .\n"
 				+ "}";
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
 		valueMap.put("DocumentId", parseValue(documentId));
@@ -405,17 +555,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		StrSubstitutor sub = new StrSubstitutor(valueMap);
 		final String query = sub.replace(queryTemplate);
 
-		logger.log(Level.FINE, query);
-
-		try
-		{
-			this.postConnection(query).post();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new QHException(e);
-		}
-
+		this.sendPostRequest(query);
 		return documentId;
 	}
 
@@ -428,9 +568,11 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				+ "${ParagraphPrefix}\n"
 				+ "${DocumentHasParagraphPrefix}\n"
 				+ "${NextParagraphPrefix}\n"
+				+ "${BeginPrefix}\n"
+				+ "${EndPrefix}\n"
 				+ "INSERT DATA {\n"
-				+ "  ${Paragraph}:${ParagraphId} ${Paragraph}:begin       ${Begin} ;\n"
-				+ "                              ${Paragraph}:end         ${End} .\n"
+				+ "  ${Paragraph}:${ParagraphId} ${Begin}:       ${BeginValue} ;\n"
+				+ "                              ${End}:         ${EndValue} .\n"
 				+ "  ${Document}:${DocumentId}   ${DocumentHasParagraph}: ${Paragraph}:${ParagraphId} .\n"
 				+ ((previousParagraphId == null) ? "" : "  ${Paragraph}:${PreviousParagraphId}   ${NextParagraph}: ${Paragraph}:${ParagraphId} .\n")
 				+ "}";
@@ -441,22 +583,12 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		{
 			valueMap.put("PreviousParagraphId", parseValue(previousParagraphId));
 		}
-		valueMap.put("Begin", String.valueOf(paragraph.getBegin()));
-		valueMap.put("End", String.valueOf(paragraph.getEnd()));
+		valueMap.put("BeginValue", String.valueOf(paragraph.getBegin()));
+		valueMap.put("EndValue", String.valueOf(paragraph.getEnd()));
 		final StrSubstitutor sub = new StrSubstitutor(valueMap);
 		final String query = sub.replace(queryTemplate);
 
-		logger.log(Level.FINE, query);
-
-		try
-		{
-			this.postConnection(query).post();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new QHException(e);
-		}
-
+		this.sendPostRequest(query);
 		return paragraphId;
 	}
 
@@ -471,9 +603,11 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				+ "${DocumentHasSentencePrefix}\n"
 				+ "${SentenceInParagraphPrefix}\n"
 				+ "${NextSentencePrefix}\n"
+				+ "${BeginPrefix}\n"
+				+ "${EndPrefix}\n"
 				+ "INSERT DATA {\n"
-				+ "  ${Sentence}:${SentenceId}   ${Sentence}:begin       ${Begin} ;\n"
-				+ "                              ${Sentence}:end         ${End} .\n"
+				+ "  ${Sentence}:${SentenceId}   ${Begin}:       ${BeginValue} ;\n"
+				+ "                              ${End}:         ${EndValue} .\n"
 				+ "  ${Document}:${DocumentId}   ${DocumentHasSentence}: ${Sentence}:${SentenceId} .\n"
 				+ "  ${Sentence}:${SentenceId}   ${SentenceInParagraph}: ${Paragraph}:${ParagraphId} .\n"
 				+ ((previousSentenceId == null) ? "" : "  ${Sentence}:${PreviousSentenceId}   ${NextSentence}: ${Sentence}:${SentenceId} .\n")
@@ -486,22 +620,12 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		{
 			valueMap.put("PreviousSentenceId", parseValue(previousSentenceId));
 		}
-		valueMap.put("Begin", String.valueOf(sentence.getBegin()));
-		valueMap.put("End", String.valueOf(sentence.getEnd()));
+		valueMap.put("BeginValue", String.valueOf(sentence.getBegin()));
+		valueMap.put("EndValue", String.valueOf(sentence.getEnd()));
 		final StrSubstitutor sub = new StrSubstitutor(valueMap);
 		final String query = sub.replace(queryTemplate);
 
-		logger.log(Level.FINE, query);
-
-		try
-		{
-			this.postConnection(query).post();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new QHException(e);
-		}
-
+		this.sendPostRequest(query);
 		return sentenceId;
 	}
 
@@ -523,12 +647,17 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				+ "${DocumentHasLemmaPrefix}\n"
 				+ "${TokenHasLemmaPrefix}\n"
 				+ "${TokenAtPosPrefix}\n"
+				+ "${BeginPrefix}\n"
+				+ "${EndPrefix}\n"
+				+ "${ValuePrefix}\n"
+				+ "${PosValuePrefix}\n"
 				+ "INSERT DATA {\n"
-				+ "  ${Token}:${TokenId}       ${Token}:begin       ${Begin} ;\n"
-				+ "                            ${Token}:end         ${End} ;\n"
-				+ "                            ${Token}:value       \"${TokenValue}\" ;\n"
+				+ "  ${Token}:${TokenId}       ${Begin}:            ${BeginValue} ;\n"
+				+ "                            ${End}:              ${EndValue} ;\n"
+				+ "                            ${Value}:            \"${TokenValue}\" ;\n"
+				+ "                            ${PosValue}:         \"${TokenPosValue}\" ;\n"
 				+ "                            ${TokenHasLemma}:    ${Lemma}:${LemmaValue} ;\n"
-				+ "                            ${TokenAtPos}:       ${Pos}:${PosValue} ;\n"
+				+ "                            ${TokenAtPos}:       ${Pos}:${PosId} ;\n"
 				+ "                            ${TokenInParagraph}: ${Paragraph}:${ParagraphId} ;\n"
 				+ "                            ${TokenInSentence}:  ${Sentence}:${SentenceId} .\n"
 				+ ((previousTokenId == null) ? "" : "  ${Token}:${PreviousTokenId} ${NextToken}: ${Token}:${TokenId} .\n")
@@ -544,38 +673,75 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		{
 			valueMap.put("PreviousTokenId", parseValue(previousTokenId));
 		}
-		valueMap.put("Begin", String.valueOf(token.getBegin()));
-		valueMap.put("End", String.valueOf(token.getEnd()));
+		valueMap.put("BeginValue", String.valueOf(token.getBegin()));
+		valueMap.put("EndValue", String.valueOf(token.getEnd()));
 		valueMap.put("TokenValue", token.getLemma().getValue());
 		valueMap.put("LemmaValue", parseValue(token.getLemma().getValue()));
-		valueMap.put("PosValue", parseValue(token.getPos().getPosValue()));
+		valueMap.put("TokenPosValue", token.getPos().getPosValue());
+		valueMap.put("PosId", parseValue(token.getPos().getPosValue()));
 		final StrSubstitutor sub = new StrSubstitutor(valueMap);
 		final String query = sub.replace(queryTemplate);
 
-		logger.log(Level.FINE, query);
-
-		try
-		{
-			this.postConnection(query).post();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-			throw new QHException(e);
-		}
-
+		this.sendPostRequest(query);
 		return tokenId;
 	}
 
 	@Override
 	public void checkIfDocumentExists(String documentId) throws DocumentNotFoundException
 	{
+		final String queryTemplate = "${DocumentPrefix}" +
+				"SELECT (count(*) as ?count)\n" +
+				"WHERE {\n" +
+				"  ${Document}:${DocumentId} ?y ?z\n" +
+				"}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", documentId);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
 
+		JSONArray results = this.extractResults(
+				this.sendGetRequest(query)
+		);
+		String count = results
+				.getJSONObject(0)
+				.getJSONObject("count")
+				.getString("value");
+
+		if (Integer.valueOf(count) == 0)
+		{
+			throw new DocumentNotFoundException();
+		}
 	}
 
 	@Override
 	public Iterable<String> getDocumentIds()
 	{
-		return null;
+		List<String> documentIds = new ArrayList<>();
+
+		final String queryTemplate = "${DocumentPrefix}" +
+				"SELECT distinct ?doc\n" +
+				"WHERE {\n" +
+				"  ?doc ?y ?z\n" +
+				"  FILTER (strstarts(str(?doc), str(${Document}:)))\n" +
+				"}";
+		StrSubstitutor sub = new StrSubstitutor(staticValueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray results = this.extractResults(
+				this.sendGetRequest(query)
+		);
+
+		for (int i = 0; i < results.length(); i++)
+		{
+			JSONObject current = results.getJSONObject(i);
+			documentIds.add(
+					getIdFromUrl(
+							current.getJSONObject("doc").getString("value")
+					)
+			);
+		}
+
+		return documentIds;
 	}
 
 	@Override
@@ -587,7 +753,101 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 	@Override
 	public void populateCasWithDocument(CAS aCAS, String documentId) throws DocumentNotFoundException, QHException
 	{
+		this.checkIfDocumentExists(documentId);
 
+		final String queryTemplate = "${DocumentPrefix}\n" +
+				"${ParagraphPrefix}\n" +
+				"${SentencePrefix}\n" +
+				"${BeginPrefix}\n" +
+				"${EndPrefix}\n" +
+				"${ValuePrefix}\n" +
+				"${PosValuePrefix}\n" +
+				"${TextPrefix}\n" +
+				"${LanguagePrefix}\n" +
+				"SELECT *\n" +
+				"WHERE {\n" +
+				"  ${Document}:${DocumentId} ?type ?target .\n" +
+				"  OPTIONAL {\n" +
+				"    ?target ${Begin}: ?begin .\n" +
+				"    ?target ${End}: ?end\n" +
+				"  } OPTIONAL {\n" +
+				"    ?target ${Value}: ?value\n" +
+				"  } OPTIONAL {\n" +
+				"    ?target ${PosValue}: ?posValue\n" +
+				"  }\n" +
+				"}";
+		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
+		valueMap.put("DocumentId", documentId);
+		StrSubstitutor sub = new StrSubstitutor(valueMap);
+		final String query = sub.replace(queryTemplate);
+
+		JSONArray result = this.extractResults(
+				this.sendGetRequest(query)
+		);
+		try
+		{
+			DocumentMetaData meta = DocumentMetaData.create(aCAS);
+			meta.setDocumentId(documentId);
+		} catch (CASException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
+		}
+
+		StreamSupport.stream(result.spliterator(), true)
+				.collect(Collectors.groupingByConcurrent(
+						obj -> ((JSONObject) obj).getJSONObject("type").getString("value")
+				))
+				.entrySet().parallelStream()
+				.forEach(entrySet -> {
+					try
+					{
+						String key = entrySet.getKey();
+						if (key.equals(Relationship.DocumentHasToken.url()))
+						{
+							for (Object obj : entrySet.getValue())
+							{
+								JSONObject token = (JSONObject) obj;
+								Token xmiToken = null;
+								xmiToken = new Token(
+										aCAS.getJCas(),
+										Integer.valueOf(token.getJSONObject("begin").getString("value")),
+										Integer.valueOf(token.getJSONObject("end").getString("value"))
+								);
+
+								Lemma lemma = new Lemma(aCAS.getJCas(), xmiToken.getBegin(), xmiToken.getEnd());
+								lemma.setValue(token.getJSONObject("value").getString("value"));
+								lemma.addToIndexes();
+								xmiToken.setLemma(lemma);
+
+								POS pos = new POS(aCAS.getJCas(), xmiToken.getBegin(), xmiToken.getEnd());
+								pos.setPosValue(token.getJSONObject("posValue").getString("value"));
+								pos.addToIndexes();
+								xmiToken.setPos(pos);
+
+								xmiToken.addToIndexes();
+							}
+						} else if (key.equals(Property.Text.url()))
+						{
+							String text = ((JSONObject)
+									entrySet.getValue().get(0))
+									.getJSONObject("target")
+									.getString("value");
+							aCAS.setDocumentText(text);
+						} else if (key.equals(Property.Language.url()))
+						{
+							String language = ((JSONObject)
+									entrySet.getValue().get(0))
+									.getJSONObject("target")
+									.getString("value");
+							aCAS.setDocumentLanguage(language);
+						}
+					} catch (CASException e)
+					{
+						e.printStackTrace();
+						throw new QHException(e);
+					}
+				});
 	}
 
 	@Override

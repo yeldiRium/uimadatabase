@@ -182,7 +182,7 @@ public class CassandraWriter extends AbstractWriter
 				value.append("'");
 				value.append(", ");
 //                fields += s + ", ";
-//                value += "'" + map.get(s) + "'" + ", ";
+//                value += "'" + map.sendGetRequest(s) + "'" + ", ";
 			}
 			fields.delete(fields.length() - 2, fields.length() - 1);
 			value.delete(value.length() - 2, value.length() - 1);

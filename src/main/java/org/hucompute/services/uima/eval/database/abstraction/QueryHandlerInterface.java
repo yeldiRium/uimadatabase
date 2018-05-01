@@ -397,7 +397,7 @@ public interface QueryHandlerInterface
 	/**
 	 * Get TTR for the specified document.
 	 *
-	 * @param documentId The id of the document to get the TTR from.
+	 * @param documentId The id of the document to sendGetRequest the TTR from.
 	 * @return Map(String DocumentId, Double TTR - value)
 	 */
 	Double calculateTTRForDocument(String documentId)
@@ -407,7 +407,7 @@ public interface QueryHandlerInterface
 	 * Get TTR for all specified documents.
 	 * Documents that can't be found are skipped.
 	 *
-	 * @param documentIds The id's of the document to get the TTR from.
+	 * @param documentIds The id's of the document to sendGetRequest the TTR from.
 	 * @return Map(String DocumentId, Double TTR - value)
 	 */
 	Map<String, Double> calculateTTRForCollectionOfDocuments(

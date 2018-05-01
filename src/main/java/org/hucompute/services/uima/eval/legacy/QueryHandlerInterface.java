@@ -216,7 +216,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	/**
 	 * Get TTR for the specified document.
 	 *
-	 * @param documentId The id of the document to get the TTR from.
+	 * @param documentId The id of the document to sendGetRequest the TTR from.
 	 * @return Map(String DocumentId, Double TTR - value)
 	 */
 	Map<String, Double> calculateTTRForDocument(String documentId);
@@ -224,7 +224,7 @@ interface QueryHandlerInterface extends Callable<JSONObject>
 	/**
 	 * Get TTR for all specified documents.
 	 *
-	 * @param documentIds The id's of the document to get the TTR from.
+	 * @param documentIds The id's of the document to sendGetRequest the TTR from.
 	 * @return Map(String DocumentId, Double TTR - value)
 	 */
 	Map<String, Double> calculateTTRForCollectionOfDocuments(
