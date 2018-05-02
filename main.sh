@@ -14,8 +14,49 @@ then
 	mkdir /code/output
 fi
 
+java -jar target.jar evaluate -e write -d ArangoDB
+java -jar target.jar evaluate -e read -d ArangoDB
+java -jar target.jar evaluate -e query -d ArangoDB
+java -jar target.jar evaluate -e calculate -d ArangoDB
+java -jar target.jar evaluate -e complex-query -d ArangoDB
+
+java -jar target.jar evaluate -e write -d BaseX
+java -jar target.jar evaluate -e read -d BaseX
+java -jar target.jar evaluate -e query -d BaseX
+java -jar target.jar evaluate -e calculate -d BaseX
+java -jar target.jar evaluate -e complex-query -d BaseX
+
+java -jar target.jar evaluate -e write -d Blazegraph
+java -jar target.jar evaluate -e read -d Blazegraph
+java -jar target.jar evaluate -e query -d Blazegraph
+java -jar target.jar evaluate -e calculate -d Blazegraph
+java -jar target.jar evaluate -e complex-query -d Blazegraph
+
+java -jar target.jar evaluate -e write -d Cassandra
+java -jar target.jar evaluate -e read -d Cassandra
+java -jar target.jar evaluate -e query -d Cassandra
+java -jar target.jar evaluate -e calculate -d Cassandra
+java -jar target.jar evaluate -e complex-query -d Cassandra
+
+java -jar target.jar evaluate -e write -d MySQL
+java -jar target.jar evaluate -e read -d MySQL
+java -jar target.jar evaluate -e query -d MySQL
+java -jar target.jar evaluate -e calculate -d MySQL
+java -jar target.jar evaluate -e complex-query -d MySQL
+
+java -jar target.jar evaluate -e write -d MongoDB
+java -jar target.jar evaluate -e read -d MongoDB
+java -jar target.jar evaluate -e query -d MongoDB
+java -jar target.jar evaluate -e calculate -d MongoDB
+java -jar target.jar evaluate -e complex-query -d MongoDB
+
+java -jar target.jar evaluate -e write -d Neo4j
+java -jar target.jar evaluate -e read -d Neo4j
+java -jar target.jar evaluate -e query -d Neo4j
+java -jar target.jar evaluate -e calculate -d Neo4j
+java -jar target.jar evaluate -e complex-query -d Neo4j
+
 java -jar target.jar evaluate -e write -d Solr
-#java -jar target.jar evaluate -e read -d Solr
-#java -jar target.jar evaluate -e query -d Solr
-#java -jar target.jar evaluate -e calculate -d Solr
 java -jar target.jar evaluate -e complex-query -d Solr
+
+java -jar target.jar visualize
