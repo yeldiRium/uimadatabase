@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 /**
@@ -52,71 +53,113 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			);
 			queryHandler.openDatabase();
 
-			// We'll need the documentIds from the database later on for the
-			// evaluations.
-			this.documentIds = Sets.newTreeSet(queryHandler.getDocumentIds());
+			try
+			{
+				// We'll need the documentIds from the database later on for the
+				// evaluations.
+				this.documentIds = Sets.newTreeSet(queryHandler.getDocumentIds());
+			} catch (UnsupportedOperationException e)
+			{
+				this.documentIds = new TreeSet<>();
+			}
 
 			JSONObject stats = new JSONObject();
 
 			int step = 1;
 
 			logger.info("Step " + step + ": Running getBiGramsFromDocumentEvaluation");
-			stats.put(
-					"getBiGramsFromDocumentEvaluation",
-					this.getBiGramsFromDocumentEvaluation(
-							queryHandler
-					)
-			);
+			try
+			{
+				stats.put(
+						"getBiGramsFromDocumentEvaluation",
+						this.getBiGramsFromDocumentEvaluation(
+								queryHandler
+						)
+				);
+			} catch (UnsupportedOperationException e)
+			{
+				logger.info("Stop " + step + " was not supported.");
+			}
 			logger.info("Step " + step + " done.");
 
 			step++;
 			logger.info("Step " + step + ": Running getBiGramsFromAllDocumentsEvaluation");
-			stats.put(
-					"getBiGramsFromAllDocumentsEvaluation",
-					this.getBiGramsFromAllDocumentsEvaluation(
-							queryHandler
-					)
-			);
+			try
+			{
+				stats.put(
+						"getBiGramsFromAllDocumentsEvaluation",
+						this.getBiGramsFromAllDocumentsEvaluation(
+								queryHandler
+						)
+				);
+			} catch (UnsupportedOperationException e)
+			{
+				logger.info("Stop " + step + " was not supported.");
+			}
 			logger.info("Step " + step + " done.");
 
 			step++;
 			logger.info("Step " + step + ": Running getBiGramsFromDocumentsInCollectionEvaluation");
-			stats.put(
-					"getBiGramsFromDocumentsInCollectionEvaluation",
-					this.getBiGramsFromDocumentsInCollectionEvaluation(
-							queryHandler
-					)
-			);
+			try
+			{
+				stats.put(
+						"getBiGramsFromDocumentsInCollectionEvaluation",
+						this.getBiGramsFromDocumentsInCollectionEvaluation(
+								queryHandler
+						)
+				);
+			} catch (UnsupportedOperationException e)
+			{
+				logger.info("Stop " + step + " was not supported.");
+			}
 			logger.info("Step " + step + " done.");
 
 			step++;
 			logger.info("Step " + step + ": Running getTriGramsFromDocumentEvaluation");
-			stats.put(
-					"getTriGramsFromDocumentEvaluation",
-					this.getTriGramsFromDocumentEvaluation(
-							queryHandler
-					)
-			);
+			try
+			{
+				stats.put(
+						"getTriGramsFromDocumentEvaluation",
+						this.getTriGramsFromDocumentEvaluation(
+								queryHandler
+						)
+				);
+			} catch (UnsupportedOperationException e)
+			{
+				logger.info("Stop " + step + " was not supported.");
+			}
 			logger.info("Step " + step + " done.");
 
 			step++;
 			logger.info("Step " + step + ": Running getTriGramsFromAllDocumentsEvaluation");
-			stats.put(
-					"getTriGramsFromAllDocumentsEvaluation",
-					this.getTriGramsFromAllDocumentsEvaluation(
-							queryHandler
-					)
-			);
+			try
+			{
+				stats.put(
+						"getTriGramsFromAllDocumentsEvaluation",
+						this.getTriGramsFromAllDocumentsEvaluation(
+								queryHandler
+						)
+				);
+			} catch (UnsupportedOperationException e)
+			{
+				logger.info("Stop " + step + " was not supported.");
+			}
 			logger.info("Step " + step + " done.");
 
 			step++;
 			logger.info("Step " + step + ": Running getTriGramsFromDocumentsInCollectionEvaluation");
-			stats.put(
-					"getTriGramsFromDocumentsInCollectionEvaluation",
-					this.getTriGramsFromDocumentsInCollectionEvaluation(
-							queryHandler
-					)
-			);
+			try
+			{
+				stats.put(
+						"getTriGramsFromDocumentsInCollectionEvaluation",
+						this.getTriGramsFromDocumentsInCollectionEvaluation(
+								queryHandler
+						)
+				);
+			} catch (UnsupportedOperationException e)
+			{
+				logger.info("Stop " + step + " was not supported.");
+			}
 			logger.info("Step " + step + " done.");
 
 			logger.info("Writing results...");
@@ -142,6 +185,10 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
+		if (this.documentIds.size() == 0) {
+			return new JSONObject();
+		}
+
 		int howManyDocuments = 20;
 		Set<String> randomDocumentIds = Collections.chooseSubset(
 				this.documentIds,
@@ -203,6 +250,10 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
+		if (this.documentIds.size() == 0) {
+			return new JSONObject();
+		}
+
 		int howManySubsets = 20;
 		int howManyDocuments = 20;
 
@@ -250,6 +301,10 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
+		if (this.documentIds.size() == 0) {
+			return new JSONObject();
+		}
+
 		int howManyDocuments = 20;
 		Set<String> randomDocumentIds = Collections.chooseSubset(
 				this.documentIds,
@@ -291,7 +346,8 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
-		// TODO: hier sollte kram passieren
+		queryHandler.getTriGramsFromAllDocuments();
+
 		return Formatting.createOutputForMethod(
 				"getTriGramsFromAllDocuments",
 				queryHandler
@@ -310,6 +366,10 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
+		if (this.documentIds.size() == 0) {
+			return new JSONObject();
+		}
+
 		int howManySubsets = 20;
 		int howManyDocuments = 20;
 

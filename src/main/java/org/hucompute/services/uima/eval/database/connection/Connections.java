@@ -10,7 +10,7 @@ public class Connections
 {
 	public enum DBName
 	{
-		ArangoDB, BaseX, Blazegraph, Cassandra, MongoDB, MySQL, Neo4j
+		ArangoDB, BaseX, Blazegraph, Cassandra, MongoDB, MySQL, Neo4j, Solr
 	}
 
 	public static Class<? extends Connection> getConnectionClassForDB(
@@ -33,6 +33,8 @@ public class Connections
 				return MySQLConnection.class;
 			case Neo4j:
 				return Neo4jConnection.class;
+			case Solr:
+				return SolrConnection.class;
 			default:
 				return null;
 		}
@@ -64,6 +66,9 @@ public class Connections
 		} else if (connectionClass == Neo4jConnection.class)
 		{
 			identifier = DBName.Neo4j;
+		} else if (connectionClass == SolrConnection.class)
+		{
+			identifier = DBName.Solr;
 		}
 		return identifier;
 	}

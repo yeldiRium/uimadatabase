@@ -31,6 +31,11 @@ services:
     environment:
       - NEO4J_AUTH=none
 
+  solr:
+    build: ./dbs/solr
+    ports:
+      - "8983:8983"
+
   main:
     build: ./
     ports:
@@ -43,6 +48,7 @@ services:
       - mongodb
       - mysql
       - neo4j
+      - solr
     volumes:
       - ~/nlpdbeval_data/input/biologie:/code/input
       - ~/nlpdbeval_data/output:/code/output
@@ -87,5 +93,7 @@ services:
       # See README.txt in dbs/neo4j for details on:
       - NEO4J_HOST=neo4j
       - NEO4J_PORT=7687
-      - NEO4J_USER=
-      - NEO4J_PASS=
+      # See README.txt in dbs/solr for details on:
+      - SOLR_HOST=solr
+      - SOLR_PORT=8983
+      - SOLR_CORE=uimadatabase

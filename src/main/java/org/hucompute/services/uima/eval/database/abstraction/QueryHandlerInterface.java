@@ -88,6 +88,11 @@ public interface QueryHandlerInterface
 			queryhandler = new Neo4jQueryHandler(
 					((Neo4jConnection) aConnection).getDriver()
 			);
+		} else if (aConnection.getClass() == SolrConnection.class)
+		{
+			queryhandler = new SolrQueryHandler(
+					((SolrConnection) aConnection).getEndpoint()
+			);
 		}
 
 		return queryhandler;
