@@ -406,21 +406,21 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 	/**
 	 * Escapes dots per default.
 	 */
-	protected static String encodeValue(String value)
+	protected static String encodeId(String value)
 	{
-		return encodeValue(value, true);
+		return encodeId(value, true);
 	}
 
 	/**
 	 * Small utility for parsing values to fit in url schemes.
 	 * Use this whenever a value is used as part of an identifier.
-	 * E.g. documentPrefix:encodeValue(documentId)
-	 * or   posPrefix:encodeValue(posValue).
+	 * E.g. documentPrefix:encodeId(documentId)
+	 * or   posPrefix:encodeId(posValue).
 	 * <p>
 	 * Escapes "." if told to, because Blazegraph can't handle dots in identifi-
 	 * ers.
 	 */
-	protected static String encodeValue(String value, Boolean escapeDot)
+	protected static String encodeId(String value, Boolean escapeDot)
 	{
 		try
 		{
@@ -440,7 +440,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		}
 	}
 
-	protected static String decodeValue(String value)
+	protected static String decodeId(String value)
 	{
 		try
 		{
@@ -454,6 +454,16 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		{
 			return null;
 		}
+	}
+
+	protected static String encodeValue(String value)
+	{
+		return value.replace("\"", "\\\"");
+	}
+
+	protected static String decodeValue(String value)
+	{
+		return value.replace("\\\"", "\"");
 	}
 
 	public BlazegraphQueryHandler(String rootEndpoint)
@@ -585,7 +595,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				+ "                          ${Language}: \"${DocumentLanguage}\" .\n"
 				+ "}";
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
-		valueMap.put("DocumentId", encodeValue(documentId));
+		valueMap.put("DocumentId", encodeId(documentId));
 		valueMap.put("DocumentText", document.getDocumentText());
 		valueMap.put("DocumentLanguage", document.getDocumentLanguage());
 		StrSubstitutor sub = new StrSubstitutor(valueMap);
@@ -613,11 +623,11 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				+ ((previousParagraphId == null) ? "" : "  ${Paragraph}:${PreviousParagraphId}   ${NextParagraph}: ${Paragraph}:${ParagraphId} .\n")
 				+ "}";
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
-		valueMap.put("DocumentId", encodeValue(documentId));
-		valueMap.put("ParagraphId", encodeValue(paragraphId));
+		valueMap.put("DocumentId", encodeId(documentId));
+		valueMap.put("ParagraphId", encodeId(paragraphId));
 		if (previousParagraphId != null)
 		{
-			valueMap.put("PreviousParagraphId", encodeValue(previousParagraphId));
+			valueMap.put("PreviousParagraphId", encodeId(previousParagraphId));
 		}
 		valueMap.put("BeginValue", String.valueOf(paragraph.getBegin()));
 		valueMap.put("EndValue", String.valueOf(paragraph.getEnd()));
@@ -649,12 +659,12 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				+ ((previousSentenceId == null) ? "" : "  ${Sentence}:${PreviousSentenceId}   ${NextSentence}: ${Sentence}:${SentenceId} .\n")
 				+ "}";
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
-		valueMap.put("DocumentId", encodeValue(documentId));
-		valueMap.put("ParagraphId", encodeValue(paragraphId));
-		valueMap.put("SentenceId", encodeValue(sentenceId));
+		valueMap.put("DocumentId", encodeId(documentId));
+		valueMap.put("ParagraphId", encodeId(paragraphId));
+		valueMap.put("SentenceId", encodeId(sentenceId));
 		if (previousSentenceId != null)
 		{
-			valueMap.put("PreviousSentenceId", encodeValue(previousSentenceId));
+			valueMap.put("PreviousSentenceId", encodeId(previousSentenceId));
 		}
 		valueMap.put("BeginValue", String.valueOf(sentence.getBegin()));
 		valueMap.put("EndValue", String.valueOf(sentence.getEnd()));
@@ -701,20 +711,20 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				+ "                            ${DocumentHasLemma}: ${Lemma}:${LemmaValue} .\n"
 				+ "}";
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
-		valueMap.put("DocumentId", encodeValue(documentId));
-		valueMap.put("ParagraphId", encodeValue(paragraphId));
-		valueMap.put("SentenceId", encodeValue(sentenceId));
-		valueMap.put("TokenId", encodeValue(tokenId));
+		valueMap.put("DocumentId", encodeId(documentId));
+		valueMap.put("ParagraphId", encodeId(paragraphId));
+		valueMap.put("SentenceId", encodeId(sentenceId));
+		valueMap.put("TokenId", encodeId(tokenId));
 		if (previousTokenId != null)
 		{
-			valueMap.put("PreviousTokenId", encodeValue(previousTokenId));
+			valueMap.put("PreviousTokenId", encodeId(previousTokenId));
 		}
 		valueMap.put("BeginValue", String.valueOf(token.getBegin()));
 		valueMap.put("EndValue", String.valueOf(token.getEnd()));
-		valueMap.put("TokenValue", token.getLemma().getValue());
-		valueMap.put("LemmaValue", encodeValue(token.getLemma().getValue()));
-		valueMap.put("TokenPosValue", token.getPos().getPosValue());
-		valueMap.put("PosId", encodeValue(token.getPos().getPosValue()));
+		valueMap.put("TokenValue", encodeValue(token.getLemma().getValue()));
+		valueMap.put("LemmaValue", encodeId(token.getLemma().getValue()));
+		valueMap.put("TokenPosValue", encodeValue(token.getPos().getPosValue()));
+		valueMap.put("PosId", encodeId(token.getPos().getPosValue()));
 		final StrSubstitutor sub = new StrSubstitutor(valueMap);
 		final String query = sub.replace(queryTemplate);
 
@@ -809,7 +819,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 							.getString("value");
 
 					lemmata.add(
-							decodeValue(getIdFromUrl(lemmaUrl))
+							decodeId(getIdFromUrl(lemmaUrl))
 					);
 				});
 
@@ -928,7 +938,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		// Somehow can't find Lemmata when using prefix. Probably because of the
 		// URL encoding.
 		valueMap.put("LemmaUrl", Model.Lemma.url());
-		valueMap.put("LemmaValue", encodeValue(lemma, false));
+		valueMap.put("LemmaValue", encodeId(lemma, false));
 		StrSubstitutor sub = new StrSubstitutor(valueMap);
 		final String query = sub.replace(queryTemplate);
 
@@ -1104,7 +1114,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 						+ "SELECT (count(distinct ?elem) as ?count)\n"
 						+ "WHERE {\n"
 						+ "  ?x ${DocumentHasLemma}: ?elem\n"
-						+ "  FILTER strends(str(?elem), \"${EncodedValueString}\")\n"
+						+ "  FILTER strends(str(?elem), \"${IDValueString}\")\n"
 						+ "}";
 				break;
 			case Pos:
@@ -1114,7 +1124,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 						+ "SELECT (count(distinct ?elem) as ?count)\n"
 						+ "WHERE {\n"
 						+ "  ?x ${TokenAtPos}: ?elem\n"
-						+ "  FILTER strends(str(?elem), \"${EncodedValueString}\")\n"
+						+ "  FILTER strends(str(?elem), \"${IDValueString}\")\n"
 						+ "}";
 				break;
 			// cases without value
@@ -1122,8 +1132,8 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				return 0;
 		}
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
-		valueMap.put("ValueString", value);
-		valueMap.put("EncodedValueString", encodeValue(value, false));
+		valueMap.put("ValueString", encodeValue(value));
+		valueMap.put("IDValueString", encodeId(value, false));
 		StrSubstitutor sub = new StrSubstitutor(valueMap);
 		final String query = sub.replace(queryTemplate);
 
@@ -1164,7 +1174,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 						+ "SELECT (count(distinct ?elem) as ?count)\n"
 						+ "WHERE {\n"
 						+ "  ${Document}:${DocumentId} ${DocumentHasLemma}: ?elem\n"
-						+ "  FILTER strends(str(?elem), \"${EncodedValueString}\")\n"
+						+ "  FILTER strends(str(?elem), \"${IDValueString}\")\n"
 						+ "}";
 				break;
 			case Pos:
@@ -1175,7 +1185,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 						+ "WHERE {\n"
 						+ "  ${Document}:${DocumentId} ${DocumentHasToken} ?token ."
 						+ "  ?token ${TokenAtPos}: ?elem\n"
-						+ "  FILTER strends(str(?elem), \"${EncodedValueString}\")\n"
+						+ "  FILTER strends(str(?elem), \"${IDValueString}\")\n"
 						+ "}";
 				break;
 			// cases without value
@@ -1184,8 +1194,8 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		}
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
 		valueMap.put("DocumentId", documentId);
-		valueMap.put("ValueString", value);
-		valueMap.put("EncodedValueString", encodeValue(value, false));
+		valueMap.put("ValueString", encodeValue(value));
+		valueMap.put("IDValueString", encodeId(value, false));
 		StrSubstitutor sub = new StrSubstitutor(valueMap);
 		final String query = sub.replace(queryTemplate);
 
@@ -1224,7 +1234,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		StreamSupport.stream(result.spliterator(), true)
 				.forEach(row -> {
 					occurenceMap.put(
-							decodeValue(getIdFromUrl(
+							decodeId(getIdFromUrl(
 									((JSONObject) row).getJSONObject("lemma").getString("value")
 							)),
 							Integer.valueOf(((JSONObject) row).getJSONObject("count").getString("value"))
@@ -1389,7 +1399,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				.forEach(obj -> {
 					JSONObject row = (JSONObject) obj;
 					frequencyMap.put(
-							decodeValue(getIdFromUrl(
+							decodeId(getIdFromUrl(
 									row.getJSONObject("lemma").getString("value")
 							)),
 							Integer.valueOf(row.getJSONObject("occurences").getString("value"))
@@ -1415,7 +1425,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				+ "}";
 		final Map<String, String> valueMap = Maps.newHashMap(staticValueMap);
 		valueMap.put("DocumentId", documentId);
-		valueMap.put("LemmaValue", encodeValue(lemma));
+		valueMap.put("LemmaValue", encodeId(lemma));
 		StrSubstitutor sub = new StrSubstitutor(valueMap);
 		final String query = sub.replace(queryTemplate);
 
