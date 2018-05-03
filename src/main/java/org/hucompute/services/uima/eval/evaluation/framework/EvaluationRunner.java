@@ -56,6 +56,7 @@ public class EvaluationRunner implements Runnable
 		{
 			e.printStackTrace();
 			Thread.currentThread().interrupt();
+			return;
 		}
 
 		Collection<QueryHandlerInterface> queryHandlers = new ArrayList<>();
