@@ -22,6 +22,7 @@ import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeHasN
 import org.hucompute.services.uima.eval.database.abstraction.exceptions.TypeNotCountableException;
 import org.hucompute.services.uima.eval.database.connection.Connections;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.neo4j.driver.internal.util.Iterables;
 
@@ -1292,11 +1293,17 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				this.sendGetRequest(query)
 		);
 
-		return Double.valueOf(
-				result.getJSONObject(0)
-						.getJSONObject("ttr")
-						.getString("value")
-		);
+		try
+		{
+			return Double.valueOf(
+					result.getJSONObject(0)
+							.getJSONObject("ttr")
+							.getString("value")
+			);
+		} catch (JSONException ignored)
+		{
+			return 0d;
+		}
 	}
 
 	@Override
@@ -1453,8 +1460,8 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 					JSONObject row = (JSONObject) obj;
 					biGrams.add(
 							row.getJSONObject("v1").getString("value")
-							+ "-"
-							+ row.getJSONObject("v2").getString("value")
+									+ "-"
+									+ row.getJSONObject("v2").getString("value")
 					);
 				});
 
@@ -1487,8 +1494,8 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 					JSONObject row = (JSONObject) obj;
 					biGrams.add(
 							row.getJSONObject("v1").getString("value")
-							+ "-"
-							+ row.getJSONObject("v2").getString("value")
+									+ "-"
+									+ row.getJSONObject("v2").getString("value")
 					);
 				});
 
@@ -1516,7 +1523,8 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				builder.append("  {"
 						+ "    ${Document}:" + documentId + " ${DocumentHasToken}: ?t1"
 						+ "  } UNION");
-			} else {
+			} else
+			{
 				builder.append("  {"
 						+ "    ${Document}:" + documentId + " ${DocumentHasToken}: ?t1"
 						+ "  }");
@@ -1539,8 +1547,8 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 					JSONObject row = (JSONObject) obj;
 					biGrams.add(
 							row.getJSONObject("v1").getString("value")
-							+ "-"
-							+ row.getJSONObject("v2").getString("value")
+									+ "-"
+									+ row.getJSONObject("v2").getString("value")
 					);
 				});
 
@@ -1579,10 +1587,10 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 					JSONObject row = (JSONObject) obj;
 					triGrams.add(
 							row.getJSONObject("v1").getString("value")
-							+ "-"
-							+ row.getJSONObject("v2").getString("value")
-							+ "-"
-							+ row.getJSONObject("v3").getString("value")
+									+ "-"
+									+ row.getJSONObject("v2").getString("value")
+									+ "-"
+									+ row.getJSONObject("v3").getString("value")
 					);
 				});
 
@@ -1617,10 +1625,10 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 					JSONObject row = (JSONObject) obj;
 					triGrams.add(
 							row.getJSONObject("v1").getString("value")
-							+ "-"
-							+ row.getJSONObject("v2").getString("value")
-							+ "-"
-							+ row.getJSONObject("v3").getString("value")
+									+ "-"
+									+ row.getJSONObject("v2").getString("value")
+									+ "-"
+									+ row.getJSONObject("v3").getString("value")
 					);
 				});
 
@@ -1648,7 +1656,8 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 				builder.append("  {"
 						+ "    ${Document}:" + documentId + " ${DocumentHasToken}: ?t1"
 						+ "  } UNION");
-			} else {
+			} else
+			{
 				builder.append("  {"
 						+ "    ${Document}:" + documentId + " ${DocumentHasToken}: ?t1"
 						+ "  }");
@@ -1673,10 +1682,10 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 					JSONObject row = (JSONObject) obj;
 					triGrams.add(
 							row.getJSONObject("v1").getString("value")
-							+ "-"
-							+ row.getJSONObject("v2").getString("value")
-							+ "-"
-							+ row.getJSONObject("v3").getString("value")
+									+ "-"
+									+ row.getJSONObject("v2").getString("value")
+									+ "-"
+									+ row.getJSONObject("v3").getString("value")
 					);
 				});
 
