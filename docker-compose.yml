@@ -93,6 +93,8 @@ services:
       # See README.txt in dbs/neo4j for details on:
       - NEO4J_HOST=neo4j
       - NEO4J_PORT=7687
+      - NEO4J_USER=
+      - NEO4J_PASS=
       # See README.txt in dbs/solr for details on:
       - SOLR_HOST=solr
       - SOLR_PORT=8983
