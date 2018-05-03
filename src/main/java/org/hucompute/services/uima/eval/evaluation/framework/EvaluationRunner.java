@@ -54,6 +54,7 @@ public class EvaluationRunner implements Runnable
 					.submitRequest(connectionRequest).get();
 		} catch (InterruptedException | ExecutionException e)
 		{
+			e.printStackTrace();
 			Thread.currentThread().interrupt();
 		}
 
