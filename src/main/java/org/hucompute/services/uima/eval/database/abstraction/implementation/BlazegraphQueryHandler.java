@@ -8,6 +8,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Paragraph;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Sentence;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 import org.apache.uima.cas.CAS;
@@ -491,6 +492,11 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 							.returnContent()
 							.asString()
 			);
+		} catch (HttpResponseException e)
+		{
+			logger.warning(query);
+			e.printStackTrace();
+			throw new QHException(e);
 		} catch (IOException e)
 		{
 			e.printStackTrace();
@@ -518,6 +524,10 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 					.execute()
 					.returnContent()
 					.asString();
+		} catch (HttpResponseException e)
+		{
+			e.printStackTrace();
+			throw new QHException(e);
 		} catch (IOException e)
 		{
 			e.printStackTrace();
