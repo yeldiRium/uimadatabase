@@ -10,6 +10,7 @@ import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
 import org.hucompute.services.uima.eval.utility.Collections;
 import org.hucompute.services.uima.eval.utility.Formatting;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.naming.OperationNotSupportedException;
@@ -280,10 +281,11 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 			try
 			{
 				Double ttr = queryHandler.calculateTTRForDocument(documentId);
-				if (ttr.isInfinite() || ttr.isNaN())
+				try
 				{
 					results.put(documentId, ttr);
-				} else {
+				} catch (JSONException ignored)
+				{
 					results.put(documentId, 0d);
 				}
 			} catch (DocumentNotFoundException e)
