@@ -15,7 +15,10 @@ import org.json.JSONObject;
 import javax.naming.OperationNotSupportedException;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 /**
@@ -277,7 +280,12 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 			try
 			{
 				Double ttr = queryHandler.calculateTTRForDocument(documentId);
-				results.put(documentId, ttr);
+				if (ttr.isInfinite() || ttr.isNaN())
+				{
+					results.put(documentId, ttr);
+				} else {
+					results.put(documentId, 0d);
+				}
 			} catch (DocumentNotFoundException e)
 			{
 				logger.warning("DocumentId \"" + documentId + "\" could "
