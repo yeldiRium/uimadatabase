@@ -451,9 +451,9 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		{
 			return URLDecoder.decode(
 					value.replace("\\.", ".")
-						.replace("\\*", "*")
-						.replace("\\+", "+")
-						.replace("\\-", "-"),
+							.replace("\\*", "*")
+							.replace("\\+", "+")
+							.replace("\\-", "-"),
 					"UTF-8"
 			);
 
@@ -485,6 +485,7 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 	 */
 	protected JSONObject sendGetRequest(String query)
 	{
+
 		try
 		{
 			String encodedQuery = URLEncoder.encode(query, "UTF-8");
@@ -499,15 +500,10 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 							.returnContent()
 							.asString()
 			);
-		} catch (HttpResponseException e)
+		} catch (Exception e)
 		{
-			logger.warning(query);
 			e.printStackTrace();
 			throw new QHException(e);
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-			return null;
 		}
 	}
 
