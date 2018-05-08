@@ -10,7 +10,6 @@ import org.hucompute.services.uima.eval.evaluation.framework.OutputProvider;
 import org.hucompute.services.uima.eval.utility.Collections;
 import org.hucompute.services.uima.eval.utility.Formatting;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.naming.OperationNotSupportedException;
@@ -252,7 +251,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 				queryHandler
 		);
 		ttrStats.getJSONObject("more").put(
-				"results", new JSONObject(ttrs)
+				"results", new JSONObject(ttrs.toString())
 		);
 		return ttrStats;
 	}
@@ -281,13 +280,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 			try
 			{
 				Double ttr = queryHandler.calculateTTRForDocument(documentId);
-				try
-				{
-					results.put(documentId, ttr);
-				} catch (JSONException ignored)
-				{
-					results.put(documentId, 0d);
-				}
+				results.put(documentId, ttr.toString());
 			} catch (DocumentNotFoundException e)
 			{
 				logger.warning("DocumentId \"" + documentId + "\" could "
@@ -337,7 +330,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 			results.put(
 					queryHandler.calculateTTRForCollectionOfDocuments(
 							randomDocumentIds
-					)
+					).toString()
 			);
 		}
 
@@ -382,7 +375,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 						documentId,
 						queryHandler.calculateRawTermFrequenciesInDocument(
 								documentId
-						)
+						).toString()
 				);
 			} catch (DocumentNotFoundException e)
 			{
@@ -441,7 +434,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 							.calculateRawTermFrequencyForLemmaInDocument(
 									lemma, documentId
 							);
-					lemmaResults.put(lemma, lemmaTF);
+					lemmaResults.put(lemma, ((Double) lemmaTF).toString());
 				}
 
 				results.put(documentId, lemmaResults);
@@ -508,7 +501,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 							.calculateTermFrequencyWithDoubleNormForLemmaInDocument(
 									lemma, documentId
 							);
-					lemmaResults.put(lemma, lemmaTF);
+					lemmaResults.put(lemma, ((Double) lemmaTF).toString());
 				}
 
 				results.put(documentId, lemmaResults);
@@ -575,7 +568,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 							.calculateTermFrequencyWithLogNormForLemmaInDocument(
 									lemma, documentId
 							);
-					lemmaResults.put(lemma, lemmaTF);
+					lemmaResults.put(lemma, ((Double) lemmaTF).toString());
 				}
 
 				results.put(documentId, lemmaResults);
@@ -633,7 +626,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 						queryHandler
 								.calculateTermFrequenciesForLemmataInDocument(
 										documentId
-								)
+								).toString()
 				);
 			} catch (DocumentNotFoundException e)
 			{
@@ -682,7 +675,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 			{
 				results.put(
 						lemma,
-						queryHandler.calculateInverseDocumentFrequency(lemma)
+						((Double) queryHandler.calculateInverseDocumentFrequency(lemma)).toString()
 				);
 			} catch (OperationNotSupportedException e)
 			{
@@ -736,7 +729,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 						documentId,
 						queryHandler.calculateInverseDocumentFrequenciesForLemmataInDocument(
 								documentId
-						)
+						).toString()
 				);
 			} catch (DocumentNotFoundException e)
 			{
@@ -803,9 +796,9 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 				{
 					lemmaResults.put(
 							lemma,
-							queryHandler.calculateTFIDFForLemmaInDocument(
+							((Double) queryHandler.calculateTFIDFForLemmaInDocument(
 									lemma, documentId
-							)
+							)).toString()
 					);
 				}
 
@@ -870,7 +863,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 			{
 				results.put(
 						documentId,
-						queryHandler.calculateTFIDFForLemmataInDocument(documentId)
+						queryHandler.calculateTFIDFForLemmataInDocument(documentId).toString()
 				);
 			} catch (DocumentNotFoundException e)
 			{
@@ -915,9 +908,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 	{
 		try
 		{
-			JSONObject results = new JSONObject(
-					queryHandler.calculateTFIDFForLemmataInAllDocuments()
-			);
+			String results = queryHandler.calculateTFIDFForLemmataInAllDocuments().toString();
 
 			JSONObject tfidfStats = Formatting
 					.createOutputForMethod(
