@@ -1,5 +1,7 @@
 package org.hucompute.services.uima.eval.evaluation.framework;
 
+import org.hucompute.services.uima.eval.evaluation.implementation.AllQueryEvaluationCase;
+import org.hucompute.services.uima.eval.utility.logging.PlainFormatter;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -8,12 +10,16 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
+import java.util.logging.Logger;
 
 /**
  * Manages an output directory and creates and backs up files for others to use.
  */
 public class BaseOutputProvider implements OutputProvider
 {
+	protected static final Logger logger =
+			Logger.getLogger(BaseOutputProvider.class.getName());
 	Path outputDirectory;
 
 	/**
@@ -131,6 +137,10 @@ public class BaseOutputProvider implements OutputProvider
 	)
 			throws IOException
 	{
+		if (jsonObject.toString() == null)
+		{
+			PlainFormatter.logJSONObject(logger, jsonObject);
+		}
 		File outputFile = this.createFile(caller, name, keepOld);
 		try (FileWriter writer = new FileWriter(outputFile))
 		{
