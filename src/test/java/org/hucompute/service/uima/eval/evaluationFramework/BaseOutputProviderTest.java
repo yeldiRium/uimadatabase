@@ -192,7 +192,7 @@ public class BaseOutputProviderTest
 
 		provider.writeJSON(this.getClass().getName(), "testJSON", testJSON);
 
-		String expectedFileContent = testJSON.toString();
+		String expectedFileContent = testJSON.toString(2);
 		String fileContent = Files.newBufferedReader(expectedPath).lines()
 				.collect(Collectors.joining("\n"));
 
