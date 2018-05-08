@@ -428,7 +428,9 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 			String encoded = URLEncoder.encode(value, "UTF-8");
 			if (escapeDot)
 			{
-				return encoded.replace(".", "\\.");
+				return encoded
+						.replace(".", "\\.")
+						.replace("*", "\\*");
 			} else
 			{
 				return encoded;
@@ -446,7 +448,8 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		try
 		{
 			return URLDecoder.decode(
-					value.replace("\\.", "."),
+					value.replace("\\.", ".")
+						.replace("\\*", "*"),
 					"UTF-8"
 			);
 
