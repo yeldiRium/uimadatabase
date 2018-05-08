@@ -251,7 +251,7 @@ public class AllCalculateEvaluationCase implements EvaluationCase
 				queryHandler
 		);
 		ttrStats.getJSONObject("more").put(
-				"results", new JSONObject(ttrs.toString())
+				"results", ttrs.toString()
 		);
 		return ttrStats;
 	}
