@@ -137,10 +137,7 @@ public class BaseOutputProvider implements OutputProvider
 	)
 			throws IOException
 	{
-		if (jsonObject.toString() == null)
-		{
-			PlainFormatter.logJSONObject(logger, jsonObject);
-		}
+		PlainFormatter.logJSONObject(logger, jsonObject);
 		File outputFile = this.createFile(caller, name, keepOld);
 		try (FileWriter writer = new FileWriter(outputFile))
 		{
