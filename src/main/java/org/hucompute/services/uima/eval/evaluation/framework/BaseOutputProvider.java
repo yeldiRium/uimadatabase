@@ -134,7 +134,7 @@ public class BaseOutputProvider implements OutputProvider
 		File outputFile = this.createFile(caller, name, keepOld);
 		try (FileWriter writer = new FileWriter(outputFile))
 		{
-			writer.write(jsonObject.toString());
+			writer.write(jsonObject.toString(2));
 		}
 	}
 }
