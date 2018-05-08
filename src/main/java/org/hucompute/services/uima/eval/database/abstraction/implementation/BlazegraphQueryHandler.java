@@ -430,7 +430,9 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 			{
 				return encoded
 						.replace(".", "\\.")
-						.replace("*", "\\*");
+						.replace("*", "\\*")
+						.replace("+", "\\+")
+						.replace("-", "\\-");
 			} else
 			{
 				return encoded;
@@ -449,7 +451,9 @@ public class BlazegraphQueryHandler extends AbstractQueryHandler
 		{
 			return URLDecoder.decode(
 					value.replace("\\.", ".")
-						.replace("\\*", "*"),
+						.replace("\\*", "*")
+						.replace("\\+", "+")
+						.replace("\\-", "-"),
 					"UTF-8"
 			);
 
