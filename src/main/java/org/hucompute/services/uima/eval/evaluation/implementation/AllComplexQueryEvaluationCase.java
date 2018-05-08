@@ -68,98 +68,62 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			int step = 1;
 
 			logger.info("Step " + step + ": Running getBiGramsFromDocumentEvaluation");
-			try
-			{
-				stats.put(
-						"getBiGramsFromDocumentEvaluation",
-						this.getBiGramsFromDocumentEvaluation(
-								queryHandler
-						)
-				);
-			} catch (UnsupportedOperationException e)
-			{
-				logger.info("Stop " + step + " was not supported.");
-			}
+			stats.put(
+					"getBiGramsFromDocumentEvaluation",
+					this.getBiGramsFromDocumentEvaluation(
+							queryHandler
+					)
+			);
 			logger.info("Step " + step + " done.");
 
 			step++;
 			logger.info("Step " + step + ": Running getBiGramsFromAllDocumentsEvaluation");
-			try
-			{
-				stats.put(
-						"getBiGramsFromAllDocumentsEvaluation",
-						this.getBiGramsFromAllDocumentsEvaluation(
-								queryHandler
-						)
-				);
-			} catch (UnsupportedOperationException e)
-			{
-				logger.info("Stop " + step + " was not supported.");
-			}
+			stats.put(
+					"getBiGramsFromAllDocumentsEvaluation",
+					this.getBiGramsFromAllDocumentsEvaluation(
+							queryHandler
+					)
+			);
 			logger.info("Step " + step + " done.");
 
 			step++;
 			logger.info("Step " + step + ": Running getBiGramsFromDocumentsInCollectionEvaluation");
-			try
-			{
-				stats.put(
-						"getBiGramsFromDocumentsInCollectionEvaluation",
-						this.getBiGramsFromDocumentsInCollectionEvaluation(
-								queryHandler
-						)
-				);
-			} catch (UnsupportedOperationException e)
-			{
-				logger.info("Stop " + step + " was not supported.");
-			}
+			stats.put(
+					"getBiGramsFromDocumentsInCollectionEvaluation",
+					this.getBiGramsFromDocumentsInCollectionEvaluation(
+							queryHandler
+					)
+			);
 			logger.info("Step " + step + " done.");
 
 			step++;
 			logger.info("Step " + step + ": Running getTriGramsFromDocumentEvaluation");
-			try
-			{
-				stats.put(
-						"getTriGramsFromDocumentEvaluation",
-						this.getTriGramsFromDocumentEvaluation(
-								queryHandler
-						)
-				);
-			} catch (UnsupportedOperationException e)
-			{
-				logger.info("Stop " + step + " was not supported.");
-			}
+			stats.put(
+					"getTriGramsFromDocumentEvaluation",
+					this.getTriGramsFromDocumentEvaluation(
+							queryHandler
+					)
+			);
 			logger.info("Step " + step + " done.");
 
 			step++;
 			logger.info("Step " + step + ": Running getTriGramsFromAllDocumentsEvaluation");
-			try
-			{
-				stats.put(
-						"getTriGramsFromAllDocumentsEvaluation",
-						this.getTriGramsFromAllDocumentsEvaluation(
-								queryHandler
-						)
-				);
-			} catch (UnsupportedOperationException e)
-			{
-				logger.info("Stop " + step + " was not supported.");
-			}
+			stats.put(
+					"getTriGramsFromAllDocumentsEvaluation",
+					this.getTriGramsFromAllDocumentsEvaluation(
+							queryHandler
+					)
+			);
 			logger.info("Step " + step + " done.");
 
 			step++;
 			logger.info("Step " + step + ": Running getTriGramsFromDocumentsInCollectionEvaluation");
-			try
-			{
-				stats.put(
-						"getTriGramsFromDocumentsInCollectionEvaluation",
-						this.getTriGramsFromDocumentsInCollectionEvaluation(
-								queryHandler
-						)
-				);
-			} catch (UnsupportedOperationException e)
-			{
-				logger.info("Stop " + step + " was not supported.");
-			}
+			stats.put(
+					"getTriGramsFromDocumentsInCollectionEvaluation",
+					this.getTriGramsFromDocumentsInCollectionEvaluation(
+							queryHandler
+					)
+			);
 			logger.info("Step " + step + " done.");
 
 			logger.info("Writing results...");
@@ -185,7 +149,8 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
-		if (this.documentIds.size() == 0) {
+		if (this.documentIds.size() == 0)
+		{
 			return new JSONObject();
 		}
 
@@ -206,6 +171,11 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 						+ "not be found in the database, although it "
 						+ "was there just a moment ago. Please check "
 						+ "for concurrent access.");
+			} catch (UnsupportedOperationException ignored)
+			{
+				return Formatting.createUnsupportedOperationError(
+						"getBiGramsFromDocument"
+				);
 			}
 		}
 
@@ -232,10 +202,18 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 	{
 		queryHandler.getBiGramsFromAllDocuments();
 
-		return Formatting.createOutputForMethod(
-				"getBiGramsFromAllDocuments",
-				queryHandler
-		);
+		try
+		{
+			return Formatting.createOutputForMethod(
+					"getBiGramsFromAllDocuments",
+					queryHandler
+			);
+		} catch (UnsupportedOperationException ignored)
+		{
+			return Formatting.createUnsupportedOperationError(
+					"getBiGramsFromAllDocuments"
+			);
+		}
 	}
 
 	/**
@@ -250,7 +228,8 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
-		if (this.documentIds.size() == 0) {
+		if (this.documentIds.size() == 0)
+		{
 			return new JSONObject();
 		}
 
@@ -274,6 +253,11 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 						+ "not be found in the database, although they "
 						+ "were there just a moment ago. Please check "
 						+ "for concurrent access.");
+			} catch (UnsupportedOperationException ignored)
+			{
+				return Formatting.createUnsupportedOperationError(
+						"getBiGramsFromDocumentsInCollection"
+				);
 			}
 		}
 
@@ -301,7 +285,8 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
-		if (this.documentIds.size() == 0) {
+		if (this.documentIds.size() == 0)
+		{
 			return new JSONObject();
 		}
 
@@ -322,6 +307,11 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 						+ "not be found in the database, although it "
 						+ "was there just a moment ago. Please check "
 						+ "for concurrent access.");
+			} catch (UnsupportedOperationException ignored)
+			{
+				return Formatting.createUnsupportedOperationError(
+						"getTriGramsFromDocument"
+				);
 			}
 		}
 
@@ -348,10 +338,18 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 	{
 		queryHandler.getTriGramsFromAllDocuments();
 
-		return Formatting.createOutputForMethod(
-				"getTriGramsFromAllDocuments",
-				queryHandler
-		);
+		try
+		{
+			return Formatting.createOutputForMethod(
+					"getTriGramsFromAllDocuments",
+					queryHandler
+			);
+		} catch (UnsupportedOperationException ignored)
+		{
+			return Formatting.createUnsupportedOperationError(
+					"getTriGramsFromAllDocuments"
+			);
+		}
 	}
 
 	/**
@@ -366,7 +364,8 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 			BenchmarkQueryHandler queryHandler
 	)
 	{
-		if (this.documentIds.size() == 0) {
+		if (this.documentIds.size() == 0)
+		{
 			return new JSONObject();
 		}
 
@@ -390,6 +389,11 @@ public class AllComplexQueryEvaluationCase implements EvaluationCase
 						+ "not be found in the database, although they "
 						+ "were there just a moment ago. Please check "
 						+ "for concurrent access.");
+			} catch (UnsupportedOperationException ignored)
+			{
+				return Formatting.createUnsupportedOperationError(
+						"getTriGramsFromDocumentsInCollection"
+				);
 			}
 		}
 
