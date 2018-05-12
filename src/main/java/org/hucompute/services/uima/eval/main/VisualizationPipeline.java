@@ -108,6 +108,13 @@ public class VisualizationPipeline
 									if (testData == null)
 										return;
 
+									Double avgTime = testData.optDouble("avgTime");
+									// If the current eval has no result (avgTime), skip it, so that no exception is raised
+									// and the rest of the file is still processed.
+									if (Double.isNaN(avgTime)) {
+										return;
+									}
+
 									String plotName = fileData.eval + "_" +
 											testName;
 
@@ -142,14 +149,16 @@ public class VisualizationPipeline
 									Vector<Double> aVector = new Vector<>(2, 0);
 									aVector.add((double) fileData.fileCount);
 									logger.info("parsing data for " + plotName + " in db " + fileData.dbName);
-									aVector.add(Double.parseDouble(testData.get("avgTime").toString()));
+									aVector.add(avgTime);
 									aDataSet.addValue(aVector);
 								});
-							} catch (IOException e)
+							} catch (IOException | JSONException e)
 							{
 								e.printStackTrace();
-							} catch (JSONException ignored)
-							{
+								logger.warning(fileData.dbName);
+								logger.warning(fileData.eval);
+								logger.warning(fileData.fileName);
+								logger.warning(String.valueOf(fileData.fileCount));
 							}
 						},
 						(Map<String, Map<String, DataSet<Double>>> map1,
@@ -205,7 +214,8 @@ public class VisualizationPipeline
 							"Documents",
 							"Time [ms]"
 					),
-					new FileOutputStream(graphFile));
+					new FileOutputStream(graphFile)
+			);
 		}
 
 		logger.info("Ending Visualization pipeline.");
