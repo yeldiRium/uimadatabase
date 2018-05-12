@@ -4,22 +4,20 @@ uimadatabase
 What this is:
 -------------
 
-This project evaluates a number of different DBMSs in the context of Apache UIMA NLP.
-The DBMSs are:
+This is part of my bachelor thesis. The thesis itself might be linked to in the future.
+
+This project evaluates a number of different DBMSs and one indexing system in the context of Apache UIMA NLP.
+Those are:
 
 - Arango DB
 - BaseX
 - Cassandra
+- Lucene/Solr
 - Mongo DB
 - MySQL
 - Neo4J
 
-Still undecided:
-
-- Microsoft Cosmos DB
-
-The DBMSs are spun up in separate docker containers (if necessary and not externally hosted)
-for ease of access.
+The DBMSs are spun up in separate docker containers for ease of access.
 
 Prerequisites:
 --------------
@@ -41,6 +39,9 @@ docker-compose up
 ```
 This will compile and package the application, build and start up the docker 
 containers and run the script at `/main.sh`.
+
+Usually this is used for one evaluation-run on a given input set and has to be 
+run multiple times with differing inputs to get meaningful results.
 
 Configure said script to change the evaluation process.
 
