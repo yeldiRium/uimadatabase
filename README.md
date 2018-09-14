@@ -4,7 +4,7 @@ uimadatabase
 What this is:
 -------------
 
-This is part of my bachelor thesis. The thesis itself might be linked to in the future.
+This is part of my bachelor thesis. The thesis can be found [here](bachelor_thesis.pdf).
 
 This project evaluates a number of different DBMSs and one indexing system in the context of Apache UIMA NLP.
 Those are:
