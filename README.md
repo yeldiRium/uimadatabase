@@ -1,10 +1,10 @@
-uimadatabase
+Komparative Analyse von Datenbank- und Indexiserungssystemen im Kontext des Natural Language Processing
 ============
 
 What this is:
 -------------
 
-This is part of my bachelor thesis. The thesis can be found [here](bachelor_thesis.pdf).
+This is my bachelor thesis. The written thesis can be found [here](bachelor_thesis.pdf).
 
 This project evaluates a number of different DBMSs and one indexing system in the context of Apache UIMA NLP.
 Those are:
